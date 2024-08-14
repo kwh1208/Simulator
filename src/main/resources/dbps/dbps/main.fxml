@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" prefHeight="800.0" prefWidth="600.0" spacing="0.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.MainController">
+    <padding>
+        <Insets bottom="0.0" left="0.0" right="0.0" top="0.0" />
+    </padding>
+   <children>
+      <TabPane prefHeight="640.0" prefWidth="590.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <fx:include source="message.fxml"/>
+          <fx:include source="setting.fxml"/>
+        </tabs>
+      </TabPane>
+       <fx:include source="log.fxml"/>
+   </children>
+</VBox>

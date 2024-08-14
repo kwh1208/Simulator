@@ -1,0 +1,12 @@
+.root {
+    -fx-font-size: 10pt;
+}
+.label, .button, .text, .choice-box, .combo-box, .text-field, .text-area, .menu, .table-cell {
+    -fx-font-size: 10pt;
+}
+.text-area{
+    -fx-text-fill: white;
+}
+.text-area .content{
+     -fx-background-color: black;
+ }

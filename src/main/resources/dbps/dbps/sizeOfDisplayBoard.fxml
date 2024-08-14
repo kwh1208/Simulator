@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.collections.FXCollections?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dbps.dbps.controller.SizeOfDisplayBoardController" layoutX="284.0" layoutY="25.0" prefHeight="168.0" prefWidth="288.0" style="-fx-border-color: black">
+<children>
+    <Label alignment="CENTER" layoutX="14.0" layoutY="-6.0" prefHeight="18.0" prefWidth="115.0" style="-fx-background-color: black;" text="전광판 크기" textFill="WHITE" />
+    <Label layoutX="20.0" layoutY="25.0" text="세로 크기" />
+    <Spinner fx:id="spinnerForColumn" layoutX="126.0" layoutY="18.0" prefHeight="25.0" prefWidth="64.0" />
+    <Label layoutX="205.0" layoutY="26.0" prefHeight="13.0" prefWidth="73.0" text="X16 Pixels" />
+
+    <Label layoutX="20.0" layoutY="56.0" text="가로 크기" />
+    <Spinner fx:id="spinnerForRow" layoutX="126.0" layoutY="51.0" prefHeight="25.0" prefWidth="64.0" />
+    <Label layoutX="205.0" layoutY="58.0" prefHeight="13.0" prefWidth="74.0" text="X16 Pixels" />
+
+    <Label layoutX="20.0" layoutY="87.0" text="픽셀당 비트수" />
+    <ChoiceBox disable="true" layoutX="125.0" layoutY="113.0" prefHeight="25.0" prefWidth="145.0">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="가로형(default)" />
+                <String fx:value="1줄 세로형" />
+                <String fx:value="2줄 세로형" />
+                <String fx:value="가로형 양면" />
+                <String fx:value="1줄 세로형 양면" />
+                <String fx:value="2줄 가로형" />
+            </FXCollections>
+        </items>
+    </ChoiceBox>
+
+    <CheckBox layoutX="20.0" layoutY="116.0" mnemonicParsing="false" text="모듈배열방법" />
+    <ChoiceBox layoutX="125.0" layoutY="82.0" prefHeight="25.0" prefWidth="145">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="1BPP(2Colors)" />
+                <String fx:value="4BPP(16Colors)" />
+                <String fx:value="16BPP(65,536Colors)" />
+            </FXCollections>
+        </items>
+    </ChoiceBox>
+
+    <Button layoutX="227.0" layoutY="140.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="전송" />
+</children>
+</Pane>

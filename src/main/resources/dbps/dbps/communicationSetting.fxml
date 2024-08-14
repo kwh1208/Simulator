@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="291.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.CommunicationSettingController">
+   <children>
+      <Pane layoutX="15.0" layoutY="14.0" prefHeight="161.0" prefWidth="265.0" style="-fx-border-color: black;">
+         <children>
+            <RadioButton fx:id="serialRadioBtn" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" style="-fx-background-color: white;" text="Serial" />
+            <Label layoutX="14.0" layoutY="30.0" prefHeight="13.0" prefWidth="99.0" text="통신 포트 설정" />
+            <ComboBox fx:id="serialPortComboBox" layoutX="155.0" layoutY="25.0" prefHeight="25.0" prefWidth="100.0" value="COM4">
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                  </FXCollections>
+               </items>
+            </ComboBox>
+
+            <Label layoutX="14.0" layoutY="70.0" text="통신 속도 설정" />
+            <ChoiceBox fx:id="serialSpeedChoiceBox" layoutX="155.0" layoutY="65.0" prefHeight="25.0" prefWidth="100.0" value="115200">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                       <String fx:value="2400" />
+                       <String fx:value="4800" />
+                       <String fx:value="9600" />
+                       <String fx:value="19200" />
+                       <String fx:value="38400" />
+                       <String fx:value="57600" />
+                       <String fx:value="115200" />
+                       <String fx:value="230400" />
+                       <String fx:value="460800" />
+                       <String fx:value="921600" />
+                    </FXCollections>
+                </items>
+            </ChoiceBox>
+
+            <CheckBox fx:id="RS485ChkBox" layoutX="14.0" layoutY="103.0" mnemonicParsing="false" text="RS-485 Address" />
+            <Button fx:id="findSpeedBtn" layoutX="82.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#findCommunicationSpeed" prefHeight="27.0" prefWidth="88.0" text="통신속도찾기" />
+            <Button fx:id="openDeviceManagerBtn" layoutX="179.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#openDeviceManager" prefHeight="27.0" prefWidth="76.0" text="장치관리자" />
+
+         </children>
+      </Pane>
+      <Pane layoutX="15.0" layoutY="191.0" prefHeight="87.0" prefWidth="265.0" style="-fx-border-color: black;">
+         <children>
+            <RadioButton fx:id="clientTCPRadioBtn" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" style="-fx-background-color: white;" text="Client TCP/IP" />
+            <Label layoutX="13.0" layoutY="16.0" text="IP Address" />
+            <TextField fx:id="ClientIPAddress" layoutX="110.0" layoutY="16.0" prefWidth="145.0"/>
+            <Label layoutX="13.0" layoutY="44.0" text="IP Port" />
+            <TextField fx:id="ClientIPPort" layoutX="110.0" layoutY="48.0" prefWidth="145.0"/>
+         </children>
+      </Pane>
+      <Pane layoutX="15.0" layoutY="294.0" prefHeight="95.0" prefWidth="265.0" style="-fx-border-color: black;">
+         <children>
+            <RadioButton fx:id="serverTCPRadioBtn" layoutX="16.0" layoutY="-8.0" mnemonicParsing="false" style="-fx-background-color: white;" text="Server TCP/IP" />
+            <Label layoutX="16.0" layoutY="21.0" text="IP Address" />
+            <TextField fx:id="serverIPAddress" layoutX="110.0" layoutY="17.0" prefWidth="145.0"/>
+            <Label layoutX="16.0" layoutY="47.0" text="IP Port" />
+            <TextField fx:id="serverIPPort" layoutX="110.0" layoutY="50.0" prefWidth="145.0"/>
+         </children>
+      </Pane>
+      <Pane layoutX="15.0" layoutY="403.0" prefHeight="87.0" prefWidth="265.0" style="-fx-border-color: black;">
+         <children>
+            <RadioButton fx:id="UDPRadioBtn" layoutX="18.0" layoutY="-8.0" mnemonicParsing="false" style="-fx-background-color: white;" text="UDP" />
+            <Label layoutX="16.0" layoutY="21.0" text="IP Address" />
+            <TextField fx:id="UDPIPAddress" layoutX="110.0" layoutY="17.0" prefWidth="145.0"/>
+            <Label layoutX="16.0" layoutY="47.0" text="IP Port" />
+            <TextField fx:id="UDPIPPort" layoutX="110.0" layoutY="50.0" prefWidth="145.0"/>
+         </children>
+      </Pane>
+      <Button layoutX="14.0" layoutY="497.0" mnemonicParsing="false" onMouseClicked="#openSerialPort" prefHeight="27.0" prefWidth="64.0" text="포트열기" />
+      <Button layoutX="215.0" layoutY="497.0" mnemonicParsing="false" onMouseClicked="#closeSerialPort" prefHeight="27.0" prefWidth="64.0" text="포트닫기" />
+      <Button layoutX="14.0" layoutY="526.0" mnemonicParsing="false" onMouseClicked="#openDabitNet" prefHeight="27.0" prefWidth="88.0" text="DABITNET" />
+      <Button layoutX="110.0" layoutY="526.0" mnemonicParsing="false" onMouseClicked="#openBluetooth" prefHeight="27.0" prefWidth="71.0" text="Bluetooth" />
+      <Button layoutX="191.0" layoutY="526.0" mnemonicParsing="false" onMouseClicked="#controllerConnect" prefHeight="27.0" prefWidth="88.0" text="컨트롤러연결" />
+
+      <Label layoutX="15.0" layoutY="564.0" text="응답시간설정" />
+      <ChoiceBox layoutX="110.0" layoutY="557.0" prefHeight="27.0" prefWidth="54.0" value="3">
+         <items>
+            <FXCollections fx:factory="observableArrayList">
+               <String fx:value="1" />
+               <String fx:value="2" />
+               <String fx:value="3" />
+            </FXCollections>
+         </items>
+      </ChoiceBox>
+      <Button layoutX="238.0" layoutY="557.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClose" prefHeight="27.0" prefWidth="40.0" text="닫기" />
+   </children>
+</AnchorPane>

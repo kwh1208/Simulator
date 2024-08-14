@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="makeOwnMsgAnchorPane" prefHeight="600.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MakeOwnMsgController">
+   <children>
+       <Label layoutX="34.0" layoutY="20.0" text="1. 메시지종류" />
+       <Label layoutX="34.0" layoutY="50.0" text="2. 섹션번호" />
+
+       <Label layoutX="34.0" layoutY="80.0" text="3. 표시제어" />
+       <ChoiceBox fx:id="displayControl" layoutX="157.0" layoutY="76.0" prefHeight="21.0" prefWidth="139.0" value="On">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="Off" />
+                   <String fx:value="On" />
+                   <String fx:value="1" />
+                   <String fx:value="2" />
+                   <String fx:value="3" />
+                   <String fx:value="4" />
+                   <String fx:value="5" />
+                   <String fx:value="6" />
+                   <String fx:value="7" />
+                   <String fx:value="8" />
+                   <String fx:value="9" />
+                   <String fx:value="10" />
+                   <String fx:value="20" />
+                   <String fx:value="30" />
+                   <String fx:value="40" />
+                   <String fx:value="50" />
+                   <String fx:value="60" />
+                   <String fx:value="70" />
+                   <String fx:value="80" />
+                   <String fx:value="90" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <Label layoutX="34.0" layoutY="110.0" text="4. 표시방법" />
+       <ChoiceBox fx:id="displayMethod" layoutX="157.0" layoutY="106.0" prefHeight="21.0" prefWidth="139.0" value="Clear">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="Normal" />
+                   <String fx:value="Clear" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <Label layoutX="34.0" layoutY="140.0" text="5. 문자코드" />
+       <ChoiceBox fx:id="charCodes" layoutX="157.0" layoutY="136.0" prefHeight="21.0" prefWidth="139.0" value="KS완성형 한글코드">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="KS완성형 한글코드" />
+                   <String fx:value="UTF16유니코드" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <Label layoutX="34.0" layoutY="170.0" text="6. 폰트크기(Pixel)" />
+       <ChoiceBox fx:id="fontSize" layoutX="157.0" layoutY="166.0" prefHeight="21.0" prefWidth="139.0" value="16(Standard)">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="16(Standard)" />
+                   <String fx:value="20" />
+                   <String fx:value="24" />
+                   <String fx:value="28" />
+                   <String fx:value="32" />
+                   <String fx:value="36" />
+                   <String fx:value="40" />
+                   <String fx:value="44" />
+                   <String fx:value="48" />
+                   <String fx:value="52" />
+                   <String fx:value="56" />
+                   <String fx:value="60" />
+                   <String fx:value="64" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+       <Label layoutX="311.0" layoutY="170.0" text="폰트그룹" />
+       <ChoiceBox fx:id="fontGroup" layoutX="385.0" layoutY="166.0" prefHeight="21.0" prefWidth="139.0" value="FontGroup0">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="FontGroup0" />
+                   <String fx:value="FontGroup1" />
+                   <String fx:value="FontGroup2" />
+                   <String fx:value="FontGroup3" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <Label layoutX="34.0" layoutY="200.0" text="7. 입장효과" />
+       <ChoiceBox fx:id="effectIn" layoutX="157.0" layoutY="196.0" prefHeight="21.0" prefWidth="139.0" value="정지효과">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="정지효과" />
+                   <String fx:value="전체효과" />
+                   <String fx:value="이동하기" />
+                   <String fx:value="닦아내기" />
+                   <String fx:value="블라인드" />
+                   <String fx:value="커튼효과" />
+                   <String fx:value="확대효과" />
+                   <String fx:value="회전효과" />
+                   <String fx:value="배경깜박이기" />
+                   <String fx:value="색상깜박이기" />
+                   <String fx:value="3D 효과" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+       <Label layoutX="311.0" layoutY="200.0" text="효과방향" />
+       <ChoiceBox fx:id="inDirection" layoutX="385.0" layoutY="196.0" prefHeight="21.0" prefWidth="139.0" value="방향없음">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="방향없음" />
+                   <String fx:value="밝아지기" />
+                   <String fx:value="어두워지기" />
+                   <String fx:value="수평반사" />
+                   <String fx:value="수직반사" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+
+       <Label layoutX="34.0" layoutY="230.0" text="8. 퇴장효과" />
+       <ChoiceBox fx:id="effectOut" layoutX="157.0" layoutY="226.0" prefHeight="21.0" prefWidth="139.0" value="정지효과">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="정지효과" />
+                   <String fx:value="전체효과" />
+                   <String fx:value="이동하기" />
+                   <String fx:value="닦아내기" />
+                   <String fx:value="블라인드" />
+                   <String fx:value="커튼효과" />
+                   <String fx:value="확대효과" />
+                   <String fx:value="회전효과" />
+                   <String fx:value="배경깜박이기" />
+                   <String fx:value="색상깜박이기" />
+                   <String fx:value="3D 효과" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+       <Label layoutX="311.0" layoutY="230.0" text="효과방향" />
+       <ChoiceBox fx:id="outDirection" layoutX="385.0" layoutY="226.0" prefHeight="21.0" prefWidth="139.0" value="방향없음">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="방향없음" />
+                   <String fx:value="밝아지기" />
+                   <String fx:value="어두워지기" />
+                   <String fx:value="수평반사" />
+                   <String fx:value="수직반사" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+
+       <Label layoutX="34.0" layoutY="260.0" text="9. 예비" />
+       <ChoiceBox fx:id="sub" disable="true" layoutX="157.0" layoutY="256.0" prefHeight="21.0" prefWidth="139.0" value="사용안함">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="사용안함" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <Label layoutX="34.0" layoutY="290.0" text="10. 효과속도" />
+       <ChoiceBox fx:id="effectSpeed" layoutX="157.0" layoutY="286.0" prefHeight="21.0" prefWidth="139.0" value="15">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="5(가장 빠름)" />
+                   <String fx:value="10" />
+                   <String fx:value="15" />
+                   <String fx:value="20" />
+                   <String fx:value="25" />
+                   <String fx:value="30" />
+                   <String fx:value="35" />
+                   <String fx:value="40" />
+                   <String fx:value="45" />
+                   <String fx:value="50" />
+                   <String fx:value="55" />
+                   <String fx:value="60" />
+                   <String fx:value="65" />
+                   <String fx:value="70" />
+                   <String fx:value="75" />
+                   <String fx:value="80" />
+                   <String fx:value="85" />
+                   <String fx:value="90" />
+                   <String fx:value="95" />
+                   <String fx:value="99" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <Label layoutX="34.0" layoutY="320.0" text="11. 유지시간(x500ms)" />
+       <ChoiceBox fx:id="effectTime" layoutX="157.0" layoutY="316.0" prefHeight="21.0" prefWidth="139.0" value="2">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="0" />
+                   <String fx:value="2" />
+                   <String fx:value="4" />
+                   <String fx:value="8" />
+                   <String fx:value="10" />
+                   <String fx:value="15" />
+                   <String fx:value="20" />
+                   <String fx:value="30" />
+                   <String fx:value="40" />
+                   <String fx:value="60" />
+                   <String fx:value="80" />
+                   <String fx:value="120(2Min)" />
+                   <String fx:value="180(3Min)" />
+                   <String fx:value="300(5Min)" />
+                   <String fx:value="600(10Min)" />
+                   <String fx:value="1800(30Min)" />
+                   <String fx:value="3600(1Hour)" />
+                   <String fx:value="10800(3Hour)" />
+                   <String fx:value="18000(5Hour)" />
+                   <String fx:value="32400(9Hour)" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <Label layoutX="34.0" layoutY="350.0" text="12. X축시작" />
+       <ChoiceBox fx:id="xStart" layoutX="157.0" layoutY="346.0" prefHeight="21.0" prefWidth="139.0" value="0">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="0" />
+                   <String fx:value="4" />
+                   <String fx:value="8" />
+                   <String fx:value="12" />
+                   <String fx:value="16" />
+                   <String fx:value="20" />
+                   <String fx:value="24" />
+                   <String fx:value="28" />
+                   <String fx:value="32" />
+                   <String fx:value="36" />
+                   <String fx:value="40" />
+                   <String fx:value="44" />
+                   <String fx:value="48" />
+                   <String fx:value="52" />
+                   <String fx:value="56" />
+                   <String fx:value="60" />
+                   <String fx:value="64" />
+                   <String fx:value="68" />
+                   <String fx:value="72" />
+                   <String fx:value="76" />
+                   <String fx:value="80" />
+                   <String fx:value="84" />
+                   <String fx:value="88" />
+                   <String fx:value="92" />
+                   <String fx:value="96" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <Label layoutX="311.0" layoutY="350.0" text="13. Y축시작" />
+       <ChoiceBox fx:id="yStart" layoutX="385.0" layoutY="346.0" prefHeight="21.0" prefWidth="139.0" value="0">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="0" />
+                   <String fx:value="4" />
+                   <String fx:value="8" />
+                   <String fx:value="12" />
+                   <String fx:value="16" />
+                   <String fx:value="20" />
+                   <String fx:value="24" />
+                   <String fx:value="28" />
+                   <String fx:value="32" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <Label layoutX="34.0" layoutY="380.0" text="14. X축종료" />
+       <ChoiceBox fx:id="xEnd" layoutX="157.0" layoutY="376.0" prefHeight="21.0" prefWidth="139.0" value="0">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="0" />
+                   <String fx:value="4" />
+                   <String fx:value="8" />
+                   <String fx:value="12" />
+                   <String fx:value="16" />
+                   <String fx:value="20" />
+                   <String fx:value="24" />
+                   <String fx:value="28" />
+                   <String fx:value="32" />
+                   <String fx:value="36" />
+                   <String fx:value="40" />
+                   <String fx:value="44" />
+                   <String fx:value="48" />
+                   <String fx:value="52" />
+                   <String fx:value="56" />
+                   <String fx:value="60" />
+                   <String fx:value="64" />
+                   <String fx:value="68" />
+                   <String fx:value="72" />
+                   <String fx:value="76" />
+                   <String fx:value="80" />
+                   <String fx:value="84" />
+                   <String fx:value="88" />
+                   <String fx:value="92" />
+                   <String fx:value="96" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <Label layoutX="311.0" layoutY="380.0" text="15. Y축종료" />
+       <ChoiceBox fx:id="yEnd" layoutX="385.0" layoutY="376.0" prefHeight="21.0" prefWidth="139.0" value="0">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="0" />
+                   <String fx:value="4" />
+                   <String fx:value="8" />
+                   <String fx:value="12" />
+                   <String fx:value="16" />
+                   <String fx:value="20" />
+                   <String fx:value="24" />
+                   <String fx:value="28" />
+                   <String fx:value="32" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <Label layoutX="34.0" layoutY="410.0" text="16. 배경이미지 선택" />
+       <ChoiceBox fx:id="bgImg" layoutX="157.0" layoutY="410.0" prefHeight="21.0" prefWidth="139.0" value="사용안함">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="사용안함" />
+                   <String fx:value="1" />
+                   <String fx:value="2" />
+                   <String fx:value="3" />
+                   <String fx:value="4" />
+                   <String fx:value="5" />
+                   <String fx:value="6" />
+                   <String fx:value="7" />
+                   <String fx:value="8" />
+                   <String fx:value="9" />
+                   <String fx:value="10" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <Label layoutX="34.0" layoutY="450.0" text="17-1. 문자색상" />
+       <ChoiceBox fx:id="fontColor" layoutX="157.0" layoutY="446.0" prefHeight="21.0" prefWidth="139.0" value="노란색">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="검은색" />
+                   <String fx:value="빨간색" />
+                   <String fx:value="초록색" />
+                   <String fx:value="노란색" />
+                   <String fx:value="파란색" />
+                   <String fx:value="분홍색" />
+                   <String fx:value="하늘색" />
+                   <String fx:value="흰색" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <Label layoutX="34.0" layoutY="480.0" text="17-2. 문자배경색상" />
+       <ChoiceBox fx:id="fontBgColor" layoutX="157.0" layoutY="476.0" prefHeight="21.0" prefWidth="139.0" value="검은색">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="검은색" />
+                   <String fx:value="빨간색" />
+                   <String fx:value="초록색" />
+                   <String fx:value="노란색" />
+                   <String fx:value="파란색" />
+                   <String fx:value="분홍색" />
+                   <String fx:value="하늘색" />
+                   <String fx:value="흰색" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+       <TextField fx:id="msgPreview" layoutX="35.0" layoutY="508.0" prefHeight="40.0" prefWidth="495.0" style="-fx-background-color: black; -fx-text-fill: white" text="![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]" />
+
+       <Button layoutX="150.0" layoutY="553.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="설정 확인" onMouseClicked="#settingConfirm" />
+       <Button layoutX="250.0" layoutY="553.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="미리보기" onMouseClicked="#preview" />
+       <Button layoutX="350.0" layoutY="553.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="초기화" onMouseClicked="#reset" />
+       <Button layoutX="450.0" layoutY="553.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="확인" onMouseClicked="#confirm" />
+   </children>
+</AnchorPane>

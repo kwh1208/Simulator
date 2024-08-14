@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dbps.dbps.controller.BasicSettingController" layoutX="19.0" layoutY="57.0" prefHeight="95.0" prefWidth="244.0" style="-fx-border-color: black;">
+<children>
+    <Label alignment="CENTER" layoutX="15.0" layoutY="-6.0" prefHeight="18.0" prefWidth="115.0" style="-fx-background-color: black;" text="프로그램 설정" textFill="WHITE" />
+    <Label layoutX="14.0" layoutY="30.0" text="프로토콜 형식" />
+    <Label layoutX="14.0" layoutY="66.0" text="프로그램 언어" />
+    <ChoiceBox layoutX="105.0" layoutY="24.0" prefHeight="25.0" prefWidth="130.0" value="아스키 프로토콜">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="아스키 프로토콜" />
+                <String fx:value="헥사 프로토콜" />
+            </FXCollections>
+        </items>
+    </ChoiceBox>
+    <ChoiceBox layoutX="105.0" layoutY="60.0" prefHeight="25.0" prefWidth="130" value="한국어">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="한국어" />
+                <String fx:value="English" />
+            </FXCollections>
+        </items>
+    </ChoiceBox>
+</children>
+</Pane>
