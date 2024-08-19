@@ -37,10 +37,16 @@ public class CommunicationSettingController {
     private CheckBox RS485ChkBox;
 
     @FXML
+    private ChoiceBox<String> RS485ChoiceBox;
+
+    @FXML
     private Button findSpeedBtn;
 
     @FXML
     private Button openDeviceManagerBtn;
+
+    @FXML
+    private CheckBox BLEChkBox;
 
     /**
      * 클라이언트 TCP/IP
@@ -125,6 +131,14 @@ public class CommunicationSettingController {
 
 
         serialPortComboBox.valueProperty().addListener((observableValue, oldValue, newValue) -> changePort(oldValue, newValue));
+
+        RS485ChkBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue) {
+                RS485ChoiceBox.setVisible(true);
+            } else {
+                RS485ChoiceBox.setVisible(false);
+            }
+        });
     }
 
     //사용가능한 포트 가져오기
@@ -194,12 +208,14 @@ public class CommunicationSettingController {
     public void controllerConnect(){
         serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
 
-        try {
-            String response = serialPortManager.sendMsgAndGetMsgHex(serialPortComboBox.getValue(), "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03", Integer.parseInt(delayTime.getValue()));
-            logService.updateInfoLog(response);
-//            serialPortManager.sendMsgAndGetMsg(serialPortComboBox.getValue(), "![000/Hello world!]", 3);
-        }catch (Exception e){
-            throw new RuntimeException(e);
+        //시리얼 일때
+        String response = serialPortManager.sendMsgAndGetMsgHex(serialPortComboBox.getValue(), "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03", Integer.parseInt(delayTime.getValue()));
+        logService.updateInfoLog(response);
+
+        //블루투스일때
+        if(BLEChkBox.isSelected()){
+            String response_BLE = serialPortManager.sendMsgAndGetMsg(serialPortComboBox.getValue(), "대충 블루투스일때 보내는 메세지", Integer.parseInt(delayTime.getValue()));
+            logService.updateInfoLog(response_BLE);
         }
     }
 
