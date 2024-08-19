@@ -60,7 +60,7 @@ public class MsgController {
      * 실제 작동하는 기능들
      */
 
-
+    //text파일에 저장
     @FXML
     public void saveMsg(Event event) {
         Button clickedBtn = (Button) event.getSource();
@@ -72,6 +72,7 @@ public class MsgController {
         MsgService.saveMessages(num, inputText);
     }
 
+    //기기에 메세지 전송
     @FXML
     public void sendMsg(Event event) {
         Button clickedBtn = (Button) event.getSource();
@@ -79,8 +80,6 @@ public class MsgController {
         TextField targetTextField = transmitMsgs.get(num - 1);
 
         MsgService.sendMessages(num, targetTextField.getText());
-
-        log.info("MsgController sendMsg 호출");
     }
 
     @FXML
@@ -89,8 +88,8 @@ public class MsgController {
     }
 
     @FXML
-    public void setDisplaySettings(){
-        MsgService.setDisplaySettings();
+    public void makeOwnMsg(){
+        MsgService.makeOwnMsg();
     }
 
     @FXML

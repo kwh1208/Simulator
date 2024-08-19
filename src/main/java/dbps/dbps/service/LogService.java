@@ -1,30 +1,43 @@
 package dbps.dbps.service;
 
+import javafx.scene.control.ScrollPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+
 public class LogService {
+    //싱글톤 관리
+    public static LogService logService = getService();
+    public TextFlow logArea;
+    public ScrollPane scrollPane;
 
-    static LogService logService = new LogService();
-
-
-    private LogService(){
-    }
-
-    public static LogService getInstance(){
+    static LogService getService(){
+        if (logService == null){
+            logService = new LogService();
+        }
         return logService;
     }
 
+    public void setInitial(TextFlow logArea, ScrollPane scrollPane){
+        this.logArea = logArea;
+        this.scrollPane = scrollPane;
+    }
 
-    public void updateInfoLog(String additionalLog, TextFlow logArea){
+    //일반 로그 업데이트
+    public void updateInfoLog(String additionalLog){
         Date currentDate = new Date(System.currentTimeMillis());
         SimpleDateFormat formatter = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 
         String formattedTime = formatter.format(currentDate);
-        logArea.getChildren().add(new Text("\n[" + formattedTime+"] " + additionalLog));
+        Text updateLog = new Text("[" + formattedTime+"] " + additionalLog+"\n");
+        updateLog.setStyle("-fx-fill: white;");
+        logArea.getChildren().add(updateLog);
+
+        scrollPane.layout();
+        scrollPane.setVvalue(1.0);
     }
 
     public void clearLog(TextFlow logArea){
@@ -32,26 +45,23 @@ public class LogService {
     }
 
 
-    public void warningLog(String additionalLog, TextFlow logArea){
-        Date currentDate = new Date(System.currentTimeMillis());
-        SimpleDateFormat formatter = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
-
-        String formattedTime = formatter.format(currentDate);
-
-        logArea.getChildren().add(new Text("\n[" + formattedTime+"] "+"[Warning!]" + additionalLog));
+    public void warningLog(String additionalLog){
+        updateInfoLog("[Warning!] " + additionalLog);
     }
 
 
-    public void errorLog(String additionalLog, TextFlow logArea){
+    public void errorLog(String additionalLog){
         Date currentDate = new Date(System.currentTimeMillis());
         SimpleDateFormat formatter = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 
         String formattedTime = formatter.format(currentDate);
-        Text errorLog = new Text("\n[" + formattedTime+"] "+"[ERROR!]" + additionalLog);
+        Text errorLog = new Text("[" + formattedTime+"] "+"[ERROR!] " + additionalLog+"\n");
         errorLog.setStyle("-fx-fill: #E88F89;");
 
-
         logArea.getChildren().add(errorLog);
+
+        scrollPane.layout();
+        scrollPane.setVvalue(1.0);
     }
 
 }

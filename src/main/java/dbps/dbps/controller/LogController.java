@@ -1,24 +1,17 @@
 package dbps.dbps.controller;
 
 
-import dbps.dbps.service.LogService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.TextFlow;
-import lombok.Getter;
+
+import static dbps.dbps.service.LogService.logService;
 
 
 public class LogController {
-
-    @Getter
-    private static LogController instance = new LogController();
-
-    public LogController LogController(TextArea logArea) {
-        return instance;
-    }
 
     @FXML
     private TextFlow logArea;
@@ -26,36 +19,28 @@ public class LogController {
     @FXML
     private Button clearBtn;
 
-    private LogService logService = LogService.getInstance();
+    @FXML
+    private ScrollPane scrollPane;
 
     @FXML
     public void initialize(){
-        instance = this;
+        logService.setInitial(logArea, scrollPane);
+
+        if (logArea != null) {
+            System.out.println("logArea initialized successfully.");
+        } else {
+            System.out.println("logArea is null.");
+        }
 
         Image image = new Image(getClass().getResourceAsStream("/dbps/dbps/images/휴지통.png"));
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(23);
         imageView.setFitHeight(23);
         clearBtn.setGraphic(imageView);
-
-
-    }
-
-    public void updateLog(String log){
-        logService.updateInfoLog(log, logArea);
     }
 
     public void clearLog(){
-        System.out.println("로그 삭제");
         logService.clearLog(logArea);
-    }
-
-    public void warningLog(String log){
-        logService.warningLog(log, logArea);
-    }
-
-    public void errorLog(String log){
-        logService.errorLog(log, logArea);
     }
 
     /**

@@ -76,7 +76,7 @@
       <Button layoutX="191.0" layoutY="526.0" mnemonicParsing="false" onMouseClicked="#controllerConnect" prefHeight="27.0" prefWidth="88.0" text="컨트롤러연결" />
 
       <Label layoutX="15.0" layoutY="564.0" text="응답시간설정" />
-      <ChoiceBox layoutX="110.0" layoutY="557.0" prefHeight="27.0" prefWidth="54.0" value="3">
+      <ChoiceBox fx:id="delayTime" layoutX="110.0" layoutY="557.0" prefHeight="27.0" prefWidth="54.0" value="3">
          <items>
             <FXCollections fx:factory="observableArrayList">
                <String fx:value="1" />

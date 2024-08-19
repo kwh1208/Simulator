@@ -88,18 +88,24 @@ public class MakeOwnMsgController {
         makeOwnMsgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dabit/dabit_simulator/css/makeOwnMsg.css").toExternalForm());
     }
 
+    //확인버튼
+    @FXML
     public void settingConfirm() {
         String newMsg = getSettings();
 
         msgPreview.setText(newMsg);
     }
 
+    //미리보기
+    //완성필요
+    @FXML
     public void preview() {
         String text = msgPreview.getText();
-        log.info("makeOwnMsgController preview : " + text);
     }
 
-    public void reset(MouseEvent mouseEvent) {
+    //선택지 초기상태로
+    @FXML
+    public void reset() {
         // 모든 항목의 value 값 초기화
         displayControl.setValue("On");
         displayMethod.setValue("Clear");
@@ -123,11 +129,11 @@ public class MakeOwnMsgController {
         msgPreview.setText("![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]");
     }
 
+
     public void confirm() {
+        settingConfirm();
         String text = msgPreview.getText();
         //텍스트를 전체화면으로 넘겨주기.
-        log.info("makeOwnMsgController confirm 호출");
-        log.info("text={}", text);
         for (TextField transmitMsg : transmitMsgs) {
             if (transmitMsg.getText().isBlank() ||transmitMsg.getText().isEmpty()) {
                 transmitMsg.setText(text);
@@ -139,7 +145,7 @@ public class MakeOwnMsgController {
         makeMsgWindow.close();
     }
 
-
+    //효과에따라서 부수효과 바뀜
     private void updateInDirections(String effect) {
         selectEffect(effect, inDirection);
     }

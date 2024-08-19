@@ -1,8 +1,7 @@
 package dbps.dbps.service;
 
 import com.fazecast.jSerialComm.SerialPort;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import dbps.dbps.controller.LogController;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,10 +10,11 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SerialPortManager {
-    private static final Logger log = LoggerFactory.getLogger(SerialPortManager.class);
-    private final Map<String, SerialPort> serialPortMap = new HashMap<>();
+import static dbps.dbps.controller.CommunicationSettingController.openPortName;
+import static dbps.dbps.service.LogService.logService;
 
+public class SerialPortManager {
+    public static final Map<String, SerialPort> serialPortMap = new HashMap<>();
     private static SerialPortManager instance = null;
 
     public static synchronized SerialPortManager getInstance() {
@@ -24,20 +24,17 @@ public class SerialPortManager {
         return instance;
     }
 
-    private SerialPortManager() {
-    }
+    public void openPort(String portName, int baudRate){
+        if (serialPortMap.containsKey(portName)&&isPortOpen(portName)){
+            logService.updateInfoLog(portName + " 포트가 열려있습니다.");
+            return;
+        }
 
-
-
-    public void openPort(String portName, int baudRate) throws IOException {
         SerialPort port = SerialPort.getCommPort(portName);
         port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000, 0);
-        if (!port.openPort()) {
-            throw new IOException("Failed to open port " + portName);
-        }
+        port.openPort();
         serialPortMap.put(portName, port);
-        log.info("포트가 열렸습니다.");
+        logService.updateInfoLog(portName + " 포트가 열렸습니다.");
     }
 
 
@@ -47,12 +44,12 @@ public class SerialPortManager {
             SerialPort serialPort = serialPortMap.get(portName);
             if (serialPort.isOpen()){
                 serialPort.closePort();
-                log.info("포트가 닫혔습니다.");
+                logService.updateInfoLog(portName + " 포트가 닫혔습니다.");
             } else {
-                log.info("포트가 이미 닫혀있습니다.");
+                logService.updateInfoLog(portName + " 포트가 이미 닫혀 있습니다.");
             }
         } else {
-            log.info("해당 포트가 존재하지 않습니다.");
+            logService.updateInfoLog(portName+" 포트가 존재하지 않습니다.");
         }
     }
 
@@ -63,8 +60,9 @@ public class SerialPortManager {
 
     public String sendMsgAndGetMsg(String portName, String message, int timeoutSec){
         SerialPort port = serialPortMap.get(portName);
-        if (port == null || !port.isOpen()) {
-            log.info("포트 {}가 열려 있지 않습니다.", portName);
+
+        if (port == null || !isPortOpen(portName)) {
+            logService.updateInfoLog(portName+" 포트가 열려 있지 않습니다.");
             return null;
         }
         timeoutSec*=1000;
@@ -75,7 +73,7 @@ public class SerialPortManager {
             byte[] dataToSend;
             dataToSend = message.getBytes();
 
-            log.info("전송 메세지 = {}", dataToSend);
+            logService.updateInfoLog("전송 메세지 = " + message);
 
             outputStream.write(dataToSend);
             outputStream.flush();
@@ -86,7 +84,7 @@ public class SerialPortManager {
             byte[] buffer = new byte[1024];
             int numBytesRead;
             while ((System.currentTimeMillis() - startTime) < timeoutSec) {
-                log.info("응답 대기 중...");
+                //로딩 애니메이션
                 if (inputStream.available() > 0) {
                     numBytesRead = inputStream.read(buffer);
                     response.append(new String(buffer, 0, numBytesRead));
@@ -94,10 +92,10 @@ public class SerialPortManager {
                 Thread.sleep(1000); // 짧은 대기 시간
             }
 
-            log.info("메시지 전송 성공 메세지 = {}", response.toString());
+            logService.updateInfoLog("메시지 전송 성공 메세지 = "+ response);
             return response.toString();
         }catch (Exception e){
-            log.error("메시지 전송 중 오류 발생", e);
+            logService.errorLog("메시지 전송 중 오류 발생");
             return null;
         }
     }
@@ -105,19 +103,16 @@ public class SerialPortManager {
 
     public String sendMsgAndGetMsgHex(String portName, String msg, int timeoutSec){
         SerialPort port = serialPortMap.get(portName);
-        if (port == null || !port.isOpen()) {
-            log.info("포트 {}가 열려 있지 않습니다.", portName);
-            return null;
-        }
+        openPort(portName, 119200);
         timeoutSec*=1000;
         try {
             OutputStream outputStream = port.getOutputStream();
             InputStream inputStream = port.getInputStream();
 
             byte[] dataToSend;
-            dataToSend = hexStringToByteArray("!["+msg+"!]");
+            dataToSend = hexStringToByteArray(msg);
 
-            log.info("전송 메세지 = {}", dataToSend);
+            logService.updateInfoLog("전송 메세지 ="+ msg);
 
             outputStream.write(dataToSend);
             outputStream.flush();
@@ -128,7 +123,7 @@ public class SerialPortManager {
             byte[] buffer = new byte[1024];
             int numBytesRead;
             while ((System.currentTimeMillis() - startTime) < timeoutSec) {
-                log.info("응답 대기 중...");
+                //로딩용 애니메이션
                 if (inputStream.available() > 0) {
                     numBytesRead = inputStream.read(buffer);
                     responseStream.write(buffer, 0, numBytesRead);
@@ -137,10 +132,10 @@ public class SerialPortManager {
             }
 
             String hexResponse = bytesToHex(responseStream.toByteArray());
-            log.info("메시지 전송 성공 메세지 = {}", hexResponse);
+            logService.updateInfoLog("메시지 전송 성공 메세지 = "+ hexResponse);
             return hexResponse;
         }catch (Exception e){
-            log.error("메시지 전송 중 오류 발생", e);
+            logService.errorLog("메시지 전송 중 오류 발생");
             return null;
         }
 
@@ -164,13 +159,13 @@ public class SerialPortManager {
         return sb.toString();
     }
 
-    public int findSpeed(String portName) {
+    public int findSpeed() {
         int[] baudRates = {2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600};
 
         for (int baudRate : baudRates) {
             try {
-                openPort(portName, baudRate);
-                SerialPort port = serialPortMap.get(portName);
+                openPort(openPortName, baudRate);
+                SerialPort port = serialPortMap.get(openPortName);
                 OutputStream outputStream = port.getOutputStream();
                 String msg = "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
                 byte[] dataToSend = hexStringToByteArray(msg);
@@ -194,19 +189,20 @@ public class SerialPortManager {
                 }
 
                 String response = bytesToHex(responseStream.toByteArray());
-                log.info("Response at baud rate {}: {}", baudRate, response);
 
                 if (!response.isBlank()) {
-                    closePort(portName);
+                    closePort(openPortName);
+                    logService.updateInfoLog("통신 속도 찾기 성공");
+                    logService.updateInfoLog(openPortName+"의 적정 통신 속도는 "+ baudRate + "입니다.");
                     return baudRate;
                 }
             } catch (IOException | InterruptedException e) {
-                log.error("Error with baud rate {}: {}", baudRate, e.getMessage());
+                logService.errorLog("Error with baud rate {}: {}"+ baudRate+ e.getMessage());
             } finally {
-                closePort(portName);
+                closePort(openPortName);
             }
         }
-        return 0; // 적정 보드레이트를 찾지 못한 경우
+        return 0;
     }
 
 }

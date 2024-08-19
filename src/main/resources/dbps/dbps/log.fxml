@@ -14,8 +14,10 @@
           </graphic>
       </Button>
     </Pane>
-    <TextFlow fx:id="logArea" prefHeight="130.0" prefWidth="590.0" style="color: #fff; -fx-background-color: #2B2D30;">
-        <Text fill="white" text="로그 나오는 곳1" />
-        <Text fill="#E88F89" text="로그 나오는 곳2 경고" />
-    </TextFlow>
+    <ScrollPane fx:id="scrollPane" style="-fx-background-color: transparent;"  prefHeight="130.0" prefWidth="590.0">
+        <TextFlow fx:id="logArea" prefHeight="125.0" prefWidth="585.0" style="color: #fff; -fx-background-color: #2B2D30;">
+            <Text fill="white" text="로그 나오는 곳1" />
+            <Text fill="#E88F89" text="로그 나오는 곳2 경고" />
+        </TextFlow>
+    </ScrollPane>
 </VBox>

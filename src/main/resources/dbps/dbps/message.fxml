@@ -18,7 +18,7 @@
                 </font>
             </Label>
             <Button fx:id="msgResetBtn" layoutX="23.0" layoutY="550.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="153.0" text="메세지 초기화" onMouseClicked="#resetMsg"/>
-            <Button fx:id="DisplaySettingsBtn" layoutX="187.0" layoutY="550.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="153.0" text="메세지 만들기" onMouseClicked="#setDisplaySettings"/>
+            <Button fx:id="DisplaySettingsBtn" layoutX="187.0" layoutY="550.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="153.0" text="메세지 만들기" onMouseClicked="#makeOwnMsg"/>
 <!--            <Button fx:id="previewBtn" layoutX="480.0" layoutY="550.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="96.0" text="미리보기" onMouseClicked="#preview"/>-->
         </children>
     </AnchorPane>

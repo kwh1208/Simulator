@@ -3,21 +3,24 @@ package dbps.dbps.controller;
 
 
 import com.fazecast.jSerialComm.SerialPort;
+import dbps.dbps.service.LogService;
 import dbps.dbps.service.SerialPortManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.io.IOException;
 
+
 import static dbps.dbps.controller.SettingController.communicationSettingWindow;
+import static dbps.dbps.service.LogService.logService;
 
 public class CommunicationSettingController {
 
-    private static final Logger log = LoggerFactory.getLogger(CommunicationSettingController.class);
-
     SerialPortManager serialPortManager = SerialPortManager.getInstance();
+
+    public static String openPortName = null;
+
     /**
      * 시리얼
      */
@@ -78,7 +81,12 @@ public class CommunicationSettingController {
     private TextField UDPIPPort;
 
     @FXML
+    private ChoiceBox<String> delayTime;
+
+    //초기화
+    @FXML
     private void initialize() {
+        //토글버튼 그룹화
         ToggleGroup communicationGroup = new ToggleGroup();
         serialRadioBtn.setToggleGroup(communicationGroup);
         clientTCPRadioBtn.setToggleGroup(communicationGroup);
@@ -116,9 +124,10 @@ public class CommunicationSettingController {
         getSerialPortList();
 
 
-        serialPortComboBox.valueProperty().addListener((observableValue, oldValue, newValue) -> closePort(oldValue));
+        serialPortComboBox.valueProperty().addListener((observableValue, oldValue, newValue) -> changePort(oldValue, newValue));
     }
 
+    //사용가능한 포트 가져오기
     private void getSerialPortList() {
         SerialPort[] ports = SerialPort.getCommPorts();
         for (SerialPort port : ports) {
@@ -126,6 +135,7 @@ public class CommunicationSettingController {
         }
     }
 
+    //장치관리자 열기
     public void openDeviceManager() {
         try {
             ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "devmgmt.msc");
@@ -135,16 +145,15 @@ public class CommunicationSettingController {
         }
     }
 
-    public void findCommunicationSpeed() throws IOException {
-        log.info("통신 속도 찾기");
-
-        int speed = serialPortManager.findSpeed(serialPortComboBox.getValue());
+    //통신속도 찾기
+    public void findCommunicationSpeed(){
+        int speed = serialPortManager.findSpeed();
 
         serialSpeedChoiceBox.setValue(String.valueOf(speed));
     }
 
     @FXML
-    public void openSerialPort() throws IOException {
+    public void openSerialPort(){
         openPort(serialPortComboBox.getValue());
     }
 
@@ -154,32 +163,44 @@ public class CommunicationSettingController {
     }
 
 
-    public void openPort(String portName) throws IOException {
+    //포트열기
+    public void openPort(String portName){
         serialPortManager.openPort(portName, Integer.parseInt(serialSpeedChoiceBox.getValue()));
+        openPortName = portName;
     }
 
+    //포트닫기
     public void closePort(String portName) {
         serialPortManager.closePort(portName);
+        openPortName = null;
     }
 
+    //comboBox 변화 감지 함수
+    public void changePort(String oldPort, String newPort){
+        closePort(oldPort);
+        openPort(newPort);
+    }
+
+    //다빛넷 열기
     public void openDabitNet(){
-        serialPortManager.sendMsgAndGetMsg(serialPortComboBox.getValue(), "![0052B11111!]", 3);
-
     }
 
+    //블루투스 열기
     public void openBluetooth() {
     }
 
+    //컨트롤러 연결하고 확인신호 보내기
     @FXML
-    public void controllerConnect() throws IOException {
+    public void controllerConnect(){
         serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
 
         try {
-            serialPortManager.sendMsgAndGetMsgHex(serialPortComboBox.getValue(), "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03", 1);
+            String response = serialPortManager.sendMsgAndGetMsgHex(serialPortComboBox.getValue(), "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03", Integer.parseInt(delayTime.getValue()));
+            logService.updateInfoLog(response);
+//            serialPortManager.sendMsgAndGetMsg(serialPortComboBox.getValue(), "![000/Hello world!]", 3);
         }catch (Exception e){
             throw new RuntimeException(e);
         }
-        log.info("컨트롤러가 연결되었습니다.");
     }
 
     public void communicationSettingClose() {

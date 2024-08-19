@@ -2,7 +2,7 @@ package dbps.dbps.service;
 
 import java.util.HashMap;
 import java.util.Map;
-
+//표출신호별 전송 프로토콜 저장
 public class displaySignal {
     public static Map<String, String> SignalMap = new HashMap<>();
     public void tmp(){

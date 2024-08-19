@@ -29,6 +29,7 @@ public class FontSettingController {
     @FXML
     AnchorPane fontSettingAnchorPane;
 
+    //초기화(하위 폰트그룹이랑 그룹화)
     @FXML
     public void initialize() {
         fontGroup2ChkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -67,6 +68,8 @@ public class FontSettingController {
         });
     }
 
+
+    //폰트선택창 띄우기
     @FXML
     public void groupFindFont(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
@@ -82,7 +85,6 @@ public class FontSettingController {
         Button clickedBtn = (Button) event.getSource();
         String groupNum = String.valueOf(clickedBtn.getId().charAt(9));
         String BtnNum = String.valueOf(clickedBtn.getId().charAt(17));
-        System.out.println("groupNum: " + groupNum + ", BtnNum: " + BtnNum);
 
         if (selectedFont != null) {
             String textFieldId = "fontGroup" + groupNum + "fontPath" + BtnNum;
@@ -91,7 +93,7 @@ public class FontSettingController {
         }
     }
 
-
+    //체크박스 클릭시 폰트설정 비활성화/활성화
     private void disableAllNodesInPane(Pane pane){
         for (Node node : pane.getChildren()) {
             node.setDisable(true);

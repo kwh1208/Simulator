@@ -14,18 +14,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class SettingController {
-    @FXML
-    private Spinner<Integer> spinnerForRow;
-
-    @FXML
-    private Spinner<Integer> spinnerForColumn;
 
     @FXML
     public void initialize(){
-
-        SpinnerValueFactory<Integer> valueFactoryForRow = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 200, 1);
-
-        SpinnerValueFactory<Integer> valueFactoryForColumn = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 200, 1);
     }
 
     public static Stage communicationSettingWindow;

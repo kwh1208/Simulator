@@ -2,6 +2,7 @@ package dbps.dbps.service;
 
 
 import dbps.dbps.Simulator;
+import dbps.dbps.controller.LogController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -11,8 +12,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -20,18 +19,19 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dbps.dbps.service.LogService.logService;
+
+
 public class MsgService {
 
     private static final String FILE_NAME = "messages.txt";
-    private static final Logger log = LoggerFactory.getLogger(MsgService.class);
     public static Stage makeMsgWindow;
 
+    //메세지 txt 파일에 저장
     public static void saveMessages(int num, String msg){
         List<String> msgs = loadMessages();
 
         msgs.set(num - 1, msg);
-        log.info("MsgService saveMessages 호출");
-        log.info("msgs={} " , msgs);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
             for (String line : msgs) {
@@ -43,8 +43,8 @@ public class MsgService {
         }
     }
 
+    //메세지 초기화 확인
     public static void resetMsg(List<String> transmitMsgContents, List<TextField> transmitMsgs) {
-        log.info("MsgService resetMsg 호출");
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("메세지 초기화");
         alert.setHeaderText("메세지를 초기화하시겠습니까?");
@@ -52,7 +52,7 @@ public class MsgService {
 
         if (result == ButtonType.OK) {
             doReset(transmitMsgContents, transmitMsgs);
-            log.info("메세지 초기화 완료");
+            logService.updateInfoLog("메세지가 초기화 되었습니다.");
         }
     }
 
@@ -64,13 +64,10 @@ public class MsgService {
         TextField targetTextField = transmitMsgs.get(num - 1);
         String inputText = targetTextField.getText();
 
-        log.info("MsgService preview 호출");
-        log.info("inputText={} " , inputText);
+        //메세지 미리보기
     }
 
     public static void sendMessages(int num, String text) {
-        log.info("MsgService sendMessages 호출");
-        log.info("text={}", text);
     }
 
 
@@ -132,7 +129,7 @@ public class MsgService {
         }
     }
 
-    public static void setDisplaySettings() {
+    public static void makeOwnMsg() {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("makeOwnMsg.fxml"));
             AnchorPane root = fxmlLoader.load();

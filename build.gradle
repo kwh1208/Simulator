@@ -35,12 +35,16 @@ javafx {
 }
 
 dependencies {
+  implementation 'io.ultreia:bluecove:2.1.1'
+
   //serialPORT
   implementation group: 'com.fazecast', name: 'jSerialComm', version: '2.11.0'
   //lombok
   implementation 'org.projectlombok:lombok:1.18.34'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.34'
   annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+  //slf4j
   implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
   implementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.16'
 
