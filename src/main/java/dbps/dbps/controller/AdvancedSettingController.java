@@ -17,7 +17,7 @@ public class AdvancedSettingController {
     // 폰트 설정 모달창을 띄우는 함수
     @FXML
     public void fontSetting(MouseEvent mouseEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("fontSetting.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/fontSetting.fxml"));
         Parent root = fxmlLoader.load();
 
         Stage modalStage = new Stage();
@@ -35,7 +35,23 @@ public class AdvancedSettingController {
         modalStage.showAndWait();
     }
 
-    public void transferSignalSetting(MouseEvent mouseEvent) {
+    public void transferSignalSetting(MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/displaySignalSetting.fxml"));
+        Parent root = fxmlLoader.load();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle("표출 신호 설정");
+
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.showAndWait();
     }
 
     public void boardSetting(MouseEvent mouseEvent) {

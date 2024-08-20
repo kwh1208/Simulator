@@ -131,7 +131,7 @@ public class MsgService {
 
     public static void makeOwnMsg() {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("makeOwnMsg.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/makeOwnMsg.fxml"));
             AnchorPane root = fxmlLoader.load();
 
             makeMsgWindow = new Stage();

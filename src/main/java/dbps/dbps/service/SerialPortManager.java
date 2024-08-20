@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static dbps.dbps.controller.CommunicationSettingController.openPortName;
+import static dbps.dbps.controller.CommunicationSettingController.selectedTime;
 import static dbps.dbps.service.LogService.logService;
 
 public class SerialPortManager {
@@ -58,7 +59,9 @@ public class SerialPortManager {
         return port != null && port.isOpen();
     }
 
-    public String sendMsgAndGetMsg(String portName, String message, int timeoutSec){
+    public String sendMsgAndGetMsg(String message){
+        String portName = openPortName;
+        int timeoutSec = selectedTime;
         SerialPort port = serialPortMap.get(portName);
 
         if (port == null || !isPortOpen(portName)) {
@@ -101,9 +104,10 @@ public class SerialPortManager {
     }
 
 
-    public String sendMsgAndGetMsgHex(String portName, String msg, int timeoutSec){
+    public String sendMsgAndGetMsgHex(String msg){
+        String portName = openPortName;
+        int timeoutSec = selectedTime;
         SerialPort port = serialPortMap.get(portName);
-        openPort(portName, 119200);
         timeoutSec*=1000;
         try {
             OutputStream outputStream = port.getOutputStream();

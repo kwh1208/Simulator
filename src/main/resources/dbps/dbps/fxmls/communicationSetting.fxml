@@ -37,9 +37,9 @@
             </ChoiceBox>
 
             <CheckBox fx:id="RS485ChkBox" layoutX="14.0" layoutY="82.0" mnemonicParsing="false" text="RS-485 Address" />
-            <ChoiceBox fx:id="RS485ChoiceBox" layoutX="155.0" layoutY="80.0" prefHeight="21.0" prefWidth="99.0" visible="false">
+            <ChoiceBox fx:id="RS485ChoiceBox" layoutX="155.0" layoutY="80.0" prefHeight="21.0" prefWidth="99.0" visible="false" value="Dabit 00">
                <items>
-                  <FXCollections fx:factory="observableArrayList" value="Dabit 00">
+                  <FXCollections fx:factory="observableArrayList">
                      <String fx:value="Dabit 00" />
                      <String fx:value="Dabit 01" />
                      <String fx:value="Dabit 02" />

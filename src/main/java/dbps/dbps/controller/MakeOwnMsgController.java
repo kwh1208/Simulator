@@ -85,7 +85,7 @@ public class MakeOwnMsgController {
         effectOut.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateOutDirections(newValue));
         effectIn.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateInDirections(newValue));
 
-        makeOwnMsgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dabit/dabit_simulator/css/makeOwnMsg.css").toExternalForm());
+        makeOwnMsgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/makeOwnMsg.css").toExternalForm());
     }
 
     //확인버튼

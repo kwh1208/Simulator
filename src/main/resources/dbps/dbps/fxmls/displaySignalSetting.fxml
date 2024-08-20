@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="479.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplaySignalSettingController">
+   <children>
+       <Label layoutX="29.0" layoutY="10.0" text="표출신호" />
+       <Label layoutX="272.0" layoutY="11.0" text="관련정보" />
+       <ListView fx:id="signalList" layoutX="29.0" layoutY="35.0" prefHeight="331.0" prefWidth="200.0">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="32D-P16D1S11" />
+                    <String fx:value="16D-P16D1S41" />
+                    <String fx:value="16D-P16D1S31" />
+                    <String fx:value="16D-P16D1S21" />
+                    <String fx:value="16D-P16D1S11" />
+                    <String fx:value="16D-P16D1S10-1" />
+                    <String fx:value="08D-P64D1S91 - 11" />
+                    <String fx:value="08D-P64D1S61" />
+                    <String fx:value="08D-P64D1S41 - 11" />
+                    <String fx:value="08D-P64D1S31" />
+                    <String fx:value="08D-P64D1S21" />
+                    <String fx:value="08D-P32D1S32" />
+                    <String fx:value="08D-P32D1S31" />
+                    <String fx:value="08D-P32D1S22 - 9 &lt; 1" />
+                    <String fx:value="08D-P32D1S12" />
+                    <String fx:value="08D-P32D1S11" />
+                    <String fx:value="08D-P16D2S81" />
+                    <String fx:value="08D-P16D2S23 - 9^1" />
+                    <String fx:value="08D-P16D2S23 - 1^2" />
+                    <String fx:value="08D-P16D2S21" />
+                    <String fx:value="08D-P16D2S11 - 1^9" />
+                    <String fx:value="08D-P16D2S10 - 1^9" />
+                    <String fx:value="08D-P128D1S51" />
+                    <String fx:value="08D-P128D1S42" />
+                    <String fx:value="04D-P64D1S11" />
+                    <String fx:value="04D-P32D4S21" />
+                    <String fx:value="04D-P32D4S11" />
+                    <String fx:value="04D-P32D2S71" />
+                    <String fx:value="04D-P32D2S61" />
+                    <String fx:value="04D-P32D2S51" />
+                    <String fx:value="04D-P32D2S41" />
+                    <String fx:value="04D-P32D2S31 - 2 &lt; 1 ^ 4 &lt; 3" />
+                    <String fx:value="04D-P16D4S21-1^5^9^13" />
+                    <String fx:value="04D-P16D4S11-1^5^9^13" />
+                    <String fx:value="04D-D2-SA1-A4E8A8E8A4" />
+                    <String fx:value="04D-D2-SA1-A4E8A8E8" />
+                    <String fx:value="02D-P64D2S41" />
+                    <String fx:value="02D-P64D2S31" />
+                    <String fx:value="02D-P64D2S21" />
+                    <String fx:value="02D-P256D2S21" />
+                    <String fx:value="02D-P128D2S21" />
+                    <String fx:value="01D-P64D4S21-4^8^12^16" />
+                    <String fx:value="01D-P128D2S31" />
+                    <String fx:value="01D-P128D2S21" />
+                </FXCollections>
+            </items>
+       </ListView>
+       <TextArea layoutX="268.0" layoutY="36.0" prefHeight="200.0" prefWidth="259.0" />
+       <Label layoutX="289.0" layoutY="244.0" text="Color Order" />
+       <ChoiceBox fx:id="colorScan" layoutX="413.0" layoutY="242.0" prefHeight="21.0" prefWidth="107.0">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="RGB" />
+                   <String fx:value="RBG" />
+                   <String fx:value="GRB" />
+                   <String fx:value="GBR" />
+                   <String fx:value="BRG" />
+                   <String fx:value="BGR" />
+                   <String fx:value="NC1" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+       <Label layoutX="290.0" layoutY="276.0" text="Scan Order" />
+       <ChoiceBox fx:id="scanOrder" disable="true" layoutX="413.0" layoutY="274.0" prefHeight="21.0" prefWidth="107.0" value="138 IC">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="138 IC" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+       <Button layoutX="452.0" layoutY="303.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="64.0" text="전송" onMouseClicked="#signalTransfer"/>
+       <Button layoutX="452.0" layoutY="339.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="64.0" text="자동전송" onMouseClicked="#autoTransfer"/>
+       <Spinner fx:id="spinnerForSec" layoutX="376.0" layoutY="339.0" prefHeight="28.0" prefWidth="64.0" />
+       <Pane layoutX="14.0" layoutY="383.0" prefHeight="77.0" prefWidth="304.0" style="-fx-border-color: black;">
+           <children>
+               <Label layoutX="14.0" layoutY="-6.0" prefHeight="13.0" prefWidth="94.0" style="-fx-background-color: white;" text="잔상 지연 설정" />
+               <Label layoutX="20.0" layoutY="18.0" text="Before" />
+               <Label layoutX="81.0" layoutY="18.0" text="After" />
+               <Spinner fx:id="spinnerForBefore" layoutX="14.0" layoutY="39.0" prefHeight="21.0" prefWidth="48.0" />
+               <Spinner fx:id="spinnerForAfter" layoutX="72.0" layoutY="39.0" prefHeight="21.0" prefWidth="48.0" />
+               <Button fx:id="settingBtn" layoutX="159.0" layoutY="32.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="64.0" text="설정" onMouseClicked="#setting"/>
+               <Button fx:id="readBtn" layoutX="230.0" layoutY="32.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="64.0" text="읽기" onMouseClicked="#read"/>
+           </children>
+       </Pane>
+       <Button layoutX="461.0" layoutY="419.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="64.0" text="닫기" onMouseClicked="#closeWindow"/>
+   </children>
+</AnchorPane>

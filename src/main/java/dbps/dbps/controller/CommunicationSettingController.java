@@ -89,9 +89,13 @@ public class CommunicationSettingController {
     @FXML
     private ChoiceBox<String> delayTime;
 
+    public static int selectedTime;
+
     //초기화
     @FXML
     private void initialize() {
+        //delayTime 변경하면 delayTime 값 변경
+
         //토글버튼 그룹화
         ToggleGroup communicationGroup = new ToggleGroup();
         serialRadioBtn.setToggleGroup(communicationGroup);
@@ -209,12 +213,14 @@ public class CommunicationSettingController {
         serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
 
         //시리얼 일때
-        String response = serialPortManager.sendMsgAndGetMsgHex(serialPortComboBox.getValue(), "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03", Integer.parseInt(delayTime.getValue()));
-        logService.updateInfoLog(response);
+        String response = serialPortManager.sendMsgAndGetMsgHex("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
+        if (!response.isEmpty()){
+            logService.updateInfoLog(response);
+        }
 
         //블루투스일때
         if(BLEChkBox.isSelected()){
-            String response_BLE = serialPortManager.sendMsgAndGetMsg(serialPortComboBox.getValue(), "대충 블루투스일때 보내는 메세지", Integer.parseInt(delayTime.getValue()));
+            String response_BLE = serialPortManager.sendMsgAndGetMsg("대충 블루투스일때 보내는 메세지");
             logService.updateInfoLog(response_BLE);
         }
     }

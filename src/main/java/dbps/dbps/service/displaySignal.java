@@ -5,7 +5,7 @@ import java.util.Map;
 //표출신호별 전송 프로토콜 저장
 public class displaySignal {
     public static Map<String, String> SignalMap = new HashMap<>();
-    public void tmp(){
+    public static void tmp(){
         SignalMap.put("32D-P16D1S11", "0052B11111");
         SignalMap.put("16D-P16D1S10-1", "0052A11011");
         SignalMap.put("16D-P16D1S11", "0052A11111");

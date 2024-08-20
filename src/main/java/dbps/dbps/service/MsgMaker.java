@@ -2,6 +2,16 @@ package dbps.dbps.service;
 
 public class MsgMaker {
 
+    private static MsgMaker instance = null;
+
+    public static MsgMaker getInstance() {
+
+        if (instance == null) {
+            instance = new MsgMaker();
+        }
+        return instance;
+    }
+
     //앞뒤 처리만 하면 되는 메세지
     public String makeMsgASCii(String msg) {
         return "!["+msg+"!]";
