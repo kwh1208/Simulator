@@ -11,7 +11,7 @@
        <Label layoutX="34.0" layoutY="50.0" text="2. 섹션번호" />
 
        <Label layoutX="34.0" layoutY="80.0" text="3. 표시제어" />
-       <ChoiceBox fx:id="displayControl" layoutX="157.0" layoutY="76.0" prefHeight="21.0" prefWidth="139.0" value="On">
+       <ChoiceBox fx:id="displayControl" layoutX="177.0" layoutY="76.0" prefHeight="21.0" prefWidth="139.0" value="On">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="Off" />
@@ -39,7 +39,7 @@
        </ChoiceBox>
 
        <Label layoutX="34.0" layoutY="110.0" text="4. 표시방법" />
-       <ChoiceBox fx:id="displayMethod" layoutX="157.0" layoutY="106.0" prefHeight="21.0" prefWidth="139.0" value="Clear">
+       <ChoiceBox fx:id="displayMethod" layoutX="177.0" layoutY="106.0" prefHeight="21.0" prefWidth="139.0" value="Clear">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="Normal" />
@@ -49,7 +49,7 @@
        </ChoiceBox>
 
        <Label layoutX="34.0" layoutY="140.0" text="5. 문자코드" />
-       <ChoiceBox fx:id="charCodes" layoutX="157.0" layoutY="136.0" prefHeight="21.0" prefWidth="139.0" value="KS완성형 한글코드">
+       <ChoiceBox fx:id="charCodes" layoutX="177.0" layoutY="136.0" prefHeight="21.0" prefWidth="139.0" value="KS완성형 한글코드">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="KS완성형 한글코드" />
@@ -59,7 +59,7 @@
        </ChoiceBox>
 
        <Label layoutX="34.0" layoutY="170.0" text="6. 폰트크기(Pixel)" />
-       <ChoiceBox fx:id="fontSize" layoutX="157.0" layoutY="166.0" prefHeight="21.0" prefWidth="139.0" value="16(Standard)">
+       <ChoiceBox fx:id="fontSize" layoutX="177.0" layoutY="166.0" prefHeight="21.0" prefWidth="139.0" value="16(Standard)">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="16(Standard)" />
@@ -78,8 +78,8 @@
                </FXCollections>
            </items>
        </ChoiceBox>
-       <Label layoutX="311.0" layoutY="170.0" text="폰트그룹" />
-       <ChoiceBox fx:id="fontGroup" layoutX="385.0" layoutY="166.0" prefHeight="21.0" prefWidth="139.0" value="FontGroup0">
+       <Label layoutX="321.0" layoutY="170.0" text="폰트그룹" />
+       <ChoiceBox fx:id="fontGroup" layoutX="405.0" layoutY="166.0" prefHeight="21.0" prefWidth="139.0" value="FontGroup0">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="FontGroup0" />
@@ -91,7 +91,7 @@
        </ChoiceBox>
 
        <Label layoutX="34.0" layoutY="200.0" text="7. 입장효과" />
-       <ChoiceBox fx:id="effectIn" layoutX="157.0" layoutY="196.0" prefHeight="21.0" prefWidth="139.0" value="정지효과">
+       <ChoiceBox fx:id="effectIn" layoutX="177.0" layoutY="196.0" prefHeight="21.0" prefWidth="139.0" value="정지효과">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="정지효과" />
@@ -108,8 +108,8 @@
                </FXCollections>
            </items>
        </ChoiceBox>
-       <Label layoutX="311.0" layoutY="200.0" text="효과방향" />
-       <ChoiceBox fx:id="inDirection" layoutX="385.0" layoutY="196.0" prefHeight="21.0" prefWidth="139.0" value="방향없음">
+       <Label layoutX="321.0" layoutY="200.0" text="효과방향" />
+       <ChoiceBox fx:id="inDirection" layoutX="405.0" layoutY="196.0" prefHeight="21.0" prefWidth="139.0" value="방향없음">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="방향없음" />
@@ -123,7 +123,7 @@
 
 
        <Label layoutX="34.0" layoutY="230.0" text="8. 퇴장효과" />
-       <ChoiceBox fx:id="effectOut" layoutX="157.0" layoutY="226.0" prefHeight="21.0" prefWidth="139.0" value="정지효과">
+       <ChoiceBox fx:id="effectOut" layoutX="177.0" layoutY="226.0" prefHeight="21.0" prefWidth="139.0" value="정지효과">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="정지효과" />
@@ -140,8 +140,8 @@
                </FXCollections>
            </items>
        </ChoiceBox>
-       <Label layoutX="311.0" layoutY="230.0" text="효과방향" />
-       <ChoiceBox fx:id="outDirection" layoutX="385.0" layoutY="226.0" prefHeight="21.0" prefWidth="139.0" value="방향없음">
+       <Label layoutX="321.0" layoutY="230.0" text="효과방향" />
+       <ChoiceBox fx:id="outDirection" layoutX="405.0" layoutY="226.0" prefHeight="21.0" prefWidth="139.0" value="방향없음">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="방향없음" />
@@ -155,7 +155,7 @@
 
 
        <Label layoutX="34.0" layoutY="260.0" text="9. 예비" />
-       <ChoiceBox fx:id="sub" disable="true" layoutX="157.0" layoutY="256.0" prefHeight="21.0" prefWidth="139.0" value="사용안함">
+       <ChoiceBox fx:id="sub" disable="true" layoutX="177.0" layoutY="256.0" prefHeight="21.0" prefWidth="139.0" value="사용안함">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="사용안함" />
@@ -164,7 +164,7 @@
        </ChoiceBox>
 
        <Label layoutX="34.0" layoutY="290.0" text="10. 효과속도" />
-       <ChoiceBox fx:id="effectSpeed" layoutX="157.0" layoutY="286.0" prefHeight="21.0" prefWidth="139.0" value="15">
+       <ChoiceBox fx:id="effectSpeed" layoutX="177.0" layoutY="286.0" prefHeight="21.0" prefWidth="139.0" value="15">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="5(가장 빠름)" />
@@ -192,7 +192,7 @@
        </ChoiceBox>
 
        <Label layoutX="34.0" layoutY="320.0" text="11. 유지시간(x500ms)" />
-       <ChoiceBox fx:id="effectTime" layoutX="157.0" layoutY="316.0" prefHeight="21.0" prefWidth="139.0" value="2">
+       <ChoiceBox fx:id="effectTime" layoutX="177.0" layoutY="316.0" prefHeight="21.0" prefWidth="139.0" value="2">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="0" />
@@ -220,7 +220,7 @@
        </ChoiceBox>
 
        <Label layoutX="34.0" layoutY="350.0" text="12. X축시작" />
-       <ChoiceBox fx:id="xStart" layoutX="157.0" layoutY="346.0" prefHeight="21.0" prefWidth="139.0" value="0">
+       <ChoiceBox layoutX="177.0" layoutY="346.0" prefHeight="21.0" prefWidth="139.0" value="0" fx:id="xStart">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="0" />
@@ -252,8 +252,8 @@
            </items>
        </ChoiceBox>
 
-       <Label layoutX="311.0" layoutY="350.0" text="13. Y축시작" />
-       <ChoiceBox fx:id="yStart" layoutX="385.0" layoutY="346.0" prefHeight="21.0" prefWidth="139.0" value="0">
+       <Label layoutX="321.0" layoutY="350.0" text="13. Y축시작" />
+       <ChoiceBox fx:id="yStart" layoutX="405.0" layoutY="346.0" prefHeight="21.0" prefWidth="139.0" value="0">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="0" />
@@ -270,7 +270,7 @@
        </ChoiceBox>
 
        <Label layoutX="34.0" layoutY="380.0" text="14. X축종료" />
-       <ChoiceBox fx:id="xEnd" layoutX="157.0" layoutY="376.0" prefHeight="21.0" prefWidth="139.0" value="0">
+       <ChoiceBox layoutX="177.0" layoutY="376.0" prefHeight="21.0" prefWidth="139.0" value="0" fx:id="xEnd">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="0" />
@@ -302,8 +302,8 @@
            </items>
        </ChoiceBox>
 
-       <Label layoutX="311.0" layoutY="380.0" text="15. Y축종료" />
-       <ChoiceBox fx:id="yEnd" layoutX="385.0" layoutY="376.0" prefHeight="21.0" prefWidth="139.0" value="0">
+       <Label layoutX="321.0" layoutY="380.0" text="15. Y축종료" />
+       <ChoiceBox fx:id="yEnd" layoutX="405.0" layoutY="376.0" prefHeight="21.0" prefWidth="139.0" value="0">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="0" />
@@ -320,7 +320,7 @@
        </ChoiceBox>
 
        <Label layoutX="34.0" layoutY="410.0" text="16. 배경이미지 선택" />
-       <ChoiceBox fx:id="bgImg" layoutX="157.0" layoutY="410.0" prefHeight="21.0" prefWidth="139.0" value="사용안함">
+       <ChoiceBox fx:id="bgImg" layoutX="177.0" layoutY="410.0" prefHeight="21.0" prefWidth="139.0" value="사용안함">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="사용안함" />
@@ -339,7 +339,7 @@
        </ChoiceBox>
 
        <Label layoutX="34.0" layoutY="450.0" text="17-1. 문자색상" />
-       <ChoiceBox fx:id="fontColor" layoutX="157.0" layoutY="446.0" prefHeight="21.0" prefWidth="139.0" value="노란색">
+       <ChoiceBox fx:id="fontColor" layoutX="177.0" layoutY="446.0" prefHeight="21.0" prefWidth="139.0" value="노란색">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="검은색" />
@@ -355,7 +355,7 @@
        </ChoiceBox>
 
        <Label layoutX="34.0" layoutY="480.0" text="17-2. 문자배경색상" />
-       <ChoiceBox fx:id="fontBgColor" layoutX="157.0" layoutY="476.0" prefHeight="21.0" prefWidth="139.0" value="검은색">
+       <ChoiceBox fx:id="fontBgColor" layoutX="177.0" layoutY="476.0" prefHeight="21.0" prefWidth="139.0" value="검은색">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="검은색" />
@@ -372,9 +372,9 @@
 
        <TextField fx:id="msgPreview" layoutX="35.0" layoutY="508.0" prefHeight="40.0" prefWidth="495.0" style="-fx-background-color: black; -fx-text-fill: white" text="![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]" />
 
-       <Button layoutX="150.0" layoutY="553.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="설정 확인" onMouseClicked="#settingConfirm" />
-       <Button layoutX="250.0" layoutY="553.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="미리보기" onMouseClicked="#preview" />
-       <Button layoutX="350.0" layoutY="553.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="초기화" onMouseClicked="#reset" />
-       <Button layoutX="450.0" layoutY="553.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="확인" onMouseClicked="#confirm" />
+       <Button layoutX="150.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#settingConfirm" prefHeight="30.0" prefWidth="81.0" text="설정 확인" />
+       <Button layoutX="250.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#preview" prefHeight="30.0" prefWidth="81.0" text="미리보기" />
+       <Button layoutX="350.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="초기화" />
+       <Button layoutX="450.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="30.0" prefWidth="81.0" text="확인" />
    </children>
 </AnchorPane>

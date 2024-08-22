@@ -75,9 +75,64 @@ public class DisplaySignalSettingController {
     @FXML
     public void signalTransfer() {
         String selectedSignal = signalList.getSelectionModel().getSelectedItem();
-        String signalProtocol = SignalMap.get(selectedSignal);
+        String signalProtocol = makePerfectProtocol(selectedSignal);
         String transferProtocol = msgMaker.makeMsgASCii(signalProtocol);
         serialPortManager.sendMsgAndGetMsg(transferProtocol);
+    }
+
+    private String makePerfectProtocol(String selectedSignal) {
+        String result = SignalMap.get(selectedSignal);
+        switch (colorScan.getValue()){
+            case "RGB":
+                result = result + "1";
+                break;
+            case "RBG":
+                result = result + "2";
+                break;
+            case "GRB":
+                result = result + "3";
+                break;
+            case "GBR":
+                result = result + "4";
+                break;
+            case "BRG":
+                result = result + "5";
+                break;
+            case "BGR":
+                result = result + "6";
+                break;
+            case "NC1":
+                result = result + "7";
+                break;
+        }
+        if (selectedSignal.equals("08D-P64D1S21")) {
+            switch (scanOrder.getValue()){
+                case "138 IC":
+                    result = result + "1";
+                    break;
+                case "595 IC":
+                    result = result + "2";
+                    break;
+                case "SUM2017TD IC":
+                    result = result + "3";
+                    break;
+            }
+        } else if (selectedSignal.equals("04D-P32D2S61")) {
+            switch (scanOrder.getValue()){
+                case "138 IC":
+                    result = result + "1";
+                    break;
+                case " L800":
+                    result = result + "2";
+                    break;
+                case "NO IC":
+                    result = result + "3";
+                    break;
+            }
+        } else {
+            result = result + "1";
+        }
+        return result;
     }
 
     @FXML

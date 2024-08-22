@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="365.0" prefWidth="377.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BoardSettingsController">
+   <children>
+      <Label layoutX="13.0" layoutY="22.0" text="1. Command" />
+      <Label layoutX="13.0" layoutY="51.0" text="2. SubCommand" />
+       <Pane layoutX="208.0" layoutY="39.0" prefHeight="31.0" prefWidth="150.0" style="-fx-border-color: black;">
+         <children>
+            <RadioButton fx:id="settingRadio" layoutX="2.0" layoutY="6.0" mnemonicParsing="false" text="설정" />
+            <RadioButton fx:id="readRadio" layoutX="95.0" layoutY="6.0" mnemonicParsing="false" text="읽기" />
+         </children>
+       </Pane>
+      <Pane fx:id="boardDisable" layoutX="14.0" layoutY="69.0" prefHeight="188.0" prefWidth="352.0">
+         <children>
+            <Label disable="true" layoutX="-1.0" layoutY="13.0" text="3. Debugging Method" />
+            <ChoiceBox disable="true" layoutX="194.0" layoutY="9.0" prefWidth="150.0" value="disable">
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                     <String fx:value="disable" />
+                     <String fx:value="enable1" />
+                     <String fx:value="enable2" />
+                     <String fx:value="enable3" />
+                     <String fx:value="enable4" />
+                     <String fx:value="enable5" />
+                     <String fx:value="enable6" />
+                     <String fx:value="enable7" />
+                     <String fx:value="enable8" />
+                  </FXCollections>
+               </items>
+            </ChoiceBox>
+            <Label disable="true" layoutX="-1.0" layoutY="43.0" text="4. BH1(TTL/RS485) Function" />
+            <ChoiceBox disable="true" layoutX="194.0" layoutY="39.0" prefWidth="150.0" value="8Pin Input(BCD)">
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                     <String fx:value="TTL/RS485" />
+                     <String fx:value="CAN" />
+                     <String fx:value="12C" />
+                     <String fx:value="SPI" />
+                     <String fx:value="8Pin Input(HEX)" />
+                     <String fx:value="8Pin Input(BCD)" />
+                     <String fx:value="8Pin Input(Number)" />
+                  </FXCollections>
+               </items>
+            </ChoiceBox>
+            <Label disable="true" layoutX="-1.0" layoutY="73.0" text="5. J4(4pin) Function" />
+            <ChoiceBox disable="true" layoutX="194.0" layoutY="69.0" prefWidth="150.0" value="Relay Out">
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                     <String fx:value="Relay Out" />
+                     <String fx:value="CDS" />
+                     <String fx:value="DHT22(ONLY NoLAN)" />
+                     <String fx:value="DS1302" />
+                     <String fx:value="SHT31(DB502)" />
+                     <String fx:value="2Port Input" />
+                     <String fx:value="Relay Out &amp; NoRTC" />
+                     <String fx:value="Relay 4Port" />
+                  </FXCollections>
+               </items>
+            </ChoiceBox>
+            <Label disable="true" layoutX="-1.0" layoutY="103.0" text="6. J2(RS232) Baudrate" />
+            <ChoiceBox disable="true" layoutX="194.0" layoutY="99.0" prefWidth="150.0" value="115200">
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                     <String fx:value="9600" />
+                     <String fx:value="19200" />
+                     <String fx:value="38400" />
+                     <String fx:value="57600" />
+                     <String fx:value="115200" />
+                     <String fx:value="230400" />
+                     <String fx:value="460800" />
+                     <String fx:value="921600" />
+                  </FXCollections>
+               </items>
+            </ChoiceBox>
+            <Label disable="true" layoutX="-1.0" layoutY="133.0" text="7. J3(TTL) Baudrate" />
+            <ChoiceBox disable="true" layoutX="194.0" layoutY="129.0" prefWidth="150.0" value="115200">
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                     <String fx:value="9600" />
+                     <String fx:value="19200" />
+                     <String fx:value="38400" />
+                     <String fx:value="57600" />
+                     <String fx:value="115200" />
+                     <String fx:value="230400" />
+                     <String fx:value="460800" />
+                     <String fx:value="921600" />
+                  </FXCollections>
+               </items>
+            </ChoiceBox>
+            <Label disable="true" layoutX="-1.0" layoutY="163.0" text="8. BH1(TTL/RS485) Baudrate" />
+            <ChoiceBox disable="true" layoutX="194.0" layoutY="159.0" prefWidth="150.0" value="115200">
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                     <String fx:value="9600" />
+                     <String fx:value="19200" />
+                     <String fx:value="38400" />
+                     <String fx:value="57600" />
+                     <String fx:value="115200" />
+                     <String fx:value="230400" />
+                     <String fx:value="460800" />
+                     <String fx:value="921600" />
+                  </FXCollections>
+               </items>
+            </ChoiceBox>
+         </children>
+      </Pane>
+      <Label layoutX="13.0" layoutY="260.0" text="9. Address" />
+      <Label layoutX="208.0" layoutY="260.0" text="00" />
+
+      <Button layoutX="14.0" layoutY="290.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="219.0" text="통신설정" onMouseClicked="#openCommunicationSetting"/>
+      <Button layoutX="257.0" layoutY="290.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="101.0" text="전송" onMouseClicked="#Transfer"/>
+      <Button layoutX="257.0" layoutY="326.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="101.0" text="닫기" onMouseClicked="#closeWindow"/>
+
+   </children>
+</AnchorPane>
