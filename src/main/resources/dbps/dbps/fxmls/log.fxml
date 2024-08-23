@@ -6,9 +6,9 @@
 <?import javafx.scene.text.*?>
 
 <VBox xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.LogController">
-    <Pane prefHeight="30.0" prefWidth="590.0" style="-fx-background-color: yellow">
-        <Label layoutX="8.0" prefHeight="23.0" prefWidth="590.0" text="로그" />
-      <Button fx:id="clearBtn" layoutX="542.0" layoutY="-1.0" mnemonicParsing="false" onMouseClicked="#clearBtnClicked" onMouseEntered="#clearBtnEntered" onMouseExited="#clearBtnExited" style="-fx-background-color: yellow;">
+    <Pane prefHeight="30.0" prefWidth="590.0" style="-fx-background-color: #3E4D34">
+        <Label layoutX="8.0" prefHeight="23.0" prefWidth="590.0" text="로그 내역" />
+      <Button fx:id="clearBtn" layoutX="542.0" layoutY="-1.0" mnemonicParsing="false" onMouseClicked="#clearBtnClicked" onMouseEntered="#clearBtnEntered" onMouseExited="#clearBtnExited" style="-fx-background-color: #1E3A5F;">
           <graphic>
               <ImageView fx:id="trashCanImage" fitHeight="23.0" fitWidth="23" />
           </graphic>

@@ -10,7 +10,7 @@
 <children>
     <Label alignment="CENTER" layoutX="5.0" layoutY="-7.0" prefHeight="18.0" prefWidth="120.0" style="-fx-background-color: black;" text="페이지 메시지 설정" textFill="WHITE" />
     <Label layoutX="19.0" layoutY="26.0" text="총 개수 등록" />
-    <ChoiceBox layoutX="114.0" layoutY="20.0" prefHeight="25.0" prefWidth="100">
+    <ChoiceBox fx:id="pageMsgCnt" layoutX="114.0" layoutY="20.0" prefHeight="25.0" prefWidth="100" value="10개">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="1개" />
@@ -26,17 +26,24 @@
             </FXCollections>
         </items>
     </ChoiceBox>
-
     <Label layoutX="17.0" layoutY="63.0" text="메시지 초기화" />
-    <ChoiceBox layoutX="114.0" layoutY="58.0" prefHeight="25.0" prefWidth="100.0">
+    <ChoiceBox fx:id="msgInitialize" layoutX="114.0" layoutY="58.0" prefHeight="25.0" prefWidth="100.0" value="전체">
         <items>
             <FXCollections fx:factory="observableArrayList">
+                <String fx:value="1개" />
+                <String fx:value="2개" />
+                <String fx:value="3개" />
+                <String fx:value="4개" />
+                <String fx:value="5개" />
+                <String fx:value="6개" />
+                <String fx:value="7개" />
+                <String fx:value="8개" />
+                <String fx:value="9개" />
                 <String fx:value="전체" />
-                <String fx:value="Page 1" />
             </FXCollections>
         </items>
     </ChoiceBox>
-    <Button layoutX="227.0" layoutY="20.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="전송" />
-    <Button layoutX="227.0" layoutY="58.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="전송" />
+    <Button layoutX="227.0" layoutY="20.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="전송" onMouseClicked="#sendPageCnt"/>
+    <Button layoutX="227.0" layoutY="58.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="전송" onMouseClicked="#sendMsgInitialize"/>
 </children>
 </Pane>

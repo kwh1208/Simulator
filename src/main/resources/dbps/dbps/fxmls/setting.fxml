@@ -30,7 +30,7 @@
             <fx:include source="messageSetting.fxml"/>
 
             <Label layoutX="298.0" layoutY="320.0" text="화면 밝기 설정" />
-            <ChoiceBox layoutX="400.0" layoutY="315.0" prefHeight="25.0" prefWidth="109.0">
+            <ChoiceBox layoutX="400.0" layoutY="315.0" prefHeight="25.0" prefWidth="109.0" value="100%(default)">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="100%(default)" />
@@ -41,10 +41,10 @@
                     </FXCollections>
                 </items>
             </ChoiceBox>
-            <Button layoutX="518.0" layoutY="315.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="전송" />
+            <Button layoutX="518.0" layoutY="315.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="전송" onMouseClicked="#sendDisplayBright"/>
 
             <Label layoutX="292.0" layoutY="356.0" text="실시간 문구 설정" />
-            <ChoiceBox layoutX="400.0" layoutY="351.0" prefHeight="25.0" prefWidth="109.0">
+            <ChoiceBox layoutX="400.0" layoutY="351.0" prefHeight="25.0" prefWidth="109.0" value="효과 동시 표출">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="효과 개별 표출" />
@@ -52,7 +52,7 @@
                     </FXCollections>
                 </items>
             </ChoiceBox>
-            <Button layoutX="518.0" layoutY="351.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="전송" />
+            <Button layoutX="518.0" layoutY="351.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="전송" onMouseClicked="#sendPageMsgType"/>
 
 
             <!--가운데 구분선-->

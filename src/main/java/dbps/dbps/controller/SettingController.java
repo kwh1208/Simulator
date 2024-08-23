@@ -5,6 +5,7 @@ import dbps.dbps.Simulator;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -37,5 +38,13 @@ public class SettingController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void sendDisplayBright(MouseEvent mouseEvent) {
+
+    }
+
+    public void sendPageMsgType(MouseEvent mouseEvent) {
+
     }
 }

@@ -58,11 +58,11 @@ public class LogController {
 
     @FXML
     public void clearBtnEntered(){
-        clearBtn.setStyle("-fx-background-color: yellow; -fx-border-color: black; -fx-border-width: 1px");
+        clearBtn.setStyle("-fx-background-color: #1E3A5F; -fx-border-color: black; -fx-border-width: 1px");
     }
 
     @FXML
     public void clearBtnExited(){
-        clearBtn.setStyle("-fx-background-color: yellow");
+        clearBtn.setStyle("-fx-background-color: #1E3A5F");
     }
 }
