@@ -18,10 +18,11 @@ public class MsgMaker {
     }
 
     //보내려는 정보만 있는 메세지
-    public String makeMsgAsciiWithCon(String msg, int RS485, boolean errorChk, int msgType) {
+    public String makeMsgAsciiWithCon(String msg, String RS485, boolean errorChk, int msgType) {
         String result = "";
 
-        result += String.valueOf(RS485);
+        //0~F까지 이후부터는 모름
+        result += RS485;
 
         if (errorChk){
             result+="1";
@@ -57,6 +58,7 @@ public class MsgMaker {
 
     public String makeMsgHEX(String msg) {
         return "10 02 "+msg+"10 03";
+        //rs 485 목적지 따라서 02 뒤에 00~1F
     }
 
     public String makeMsgHexWithCon(){

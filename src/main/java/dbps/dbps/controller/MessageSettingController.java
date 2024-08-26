@@ -1,17 +1,26 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Simulator;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 
 public class MessageSettingController {
+
     @FXML
     public ChoiceBox<String> msgInitialize;
+
     @FXML
     public ChoiceBox<String> pageMsgCnt;
 
     @FXML
+    public Pane msPane;
+
+    @FXML
     public void initialize() {
+        msPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/messageSetting.css").toExternalForm());
+
         pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             int selectedCount = Integer.parseInt(newValue.replace("개", ""));
             msgInitialize.getItems().clear();

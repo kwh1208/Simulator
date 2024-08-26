@@ -9,7 +9,7 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="dbps.dbps.controller.UnderTheLineRightController"
       layoutX="284.0" layoutY="396.0">
-<Pane prefHeight="142.0" prefWidth="288.0" style="-fx-border-color: black;">
+<Pane fx:id="rightPane" prefHeight="142.0" prefWidth="288.0" style="-fx-border-color: black;">
     <children>
         <Label alignment="CENTER" layoutX="8.0" layoutY="-7.0" prefHeight="18.0" prefWidth="115.0" style="-fx-background-color: black;" text="릴레이 신호 출력" textFill="WHITE" />
         <ChoiceBox layoutX="8.0" layoutY="15.0" prefHeight="25.0" prefWidth="81.0" value="None">

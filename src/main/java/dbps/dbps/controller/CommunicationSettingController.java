@@ -3,7 +3,6 @@ package dbps.dbps.controller;
 
 
 import com.fazecast.jSerialComm.SerialPort;
-import dbps.dbps.service.LogService;
 import dbps.dbps.service.SerialPortManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -44,9 +43,6 @@ public class CommunicationSettingController {
 
     @FXML
     private Button openDeviceManagerBtn;
-
-    @FXML
-    private CheckBox BLEChkBox;
 
     /**
      * 클라이언트 TCP/IP
@@ -219,10 +215,6 @@ public class CommunicationSettingController {
         }
 
         //블루투스일때
-        if(BLEChkBox.isSelected()){
-            String response_BLE = serialPortManager.sendMsgAndGetMsg("대충 블루투스일때 보내는 메세지");
-            logService.updateInfoLog(response_BLE);
-        }
     }
 
     public void communicationSettingClose() {

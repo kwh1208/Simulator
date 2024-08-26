@@ -5,9 +5,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dbps.dbps.controller.SizeOfDisplayBoardController" layoutX="284.0" layoutY="15.0" prefHeight="178.0" prefWidth="288.0" style="-fx-border-color: black">
+<Pane fx:id="dpPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dbps.dbps.controller.SizeOfDisplayBoardController" layoutX="284.0" layoutY="15.0" prefHeight="178.0" prefWidth="288.0" style="-fx-border-color: black">
 <children>
-    <Label alignment="CENTER" layoutX="14.0" layoutY="-6.0" prefHeight="18.0" prefWidth="115.0" style="-fx-background-color: black;" text="전광판 크기" textFill="WHITE" />
+    <Label alignment="CENTER" layoutX="14.0" layoutY="-6.0" prefHeight="18.0" prefWidth="115.0"
+           style="-fx-background-color: #333333; -fx-border-color: black; -fx-border-width: 0.5px;" text="전광판 크기" textFill="WHITE"/>
     <Label layoutX="20.0" layoutY="25.0" text="세로 크기" />
     <Spinner fx:id="spinnerForColumn" layoutX="136.0" layoutY="18.0" prefHeight="25.0" prefWidth="64.0" />
     <Label layoutX="215.0" layoutY="26.0" prefHeight="13.0" prefWidth="73.0" text="X16 Pixels" />

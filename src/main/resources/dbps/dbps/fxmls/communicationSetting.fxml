@@ -75,7 +75,6 @@
                   </FXCollections>
                </items>
             </ChoiceBox>
-            <CheckBox fx:id="BLEChkBox" layoutX="14.0" layoutY="104.0" mnemonicParsing="false" text="블루투스" />
             <Button fx:id="findSpeedBtn" layoutX="82.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#findCommunicationSpeed" prefHeight="27.0" prefWidth="88.0" text="통신속도찾기" />
             <Button fx:id="openDeviceManagerBtn" layoutX="179.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#openDeviceManager" prefHeight="27.0" prefWidth="76.0" text="장치관리자" />
 
