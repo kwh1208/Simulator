@@ -214,7 +214,7 @@ public class CommunicationSettingController {
             logService.updateInfoLog(response);
         }
 
-        //블루투스일때
+        //블루투스일때 - 아스키 코드
     }
 
     public void communicationSettingClose() {

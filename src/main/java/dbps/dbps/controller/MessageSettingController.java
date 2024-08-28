@@ -19,7 +19,7 @@ public class MessageSettingController {
 
     @FXML
     public void initialize() {
-        msPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/messageSetting.css").toExternalForm());
+//        msPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/messageSetting.css").toExternalForm());
 
         pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             int selectedCount = Integer.parseInt(newValue.replace("개", ""));

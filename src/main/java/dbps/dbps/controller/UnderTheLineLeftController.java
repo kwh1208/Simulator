@@ -11,7 +11,7 @@ public class UnderTheLineLeftController {
 
     @FXML
     public void initialize() {
-        leftPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/underTheLineLeft.css").toExternalForm());
+//        leftPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/underTheLineLeft.css").toExternalForm());
     }
     @FXML
     public void sendDisplayOn(MouseEvent mouseEvent) {

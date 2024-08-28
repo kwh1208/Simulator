@@ -15,12 +15,12 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MsgController {
+public class ASCiiMsgController {
 
-    private static final Logger log = LoggerFactory.getLogger(MsgController.class);
+    private static final Logger log = LoggerFactory.getLogger(ASCiiMsgController.class);
 
     @FXML
-    private AnchorPane msgAnchorPane;
+    private AnchorPane ASCiiMsgAnchorPane;
 
     @FXML
     private TextField transmitMsg1;
@@ -52,7 +52,7 @@ public class MsgController {
 
         makeMsgContainer();
 
-        msgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/msg.css").toExternalForm());
+        ASCiiMsgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/ASCiiMsg.css").toExternalForm());
     }
 
 
@@ -105,44 +105,52 @@ public class MsgController {
 
 
     private void makeMsgContainer() {
-        for (int i = 2; i < 12; i++) {
+        for (int i = 2; i < 10; i++) {
             TextField textField = new TextField();
-            textField.setPrefHeight(35.0);
-            textField.setPrefWidth(374.0);
-            textField.setLayoutX(11.0);
-            textField.setLayoutY(15.0 + (i - 1) * 45.0);
+            textField.setMaxHeight(45.0);
+            textField.setMaxWidth(466.0);
+            AnchorPane.setLeftAnchor(textField, 11.0);
+            AnchorPane.setTopAnchor(textField, 15.0 + (i - 1) * 55.0);
+            AnchorPane.setRightAnchor(textField, 223.0);
+            AnchorPane.setBottomAnchor(textField, 543 - (i - 1) * 55.0);
             textField.setId("transmitMsg" + i);
             textField.setText(transmitMsgContents.get(i - 1));
             transmitMsgs.add(textField);
 
             Button previewButton = new Button("미리보기");
-            previewButton.setPrefHeight(35.0);
-            previewButton.setPrefWidth(72.0);
-            previewButton.setLayoutX(389.0);
-            previewButton.setLayoutY(15.0 + (i - 1) * 45.0);
+            previewButton.setPrefHeight(45.0);
+            previewButton.setPrefWidth(80.0);
+            AnchorPane.setLeftAnchor(previewButton, 481.0);
+            AnchorPane.setTopAnchor(previewButton, 15.0 + (i - 1) * 55.0);
+            AnchorPane.setBottomAnchor(previewButton, 543 - (i - 1) * 55.0);
+            AnchorPane.setRightAnchor(previewButton, 139.0);
             previewButton.setId("previewBtn" + i);
             previewButton.setOnMouseClicked(this::preview);
             previewBtns.add(previewButton);
 
             Button saveButton = new Button("저장");
-            saveButton.setPrefHeight(35.0);
+            saveButton.setPrefHeight(45.0);
             saveButton.setPrefWidth(61.0);
-            saveButton.setLayoutX(465.0);
-            saveButton.setLayoutY(15.0 + (i - 1) * 45.0);
+            AnchorPane.setLeftAnchor(saveButton, 565.0);
+            AnchorPane.setTopAnchor(saveButton, 15.0 + (i - 1) * 55.0);
+            AnchorPane.setRightAnchor(saveButton, 73.5);
+            AnchorPane.setBottomAnchor(saveButton, 543 - (i - 1) * 55.0);
             saveButton.setId("msgSaveBtn" + i);
             saveButton.setOnMouseClicked(this::saveMsg);
             msgSaveBtns.add(saveButton);
 
             Button sendButton = new Button("전송");
-            sendButton.setPrefHeight(35.0);
+            sendButton.setPrefHeight(45.0);
             sendButton.setPrefWidth(61.0);
-            sendButton.setLayoutX(530.0);
-            sendButton.setLayoutY(15.0 + (i - 1) * 45.0);
+            AnchorPane.setLeftAnchor(sendButton, 630.0);
+            AnchorPane.setTopAnchor(sendButton, 15.0 + (i - 1) * 55.0);
+            AnchorPane.setBottomAnchor(sendButton, 543 - (i - 1) * 55.0);
+            AnchorPane.setRightAnchor(sendButton, 8.0);
             sendButton.setId("msgSendBtn" + i);
             sendButton.setOnMouseClicked(this::sendMsg);
             msgSendBtns.add(sendButton);
 
-            msgAnchorPane.getChildren().addAll(textField, previewButton, saveButton, sendButton);
+            ASCiiMsgAnchorPane.getChildren().addAll(textField, previewButton, saveButton, sendButton);
         }
     }
 }

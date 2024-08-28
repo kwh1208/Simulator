@@ -21,7 +21,7 @@ public class UnderTheLineRightController {
             BGImgSelection.getItems().add(String.valueOf(i));
         }
 
-        rightPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/underTheLineRight.css").toExternalForm());
+//        rightPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/underTheLineRight.css").toExternalForm());
     }
 
     public void sendRelaySignal(MouseEvent mouseEvent) {

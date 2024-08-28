@@ -24,7 +24,7 @@
     -fx-background-color: black; /* 버튼 배경색 */
     -fx-text-fill: white; /* 텍스트 색상 */
     -fx-font-size: 14px; /* 폰트 크기 */
-    -fx-font-family: "맑은 고딕"; /* 폰트 스타일 */
+     /* 폰트 스타일 */
     -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
     -fx-padding: 5 10 5 10; /* 버튼 내부 여백 */
 }
@@ -41,5 +41,5 @@
 .label{
     -fx-text-fill: #E0E0E0;
     -fx-font-size: 14px;
-    -fx-font-family: "맑은 고딕";
+
 }

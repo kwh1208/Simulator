@@ -44,6 +44,7 @@
                      <String fx:value="8Pin Input(HEX)" />
                      <String fx:value="8Pin Input(BCD)" />
                      <String fx:value="8Pin Input(Number)" />
+                     <String fx:value="8Pin Input(BGbit어쩌고)" />
                   </FXCollections>
                </items>
             </ChoiceBox>

@@ -94,7 +94,7 @@ public class MsgService {
             messages.add("![000Hello world!]");
             messages.add("![000/C1Hello /C2World!]");
             messages.add("![000/Y0004/E0606/S1000/C7Text 123456789 Hello World!]");
-            for (int i = 4; i <= 11; i++) {
+            for (int i = 4; i <= 9; i++) {
                 messages.add("");
             }
             setDefaultMessages(messages);

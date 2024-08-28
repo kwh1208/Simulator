@@ -1,17 +1,22 @@
 package dbps.dbps.controller;
 
 
+import dbps.dbps.Simulator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
 
 import static dbps.dbps.service.LogService.logService;
 
 
 public class LogController {
+
+    @FXML
+    public VBox logVBoX;
 
     @FXML
     private TextFlow logArea;
@@ -26,17 +31,15 @@ public class LogController {
     public void initialize(){
         logService.setInitial(logArea, scrollPane);
 
-        if (logArea != null) {
-            System.out.println("logArea initialized successfully.");
-        } else {
-            System.out.println("logArea is null.");
-        }
-
         Image image = new Image(getClass().getResourceAsStream("/dbps/dbps/images/휴지통.png"));
         ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(23);
-        imageView.setFitHeight(23);
+        imageView.setFitHeight(18);
+        imageView.setPreserveRatio(true);  // 비율 유지
+        imageView.setSmooth(true);  // 스무딩 활성화
+
         clearBtn.setGraphic(imageView);
+
+        logVBoX.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/log.css").toExternalForm());
     }
 
     public void clearLog(){
@@ -58,11 +61,11 @@ public class LogController {
 
     @FXML
     public void clearBtnEntered(){
-        clearBtn.setStyle("-fx-background-color: #1E3A5F; -fx-border-color: black; -fx-border-width: 1px");
+        clearBtn.setStyle("-fx-background-color: #1C1F26; -fx-border-color: black; -fx-border-width: 1px");
     }
 
     @FXML
     public void clearBtnExited(){
-        clearBtn.setStyle("-fx-background-color: #1E3A5F");
+        clearBtn.setStyle("-fx-background-color: #1C1F26");
     }
 }

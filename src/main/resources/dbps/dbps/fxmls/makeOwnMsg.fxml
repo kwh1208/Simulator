@@ -94,6 +94,7 @@
        <ChoiceBox fx:id="effectIn" layoutX="177.0" layoutY="196.0" prefHeight="21.0" prefWidth="139.0" value="정지효과">
            <items>
                <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="효과없음" />
                    <String fx:value="정지효과" />
                    <String fx:value="전체효과" />
                    <String fx:value="이동하기" />
@@ -186,35 +187,35 @@
                    <String fx:value="85" />
                    <String fx:value="90" />
                    <String fx:value="95" />
-                   <String fx:value="99" />
+                   <String fx:value="99(가장 느림)" />
                </FXCollections>
            </items>
        </ChoiceBox>
 
-       <Label layoutX="34.0" layoutY="320.0" text="11. 유지시간(x500ms)" />
+       <Label layoutX="34.0" layoutY="320.0" text="11. 유지시간" />
        <ChoiceBox fx:id="effectTime" layoutX="177.0" layoutY="316.0" prefHeight="21.0" prefWidth="139.0" value="2">
            <items>
                <FXCollections fx:factory="observableArrayList">
-                   <String fx:value="0" />
-                   <String fx:value="2" />
-                   <String fx:value="4" />
-                   <String fx:value="8" />
-                   <String fx:value="10" />
-                   <String fx:value="15" />
-                   <String fx:value="20" />
-                   <String fx:value="30" />
-                   <String fx:value="40" />
-                   <String fx:value="60" />
-                   <String fx:value="80" />
-                   <String fx:value="120(2Min)" />
-                   <String fx:value="180(3Min)" />
-                   <String fx:value="300(5Min)" />
-                   <String fx:value="600(10Min)" />
-                   <String fx:value="1800(30Min)" />
-                   <String fx:value="3600(1Hour)" />
-                   <String fx:value="10800(3Hour)" />
-                   <String fx:value="18000(5Hour)" />
-                   <String fx:value="32400(9Hour)" />
+                   <String fx:value="0초" />
+                   <String fx:value="1초" />
+                   <String fx:value="2초" />
+                   <String fx:value="4초" />
+                   <String fx:value="5초" />
+                   <String fx:value="7.5초" />
+                   <String fx:value="10초" />
+                   <String fx:value="15초" />
+                   <String fx:value="20초" />
+                   <String fx:value="30초" />
+                   <String fx:value="40초" />
+                   <String fx:value="2분" />
+                   <String fx:value="3분" />
+                   <String fx:value="5분" />
+                   <String fx:value="10분" />
+                   <String fx:value="30분" />
+                   <String fx:value="1시간" />
+                   <String fx:value="3시간" />
+                   <String fx:value="5시간" />
+                   <String fx:value="9시간" />
                </FXCollections>
            </items>
        </ChoiceBox>
@@ -324,16 +325,6 @@
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="사용안함" />
-                   <String fx:value="1" />
-                   <String fx:value="2" />
-                   <String fx:value="3" />
-                   <String fx:value="4" />
-                   <String fx:value="5" />
-                   <String fx:value="6" />
-                   <String fx:value="7" />
-                   <String fx:value="8" />
-                   <String fx:value="9" />
-                   <String fx:value="10" />
                </FXCollections>
            </items>
        </ChoiceBox>
@@ -375,6 +366,6 @@
        <Button layoutX="150.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#settingConfirm" prefHeight="30.0" prefWidth="81.0" text="설정 확인" />
        <Button layoutX="250.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#preview" prefHeight="30.0" prefWidth="81.0" text="미리보기" />
        <Button layoutX="350.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="초기화" />
-       <Button layoutX="450.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="30.0" prefWidth="81.0" text="확인" />
+       <Button layoutX="450.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="30.0" prefWidth="81.0" text="확인"/>
    </children>
 </AnchorPane>
