@@ -7,12 +7,22 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class AdvancedSettingController {
+
+    @FXML
+    Pane ASAP;
+
+    @FXML
+    public void initialize(){
+        ASAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/advancedSetting.css").toExternalForm());
+    }
+
 
     // 폰트 설정 모달창을 띄우는 함수
     @FXML

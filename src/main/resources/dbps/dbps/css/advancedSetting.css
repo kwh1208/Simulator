@@ -1,3 +1,11 @@
 .label{
     font-size: 15px;
 }
+
+.button {
+    -fx-font-size : 15px;
+    -fx-background-color: #222222;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-padding: 5 10 5 10;
+}

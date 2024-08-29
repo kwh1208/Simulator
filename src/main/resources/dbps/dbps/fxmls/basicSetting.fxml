@@ -6,7 +6,7 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
-<Pane fx:id="basicPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dbps.dbps.controller.BasicSettingController" layoutX="19.0" layoutY="57.0" prefHeight="95.0" prefWidth="310.0" style="-fx-border-color: black; -fx-border-radius: 10">
+<Pane fx:id="basicPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dbps.dbps.controller.BasicSettingController" layoutX="19.0" layoutY="57.0" prefHeight="95.0" prefWidth="310.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
 <children>
     <Label alignment="CENTER" layoutX="85.0" layoutY="-12.0" prefHeight="18.0" prefWidth="140.0" text="프로그램 설정"
            style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 17" />

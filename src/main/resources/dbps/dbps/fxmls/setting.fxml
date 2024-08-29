@@ -25,7 +25,7 @@
             <fx:include source="messageSetting.fxml"/>
 
             <Label layoutX="365.0" layoutY="320.0" text="화면 밝기 설정" />
-            <ChoiceBox layoutX="400.0" layoutY="315.0" prefHeight="25.0" prefWidth="109.0" value="100%(default)">
+            <ChoiceBox layoutX="490.0" layoutY="315.0" prefHeight="25.0" prefWidth="109.0" value="100%(default)">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="100%(default)" />
@@ -36,10 +36,10 @@
                     </FXCollections>
                 </items>
             </ChoiceBox>
-            <Button layoutX="577.0" layoutY="315.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="전송" onMouseClicked="#sendDisplayBright"/>
+            <Button layoutX="612.0" layoutY="314.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendDisplayBright"/>
 
             <Label layoutX="365.0" layoutY="356.0" text="실시간 문구 설정" />
-            <ChoiceBox layoutX="400.0" layoutY="351.0" prefHeight="25.0" prefWidth="109.0" value="효과 동시 표출">
+            <ChoiceBox layoutX="490.0" layoutY="351.0" prefHeight="25.0" prefWidth="109.0" value="효과 동시 표출">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="효과 개별 표출" />
@@ -47,11 +47,11 @@
                     </FXCollections>
                 </items>
             </ChoiceBox>
-            <Button layoutX="518.0" layoutY="351.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="전송" onMouseClicked="#sendPageMsgType"/>
+            <Button layoutX="612.0" layoutY="350.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendPageMsgType"/>
 
 
             <!--가운데 구분선-->
-            <Line endX="600.0" layoutX="250.0" layoutY="384.0" startX="-300.0" />
+            <Line endX="600.0" layoutX="250.0" layoutY="384.0" startX="-300.0" style="-fx-stroke: #4A4A4A"/>
 
 
             <!--선아래 왼쪽-->
