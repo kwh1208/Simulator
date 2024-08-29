@@ -8,6 +8,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 import static dbps.dbps.service.LogService.logService;
@@ -33,13 +34,14 @@ public class LogController {
 
         Image image = new Image(getClass().getResourceAsStream("/dbps/dbps/images/휴지통.png"));
         ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(18);
+        imageView.setFitHeight(17.5);
         imageView.setPreserveRatio(true);  // 비율 유지
         imageView.setSmooth(true);  // 스무딩 활성화
 
         clearBtn.setGraphic(imageView);
 
         logVBoX.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/log.css").toExternalForm());
+        logArea.getChildren().add(new Text("\n"));
     }
 
     public void clearLog(){

@@ -7,17 +7,18 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class ASCiiMsgController {
-
-    private static final Logger log = LoggerFactory.getLogger(ASCiiMsgController.class);
 
     @FXML
     private AnchorPane ASCiiMsgAnchorPane;
@@ -40,6 +41,15 @@ public class ASCiiMsgController {
     private List<Button> previewBtns = new ArrayList<>();
     private List<String> transmitMsgContents;
 
+    private final KeyCode[] KONAMI_CODE = {
+            KeyCode.UP, KeyCode.UP, KeyCode.DOWN, KeyCode.DOWN,
+            KeyCode.LEFT, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.RIGHT,
+            KeyCode.B, KeyCode.A
+    };
+
+    // 사용자가 입력한 키를 저장할 큐
+    private Queue<KeyCode> inputQueue = new LinkedList<>();
+
     @FXML
     public void initialize() {
         transmitMsgContents = MsgService.loadMessages();
@@ -53,6 +63,36 @@ public class ASCiiMsgController {
         makeMsgContainer();
 
         ASCiiMsgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/ASCiiMsg.css").toExternalForm());
+
+        transmitMsg1.setOnKeyPressed(event -> {
+            KeyCode keyCode = event.getCode();
+            inputQueue.add(keyCode); // 입력된 키를 큐에 추가
+
+            // 큐의 크기가 정해진 시퀀스의 길이를 초과하면 가장 오래된 입력 제거
+            if (inputQueue.size() > KONAMI_CODE.length) {
+                inputQueue.poll();
+            }
+
+            // 현재 입력된 키 시퀀스가 정해진 시퀀스와 일치하는지 확인
+            if (checkSequence()) {
+                //숨겨진 기능!
+                System.out.println("코나미 코드 입력 성공!");
+                inputQueue.clear(); // 일치 시 입력 기록 초기화
+            }
+        });
+
+    }
+
+    private boolean checkSequence() {
+        if (inputQueue.size() != KONAMI_CODE.length) return false;
+
+        int i = 0;
+        for (KeyCode code : inputQueue) {
+            if (code != KONAMI_CODE[i++]) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
