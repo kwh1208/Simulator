@@ -1,7 +1,7 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.service.MsgMaker;
-import dbps.dbps.service.SerialPortManager;
+import dbps.dbps.service.connectManager.SerialPortManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -36,7 +36,7 @@ public class DisplaySignalSettingController {
     private Button readBtn;
 
     MsgMaker msgMaker = MsgMaker.getInstance();
-    SerialPortManager serialPortManager = SerialPortManager.getInstance();
+    SerialPortManager serialPortManager = SerialPortManager.getManager();
 
     @FXML
     private void initialize() {

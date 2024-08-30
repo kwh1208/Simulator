@@ -10,6 +10,7 @@ import java.io.IOException;
 public class Simulator extends Application {
     @Override
     public void start(Stage stage) throws IOException {
+        System.out.println("Simulator start");
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/main.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 700, 800);
 
@@ -21,6 +22,7 @@ public class Simulator extends Application {
     }
 
     public static void main(String[] args) {
+        System.out.println("Simulator start-main");
         launch();
     }
 }

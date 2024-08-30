@@ -10,11 +10,14 @@ import java.util.Date;
 
 public class LogService {
     //싱글톤 관리
-    public static LogService logService = getService();
+    private static LogService logService = null;
     public TextFlow logArea;
     public ScrollPane scrollPane;
 
-    static LogService getService(){
+    private LogService() {
+    }
+
+    public static LogService getLogService(){
         if (logService == null){
             logService = new LogService();
         }

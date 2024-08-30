@@ -1,7 +1,7 @@
-package dbps.dbps.service;
+package dbps.dbps.service.connectManager;
 
 import com.fazecast.jSerialComm.SerialPort;
-import dbps.dbps.controller.LogController;
+import dbps.dbps.service.LogService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,13 +12,17 @@ import java.util.Map;
 
 import static dbps.dbps.controller.CommunicationSettingController.openPortName;
 import static dbps.dbps.controller.CommunicationSettingController.selectedTime;
-import static dbps.dbps.service.LogService.logService;
 
 public class SerialPortManager {
     public static final Map<String, SerialPort> serialPortMap = new HashMap<>();
     private static SerialPortManager instance = null;
+    private final LogService logService;
 
-    public static synchronized SerialPortManager getInstance() {
+    private SerialPortManager() {
+        logService = LogService.getLogService();
+    }
+
+    public static SerialPortManager getManager() {
         if (instance == null) {
             instance = new SerialPortManager();
         }

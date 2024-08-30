@@ -3,7 +3,7 @@ package dbps.dbps.controller;
 
 
 import com.fazecast.jSerialComm.SerialPort;
-import dbps.dbps.service.SerialPortManager;
+import dbps.dbps.service.connectManager.SerialPortManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -12,11 +12,10 @@ import java.io.IOException;
 
 
 import static dbps.dbps.controller.SettingController.communicationSettingWindow;
-import static dbps.dbps.service.LogService.logService;
 
 public class CommunicationSettingController {
 
-    SerialPortManager serialPortManager = SerialPortManager.getInstance();
+    SerialPortManager serialPortManager = SerialPortManager.getManager();
 
     public static String openPortName = null;
 

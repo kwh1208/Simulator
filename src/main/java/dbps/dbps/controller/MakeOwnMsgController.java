@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static dbps.dbps.controller.ASCiiMsgController.transmitMsgs;
-import static dbps.dbps.service.MsgService.makeMsgWindow;
+import static dbps.dbps.service.ASCiiMsgService.makeMsgWindow;
 import static java.lang.Integer.parseInt;
 
 

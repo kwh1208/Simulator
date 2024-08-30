@@ -1,4 +1,4 @@
-package dbps.dbps;
+package dbps.dbps.controller;
 
 
 import dbps.dbps.service.MainService;

@@ -2,7 +2,7 @@ package dbps.dbps.controller;
 
 
 import dbps.dbps.Simulator;
-import dbps.dbps.service.MsgService;
+import dbps.dbps.service.ASCiiMsgService;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -10,8 +10,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -35,6 +33,7 @@ public class ASCiiMsgController {
     @FXML
     private Button previewBtn1;
 
+    ASCiiMsgService msgService = ASCiiMsgService.getInstance();
     public static List<TextField> transmitMsgs = new ArrayList<>();
     private List<Button> msgSaveBtns = new ArrayList<>();
     private List<Button> msgSendBtns = new ArrayList<>();
@@ -52,7 +51,7 @@ public class ASCiiMsgController {
 
     @FXML
     public void initialize() {
-        transmitMsgContents = MsgService.loadMessages();
+        transmitMsgContents = msgService.loadMessages();
 
         transmitMsgs.add(transmitMsg1);
         msgSaveBtns.add(msgSaveBtn1);
@@ -109,32 +108,31 @@ public class ASCiiMsgController {
 
         String inputText = targetTextField.getText();
 
-        MsgService.saveMessages(num, inputText);
+        msgService.saveMessages(num, inputText);
     }
 
     //기기에 메세지 전송
-    @FXML
     public void sendMsg(Event event) {
         Button clickedBtn = (Button) event.getSource();
         int num = Integer.parseInt(clickedBtn.getId().substring(10));
         TextField targetTextField = transmitMsgs.get(num - 1);
 
-        MsgService.sendMessages(num, targetTextField.getText());
+        msgService.sendMessages(targetTextField.getText());
     }
 
     @FXML
     public void resetMsg() {
-        MsgService.resetMsg(transmitMsgContents, transmitMsgs);
+        msgService.resetMsg(transmitMsgContents, transmitMsgs);
     }
 
     @FXML
     public void makeOwnMsg(){
-        MsgService.makeOwnMsg();
+        msgService.makeOwnMsg();
     }
 
     @FXML
     public void preview(MouseEvent event) {
-        MsgService.preview(event, transmitMsgs);
+        msgService.preview(event, transmitMsgs);
     }
 
 
