@@ -9,19 +9,19 @@
 <children>
     <Label alignment="CENTER" layoutX="95.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0"
            style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white;-fx-font-size: 17; -fx-font-weight: bolder" text="전광판 크기" textFill="WHITE"/>
-    <Label layoutX="20.0" layoutY="25.0" text="세로 크기" />
+    <Label layoutX="20.0" layoutY="25.0" text="단수" />
     <Spinner fx:id="spinnerForColumn" layoutX="175.0" layoutY="18.0" prefHeight="25.0" prefWidth="64.0" />
     <Label layoutX="245.0" layoutY="26.0" prefHeight="13.0" prefWidth="80.0" text="X16 Pixels" />
 
-    <Label layoutX="20.0" layoutY="56.0" text="가로 크기" />
+    <Label layoutX="20.0" layoutY="56.0" text="열수" />
     <Spinner fx:id="spinnerForRow" layoutX="175.0" layoutY="51.0" prefHeight="25.0" prefWidth="64.0" />
     <Label layoutX="245.0" layoutY="58.0" prefHeight="13.0" prefWidth="80.0" text="X16 Pixels" />
 
     <Label layoutX="20.0" layoutY="87.0" text="픽셀당 비트수" />
-    <ChoiceBox layoutX="175.0" layoutY="82.0" prefHeight="25.0" prefWidth="145" value="3BPP(8Colors)">
+    <ChoiceBox fx:id="colorNum" layoutX="175.0" layoutY="82.0" prefHeight="25.0" prefWidth="145" value="3BPP(8Colors)">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="1BPP(2Colors)" />
+                <String fx:value="2BPP(3Colors)" />
                 <String fx:value="3BPP(8Colors)" />
                 <String fx:value="8BPP(256Colors)" />
             </FXCollections>
@@ -41,6 +41,6 @@
             </FXCollections>
         </items>
     </ChoiceBox>
-    <Button layoutX="260.0" layoutY="145.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" />
+    <Button layoutX="260.0" layoutY="145.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendDisplaySize"/>
 </children>
 </Pane>

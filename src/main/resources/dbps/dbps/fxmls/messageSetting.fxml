@@ -27,24 +27,25 @@
             </FXCollections>
         </items>
     </ChoiceBox>
+    <Button layoutX="260.0" layoutY="19.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendPageCnt"/>
     <Label layoutX="17.0" layoutY="63.0" text="메시지 초기화" />
     <ChoiceBox fx:id="msgInitialize" layoutX="140.0" layoutY="58.0" prefHeight="25.0" prefWidth="109.0" value="전체">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="1개" />
-                <String fx:value="2개" />
-                <String fx:value="3개" />
-                <String fx:value="4개" />
-                <String fx:value="5개" />
-                <String fx:value="6개" />
-                <String fx:value="7개" />
-                <String fx:value="8개" />
-                <String fx:value="9개" />
+                <String fx:value="page 1" />
+                <String fx:value="page 2" />
+                <String fx:value="page 3" />
+                <String fx:value="page 4" />
+                <String fx:value="page 5" />
+                <String fx:value="page 6" />
+                <String fx:value="page 7" />
+                <String fx:value="page 8" />
+                <String fx:value="page 9" />
+                <String fx:value="page 10" />
                 <String fx:value="전체" />
             </FXCollections>
         </items>
     </ChoiceBox>
-    <Button layoutX="260.0" layoutY="19.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendPageCnt"/>
     <Button layoutX="260.0" layoutY="57.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendMsgInitialize"/>
 </children>
 </Pane>

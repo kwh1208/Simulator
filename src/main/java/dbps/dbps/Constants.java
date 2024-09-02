@@ -13,8 +13,7 @@ public class Constants {
 
     public static int responseLatency = 1000;
 
-
-
+    public static boolean isAscii = false;
 
 
 

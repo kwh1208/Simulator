@@ -96,7 +96,7 @@ public class SerialPortManager {
                     numBytesRead = inputStream.read(buffer);
                     response.append(new String(buffer, 0, numBytesRead));
                 }
-                Thread.sleep(1000); // 짧은 대기 시간
+                Thread.sleep(100); // 짧은 대기 시간
             }
 
             logService.updateInfoLog("메시지 전송 성공 메세지 = "+ response);
@@ -136,7 +136,7 @@ public class SerialPortManager {
                     numBytesRead = inputStream.read(buffer);
                     responseStream.write(buffer, 0, numBytesRead);
                 }
-                Thread.sleep(1000); // 짧은 대기 시간
+                Thread.sleep(100); // 짧은 대기 시간
             }
 
             String hexResponse = bytesToHex(responseStream.toByteArray());

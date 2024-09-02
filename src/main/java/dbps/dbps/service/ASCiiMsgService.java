@@ -100,7 +100,7 @@ public class ASCiiMsgService {
         //메세지 미리보기
     }
 
-    public void sendMessages(String text) {
+    public String sendMessages(String text) {
         //현재 serial, bluetooth, udp, tcp, rs485, WiFi 중에 어떤 것인지 파악.
         //열려있는 곳으로 메세지 전송
         String receivedMsg = "";
@@ -137,7 +137,11 @@ public class ASCiiMsgService {
             //검사 결과 및 응답메세지 경고메세지/주의 메세지로 출력
             logService.errorLog(cause);
         }
+
+        return receivedMsg;
     }
+
+    //
 
 
     /**

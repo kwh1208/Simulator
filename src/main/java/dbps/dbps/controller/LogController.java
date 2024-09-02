@@ -2,6 +2,7 @@ package dbps.dbps.controller;
 
 
 import dbps.dbps.Simulator;
+import dbps.dbps.service.LogService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -11,10 +12,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
-import static dbps.dbps.service.LogService.logService;
-
 
 public class LogController {
+
+    LogService logService;
 
     @FXML
     public VBox logVBoX;
@@ -30,6 +31,7 @@ public class LogController {
 
     @FXML
     public void initialize(){
+        logService = LogService.getLogService();
         logService.setInitial(logArea, scrollPane);
 
         Image image = new Image(getClass().getResourceAsStream("/dbps/dbps/images/휴지통.png"));
