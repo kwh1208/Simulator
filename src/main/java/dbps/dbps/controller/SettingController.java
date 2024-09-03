@@ -3,12 +3,13 @@ package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ASCiiMsgService;
+import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgService;
+import dbps.dbps.service.HexMsgTransceiver;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -20,8 +21,8 @@ import static dbps.dbps.Constants.isAscii;
 public class SettingController {
 
     ASCiiMsgService ascMsgService = ASCiiMsgService.getInstance();
-    HexMsgService hexMsgService = HexMsgService.getInstance();
-
+    HexMsgTransceiver hexMsgTransceiver = HexMsgTransceiver.getInstance();
+    AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance(); 
     @FXML
     public ChoiceBox<String> displayBright;
 
@@ -66,11 +67,8 @@ public class SettingController {
                 case "5%": msg += "05"; break;
             }
             msg += "!]";
-            String receiveMsg = ascMsgService.sendMessages(msg);
-
-            if (receiveMsg.contains("F")){
-                System.out.println("밝기 조절에 실패했습니다.");
-            }
+            asciiMsgTransceiver.sendMessages(msg);
+            
 
         } else{
             String msg = "10 02 00 00 02 44 ";
@@ -82,13 +80,7 @@ public class SettingController {
                 case "5%": msg += "05"; break;
             }
             msg += " 10 03";
-            String receiveMsg = hexMsgService.sendMessages(msg);
-
-            String[] splitMsg = receiveMsg.split(" ");
-
-            if (!splitMsg[6].equals("00")){
-                System.out.println("밝기 조절에 실패했습니다.");
-            }
+            hexMsgTransceiver.sendMessages(msg);
         }
     }
 
@@ -102,11 +94,9 @@ public class SettingController {
                 msg += "Y";
             }
             msg += "!]";
-            String receiveMsg = ascMsgService.sendMessages(msg);
+            asciiMsgTransceiver.sendMessages(msg);
+            
 
-            if (receiveMsg.contains("F")){
-                System.out.println("실시간 문구 설정에 실패했습니다.");
-            }
         } else {
             String msg;
             if (pageMsgType.getValue().contains("동시")){
@@ -114,14 +104,7 @@ public class SettingController {
             }else{
                 msg = "21 5B 30 30 36 32 59 21 5D";
             }
-            String receiveMsg = hexMsgService.sendMessages(msg);
-
-            String[] splitMsg = receiveMsg.split(" ");
-
-            if (!splitMsg[6].equals("59")){
-                System.out.println("실시간 문구 설정에 실패했습니다.");
-            }
-
+            hexMsgTransceiver.sendMessages(msg);
         }
     }
 }

@@ -1,9 +1,7 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
-import dbps.dbps.service.ASCiiMsgService;
-import dbps.dbps.service.HexMsgService;
-import dbps.dbps.service.LogService;
+import dbps.dbps.service.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.Pane;
@@ -16,7 +14,9 @@ public class MessageSettingController {
 
     LogService logService = LogService.getLogService();
 
-    HexMsgService hexMsgService = HexMsgService.getInstance();
+    HexMsgTransceiver hexMsgTransceiver = HexMsgTransceiver.getInstance();
+    
+    AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
 
     @FXML
     public ChoiceBox<String> msgInitialize;
@@ -50,22 +50,16 @@ public class MessageSettingController {
             String msg = "![0060";
             msg += String.format("%02d", Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", "")));
             msg += "!]";
-            String receiveMsg = ascMsgService.sendMessages(msg);
+            String receiveMsg = asciiMsgTransceiver.sendMessages(msg);
 
-            if (receiveMsg.contains("F")){
-                logService.errorLog("페이지 메세지 등록에 실패했습니다.");
-            }
+            
+
         } else {
             String msg = "10 02 00 00 02 4C ";
             msg += Integer.toHexString(Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", ""))).toUpperCase();
             msg += " 10 03";
 
-            String receiveMsg = hexMsgService.sendMessages(msg);
-
-            String[] splitMsg = receiveMsg.split(" ");
-            if (!splitMsg[6].equals("00")){
-                logService.errorLog("페이지 메세지 등록에 실패했습니다.");
-            }
+            hexMsgTransceiver.sendMessages(msg);
         }
     }
 
@@ -81,11 +75,8 @@ public class MessageSettingController {
             }
             msg += "!]";
 
-            String receiveMsg = ascMsgService.sendMessages(msg);
+            asciiMsgTransceiver.sendMessages(msg);
 
-            if (receiveMsg.contains("F")){
-                logService.errorLog("페이지 메세지 초기화에 실패했습니다.");
-            }
         } else {
             //10 02 00 00 02 4B 00 10 03
             String msg = "10 02 00 00 02 4B ";
@@ -97,11 +88,7 @@ public class MessageSettingController {
             }
             msg += " 10 03";
 
-            String receiveMsg = hexMsgService.sendMessages(msg);
-            String[] splitMsg = receiveMsg.split(" ");
-            if (!splitMsg[6].equals("00")){
-                logService.errorLog("페이지 메세지 초기화에 실패했습니다.");
-            }
+            hexMsgTransceiver.sendMessages(msg);
         }
     }
 }

@@ -116,4 +116,7 @@ public class UDPManager {
         logService.updateInfoLog("UDP 서버 연결이 종료되었습니다. IP: " + IP + ", PORT: " + PORT);
     }
 
+    public String sendMsgAndGetMsgHex(String msg) {
+        return null;
+    }
 }

@@ -54,27 +54,6 @@ public class TCPManager {
         return "에러코드";
     }
 
-    public String sendHEXMsg(String msg){
-        if (socket == null) {
-            logService.warningLog("TCP 소켓이 열려있지 않습니다.");
-            connect(IP, PORT);
-        }
-
-        try {
-            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            OutputStream output = socket.getOutputStream();
-
-            output.write(hexStringToByteArray(msg));
-            output.flush();
-
-            return input.readLine();
-        } catch (IOException e){
-            logService.errorLog(msg+"전송에 실패했습니다.");
-        }
-
-        return "에러코드";
-    }
-
 
     //접속하기
     public void connect(String IP, int PORT){
@@ -117,4 +96,26 @@ public class TCPManager {
         socket = null;
         logService.updateInfoLog("TCP 서버 연결이 종료되었습니다. IP: " + IP + ", PORT: " + PORT);
     }
+
+    public String sendMsgAndGetMsgHex(String msg) {
+        if (socket == null) {
+            logService.warningLog("TCP 소켓이 열려있지 않습니다.");
+            connect(IP, PORT);
+        }
+
+        try {
+            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            OutputStream output = socket.getOutputStream();
+
+            output.write(hexStringToByteArray(msg));
+            output.flush();
+
+            return input.readLine();
+        } catch (IOException e){
+            logService.errorLog(msg+"전송에 실패했습니다.");
+        }
+
+        return null;
+    }
 }
+

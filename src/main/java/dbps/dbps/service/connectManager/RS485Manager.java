@@ -8,4 +8,8 @@ public class RS485Manager {
     public String sendMsg(String text) {
         return null;
     }
+
+    public String sendMsgAndGetMsgHex(String msg) {
+        return null;
+    }
 }

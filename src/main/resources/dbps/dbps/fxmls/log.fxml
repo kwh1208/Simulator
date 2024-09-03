@@ -18,7 +18,7 @@
         <TextFlow fx:id="logArea" prefHeight="130.0" prefWidth="680.0" style="color: #fff; -fx-background-color: #2B2D30; -fx-padding: 10 0 0 10;">
             <Text fill="white" text="로그 나오는 곳" />
             <Text fill="#E88F89" text="경고 로그 나오는 곳" />
-            <Text fill="#E88F89" text="주의 로그 나오는 곳" />
+            <Text fill="#E88F89" text="주의 로그 나오는 곳111111111111111111111111111111111" />
         </TextFlow>
     </ScrollPane>
 </VBox>

@@ -2,7 +2,6 @@ package dbps.dbps.service;
 
 
 import dbps.dbps.Simulator;
-import dbps.dbps.service.connectManager.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -19,8 +18,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dbps.dbps.Constants.CONNECT_TYPE;
-
 
 public class ASCiiMsgService {
 
@@ -31,20 +28,10 @@ public class ASCiiMsgService {
     private static ASCiiMsgService instance = null;
 
     //DI용
-    private final SerialPortManager serialPortManager;
     private final LogService logService;
-    private final UDPManager udpManager;
-    private final TCPManager tcpManager;
-    private final RS485Manager rs485Manager;
-    private final WiFiManager wiFiManager;
 
     private ASCiiMsgService() {
-        serialPortManager = SerialPortManager.getManager();
         logService = LogService.getLogService();
-        udpManager = UDPManager.getUDPManager();
-        tcpManager = TCPManager.getManager();
-        rs485Manager = RS485Manager.getInstance();
-        wiFiManager = WiFiManager.getInstance();
     }
 
     public static ASCiiMsgService getInstance() {
@@ -98,47 +85,6 @@ public class ASCiiMsgService {
         String inputText = targetTextField.getText();
 
         //메세지 미리보기
-    }
-
-    public String sendMessages(String text) {
-        //현재 serial, bluetooth, udp, tcp, rs485, WiFi 중에 어떤 것인지 파악.
-        //열려있는 곳으로 메세지 전송
-        String receivedMsg = "";
-
-        //로그 출력
-        logService.updateInfoLog("전송 메세지: " + text);
-
-        switch (CONNECT_TYPE) {
-            case "serial", "bluetooth" -> {
-                //시리얼 및 블루투스
-                receivedMsg = serialPortManager.sendMsgAndGetMsg(text);
-            }
-            case "udp" ->
-                //udp로 메세지 전송
-                    receivedMsg = udpManager.sendASCMsg(text);
-            case "tcp" ->
-                //tcp로 메세지 전송
-                    receivedMsg = tcpManager.sendASCMsg(text);
-            case "rs485" ->
-                //rs485로 메세지 전송
-                    receivedMsg = rs485Manager.sendMsg(text);
-            case "WiFi" ->
-                //WiFi로 메세지 전송
-                    receivedMsg = wiFiManager.sendMsg(text);
-        }
-        //응답메세지 로그출력
-        logService.updateInfoLog("수신 메세지: " + receivedMsg);
-
-        //응답메세지 검사후 문제 발생시 text 검사.
-        if (receivedMsg.equals("에러프로토콜!")){
-            //text 검사하는 로직
-            String cause = "에러프로토콜";
-
-            //검사 결과 및 응답메세지 경고메세지/주의 메세지로 출력
-            logService.errorLog(cause);
-        }
-
-        return receivedMsg;
     }
 
     //
@@ -224,4 +170,6 @@ public class ASCiiMsgService {
             throw new RuntimeException(e);
         }
     }
+
+
 }

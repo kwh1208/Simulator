@@ -3,6 +3,7 @@ package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ASCiiMsgService;
+import dbps.dbps.service.AsciiMsgTransceiver;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -34,6 +35,7 @@ public class ASCiiMsgController {
     private Button previewBtn1;
 
     ASCiiMsgService msgService = ASCiiMsgService.getInstance();
+    AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
     public static List<TextField> transmitMsgs = new ArrayList<>();
     private List<Button> msgSaveBtns = new ArrayList<>();
     private List<Button> msgSendBtns = new ArrayList<>();
@@ -117,7 +119,7 @@ public class ASCiiMsgController {
         int num = Integer.parseInt(clickedBtn.getId().substring(10));
         TextField targetTextField = transmitMsgs.get(num - 1);
 
-        msgService.sendMessages(targetTextField.getText());
+        asciiMsgTransceiver.sendMessages(targetTextField.getText());
     }
 
     @FXML
