@@ -6,8 +6,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static dbps.dbps.controller.ASCiiMsgController.transmitMsgs;
 import static dbps.dbps.service.ASCiiMsgService.makeMsgWindow;
@@ -15,7 +13,6 @@ import static java.lang.Integer.parseInt;
 
 
 public class MakeOwnMsgController {
-    private static final Logger log = LoggerFactory.getLogger(MakeOwnMsgController.class);
     @FXML
     AnchorPane makeOwnMsgAnchorPane;
 

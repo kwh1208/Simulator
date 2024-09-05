@@ -6,7 +6,7 @@ module dbps.dbps {
     requires static lombok;
     requires jdk.jshell;
     requires java.desktop;
-    requires com.sun.jna;
+    requires org.fxmisc.richtext;
 
     opens dbps.dbps to javafx.fxml;
     opens dbps.dbps.controller to javafx.fxml;

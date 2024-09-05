@@ -25,7 +25,7 @@
             <fx:include source="messageSetting.fxml"/>
 
             <Label layoutX="365.0" layoutY="320.0" text="화면 밝기 설정" />
-            <ChoiceBox fx:id="displayBright" layoutX="490.0" layoutY="315.0" prefHeight="25.0" prefWidth="109.0" value="100%(default)">
+            <ChoiceBox fx:id="displayBright" layoutX="490.0" layoutY="315.0" prefHeight="25.0" prefWidth="109.0" value="100%(기본)">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="100%(기본)" />

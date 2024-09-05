@@ -4,18 +4,16 @@ import dbps.dbps.Simulator;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-
-import static dbps.dbps.controller.SettingController.communicationSettingWindow;
 
 public class BoardSettingsController {
     @FXML
@@ -50,19 +48,23 @@ public class BoardSettingsController {
     }
 
     @FXML
-    public void openCommunicationSetting() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/communicationSetting.fxml"));
-        AnchorPane root = fxmlLoader.load();
-        communicationSettingWindow = new Stage();
-        communicationSettingWindow.setTitle("통신 설정");
+    public void openCommunicationSetting(MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/boardSettings.fxml"));
+        Parent root = fxmlLoader.load();
 
-        communicationSettingWindow.initModality(Modality.APPLICATION_MODAL);
+        Stage modalStage = new Stage();
+        modalStage.setTitle("통신 설정");
 
-        Scene scene = new Scene(root, 291, 600);
-        communicationSettingWindow.setScene(scene);
-        communicationSettingWindow.setResizable(false);
+        modalStage.initModality(Modality.APPLICATION_MODAL);
 
-        communicationSettingWindow.show();
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.showAndWait();
     }
     @FXML
     public void closeWindow(MouseEvent mouseEvent) {

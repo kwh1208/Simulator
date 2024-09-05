@@ -2,7 +2,7 @@ package dbps.dbps;
 
 public class Constants {
     //현재 연결 방법(serial, tcp, udp, RS485, WiFi, Bluetooth)
-    public static String CONNECT_TYPE;
+    public static String CONNECT_TYPE = "none";
 
     public static byte[] CONNECT_START = {
             (byte) 0x10, (byte) 0x02, (byte) 0x00, (byte) 0x00, (byte) 0x0B,
@@ -11,13 +11,13 @@ public class Constants {
             (byte) 0x39, (byte) 0x10, (byte) 0x03
     };
 
-    public static int responseLatency = 1000;
+    public static int responseLatency = 3;
 
     public static boolean isAscii = false;
 
+    public static int serialBaudRate = 115200;
 
-
-
+    public static String openPortName = null;
 
 
 
@@ -30,5 +30,15 @@ public class Constants {
         }
 
         return byteArray;
+    }
+
+    public static String bytesToHex(byte[] bytes, int length) {
+        StringBuilder hexString = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            hexString.append(String.format("%02X ", bytes[i]));
+        }
+
+        return hexString.toString();
     }
 }

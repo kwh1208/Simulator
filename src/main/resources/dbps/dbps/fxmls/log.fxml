@@ -3,7 +3,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
 <VBox fx:id="logVBoX" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.LogController">
     <Pane prefHeight="30.0" prefWidth="590.0" style="-fx-background-color: #1C1F26">
@@ -15,10 +14,5 @@
       </Button>
     </Pane>
     <ScrollPane fx:id="scrollPane" style="-fx-background-color: transparent;"  prefHeight="130.0" prefWidth="560.0">
-        <TextFlow fx:id="logArea" prefHeight="130.0" prefWidth="680.0" style="color: #fff; -fx-background-color: #2B2D30; -fx-padding: 10 0 0 10;">
-            <Text fill="white" text="로그 나오는 곳" />
-            <Text fill="#E88F89" text="경고 로그 나오는 곳" />
-            <Text fill="#E88F89" text="주의 로그 나오는 곳111111111111111111111111111111111" />
-        </TextFlow>
     </ScrollPane>
 </VBox>

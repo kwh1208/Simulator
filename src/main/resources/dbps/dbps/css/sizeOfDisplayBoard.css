@@ -1,6 +1,6 @@
 .choice-box .context-menu {
-    -fx-background-color: black;
-    -fx-pref-width: 81; /* 컨텍스트 메뉴 너비를 오른쪽 CSS와 동일하게 설정 */
+    -fx-background-color: #1C1F26;
+    -fx-pref-width: 150; /* 컨텍스트 메뉴 너비를 오른쪽 CSS와 동일하게 설정 */
 }
 .choice-box .menu-item:focused {
     -fx-background-color: orange;
@@ -13,7 +13,7 @@
     -fx-text-fill: black;
 }
 .choice-box {
-    -fx-background-color: black;
+    -fx-background-color: #1C1F26;
     -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
 }
 .choice-box .label {
@@ -26,4 +26,30 @@
 .label{
     -fx-text-fill: #E0E0E0;
     -fx-font-size: 15px;
+}
+
+.check-box .box {
+    -fx-border-color: #5A5A5A; /* 체크박스 테두리 색상 */
+    -fx-border-width: 1px; /* 테두리 두께 */
+    -fx-background-color: #1C1F26; /* 체크박스 배경색 */
+}
+
+.spinner .increment-arrow-button, .spinner .decrement-arrow-button {
+    -fx-background-color: #1C1F26; /* 배경색 설정 */
+    -fx-text-fill: white; /* 텍스트 색상 설정 */
+    -fx-border-color: #5A5A5A; /* 테두리 색상 설정 */
+}
+
+.spinner .increment-arrow-button:hover, .spinner .decrement-arrow-button:hover {
+    -fx-background-color: #2A2E35; /* 마우스 오버 시 배경색 */
+}
+
+.spinner .increment-arrow-button:pressed, .spinner .decrement-arrow-button:pressed {
+    -fx-background-color: orange; /* 클릭 시 배경색 */
+}
+
+.spinner .text-field {
+    -fx-background-color: #1C1F26; /* 텍스트 필드 배경색 */
+    -fx-text-fill: white; /* 텍스트 색상 */
+    -fx-border-color: #5A5A5A; /* 테두리 색상 */
 }

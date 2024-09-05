@@ -7,7 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
-import static dbps.dbps.controller.CommunicationSettingController.selectedTime;
+import static dbps.dbps.Constants.responseLatency;
 import static dbps.dbps.service.displaySignal.SignalMap;
 
 public class DisplaySignalSettingController {
@@ -138,8 +138,8 @@ public class DisplaySignalSettingController {
     @FXML
     public void autoTransfer() {
         Integer time = spinnerForSec.getValue();
-        int originalTime = selectedTime;
-        selectedTime = time;
+        int originalTime = responseLatency;
+        responseLatency = time;
 
 
         signalList.getItems().forEach(signal -> {
@@ -154,7 +154,7 @@ public class DisplaySignalSettingController {
             }
         });
 
-        selectedTime = originalTime;
+        responseLatency = originalTime;
     }
 
     @FXML

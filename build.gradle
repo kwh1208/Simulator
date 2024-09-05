@@ -35,8 +35,8 @@ javafx {
 }
 
 dependencies {
-  implementation 'org.rxtx:rxtx:2.1.7'
-  implementation group: 'net.java.dev.jna', name: 'jna', version: '5.14.0'
+  implementation group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.11.3'
+
 
   //serialPORT
   implementation group: 'com.fazecast', name: 'jSerialComm', version: '2.11.0'

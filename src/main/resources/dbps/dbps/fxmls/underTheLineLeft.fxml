@@ -6,7 +6,7 @@
 <children>
     <Button layoutX="39.0" layoutY="18.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="103.0" text="화면 켜기" onMouseClicked="#sendDisplayOn"/>
     <Button layoutX="149.0" layoutY="18.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="화면 끄기" onMouseClicked="#sendDisplayOff" />
-    <TextField alignment="CENTER" layoutX="39.0" layoutY="58.0" prefHeight="30.0" prefWidth="210.0" text="현재 시간" />
+    <TextField fx:id="timeBoard" alignment="CENTER" layoutX="39.0" layoutY="58.0" prefHeight="30.0" prefWidth="210.0" text="현재 시간" />
     <Button layoutX="39.0" layoutY="98.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="210.0" text="컨트롤러 시간 읽기" onMouseClicked="#getControllerTime"/>
     <Button layoutX="39.0" layoutY="138.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="210.0" text="PC 시간 동기화" onMouseClicked="#synchronizeTime"/>
     <Button layoutX="39.0" layoutY="178.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="103.0" text="컨트롤러 리셋" onMouseClicked="#resetController"/>

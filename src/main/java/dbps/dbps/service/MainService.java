@@ -12,7 +12,6 @@ public class MainService {
     @Setter
     private static Tab messageTab = null;
 
-
     private static MainService instance;
 
     private MainService() {
@@ -35,7 +34,6 @@ public class MainService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
 

@@ -3,24 +3,33 @@ package dbps.dbps.controller;
 
 
 import com.fazecast.jSerialComm.SerialPort;
-import dbps.dbps.service.LogService;
+import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.connectManager.SerialPortManager;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 
-import static dbps.dbps.controller.SettingController.communicationSettingWindow;
+import static dbps.dbps.Constants.*;
 
 public class CommunicationSettingController {
 
-    SerialPortManager serialPortManager = SerialPortManager.getManager();
 
-    public static String openPortName = null;
+    SerialPortManager serialPortManager;
 
-    private static LogService logService;
+    HexMsgTransceiver hexMsgTransceiver;
+
+    @FXML
+    private ProgressIndicator loadingSpinner;
 
     /**
      * 시리얼
@@ -87,12 +96,11 @@ public class CommunicationSettingController {
     @FXML
     private ChoiceBox<String> delayTime;
 
-    public static int selectedTime;
-
     //초기화
     @FXML
     private void initialize() {
-        logService = LogService.getLogService();
+        serialPortManager = SerialPortManager.getManager();
+        hexMsgTransceiver = HexMsgTransceiver.getInstance();
 
 
         //delayTime 변경하면 delayTime 값 변경
@@ -133,24 +141,44 @@ public class CommunicationSettingController {
         serialRadioBtn.setSelected(true);
 
         getSerialPortList();
+        serialPortComboBox.setValue(serialPortComboBox.getItems().get(0));
 
 
-        serialPortComboBox.valueProperty().addListener((observableValue, oldValue, newValue) -> changePort(oldValue, newValue));
-
-        RS485ChkBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
-            if (newValue) {
-                RS485ChoiceBox.setVisible(true);
-            } else {
-                RS485ChoiceBox.setVisible(false);
-            }
+        serialPortComboBox.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+            serialPortComboBox.setValue(newValue);
         });
+        serialPortComboBox.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
+
+
+        RS485ChkBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> RS485ChoiceBox.setVisible(newValue));
+
+        //응답시간 변경
+        delayTime.selectionModelProperty().addListener((observableValue, oldValue, newValue) -> responseLatency = Integer.parseInt(delayTime.getValue()));
     }
 
     //사용가능한 포트 가져오기
     private void getSerialPortList() {
         SerialPort[] ports = SerialPort.getCommPorts();
-        for (SerialPort port : ports) {
-            serialPortComboBox.getItems().add(port.getSystemPortName());
+        ObservableList<String> items = serialPortComboBox.getItems();
+
+        String currentSelection = serialPortComboBox.getValue(); // 현재 선택된 값 저장
+
+
+        List<String> portNames = Arrays.stream(ports)
+                .map(SerialPort::getSystemPortName)
+                .sorted() // 알파벳순 정렬 (COM 포트 번호 기준으로 자동 정렬됨)
+                .toList();
+
+        items.clear();
+        // 정렬된 포트 이름을 items에 추가
+        items.addAll(portNames);
+
+        // ComboBox에 정렬된 목록 설정
+        serialPortComboBox.setItems(items);
+
+        // 기존에 선택한 값이 여전히 리스트에 있다면, 다시 선택해줍니다.
+        if (currentSelection != null && items.contains(currentSelection)) {
+            serialPortComboBox.setValue(currentSelection);
         }
     }
 
@@ -165,10 +193,17 @@ public class CommunicationSettingController {
     }
 
     //통신속도 찾기
-    public void findCommunicationSpeed(){
-        int speed = serialPortManager.findSpeed();
+    public void findCommunicationSpeed() {
+        // UI 업데이트를 JavaFX 애플리케이션 스레드에서 즉시 실행
+        Platform.runLater(() -> loadingSpinner.setVisible(true));
+
+        int speed = serialPortManager.findSpeed(); // 속도 찾기
+
+        serialBaudRate = speed;
 
         serialSpeedChoiceBox.setValue(String.valueOf(speed));
+
+        Platform.runLater(() -> loadingSpinner.setVisible(false));
     }
 
     @FXML
@@ -194,12 +229,6 @@ public class CommunicationSettingController {
         openPortName = null;
     }
 
-    //comboBox 변화 감지 함수
-    public void changePort(String oldPort, String newPort){
-        closePort(oldPort);
-        openPort(newPort);
-    }
-
     //다빛넷 열기
     public void openDabitNet(){
     }
@@ -211,19 +240,18 @@ public class CommunicationSettingController {
     //컨트롤러 연결하고 확인신호 보내기
     @FXML
     public void controllerConnect(){
-        serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
-
         //시리얼 일때
-        String response = serialPortManager.sendMsgAndGetMsgHex("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
-        if (!response.isEmpty()){
-            logService.updateInfoLog(response);
+        CONNECT_TYPE = "serial";
+        serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
+        String receiveMsg = hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
+        if (!receiveMsg.split(" ")[5].equals("6A")){
+            CONNECT_TYPE = "none";
         }
-
-        //블루투스일때 - 아스키 코드
     }
 
-    public void communicationSettingClose() {
-        communicationSettingWindow.close();
+    public void communicationSettingClose(MouseEvent mouseEvent) {
+        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        stage.close();
     }
 
 

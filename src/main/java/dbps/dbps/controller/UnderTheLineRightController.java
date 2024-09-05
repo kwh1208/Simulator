@@ -2,16 +2,20 @@ package dbps.dbps.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 
 public class UnderTheLineRightController {
     @FXML
-    public ChoiceBox<String> BGImgSelection;
+    public ComboBox<String> BGImgSelection;
 
     @FXML
     public ChoiceBox<String> fillColor;
-    public Pane rightPane;
+
+    @FXML
+    public VBox rightVbox;
 
 
     @FXML
@@ -21,7 +25,9 @@ public class UnderTheLineRightController {
             BGImgSelection.getItems().add(String.valueOf(i));
         }
 
-//        rightPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/underTheLineRight.css").toExternalForm());
+        BGImgSelection.setVisibleRowCount(10);
+
+        rightVbox.getStylesheets().add(getClass().getResource("/dbps/dbps/css/underTheLineRight.css").toExternalForm());
     }
 
     public void sendRelaySignal(MouseEvent mouseEvent) {

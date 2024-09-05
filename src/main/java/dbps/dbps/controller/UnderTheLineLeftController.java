@@ -1,10 +1,10 @@
 package dbps.dbps.controller;
 
-import dbps.dbps.service.ASCiiMsgService;
+
 import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.HexMsgService;
 import dbps.dbps.service.HexMsgTransceiver;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 
 import java.text.SimpleDateFormat;
@@ -13,12 +13,14 @@ import static dbps.dbps.Constants.isAscii;
 
 public class UnderTheLineLeftController {
 
-    ASCiiMsgService ascMsgService = ASCiiMsgService.getInstance();
     HexMsgTransceiver hexMsgTransceiver = HexMsgTransceiver.getInstance();
     AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
 
     @FXML
     public Pane leftPane;
+
+    @FXML
+    public TextField timeBoard;
 
     @FXML
     public void initialize() {
@@ -28,6 +30,7 @@ public class UnderTheLineLeftController {
     public void sendDisplayOn() {
         if (isAscii){
             asciiMsgTransceiver.sendMessages("![00211!]");
+            return;
         }
         hexMsgTransceiver.sendMessages("10 02 00 00 02 41 01 10 03");
     }
@@ -35,7 +38,7 @@ public class UnderTheLineLeftController {
     public void sendDisplayOff() {
         if (isAscii){
             asciiMsgTransceiver.sendMessages("![00210!]");
-            
+            return;
         }
         hexMsgTransceiver.sendMessages("10 02 00 00 02 41 00 10 03");
 
@@ -45,21 +48,34 @@ public class UnderTheLineLeftController {
 
     public void getControllerTime() {
         if (isAscii){
-            asciiMsgTransceiver.sendMessages("![0031!]");
+            String time = asciiMsgTransceiver.sendMessages("![0031!]");
+            timeBoard.setText(time);
             return;
         }
         hexMsgTransceiver.sendMessages("10 02 00 00 01 66 10 03");
 
         //년 = splitMsg[6] 월 = splitMsg[7] 일 = splitMsg[8] 요일 = splitMsg[9] 시간 = splitMsg[10] 분 = splitMsg[11] 초 = splitMsg[12]
 
+
     }
 
     public void synchronizeTime() {
-//        ![00302409021172312!]
         if (isAscii){
             String msg = "![0030";
-            SimpleDateFormat formatter = new SimpleDateFormat("yyMMdddHHmmss");
-            msg+=formatter.format(System.currentTimeMillis());
+            SimpleDateFormat formatter = new SimpleDateFormat("yyMMddEHHmmss");
+            String time = formatter.format(System.currentTimeMillis());
+            char day = time.charAt(6);
+            char dayInt = switch (day) {
+                case '월' -> '1';
+                case '화' -> '2';
+                case '수' -> '3';
+                case '목' -> '4';
+                case '금' -> '5';
+                case '토' -> '6';
+                case '일' -> '0';
+                default -> day;
+            };
+            msg+=time.replace(day, dayInt);
             msg += "!]";
 
             asciiMsgTransceiver.sendMessages(msg);
@@ -67,8 +83,20 @@ public class UnderTheLineLeftController {
             return;
         }
         String msg = "10 02 00 00 08 47 ";
-        SimpleDateFormat formatter = new SimpleDateFormat("yy MM dd d HH mm ss ");
-        msg+=formatter.format(System.currentTimeMillis());
+        SimpleDateFormat formatter = new SimpleDateFormat("yy MM dd E HH mm ss ");
+        String time = formatter.format(System.currentTimeMillis());
+        String day = String.valueOf(time.charAt(9));
+        String dayStr = switch (day) {
+            case "월" -> "01";
+            case "화" -> "02";
+            case "수" -> "03";
+            case "목" -> "04";
+            case "금" -> "05";
+            case "토" -> "06";
+            case "일" -> "00";
+            default -> "에러";
+        };
+        msg+=time.replace(day, dayStr);
         msg += "10 03";
 
         hexMsgTransceiver.sendMessages(msg);

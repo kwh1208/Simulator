@@ -1,5 +1,5 @@
 .choice-box .context-menu {
-    -fx-background-color: black;
+    -fx-background-color: #1C1F26;
     -fx-pref-width: 81; /* 컨텍스트 메뉴 너비를 오른쪽 CSS와 동일하게 설정 */
 }
 .choice-box .menu-item:focused {
@@ -13,7 +13,7 @@
     -fx-text-fill: black;
 }
 .choice-box {
-    -fx-background-color: black;
+    -fx-background-color: #1C1F26;
     -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
 }
 .choice-box .label {
@@ -21,11 +21,9 @@
 }
 
 .button {
-    -fx-background-color: black; /* 버튼 배경색 */
+    -fx-background-color: #222222; /* 버튼 배경색 */
     -fx-text-fill: white; /* 텍스트 색상 */
     -fx-font-size: 14px; /* 폰트 크기 */
-     /* 폰트 스타일 */
-    -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
     -fx-padding: 5 10 5 10; /* 버튼 내부 여백 */
 }
 

@@ -9,8 +9,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
+import org.fxmisc.richtext.InlineCssTextArea;
 
 
 public class LogController {
@@ -21,33 +20,41 @@ public class LogController {
     public VBox logVBoX;
 
     @FXML
-    private TextFlow logArea;
-
-    @FXML
     private Button clearBtn;
+
+
+    private InlineCssTextArea logTextArea;
 
     @FXML
     private ScrollPane scrollPane;
 
     @FXML
     public void initialize(){
-        logService = LogService.getLogService();
-        logService.setInitial(logArea, scrollPane);
-
         Image image = new Image(getClass().getResourceAsStream("/dbps/dbps/images/휴지통.png"));
         ImageView imageView = new ImageView(image);
         imageView.setFitHeight(17.5);
         imageView.setPreserveRatio(true);  // 비율 유지
         imageView.setSmooth(true);  // 스무딩 활성화
 
+        logTextArea = new InlineCssTextArea();
+        logTextArea.setWrapText(true);
+        logTextArea.setEditable(false);
+        logTextArea.setStyle("-fx-background-color: #1C1F26; -fx-text-fill: white; -fx-font-size: 14px;");
+        logTextArea.setMinWidth(696);
+        logTextArea.setMinHeight(127);
+        scrollPane.setContent(logTextArea);
+
+
         clearBtn.setGraphic(imageView);
 
         logVBoX.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/log.css").toExternalForm());
-        logArea.getChildren().add(new Text("\n"));
+
+        logService = LogService.getLogService();
+        logService.setInitial(scrollPane, logTextArea);
     }
 
     public void clearLog(){
-        logService.clearLog(logArea);
+        logService.clearLog();
     }
 
     /**

@@ -10,10 +10,6 @@ import static dbps.dbps.Constants.isAscii;
 
 public class MessageSettingController {
 
-    ASCiiMsgService ascMsgService = ASCiiMsgService.getInstance();
-
-    LogService logService = LogService.getLogService();
-
     HexMsgTransceiver hexMsgTransceiver = HexMsgTransceiver.getInstance();
     
     AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
@@ -45,25 +41,6 @@ public class MessageSettingController {
     }
 
     public void sendMsgInitialize() {
-        if (isAscii){ //아스키 코드라면
-//            ![006003!]
-            String msg = "![0060";
-            msg += String.format("%02d", Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", "")));
-            msg += "!]";
-            String receiveMsg = asciiMsgTransceiver.sendMessages(msg);
-
-            
-
-        } else {
-            String msg = "10 02 00 00 02 4C ";
-            msg += Integer.toHexString(Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", ""))).toUpperCase();
-            msg += " 10 03";
-
-            hexMsgTransceiver.sendMessages(msg);
-        }
-    }
-
-    public void sendPageCnt() {
         if (isAscii){
             // ![006103!]
             String msg = "![0061";
@@ -86,6 +63,25 @@ public class MessageSettingController {
             else{
                 msg += String.format("%02d", Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", ""))-1);
             }
+            msg += " 10 03";
+
+            hexMsgTransceiver.sendMessages(msg);
+        }
+    }
+
+    public void sendPageCnt() {
+        if (isAscii){ //아스키 코드라면
+//            ![006003!]
+            String msg = "![0060";
+            msg += String.format("%02d", Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", "")));
+            msg += "!]";
+            String receiveMsg = asciiMsgTransceiver.sendMessages(msg);
+
+
+
+        } else {
+            String msg = "10 02 00 00 02 4C ";
+            msg += Integer.toHexString(Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", ""))).toUpperCase();
             msg += " 10 03";
 
             hexMsgTransceiver.sendMessages(msg);

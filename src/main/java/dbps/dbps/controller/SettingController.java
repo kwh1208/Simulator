@@ -8,8 +8,11 @@ import dbps.dbps.service.HexMsgService;
 import dbps.dbps.service.HexMsgTransceiver;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -20,7 +23,6 @@ import static dbps.dbps.Constants.isAscii;
 
 public class SettingController {
 
-    ASCiiMsgService ascMsgService = ASCiiMsgService.getInstance();
     HexMsgTransceiver hexMsgTransceiver = HexMsgTransceiver.getInstance();
     AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance(); 
     @FXML
@@ -33,26 +35,25 @@ public class SettingController {
     public void initialize(){
     }
 
-    public static Stage communicationSettingWindow;
 
+    public void communicationSettingClicked(MouseEvent mouseEvent) throws IOException {
 
-    public void communicationSettingClicked(){
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/communicationSetting.fxml"));
-            AnchorPane root = fxmlLoader.load();
-            communicationSettingWindow = new Stage();
-            communicationSettingWindow.setTitle("통신 설정");
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/communicationSetting.fxml"));
+        Parent root = fxmlLoader.load();
 
-            communicationSettingWindow.initModality(Modality.APPLICATION_MODAL);
+        Stage modalStage = new Stage();
+        modalStage.setTitle("통신 설정");
 
-            Scene scene = new Scene(root, 291, 600);
-            communicationSettingWindow.setScene(scene);
-            communicationSettingWindow.setResizable(false);
+        modalStage.initModality(Modality.APPLICATION_MODAL);
 
-            communicationSettingWindow.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.showAndWait();
     }
 
     public void sendDisplayBright() {

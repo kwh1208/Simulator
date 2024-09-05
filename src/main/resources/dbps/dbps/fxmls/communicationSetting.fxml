@@ -50,34 +50,33 @@
                      <String fx:value="Dabit 07" />
                      <String fx:value="Dabit 08" />
                      <String fx:value="Dabit 09" />
-                     <String fx:value="Dabit 010" />
-                     <String fx:value="Dabit 011" />
-                     <String fx:value="Dabit 012" />
-                     <String fx:value="Dabit 013" />
-                     <String fx:value="Dabit 014" />
-                     <String fx:value="Dabit 015" />
-                     <String fx:value="Dabit 016" />
-                     <String fx:value="Dabit 017" />
-                     <String fx:value="Dabit 018" />
-                     <String fx:value="Dabit 019" />
-                     <String fx:value="Dabit 020" />
-                     <String fx:value="Dabit 021" />
-                     <String fx:value="Dabit 022" />
-                     <String fx:value="Dabit 023" />
-                     <String fx:value="Dabit 024" />
-                     <String fx:value="Dabit 025" />
-                     <String fx:value="Dabit 026" />
-                     <String fx:value="Dabit 027" />
-                     <String fx:value="Dabit 028" />
-                     <String fx:value="Dabit 029" />
-                     <String fx:value="Dabit 030" />
-                     <String fx:value="Dabit 031" />
+                     <String fx:value="Dabit 10" />
+                     <String fx:value="Dabit 11" />
+                     <String fx:value="Dabit 12" />
+                     <String fx:value="Dabit 13" />
+                     <String fx:value="Dabit 14" />
+                     <String fx:value="Dabit 15" />
+                     <String fx:value="Dabit 16" />
+                     <String fx:value="Dabit 17" />
+                     <String fx:value="Dabit 18" />
+                     <String fx:value="Dabit 19" />
+                     <String fx:value="Dabit 20" />
+                     <String fx:value="Dabit 21" />
+                     <String fx:value="Dabit 22" />
+                     <String fx:value="Dabit 23" />
+                     <String fx:value="Dabit 24" />
+                     <String fx:value="Dabit 25" />
+                     <String fx:value="Dabit 26" />
+                     <String fx:value="Dabit 27" />
+                     <String fx:value="Dabit 28" />
+                     <String fx:value="Dabit 29" />
+                     <String fx:value="Dabit 30" />
+                     <String fx:value="Dabit 31" />
                   </FXCollections>
                </items>
             </ChoiceBox>
             <Button fx:id="findSpeedBtn" layoutX="82.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#findCommunicationSpeed" prefHeight="27.0" prefWidth="88.0" text="통신속도찾기" />
             <Button fx:id="openDeviceManagerBtn" layoutX="179.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#openDeviceManager" prefHeight="27.0" prefWidth="76.0" text="장치관리자" />
-
 
          </children>
       </Pane>
@@ -125,5 +124,8 @@
          </items>
       </ChoiceBox>
       <Button layoutX="238.0" layoutY="557.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClose" prefHeight="27.0" prefWidth="40.0" text="닫기" />
+
+      <ProgressIndicator fx:id="loadingSpinner" layoutX="120.0" layoutY="270.0" visible="false" />
+
    </children>
 </AnchorPane>

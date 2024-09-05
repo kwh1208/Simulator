@@ -5,14 +5,15 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.collections.FXCollections?>
 
-<VBox xmlns="http://javafx.com/javafx"
+<VBox fx:id="rightVbox" xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="dbps.dbps.controller.UnderTheLineRightController"
-      layoutX="284.0" layoutY="396.0">
-<Pane fx:id="rightPane" prefHeight="142.0" prefWidth="288.0" style="-fx-border-color: black;">
+      layoutX="350.0" layoutY="396.0">
+<Pane prefHeight="142.0" prefWidth="327.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
     <children>
-        <Label alignment="CENTER" layoutX="8.0" layoutY="-7.0" prefHeight="18.0" prefWidth="115.0" style="-fx-background-color: black;" text="릴레이 신호 출력" textFill="WHITE" />
-        <ChoiceBox layoutX="8.0" layoutY="15.0" prefHeight="25.0" prefWidth="81.0" value="None">
+        <Label alignment="CENTER" layoutX="88.5" layoutY="-12.0" prefHeight="25.0" prefWidth="150.0"
+               style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white;-fx-font-size: 17; -fx-font-weight: bolder" text="릴레이 신호 출력" textFill="WHITE"/>
+        <ComboBox layoutX="18.0" layoutY="20.0" prefHeight="27.0" prefWidth="109.0" value="None">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="None" />
@@ -48,9 +49,9 @@
                     <String fx:value="230" />
                 </FXCollections>
             </items>
-        </ChoiceBox>
-        <Label layoutX="94.0" layoutY="21.0" text="x 100ms" />
-        <ChoiceBox layoutX="8.0" layoutY="45.0" prefHeight="25.0" prefWidth="81.0" value="None">
+        </ComboBox>
+        <Label layoutX="143.0" layoutY="23.0" text="x 100ms" />
+        <ComboBox layoutX="18.0" layoutY="50.0" prefHeight="27.0" prefWidth="109.0" value="None">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="None" />
@@ -86,9 +87,9 @@
                     <String fx:value="230" />
                 </FXCollections>
             </items>
-        </ChoiceBox>
-        <Label layoutX="94.0" layoutY="51.0" text="x 100ms" />
-        <ChoiceBox disable="true" layoutX="8.0" layoutY="78.0" prefHeight="25.0" prefWidth="81.0" value="None">
+        </ComboBox>
+        <Label layoutX="143.0" layoutY="55.0" text="x 100ms" />
+        <ComboBox disable="true" layoutX="18.0" layoutY="80.0" prefHeight="27.0" prefWidth="109.0" value="None">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="None" />
@@ -124,9 +125,9 @@
                     <String fx:value="230" />
                 </FXCollections>
             </items>
-        </ChoiceBox>
-        <Label disable="true" layoutX="94.0" layoutY="84.0" text="x 100ms" />
-        <ChoiceBox disable="true" layoutX="8.0" layoutY="108.0" prefHeight="25.0" prefWidth="81.0" value="None">
+        </ComboBox>
+        <Label disable="true" layoutX="143.0" layoutY="86.0" text="x 100ms" />
+        <ComboBox disable="true" layoutX="18.0" layoutY="110.0" prefHeight="27.0" prefWidth="109.0" value="None">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="None" />
@@ -162,25 +163,25 @@
                     <String fx:value="230" />
                 </FXCollections>
             </items>
-        </ChoiceBox>
-        <Label disable="true" layoutX="94.0" layoutY="115.0" text="x 100ms" />
-        <Button layoutX="198.0" layoutY="107.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="82.0" text="전송" onMouseClicked="#sendRelaySignal"/>
+        </ComboBox>
+        <Label disable="true" layoutX="143.0" layoutY="118.0" text="x 100ms" />
+        <Button layoutX="255.0" layoutY="107.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendRelaySignal"/>
     </children>
 </Pane>
 
 <Pane layoutX="284.0" layoutY="539.0" prefHeight="67.0" prefWidth="288.0">
     <children>
-        <Label layoutX="12.0" layoutY="11.0" text="배경 이미지 선택" />
-        <ChoiceBox fx:id="BGImgSelection" layoutX="120.0" layoutY="38.0" prefHeight="25.0" prefWidth="100.0" value="사용안함">
+        <Label layoutX="18.0" layoutY="11.0" text="배경 이미지 선택" />
+        <ComboBox fx:id="BGImgSelection" layoutX="140.0" layoutY="6.0" prefHeight="28.0" prefWidth="113.0" value="사용안함">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
             </items>
-        </ChoiceBox>
-        <Button layoutX="231.0" layoutY="38.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="48.0" text="전송" onMouseClicked="#sendBGImgSelection"/>
+        </ComboBox>
+        <Button layoutX="255.0" layoutY="6.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendBGImgSelection"/>
 
-        <Label layoutX="25.0" layoutY="42.0" text="화면 채우기" />
-        <ChoiceBox fx:id="fillColor" layoutX="120.0" layoutY="6.0" prefHeight="25.0" prefWidth="100.0" value="검은색">
+        <Label layoutX="18.0" layoutY="42.0" text="화면 채우기" />
+        <ChoiceBox fx:id="fillColor" layoutX="140.0" layoutY="37.0" prefHeight="28.0" prefWidth="113.0" value="검은색">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="검은색" />
@@ -194,7 +195,7 @@
                 </FXCollections>
             </items>
         </ChoiceBox>
-        <Button layoutX="231.0" layoutY="6.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="48.0" text="전송" onMouseClicked="#sendFillColor"/>
+        <Button layoutX="255.0" layoutY="37.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendFillColor"/>
     </children>
 </Pane>
 </VBox>

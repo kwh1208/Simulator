@@ -2,6 +2,7 @@ package dbps.dbps.service;
 
 import dbps.dbps.service.connectManager.*;
 
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -59,13 +60,24 @@ public class HexMsgTransceiver {
     }
 
     private String msgReceive(String receiveMsg, String msg) {
-        if (receiveMsg.isEmpty()) {
+        if (receiveMsg==null) {
             return null;
         }
         String[] splitMsg = receiveMsg.split(" ");
         if (splitMsg[5].equals("94")){
             //일반 메세지
             chkErrorCode(receiveMsg, splitMsg);
+        }
+        if (splitMsg[5].equals("6A")){
+            //특수 메세지
+            for (int i = 6; i < 16; i++) {
+                if (splitMsg[i].equals("3"+i)){
+                    logService.errorLog("커맨드가 없습니다.");
+                    return null;
+                }
+            }
+            logService.updateInfoLog("연결되었습니다.");
+            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
         }
 
 
@@ -90,6 +102,7 @@ public class HexMsgTransceiver {
             logService.warningLog("화면 크기 설정에 실패했습니다.");
             logService.warningLog(splitMsg[7] + "단, " + splitMsg[8] + "열까지만 가능합니다.");
         } else {
+            logService.updateInfoLog("받은 메세지 : " + msg);
             logService.updateInfoLog("화면 크기 설정에 성공했습니다.");
         }
     }
@@ -107,6 +120,7 @@ public class HexMsgTransceiver {
             try {
                 Date date = inputFormat.parse(time.toString());
                 String formattedTime = outputFormat.format(date);
+                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
                 logService.updateInfoLog("컨트롤러 시간은 " + formattedTime + "입니다.");
             } catch (Exception e) {
                 logService.warningLog("시간 변환에 실패했습니다: " + e.getMessage());
