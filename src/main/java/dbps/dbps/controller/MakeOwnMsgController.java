@@ -363,6 +363,7 @@ public class MakeOwnMsgController {
                     return "55";
             }
         }
+        else if (value1.equals("전체 효과")) return "122";
         return "54";//3D 효과, 왼쪽
 
     }

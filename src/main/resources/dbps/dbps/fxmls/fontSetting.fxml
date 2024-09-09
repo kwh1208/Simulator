@@ -5,11 +5,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="fontSettingAnchorPane" prefHeight="700.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.FontSettingController">
+<AnchorPane fx:id="fontSettingAnchorPane" prefHeight="700.0" prefWidth="400.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.FontSettingController">
    <children>
       <Pane layoutX="15.0" layoutY="14.0" prefHeight="156.0" prefWidth="370.0" style="-fx-border-color: black;">
          <children>
-            <CheckBox fx:id="fontGroup1ChkBox" disable="true" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="94.0" selected="true" style="-fx-background-color: white;" text="폰트그룹 1"/>
+            <CheckBox fx:id="fontGroup1ChkBox" disable="true" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="112.0" selected="true" style="-fx-background-color: #333333;" text="폰트그룹 1" />
             <Label layoutX="24.0" layoutY="23.0" text="폰트" />
              <ChoiceBox fx:id="fontGroup1fontsize" disable="true" layoutX="73.0" layoutY="19.0" prefWidth="150.0" value="8x16/16x16">
                  <items>
@@ -31,8 +31,8 @@
                      </FXCollections>
                  </items>
              </ChoiceBox>
-             <TextField fx:id="fontGroup1fontPath1" layoutX="185.0" layoutY="54.0" prefWidth="150.0" text="default 경로" />
-             <Button fx:id="fontGroup1fontBtn1" layoutX="343.0" layoutY="54.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="15.0" text="Button" />
+             <TextField fx:id="fontGroup1fontPath1" layoutX="185.0" layoutY="55.0" prefWidth="150.0" text="default 경로" />
+             <Button fx:id="fontGroup1fontBtn1" layoutX="337.0" layoutY="54.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="15.0" text="Button" />
              <ChoiceBox fx:id="fontGroup1fontselected2" layoutX="24.0" layoutY="90.0" prefWidth="150.0" value="한글조합형">
                  <items>
                      <FXCollections fx:factory="observableArrayList">
@@ -45,8 +45,8 @@
                      </FXCollections>
                  </items>
              </ChoiceBox>
-             <TextField fx:id="fontGroup1fontPath2" layoutX="185.0" layoutY="90.0" prefWidth="150.0" text="default 경로" />
-             <Button fx:id="fontGroup1fontBtn2" layoutX="341.0" layoutY="90.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
+             <TextField fx:id="fontGroup1fontPath2" layoutX="185.0" layoutY="91.0" prefWidth="150.0" text="default 경로" />
+             <Button fx:id="fontGroup1fontBtn2" layoutX="337.0" layoutY="90.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
              <ChoiceBox fx:id="fontGroup1fontselected3" layoutX="24.0" layoutY="126.0" prefWidth="150.0" value="사용자폰트">
                  <items>
                      <FXCollections fx:factory="observableArrayList">
@@ -55,14 +55,14 @@
                      </FXCollections>
                  </items>
              </ChoiceBox>
-             <TextField fx:id="fontGroup1fontPath3" layoutX="185.0" layoutY="126.0" prefWidth="150.0" text="default 경로" />
-             <Button fx:id="fontGroup1fontBtn3" layoutX="339.0" layoutY="126.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
+             <TextField fx:id="fontGroup1fontPath3" layoutX="185.0" layoutY="127.0" prefWidth="150.0" text="default 경로" />
+             <Button fx:id="fontGroup1fontBtn3" layoutX="337.0" layoutY="126.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
          </children>
       </Pane>
 
       <Pane layoutX="15.0" layoutY="183.0" prefHeight="156.0" prefWidth="370.0" style="-fx-border-color: black;">
          <children>
-            <CheckBox selected="true" fx:id="fontGroup2ChkBox" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="94.0" style="-fx-background-color: white;" text="폰트그룹 2"/>
+            <CheckBox fx:id="fontGroup2ChkBox" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="112.0" selected="true" style="-fx-background-color: #333333;" text="폰트그룹 2" />
             <Label layoutX="24.0" layoutY="23.0" text="폰트" />
             <ChoiceBox fx:id="fontGroup2fontsize" layoutX="73.0" layoutY="19.0" prefWidth="150.0" value="16x16/16x16">
                <items>
@@ -84,8 +84,8 @@
                   </FXCollections>
                </items>
             </ChoiceBox>
-            <TextField fx:id="fontGroup2fontPath1" layoutX="185.0" layoutY="54.0" prefWidth="150.0" text="default 경로" />
-            <Button fx:id="fontGroup2fontBtn1" layoutX="343.0" layoutY="54.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="15.0" text="Button" />
+            <TextField fx:id="fontGroup2fontPath1" layoutX="185.0" layoutY="55.0" prefWidth="150.0" text="default 경로" />
+            <Button fx:id="fontGroup2fontBtn1" layoutX="337.0" layoutY="54.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="15.0" text="Button" />
             <ChoiceBox fx:id="fontGroup2fontselected2" layoutX="24.0" layoutY="90.0" prefWidth="150.0" value="한글조합형">
                <items>
                   <FXCollections fx:factory="observableArrayList">
@@ -98,8 +98,8 @@
                   </FXCollections>
                </items>
             </ChoiceBox>
-            <TextField fx:id="fontGroup2fontPath2" layoutX="185.0" layoutY="90.0" prefWidth="150.0" text="default 경로" />
-            <Button fx:id="fontGroup2fontBtn2" layoutX="341.0" layoutY="90.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
+            <TextField fx:id="fontGroup2fontPath2" layoutX="185.0" layoutY="91.0" prefWidth="150.0" text="default 경로" />
+            <Button fx:id="fontGroup2fontBtn2" layoutX="337.0" layoutY="90.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
             <ChoiceBox fx:id="fontGroup2fontselected3" layoutX="24.0" layoutY="126.0" prefWidth="150.0" value="사용자폰트">
                <items>
                   <FXCollections fx:factory="observableArrayList">
@@ -108,17 +108,17 @@
                   </FXCollections>
                </items>
             </ChoiceBox>
-            <TextField fx:id="fontGroup2fontPath3" layoutX="185.0" layoutY="126.0" prefWidth="150.0" text="default 경로" />
-            <Button fx:id="fontGroup2fontBtn3" layoutX="339.0" layoutY="126.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
+            <TextField fx:id="fontGroup2fontPath3" layoutX="185.0" layoutY="127.0" prefWidth="150.0" text="default 경로" />
+            <Button fx:id="fontGroup2fontBtn3" layoutX="337.0" layoutY="126.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
          </children>
       </Pane>
 
 
       <Pane layoutX="16.0" layoutY="350.0" prefHeight="156.0" prefWidth="370.0" style="-fx-border-color: black;">
          <children>
-            <CheckBox fx:id="fontGroup3ChkBox" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="94.0" style="-fx-background-color: white;" text="폰트그룹 3" />
+            <CheckBox fx:id="fontGroup3ChkBox" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="112.0" style="-fx-background-color: #333333;" text="폰트그룹 3" />
             <Label disable="true" layoutX="24.0" layoutY="23.0" text="폰트" />
-            <ChoiceBox disable="true" fx:id="fontGroup3fontsize" layoutX="73.0" layoutY="19.0" prefWidth="150.0" value="16x32/32x32">
+            <ChoiceBox fx:id="fontGroup3fontsize" disable="true" layoutX="73.0" layoutY="19.0" prefWidth="150.0" value="16x32/32x32">
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="None" />
@@ -138,8 +138,8 @@
                   </FXCollections>
                </items>
             </ChoiceBox>
-            <TextField fx:id="fontGroup3fontPath1" disable="true" layoutX="185.0" layoutY="54.0" prefWidth="150.0"/>
-            <Button fx:id="fontGroup3fontBtn1" disable="true" layoutX="343.0" layoutY="54.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="15.0" text="Button" />
+            <TextField fx:id="fontGroup3fontPath1" disable="true" layoutX="185.0" layoutY="55.0" prefWidth="150.0" />
+            <Button fx:id="fontGroup3fontBtn1" disable="true" layoutX="337.0" layoutY="54.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="15.0" text="Button" />
             <ChoiceBox fx:id="fontGroup3fontselected2" disable="true" layoutX="24.0" layoutY="90.0" prefWidth="150.0">
                <items>
                   <FXCollections fx:factory="observableArrayList">
@@ -152,9 +152,9 @@
                   </FXCollections>
                </items>
             </ChoiceBox>
-            <TextField disable="true" fx:id="fontGroup3fontPath2" layoutX="185.0" layoutY="90.0" prefWidth="150.0" />
-            <Button fx:id="fontGroup3fontBtn2" disable="true" layoutX="341.0" layoutY="90.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
-            <ChoiceBox disable="true" fx:id="fontGroup3fontselected3" layoutX="24.0" layoutY="126.0" prefWidth="150.0">
+            <TextField fx:id="fontGroup3fontPath2" disable="true" layoutX="185.0" layoutY="91.0" prefWidth="150.0" />
+            <Button fx:id="fontGroup3fontBtn2" disable="true" layoutX="337.0" layoutY="90.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
+            <ChoiceBox fx:id="fontGroup3fontselected3" disable="true" layoutX="24.0" layoutY="126.0" prefWidth="150.0">
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="사용안함" />
@@ -162,14 +162,14 @@
                   </FXCollections>
                </items>
             </ChoiceBox>
-            <TextField disable="true" fx:id="fontGroup3fontPath3" layoutX="185.0" layoutY="126.0" prefWidth="150.0"/>
-            <Button fx:id="fontGroup3fontBtn3" disable="true" layoutX="339.0" layoutY="126.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
+            <TextField fx:id="fontGroup3fontPath3" disable="true" layoutX="185.0" layoutY="127.0" prefWidth="150.0" />
+            <Button fx:id="fontGroup3fontBtn3" disable="true" layoutX="337.0" layoutY="126.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
          </children>
       </Pane>
 
       <Pane layoutX="16.0" layoutY="515.0" prefHeight="156.0" prefWidth="370.0" style="-fx-border-color: black;">
          <children>
-            <CheckBox disable="true" fx:id="fontGroup4ChkBox" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="94.0" style="-fx-background-color: white;" text="폰트그룹 4" />
+            <CheckBox fx:id="fontGroup4ChkBox" disable="true" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="112.0" style="-fx-background-color: #333333;" text="폰트그룹 4" />
             <Label disable="true" layoutX="24.0" layoutY="23.0" text="폰트" />
             <ChoiceBox disable="true" layoutX="73.0" layoutY="19.0" prefWidth="150.0" value="16x32/32x32">
                <items>
@@ -191,8 +191,8 @@
                   </FXCollections>
                </items>
             </ChoiceBox>
-            <TextField fx:id="fontGroup4fontPath1" disable="true" layoutX="185.0" layoutY="54.0" prefWidth="150.0" />
-            <Button fx:id="fontGroup4fontBtn1" disable="true" layoutX="343.0" layoutY="54.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="15.0" text="Button" />
+            <TextField fx:id="fontGroup4fontPath1" disable="true" layoutX="185.0" layoutY="55.0" prefWidth="150.0" />
+            <Button fx:id="fontGroup4fontBtn1" disable="true" layoutX="337.0" layoutY="54.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="15.0" text="Button" />
             <ChoiceBox disable="true" layoutX="24.0" layoutY="90.0" prefWidth="150.0">
                <items>
                   <FXCollections fx:factory="observableArrayList">
@@ -205,8 +205,8 @@
                   </FXCollections>
                </items>
             </ChoiceBox>
-            <TextField fx:id="fontGroup4fontPath2" disable="true" layoutX="185.0" layoutY="90.0" prefWidth="150.0" />
-            <Button fx:id="fontGroup4fontBtn2" disable="true" layoutX="341.0" layoutY="90.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
+            <TextField fx:id="fontGroup4fontPath2" disable="true" layoutX="185.0" layoutY="91.0" prefWidth="150.0" />
+            <Button fx:id="fontGroup4fontBtn2" disable="true" layoutX="337.0" layoutY="90.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
             <ChoiceBox disable="true" layoutX="24.0" layoutY="126.0" prefWidth="150.0">
                <items>
                   <FXCollections fx:factory="observableArrayList">
@@ -215,8 +215,8 @@
                   </FXCollections>
                </items>
             </ChoiceBox>
-            <TextField fx:id="fontGroup4fontPath3" disable="true" layoutX="185.0" layoutY="126.0" prefWidth="150.0" />
-            <Button fx:id="fontGroup4fontBtn3" disable="true" layoutX="339.0" layoutY="126.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
+            <TextField fx:id="fontGroup4fontPath3" disable="true" layoutX="185.0" layoutY="127.0" prefWidth="150.0" />
+            <Button fx:id="fontGroup4fontBtn3" disable="true" layoutX="337.0" layoutY="126.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" />
          </children>
       </Pane>
    </children>

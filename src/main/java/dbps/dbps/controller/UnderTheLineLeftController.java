@@ -3,18 +3,24 @@ package dbps.dbps.controller;
 
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.connectManager.SerialPortManager;
+import dbps.dbps.service.connectManager.TCPManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-import static dbps.dbps.Constants.isAscii;
+import static dbps.dbps.Constants.*;
 
 public class UnderTheLineLeftController {
 
-    HexMsgTransceiver hexMsgTransceiver = HexMsgTransceiver.getInstance();
-    AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+    HexMsgTransceiver hexMsgTransceiver;
+    AsciiMsgTransceiver asciiMsgTransceiver;
+    SerialPortManager serialPortManager;
+    TCPManager tcpManager;
 
     @FXML
     public Pane leftPane;
@@ -25,10 +31,20 @@ public class UnderTheLineLeftController {
     @FXML
     public void initialize() {
         leftPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/underTheLineLeft.css").toExternalForm());
+
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd (E) HH:mm:ss");
+        String formattedTime = now.format(formatter);
+
+        timeBoard.setText(formattedTime);
+        serialPortManager = SerialPortManager.getManager();
+        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+        hexMsgTransceiver = HexMsgTransceiver.getInstance();
+        tcpManager = TCPManager.getManager();
     }
     @FXML
     public void sendDisplayOn() {
-        if (isAscii){
+        if (IS_ASCII){
             asciiMsgTransceiver.sendMessages("![00211!]");
             return;
         }
@@ -36,7 +52,7 @@ public class UnderTheLineLeftController {
     }
     @FXML
     public void sendDisplayOff() {
-        if (isAscii){
+        if (IS_ASCII){
             asciiMsgTransceiver.sendMessages("![00210!]");
             return;
         }
@@ -47,7 +63,7 @@ public class UnderTheLineLeftController {
 
 
     public void getControllerTime() {
-        if (isAscii){
+        if (IS_ASCII){
             String time = asciiMsgTransceiver.sendMessages("![0031!]");
             timeBoard.setText(time);
             return;
@@ -60,7 +76,7 @@ public class UnderTheLineLeftController {
     }
 
     public void synchronizeTime() {
-        if (isAscii){
+        if (IS_ASCII){
             String msg = "![0030";
             SimpleDateFormat formatter = new SimpleDateFormat("yyMMddEHHmmss");
             String time = formatter.format(System.currentTimeMillis());
@@ -103,22 +119,40 @@ public class UnderTheLineLeftController {
 
     }
 
-    public void resetController() {
-        if (isAscii){
+    public void resetController() throws InterruptedException {
+        if (IS_ASCII){
             asciiMsgTransceiver.sendMessages("![0041!]");
-            
-            return;
         }
-        hexMsgTransceiver.sendMessages("10 02 00 00 02 89 00 10 03");
+        else hexMsgTransceiver.sendMessages("10 02 00 00 02 89 00 10 03");
+
+        Thread.sleep(4500);
+        if (CONNECT_TYPE.equals("serial")) {
+            serialPortManager.closePort(OPEN_PORT_NAME);
+            serialPortManager.openPort(OPEN_PORT_NAME, SERIAL_BAUDRATE);
+        }
+        if (CONNECT_TYPE.equals("clientTCP")) {
+            tcpManager.disconnect();
+            tcpManager.connect(CLIENT_TCP_IP, CLIENT_TCP_PORT);
+        }
     }
 
-    public void hardReset() {
-        if (isAscii){
+    public void hardReset() throws InterruptedException {
+        if (IS_ASCII){
             asciiMsgTransceiver.sendMessages("![0042!]");
-            
-            return;
         }
-            //비트수, 세로, 가로크기 가져와서 같이 보내줘야함.
-//            hexMsgTransceiver.sendMessages("10 02 00 00 04 4A 03 04 06 10 03");
+        //비트수, 세로, 가로크기 가져와서 같이 보내줘야함.
+        else {
+            String msg = "10 02 00 00 04 4A 0"+BITS_PER_PIXEL+" 0"+SIZE_ROW+" 0"+SIZE_COLUMN+ " 10 03";
+            hexMsgTransceiver.sendMessages(msg);
+        }
+        Thread.sleep(4500);
+        if (CONNECT_TYPE.equals("serial")) {
+            serialPortManager.closePort(OPEN_PORT_NAME);
+            serialPortManager.openPort(OPEN_PORT_NAME, SERIAL_BAUDRATE);
+        }
+        if (CONNECT_TYPE.equals("clientTCP")) {
+            tcpManager.disconnect();
+            tcpManager.connect(CLIENT_TCP_IP, CLIENT_TCP_PORT);
+        }
     }
 }

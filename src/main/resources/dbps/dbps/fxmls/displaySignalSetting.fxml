@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="479.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplaySignalSettingController">
+<AnchorPane fx:id="displaySignalAP" prefHeight="479.0" prefWidth="550.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplaySignalSettingController">
    <children>
        <Label layoutX="29.0" layoutY="10.0" text="표출신호" />
        <Label layoutX="272.0" layoutY="11.0" text="관련정보" />
@@ -82,20 +82,20 @@
                </FXCollections>
            </items>
        </ChoiceBox>
-       <Button layoutX="452.0" layoutY="303.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="64.0" text="전송" onMouseClicked="#signalTransfer"/>
-       <Button layoutX="452.0" layoutY="339.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="64.0" text="자동전송" onMouseClicked="#autoTransfer"/>
-       <Spinner fx:id="spinnerForSec" layoutX="376.0" layoutY="339.0" prefHeight="28.0" prefWidth="64.0" />
+       <Button layoutX="452.0" layoutY="303.0" mnemonicParsing="false" onMouseClicked="#signalTransfer" prefHeight="28.0" prefWidth="64.0" text="전송" />
+       <Button layoutX="430.0" layoutY="339.0" mnemonicParsing="false" onMouseClicked="#autoTransfer" prefHeight="28.0" prefWidth="86.0" text="자동전송" />
+       <Spinner fx:id="spinnerForSec" layoutX="356.0" layoutY="339.0" prefHeight="28.0" prefWidth="64.0" />
        <Pane layoutX="14.0" layoutY="383.0" prefHeight="77.0" prefWidth="304.0" style="-fx-border-color: black;">
            <children>
-               <Label layoutX="14.0" layoutY="-6.0" prefHeight="13.0" prefWidth="94.0" style="-fx-background-color: white;" text="잔상 지연 설정" />
+               <Label layoutX="14.0" layoutY="-6.0" prefHeight="13.0" prefWidth="107.0" style="-fx-background-color: #333333;" text="잔상 지연 설정" />
                <Label layoutX="20.0" layoutY="18.0" text="Before" />
                <Label layoutX="81.0" layoutY="18.0" text="After" />
-               <Spinner fx:id="spinnerForBefore" layoutX="14.0" layoutY="39.0" prefHeight="21.0" prefWidth="48.0" />
-               <Spinner fx:id="spinnerForAfter" layoutX="72.0" layoutY="39.0" prefHeight="21.0" prefWidth="48.0" />
-               <Button fx:id="settingBtn" layoutX="159.0" layoutY="32.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="64.0" text="설정" onMouseClicked="#setting"/>
-               <Button fx:id="readBtn" layoutX="230.0" layoutY="32.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="64.0" text="읽기" onMouseClicked="#read"/>
+               <Spinner fx:id="spinnerForBefore" layoutX="14.0" layoutY="39.0" prefHeight="21.0" prefWidth="54.0" />
+               <Spinner fx:id="spinnerForAfter" layoutX="80.0" layoutY="39.0" prefHeight="21.0" prefWidth="54.0" />
+               <Button fx:id="settingBtn" layoutX="159.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#setting" prefHeight="28.0" prefWidth="64.0" text="설정" />
+               <Button fx:id="readBtn" layoutX="230.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="28.0" prefWidth="64.0" text="읽기" />
            </children>
        </Pane>
-       <Button layoutX="461.0" layoutY="419.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="64.0" text="닫기" onMouseClicked="#closeWindow"/>
+       <Button layoutX="461.0" layoutY="419.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="28.0" prefWidth="64.0" text="닫기" />
    </children>
 </AnchorPane>

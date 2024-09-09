@@ -77,7 +77,6 @@ public class ASCiiMsgController {
             // 현재 입력된 키 시퀀스가 정해진 시퀀스와 일치하는지 확인
             if (checkSequence()) {
                 //숨겨진 기능!
-                System.out.println("코나미 코드 입력 성공!");
                 inputQueue.clear(); // 일치 시 입력 기록 초기화
             }
         });

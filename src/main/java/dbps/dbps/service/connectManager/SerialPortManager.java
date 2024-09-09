@@ -50,7 +50,7 @@ public class SerialPortManager {
 
         SerialPort port = SerialPort.getCommPort(portName);
         port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, responseLatency*1000, 0);
+        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY *1000, 0);
         port.openPort();
 
         return port;
@@ -88,11 +88,11 @@ public class SerialPortManager {
     }
 
     public String sendMsgAndGetMsg(String message){
-        String portName = openPortName;
+        String portName = OPEN_PORT_NAME;
         SerialPort port = serialPortMap.get(portName);
 
         if (port == null || !isPortOpen(portName)) {
-            openPort(portName, serialBaudRate);
+            openPort(portName, SERIAL_BAUDRATE);
             port = serialPortMap.get(portName);
         }
         try {
@@ -106,7 +106,7 @@ public class SerialPortManager {
             Thread.sleep(300);
             byte[] buffer = new byte[1024];
             int totalBytesRead = 0;
-            long timeout = responseLatency * 1000;
+            long timeout = RESPONSE_LATENCY * 1000;
             long startTime = System.currentTimeMillis();
 
             while (System.currentTimeMillis() - startTime < timeout) {
@@ -141,11 +141,11 @@ public class SerialPortManager {
 
 
     public String sendMsgAndGetMsgHex(String msg) {
-        String portName = openPortName;
+        String portName = OPEN_PORT_NAME;
         SerialPort port = serialPortMap.get(portName);
 
         if (port == null || !isPortOpen(portName)) {
-            openPort(portName, serialBaudRate);
+            openPort(portName, SERIAL_BAUDRATE);
             port = serialPortMap.get(portName);
         }
 
@@ -161,7 +161,7 @@ public class SerialPortManager {
             int totalBytesRead = 0;
 
             // 데이터 수신을 기다리는 최대 시간 (예: 1000 밀리초)
-            long timeout = responseLatency * 1000;
+            long timeout = RESPONSE_LATENCY * 1000;
             long startTime = System.currentTimeMillis();
 
             // 반복적으로 읽어 남아있는 데이터를 모두 수신
@@ -200,11 +200,11 @@ public class SerialPortManager {
 
         for (int baudRate : baudRates) {
             try {
-                SerialPort port = openPortNoLog(openPortName, baudRate);
+                SerialPort port = openPortNoLog(OPEN_PORT_NAME, baudRate);
                 OutputStream outputStream = port.getOutputStream();
                 InputStream inputStream = port.getInputStream();
                 if (!port.isOpen()){
-                    System.out.println("포트 열기 실패");
+                    logService.warningLog("포트를 열 수 없습니다.");
                 }
 
                 String msg = "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
@@ -214,13 +214,12 @@ public class SerialPortManager {
                 byte[] buffer = new byte[1024];
                 int numRead = inputStream.read(buffer, 0, buffer.length);
                 String response = bytesToHex(buffer, numRead);
-                System.out.println(response);
                 if (!response.isBlank()) {
                     logService.updateInfoLog("통신 속도 찾기 성공");
-                    logService.updateInfoLog(openPortName+"의 적정 통신 속도는 "+ baudRate + "입니다.");
+                    logService.updateInfoLog(OPEN_PORT_NAME +"의 적정 통신 속도는 "+ baudRate + "입니다.");
                     return baudRate;
                 }
-                closePortNoLog(openPortName);
+                closePortNoLog(OPEN_PORT_NAME);
             } catch (IOException | InterruptedException e) {
             }
         }

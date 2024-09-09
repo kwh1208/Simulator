@@ -11,13 +11,21 @@ public class Constants {
             (byte) 0x39, (byte) 0x10, (byte) 0x03
     };
 
-    public static int responseLatency = 3;
+    public static int RESPONSE_LATENCY = 3;
 
-    public static boolean isAscii = false;
+    public static boolean IS_ASCII = false;
 
-    public static int serialBaudRate = 115200;
+    public static int SERIAL_BAUDRATE = 115200;
 
-    public static String openPortName = null;
+    public static String OPEN_PORT_NAME = null;
+
+    public static String CLIENT_TCP_IP = "";
+
+    public static int CLIENT_TCP_PORT = 0;
+
+    public static int SIZE_ROW = 0;
+    public static int SIZE_COLUMN = 0;
+    public static int BITS_PER_PIXEL = 0;
 
 
 

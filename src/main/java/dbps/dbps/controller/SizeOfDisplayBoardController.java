@@ -9,7 +9,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.Pane;
 
-import static dbps.dbps.Constants.isAscii;
+import static dbps.dbps.Constants.*;
 
 public class SizeOfDisplayBoardController {
 
@@ -57,16 +57,25 @@ public class SizeOfDisplayBoardController {
                 howToArray.setDisable(true);
             }
         });
+
+        setInitialValues();
+    }
+
+    private void setInitialValues() {
+        SIZE_ROW = spinnerForRow.getValue();
+        SIZE_COLUMN = spinnerForColumn.getValue();
+        BITS_PER_PIXEL = Integer.parseInt(String.valueOf(colorNum.getValue()).substring(0,1));
     }
 
 
     public void sendDisplaySize() {
-        if (isAscii){
+        if (IS_ASCII){
             displaySizeASC();
         }
         else {
             displaySizeHEX();
         }
+        setInitialValues();
     }
 
     private void displaySizeASC() {

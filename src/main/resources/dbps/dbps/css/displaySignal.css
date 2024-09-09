@@ -1,0 +1,88 @@
+.choice-box .context-menu {
+    -fx-background-color: #1C1F26;
+    -fx-pref-width: 150; /* 컨텍스트 메뉴 너비를 오른쪽 CSS와 동일하게 설정 */
+}
+.choice-box .menu-item:focused {
+    -fx-background-color: orange;
+}
+.choice-box .menu-item > .label {
+    -fx-text-fill: white;
+    -fx-padding: 0 0 0 20px;
+}
+.choice-box .menu-item:focused > .label {
+    -fx-text-fill: black;
+}
+.choice-box {
+    -fx-background-color: #1C1F26;
+    -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
+}
+.choice-box .label {
+    -fx-text-fill: white;
+}
+.label{
+    -fx-text-fill: #E0E0E0;
+    -fx-font-size: 15px;
+}
+.spinner .increment-arrow-button, .spinner .decrement-arrow-button {
+    -fx-background-color: #1C1F26; /* 배경색 설정 */
+    -fx-text-fill: white; /* 텍스트 색상 설정 */
+    -fx-border-color: #5A5A5A; /* 테두리 색상 설정 */
+}
+
+.spinner .increment-arrow-button:hover, .spinner .decrement-arrow-button:hover {
+    -fx-background-color: #2A2E35; /* 마우스 오버 시 배경색 */
+}
+
+.spinner .increment-arrow-button:pressed, .spinner .decrement-arrow-button:pressed {
+    -fx-background-color: orange; /* 클릭 시 배경색 */
+}
+
+.spinner .text-field {
+    -fx-background-color: #1C1F26; /* 텍스트 필드 배경색 */
+    -fx-text-fill: white; /* 텍스트 색상 */
+    -fx-border-color: #5A5A5A; /* 테두리 색상 */
+}
+
+.button {
+    -fx-font-size : 15px; /* 폰트 크기 */
+    -fx-background-color: #222222; /* 버튼 배경색 */
+    -fx-text-fill: white; /* 텍스트 색상 */
+    -fx-background-radius: 10; /* 버튼 모서리 둥글기 제거 */
+    -fx-padding: 5 10 5 10; /* 버튼 내부 여백 */
+}
+
+.button:hover {
+    -fx-background-color: orange; /* 마우스 올렸을 때 배경색 */
+    -fx-text-fill: black; /* 마우스 올렸을 때 텍스트 색상 */
+}
+
+.button:pressed {
+    -fx-background-color: darkorange; /* 버튼 눌렀을 때 배경색 */
+}
+.text-area{
+    -fx-background-color: black;
+    -fx-control-inner-background: black;
+    -fx-text-fill: white;
+}
+.text-area:focused{
+    -fx-border-color: transparent;
+}
+
+.list-view {
+    -fx-background-color: #1C1F26; /* 전체 ListView 배경색 */
+}
+
+.list-cell:odd {
+    -fx-background-color: #2B2B2B; /* 홀수 셀의 배경색 */
+    -fx-text-fill: white; /* 홀수 셀의 텍스트 색상 */
+}
+
+.list-cell:even {
+    -fx-background-color: #3C3C3C; /* 짝수 셀의 배경색 */
+    -fx-text-fill: white; /* 짝수 셀의 텍스트 색상 */
+}
+
+.list-cell:filled:selected, .list-cell:filled:selected:focused {
+    -fx-background-color: #444444; /* 선택된 항목의 배경색 */
+    -fx-text-fill: white; /* 선택된 항목의 텍스트 색상 */
+}

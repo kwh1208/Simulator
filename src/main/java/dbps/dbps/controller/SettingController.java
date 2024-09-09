@@ -2,9 +2,7 @@ package dbps.dbps.controller;
 
 
 import dbps.dbps.Simulator;
-import dbps.dbps.service.ASCiiMsgService;
 import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.HexMsgService;
 import dbps.dbps.service.HexMsgTransceiver;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,13 +11,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
-import static dbps.dbps.Constants.isAscii;
+import static dbps.dbps.Constants.IS_ASCII;
 
 public class SettingController {
 
@@ -58,7 +55,7 @@ public class SettingController {
 
     public void sendDisplayBright() {
 //        ![005099!]
-        if (isAscii){
+        if (IS_ASCII){
             String msg = "![0050";
             switch (displayBright.getValue()){
                 case "100%(기본)": msg += "99"; break;
@@ -86,7 +83,7 @@ public class SettingController {
     }
 
     public void sendPageMsgType() {
-        if (isAscii){
+        if (IS_ASCII){
             //![0062N!] : 동시, ![0062Y!] : 개별
             String msg = "![0062";
             if (pageMsgType.getValue().contains("동시")){

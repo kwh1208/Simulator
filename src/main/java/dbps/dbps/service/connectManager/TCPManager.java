@@ -2,19 +2,22 @@ package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.LogService;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.Charset;
 
-import static dbps.dbps.Constants.CONNECT_START;
-import static dbps.dbps.Constants.hexStringToByteArray;
+import static dbps.dbps.Constants.*;
 
 public class TCPManager {
 
     @Getter
+    @Setter
     private String IP;
+
     @Getter
+    @Setter
     private int PORT;
 
     Socket socket = null;
@@ -40,18 +43,43 @@ public class TCPManager {
         }
 
         try {
-            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            InputStream input = socket.getInputStream();
             OutputStream output = socket.getOutputStream();
+
+
 
             output.write(msg.getBytes(Charset.forName("EUC-KR")));
             output.flush();
 
-            return input.readLine();
-        } catch (IOException e){
-            logService.errorLog(msg+"전송에 실패했습니다.");
-        }
+            long startTime = System.currentTimeMillis();
+            byte[] buffer = new byte[1024];
+            int totalBytesRead = 0;
 
-        return "에러코드";
+            while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000) {
+                if (input.available() > 0) {
+                int bytesRead = input.read(buffer);
+                if (bytesRead > 0) {
+                    totalBytesRead += bytesRead;
+
+                    startTime = System.currentTimeMillis();
+
+                    if (dataReceivedIsComplete(buffer, totalBytesRead)) {
+                        break;
+                    }
+                }} else {
+                    Thread.sleep(50);
+                }
+            }
+            return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+        } catch (IOException | InterruptedException e){
+            e.getMessage();
+            logService.errorLog(msg+"전송에 실패했습니다.");
+            return "에러발생";
+        }
+    }
+
+    private boolean dataReceivedIsComplete(byte[] buffer, int length) {
+        return length > 0 && buffer[length - 1]==(byte) ']' && buffer[length - 2]==(byte) '!';
     }
 
 
@@ -64,15 +92,26 @@ public class TCPManager {
         try {
             socket = new Socket(IP, PORT);
 
-            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            socket.setSoTimeout(RESPONSE_LATENCY *1000);
+
+            InputStream input = socket.getInputStream();
             OutputStream output = socket.getOutputStream();
 
             output.write(CONNECT_START);
             output.flush();
 
-            String response = input.readLine();
+            byte[] buffer = new byte[1024];
+            int bytesRead = input.read(buffer);
 
-            if (response.equals("연결성공코드")){
+            if (bytesRead == -1) {
+                logService.errorLog("서버로부터 데이터를 읽지 못했습니다.");
+                return;
+            }
+
+            // 받은 데이터 문자열로 변환
+            String response = bytesToHex(buffer, bytesRead);
+
+            if (response.equals("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03 ")){
                 logService.updateInfoLog("TCP 서버에 연결되었습니다. IP : " + IP + ", PORT: " + PORT);
             } else {
                 logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
@@ -80,9 +119,8 @@ public class TCPManager {
 
 
         }catch (IOException e){
-            logService.errorLog("UDP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
+            logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
         }
-
     }
 
 
@@ -104,18 +142,36 @@ public class TCPManager {
         }
 
         try {
-            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            InputStream input = socket.getInputStream();
             OutputStream output = socket.getOutputStream();
 
             output.write(hexStringToByteArray(msg));
             output.flush();
 
-            return input.readLine();
-        } catch (IOException e){
-            logService.errorLog(msg+"전송에 실패했습니다.");
-        }
+            long startTime = System.currentTimeMillis();
+            byte[] buffer = new byte[1024];
+            int totalBytesRead = 0;
 
-        return null;
+            while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000) {
+                if (input.available() > 0) {
+                    int bytesRead = input.read(buffer);
+                    if (bytesRead > 0) {
+                        totalBytesRead += bytesRead;
+
+                        startTime = System.currentTimeMillis();
+
+                        if (dataReceivedIsComplete(buffer, totalBytesRead)) {
+                            break;
+                        }
+                    }} else {
+                    Thread.sleep(50);
+                }
+            }
+            return bytesToHex(buffer, totalBytesRead);
+        } catch (IOException | InterruptedException e){
+            logService.errorLog(msg+"전송에 실패했습니다.");
+            return null;
+        }
     }
 }
 

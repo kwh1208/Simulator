@@ -5,12 +5,17 @@ import dbps.dbps.service.connectManager.SerialPortManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import static dbps.dbps.Constants.responseLatency;
+import static dbps.dbps.Constants.RESPONSE_LATENCY;
 import static dbps.dbps.service.displaySignal.SignalMap;
 
 public class DisplaySignalSettingController {
+
+    @FXML
+    private AnchorPane displaySignalAP;
+
     @FXML
     private ListView<String> signalList;
 
@@ -63,6 +68,8 @@ public class DisplaySignalSettingController {
                 scanOrder.setDisable(false);
             }
         });
+
+        displaySignalAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/displaySignal.css").toExternalForm());
     }
 
     //현재창 닫기
@@ -138,8 +145,8 @@ public class DisplaySignalSettingController {
     @FXML
     public void autoTransfer() {
         Integer time = spinnerForSec.getValue();
-        int originalTime = responseLatency;
-        responseLatency = time;
+        int originalTime = RESPONSE_LATENCY;
+        RESPONSE_LATENCY = time;
 
 
         signalList.getItems().forEach(signal -> {
@@ -154,7 +161,7 @@ public class DisplaySignalSettingController {
             }
         });
 
-        responseLatency = originalTime;
+        RESPONSE_LATENCY = originalTime;
     }
 
     @FXML

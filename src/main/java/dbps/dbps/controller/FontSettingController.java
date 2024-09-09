@@ -66,6 +66,8 @@ public class FontSettingController {
                 fontGroup4ChkBox.setDisable(false);
             }
         });
+
+        fontSettingAnchorPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/fontSetting.css").toExternalForm());
     }
 
 

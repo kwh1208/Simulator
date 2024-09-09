@@ -40,8 +40,7 @@ public class AsciiMsgTransceiver {
         String receivedMsg = "";
 
         switch (CONNECT_TYPE) {
-            case "none" ->
-            {
+            case "none" -> {
                 logService.errorLog("연결된 장치가 없습니다.");
                 return null;
             }
@@ -49,8 +48,10 @@ public class AsciiMsgTransceiver {
                     receivedMsg = serialPortManager.sendMsgAndGetMsg(msg);
             case "udp" -> //udp로 메세지 전송
                     receivedMsg = udpManager.sendASCMsg(msg);
-            case "tcp" -> //tcp로 메세지 전송
-                    receivedMsg = tcpManager.sendASCMsg(msg);
+            case "clientTCP" -> {
+            //tcp로 메세지 전송
+                receivedMsg = tcpManager.sendASCMsg(msg);
+            }
             case "rs485" ->  //rs485로 메세지 전송
                     receivedMsg = rs485Manager.sendMsg(msg);
             case "WiFi" -> //WiFi로 메세지 전송

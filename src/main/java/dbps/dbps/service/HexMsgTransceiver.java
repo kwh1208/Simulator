@@ -44,11 +44,11 @@ public class HexMsgTransceiver {
 
         switch (CONNECT_TYPE) {
             case "serial", "bluetooth" -> //시리얼 및 블루투스
-                    receivedMsg = serialPortManager.sendMsgAndGetMsgHex(msg);
+            receivedMsg = serialPortManager.sendMsgAndGetMsgHex(msg);
             case "udp" -> //udp로 메세지 전송
                     receivedMsg = udpManager.sendMsgAndGetMsgHex(msg);
-            case "tcp" -> //tcp로 메세지 전송
-                    receivedMsg = tcpManager.sendMsgAndGetMsgHex(msg);
+            case "clientTCP" -> //tcp로 메세지 전송
+                receivedMsg = tcpManager.sendMsgAndGetMsgHex(msg);
             case "rs485" ->  //rs485로 메세지 전송
                     receivedMsg = rs485Manager.sendMsgAndGetMsgHex(msg);
             case "WiFi" -> //WiFi로 메세지 전송
@@ -65,7 +65,6 @@ public class HexMsgTransceiver {
         }
         String[] splitMsg = receiveMsg.split(" ");
         if (splitMsg[5].equals("94")){
-            //일반 메세지
             chkErrorCode(receiveMsg, splitMsg);
         }
         if (splitMsg[5].equals("6A")){
@@ -133,6 +132,7 @@ public class HexMsgTransceiver {
     private void handleDefaultCommands(String command, String status, String receiveMsg, String[] splitMsg) {
         // 단순 상태 코드 확인 및 로그 출력
         if (status.equals("00")) {
+            logService.updateInfoLog("받은 메세지 : " + receiveMsg); // 받은 메세지 출력
             logService.updateInfoLog(getSuccessMessage(command));
         } else {
             chkErrorCode(receiveMsg, splitMsg);
@@ -149,14 +149,12 @@ public class HexMsgTransceiver {
             case "44" -> "화면 밝기 조절에 성공했습니다.";
             case "47" -> "시간 동기화에 성공했습니다.";
             case "42" -> "화면 단일색으로 채우기에 성공했습니다.";
-            default -> "작업에 성공했습니다.";
+            default -> null;
         };
     }
 
     private void chkErrorCode(String receiveMsg, String[] splitMsg) {
         switch (splitMsg[6]){
-            case "00" ->
-                    logService.updateInfoLog("받은 메세지 : " + receiveMsg);
             case "10" ->
                     logService.errorLog("커맨드가 없습니다. " + receiveMsg);
             case "20" ->

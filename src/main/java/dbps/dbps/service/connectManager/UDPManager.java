@@ -89,7 +89,7 @@ public class UDPManager {
         try {
             InetAddress serverAddr = InetAddress.getByName(IP);
             DatagramPacket sendPacket = new DatagramPacket(CONNECT_START, CONNECT_START.length, serverAddr, PORT);
-            socket.setSoTimeout(responseLatency);
+            socket.setSoTimeout(RESPONSE_LATENCY);
             socket.send(sendPacket);
 
             byte[] receiveBuffer = new byte[1024];

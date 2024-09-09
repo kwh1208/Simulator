@@ -6,7 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.Pane;
 
-import static dbps.dbps.Constants.isAscii;
+import static dbps.dbps.Constants.IS_ASCII;
 
 public class MessageSettingController {
 
@@ -41,7 +41,7 @@ public class MessageSettingController {
     }
 
     public void sendMsgInitialize() {
-        if (isAscii){
+        if (IS_ASCII){
             // ![006103!]
             String msg = "![0061";
             if (msgInitialize.getValue().equals("전체")){
@@ -70,14 +70,12 @@ public class MessageSettingController {
     }
 
     public void sendPageCnt() {
-        if (isAscii){ //아스키 코드라면
+        if (IS_ASCII){ //아스키 코드라면
 //            ![006003!]
             String msg = "![0060";
             msg += String.format("%02d", Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", "")));
             msg += "!]";
-            String receiveMsg = asciiMsgTransceiver.sendMessages(msg);
-
-
+            asciiMsgTransceiver.sendMessages(msg);
 
         } else {
             String msg = "10 02 00 00 02 4C ";
@@ -86,5 +84,7 @@ public class MessageSettingController {
 
             hexMsgTransceiver.sendMessages(msg);
         }
+
+        //헥사프로토콜 , 메세지만들기에 페이지메세지 갯수 줄이기
     }
 }
