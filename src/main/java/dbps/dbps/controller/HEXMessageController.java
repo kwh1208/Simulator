@@ -136,7 +136,7 @@ public class HEXMessageController {
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
     }
 
-    public void send(MouseEvent mouseEvent) {
+    public void send() {
         String msg = makeHexMsg();
 
         hexMsgTransceiver.sendMessages(msg);

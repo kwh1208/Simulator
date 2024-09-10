@@ -23,6 +23,10 @@ public class Constants {
 
     public static int CLIENT_TCP_PORT = 0;
 
+    public static String UDP_IP = "";
+
+    public static int UDP_PORT = 0;
+
     public static int SIZE_ROW = 0;
     public static int SIZE_COLUMN = 0;
     public static int BITS_PER_PIXEL = 0;

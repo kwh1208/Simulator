@@ -46,7 +46,7 @@ public class AsciiMsgTransceiver {
             }
             case "serial", "bluetooth" -> //시리얼 및 블루투스
                     receivedMsg = serialPortManager.sendMsgAndGetMsg(msg);
-            case "udp" -> //udp로 메세지 전송
+            case "UDP" -> //udp로 메세지 전송
                     receivedMsg = udpManager.sendASCMsg(msg);
             case "clientTCP" -> {
             //tcp로 메세지 전송

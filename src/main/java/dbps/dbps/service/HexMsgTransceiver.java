@@ -45,7 +45,7 @@ public class HexMsgTransceiver {
         switch (CONNECT_TYPE) {
             case "serial", "bluetooth" -> //시리얼 및 블루투스
             receivedMsg = serialPortManager.sendMsgAndGetMsgHex(msg);
-            case "udp" -> //udp로 메세지 전송
+            case "UDP" -> //udp로 메세지 전송
                     receivedMsg = udpManager.sendMsgAndGetMsgHex(msg);
             case "clientTCP" -> //tcp로 메세지 전송
                 receivedMsg = tcpManager.sendMsgAndGetMsgHex(msg);

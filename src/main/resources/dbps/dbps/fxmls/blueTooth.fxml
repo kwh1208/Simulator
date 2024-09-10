@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="300.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.blueToothController">
+   <children>
+      <Pane layoutX="22.0" layoutY="19.0" prefHeight="278.0" prefWidth="518.0">
+         <children>
+            <Label layoutX="62.0" layoutY="79.0" text="Label" />
+            <TextField fx:id="ble_id" layoutX="173.0" layoutY="75.0" />
+            <Label layoutX="62.0" layoutY="131.0" text="Label" />
+            <TextField fx:id="ble_password" layoutX="173.0" layoutY="134.0" />
+            <Button layoutX="50.0" layoutY="223.0" mnemonicParsing="false" text="Search" onMouseClicked="#search"/>
+            <Button layoutX="140.0" layoutY="223.0" mnemonicParsing="false" text="Set" onMouseClicked="#set"/>
+            <Button layoutX="246.0" layoutY="223.0" mnemonicParsing="false" text="BeginBLE" onMouseClicked="#begin"/>
+            <Button layoutX="343.0" layoutY="223.0" mnemonicParsing="false" text="EndBLE" onMouseClicked="#end"/>
+         </children>
+      </Pane>
+      <Button layoutX="479.0" layoutY="329.0" mnemonicParsing="false" text="닫기" />
+   </children>
+</AnchorPane>

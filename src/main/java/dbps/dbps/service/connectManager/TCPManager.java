@@ -46,8 +46,6 @@ public class TCPManager {
             InputStream input = socket.getInputStream();
             OutputStream output = socket.getOutputStream();
 
-
-
             output.write(msg.getBytes(Charset.forName("EUC-KR")));
             output.flush();
 

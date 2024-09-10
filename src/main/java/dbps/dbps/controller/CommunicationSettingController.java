@@ -7,13 +7,18 @@ import dbps.dbps.Simulator;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.TCPManager;
+import dbps.dbps.service.connectManager.UDPManager;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
@@ -28,10 +33,12 @@ import static dbps.dbps.Constants.*;
 public class CommunicationSettingController {
 
 
+    public Button shutConnect;
     SerialPortManager serialPortManager;
     TCPManager tcpManager;
 
     HexMsgTransceiver hexMsgTransceiver;
+    UDPManager udpManager;
 
     @FXML
     private AnchorPane communicationSettingAP;
@@ -115,6 +122,7 @@ public class CommunicationSettingController {
         serialPortManager = SerialPortManager.getManager();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         tcpManager = TCPManager.getManager();
+        udpManager = UDPManager.getUDPManager();
 
 
         //delayTime 변경하면 delayTime 값 변경
@@ -134,24 +142,28 @@ public class CommunicationSettingController {
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(false);
                 connect.setText("포트열기");
+                shutConnect.setText("포트닫기");
             } else if (selectedRadioButton.equals(clientTCPRadioBtn)) {
                 serialRadioToggle(false);
                 clientTCPRadioToggle(true);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(false);
                 connect.setText("접속하기");
+                shutConnect.setText("접속끊기");
             } else if (selectedRadioButton.equals(serverTCPRadioBtn)) {
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(true);
                 UDPRadioToggle(false);
                 connect.setText("접속하기");
+                shutConnect.setText("접속끊기");
             } else  {
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(true);
                 connect.setText("접속하기");
+                shutConnect.setText("접속끊기");
             }
 
         });
@@ -232,6 +244,7 @@ public class CommunicationSettingController {
         Platform.runLater(() -> loadingSpinner.setVisible(false));
     }
 
+    //포트열기, 접속하기
     @FXML
     public void openSerialPort(){
         if (communicationGroup.getSelectedToggle().equals(serialRadioBtn))
@@ -241,11 +254,7 @@ public class CommunicationSettingController {
         else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn))
             connectServerTCP();
         else
-            openUDP();
-    }
-
-    private void openUDP() {
-
+            connectUDP();
     }
 
     private void connectServerTCP() {
@@ -261,6 +270,17 @@ public class CommunicationSettingController {
 
         CLIENT_TCP_IP = IPAddress;
         CLIENT_TCP_PORT = port;
+    }
+
+    private void connectUDP(){
+        String IPAddress = UDPIPAddress.getText();
+        int port = Integer.parseInt(UDPIPPort.getText());
+
+        udpManager.setIP(IPAddress);
+        udpManager.setPORT(port);
+
+        UDP_IP = IPAddress;
+        UDP_PORT = port;
     }
 
     @FXML
@@ -286,7 +306,23 @@ public class CommunicationSettingController {
     }
 
     //블루투스 열기
-    public void openBluetooth() {
+    public void openBluetooth(MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/blueTooth.fxml"));
+        Parent root = fxmlLoader.load();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle("블루투스 설정");
+
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.showAndWait();
     }
 
     //컨트롤러 연결하고 확인신호 보내기
@@ -304,6 +340,15 @@ public class CommunicationSettingController {
             CONNECT_TYPE = "clientTCP";
             connectClientTCP();
             tcpManager.connect(tcpManager.getIP(), tcpManager.getPORT());
+        } else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)) {
+//            CONNECT_TYPE = "serverTCP";
+//            connectServerTCP();
+//            tcpManager.connect(tcpManager.getIP(), tcpManager.getPORT());
+            //
+        } else {
+            CONNECT_TYPE = "UDP";
+            connectUDP();
+            udpManager.connect(udpManager.getIP(), udpManager.getPORT());
         }
     }
 
