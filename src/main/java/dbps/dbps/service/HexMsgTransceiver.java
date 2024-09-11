@@ -17,7 +17,6 @@ public class HexMsgTransceiver {
     private final LogService logService;
     private final UDPManager udpManager;
     private final TCPManager tcpManager;
-    private final RS485Manager rs485Manager;
     private final WiFiManager wiFiManager;
 
     private HexMsgTransceiver() {
@@ -25,7 +24,6 @@ public class HexMsgTransceiver {
         logService = LogService.getLogService();
         udpManager = UDPManager.getUDPManager();
         tcpManager = TCPManager.getManager();
-        rs485Manager = RS485Manager.getInstance();
         wiFiManager = WiFiManager.getInstance();
     }
 
@@ -43,14 +41,12 @@ public class HexMsgTransceiver {
         logService.updateInfoLog("전송 메세지: " + msg);
 
         switch (CONNECT_TYPE) {
-            case "serial", "bluetooth" -> //시리얼 및 블루투스
+            case "serial", "bluetooth", "rs485" -> //시리얼 및 블루투스
             receivedMsg = serialPortManager.sendMsgAndGetMsgHex(msg);
             case "UDP" -> //udp로 메세지 전송
                     receivedMsg = udpManager.sendMsgAndGetMsgHex(msg);
             case "clientTCP" -> //tcp로 메세지 전송
                 receivedMsg = tcpManager.sendMsgAndGetMsgHex(msg);
-            case "rs485" ->  //rs485로 메세지 전송
-                    receivedMsg = rs485Manager.sendMsgAndGetMsgHex(msg);
             case "WiFi" -> //WiFi로 메세지 전송
                     receivedMsg = wiFiManager.sendMsgAndGetMsgHex(msg);
         }
@@ -133,7 +129,6 @@ public class HexMsgTransceiver {
         // 단순 상태 코드 확인 및 로그 출력
         if (status.equals("00")) {
             logService.updateInfoLog("받은 메세지 : " + receiveMsg); // 받은 메세지 출력
-            logService.updateInfoLog(getSuccessMessage(command));
         } else {
             chkErrorCode(receiveMsg, splitMsg);
         }

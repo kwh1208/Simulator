@@ -173,4 +173,8 @@ public class DisplaySignalSettingController {
     public void read(MouseEvent mouseEvent) {
 
     }
+
+    public void save(MouseEvent mouseEvent) {
+
+    }
 }

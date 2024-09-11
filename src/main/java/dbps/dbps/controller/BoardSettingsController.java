@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,6 +25,7 @@ public class BoardSettingsController {
 
     @FXML
     public Pane boardDisable;
+    public AnchorPane boardAP;
 
     ToggleGroup group = new ToggleGroup();
     @FXML
@@ -45,6 +47,8 @@ public class BoardSettingsController {
                 });
             }
         });
+
+        boardAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/boardsetting.css").toExternalForm());
     }
 
     @FXML

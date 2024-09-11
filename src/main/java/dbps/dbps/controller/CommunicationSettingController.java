@@ -247,8 +247,9 @@ public class CommunicationSettingController {
     //포트열기, 접속하기
     @FXML
     public void openSerialPort(){
-        if (communicationGroup.getSelectedToggle().equals(serialRadioBtn))
+        if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
             openPort(serialPortComboBox.getValue());
+        }
         else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn))
             connectClientTCP();
         else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn))
@@ -330,11 +331,22 @@ public class CommunicationSettingController {
     public void controllerConnect(){
         //시리얼 일때
         if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)){
-            CONNECT_TYPE = "serial";
-            serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
-            String receiveMsg = hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
-            if (!receiveMsg.split(" ")[5].equals("6A")){
-                CONNECT_TYPE = "none";
+            if (RS485ChkBox.isSelected()){
+                CONNECT_TYPE = "rs485";
+                serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
+                RS485_ADDR_NUM = Integer.parseInt(RS485ChoiceBox.getValue().replaceAll("[^0-9]", ""));
+                String msg = "10 02 "+String.format("%02x", RS485_ADDR_NUM)+" 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                String receivedMsg = hexMsgTransceiver.sendMessages(msg);
+                if (!receivedMsg.split(" ")[5].equals("6A")){
+                    CONNECT_TYPE = "none";
+                }
+            } else {
+                CONNECT_TYPE = "serial";
+                serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
+                String receiveMsg = hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
+                if (!receiveMsg.split(" ")[5].equals("6A")){
+                    CONNECT_TYPE = "none";
+                }
             }
         } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn)) {
             CONNECT_TYPE = "clientTCP";

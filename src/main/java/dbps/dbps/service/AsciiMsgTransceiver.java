@@ -13,7 +13,6 @@ public class AsciiMsgTransceiver {
     private final LogService logService;
     private final UDPManager udpManager;
     private final TCPManager tcpManager;
-    private final RS485Manager rs485Manager;
     private final WiFiManager wiFiManager;
 
 
@@ -22,7 +21,6 @@ public class AsciiMsgTransceiver {
         logService = LogService.getLogService();
         udpManager = UDPManager.getUDPManager();
         tcpManager = TCPManager.getManager();
-        rs485Manager = RS485Manager.getInstance();
         wiFiManager = WiFiManager.getInstance();
     }
 
@@ -44,16 +42,12 @@ public class AsciiMsgTransceiver {
                 logService.errorLog("연결된 장치가 없습니다.");
                 return null;
             }
-            case "serial", "bluetooth" -> //시리얼 및 블루투스
+            case "serial", "bluetooth","rs485" -> //시리얼 및 블루투스
                     receivedMsg = serialPortManager.sendMsgAndGetMsg(msg);
             case "UDP" -> //udp로 메세지 전송
                     receivedMsg = udpManager.sendASCMsg(msg);
-            case "clientTCP" -> {
-            //tcp로 메세지 전송
-                receivedMsg = tcpManager.sendASCMsg(msg);
-            }
-            case "rs485" ->  //rs485로 메세지 전송
-                    receivedMsg = rs485Manager.sendMsg(msg);
+            case "clientTCP" -> //tcp로 메세지 전송
+                    receivedMsg = tcpManager.sendASCMsg(msg);
             case "WiFi" -> //WiFi로 메세지 전송
                     receivedMsg = wiFiManager.sendMsg(msg);
         }

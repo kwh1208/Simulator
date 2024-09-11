@@ -1,18 +1,23 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Simulator;
 import dbps.dbps.service.connectManager.BTManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 
 public class blueToothController {
 
     public TextField ble_id;
     public TextField ble_password;
+    public AnchorPane bluetoothAP;
     BTManager btManager;
     @FXML
     public void initialize(){
         btManager = BTManager.getInstance();
+
+        bluetoothAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/bluetooth.css").toExternalForm());
     }
 
     public void search(MouseEvent mouseEvent) {

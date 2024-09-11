@@ -19,6 +19,8 @@ public class Constants {
 
     public static String OPEN_PORT_NAME = null;
 
+    public static int RS485_ADDR_NUM = 0;
+
     public static String CLIENT_TCP_IP = "";
 
     public static int CLIENT_TCP_PORT = 0;

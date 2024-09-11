@@ -3,6 +3,7 @@ package dbps.dbps.service.connectManager;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
+import static dbps.dbps.Constants.CONNECT_TYPE;
 public class BTManager {
 
     private static BTManager instance = null;
@@ -50,7 +51,10 @@ public class BTManager {
 
     public void begin(String password) {
         String msg = "++SET++![BT " + password + " BEGIN!]";
-        serialPortManager.sendMsgAndGetMsg(msg);
+        String receivedMsg = serialPortManager.sendMsgAndGetMsg(msg);
+        if (receivedMsg.equals("![DIBD BLE OK!]")){
+            CONNECT_TYPE = "bluetooth";
+        }
     }
 
     public void end(String password) {

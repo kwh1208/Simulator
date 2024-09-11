@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="365.0" prefWidth="377.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BoardSettingsController">
+<AnchorPane fx:id="boardAP" style="-fx-background-color: #333333" prefHeight="365.0" prefWidth="377.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BoardSettingsController">
    <children>
       <Label layoutX="13.0" layoutY="22.0" text="1. Command" />
       <Label layoutX="13.0" layoutY="51.0" text="2. SubCommand" />
@@ -18,7 +18,7 @@
       <Pane fx:id="boardDisable" layoutX="14.0" layoutY="69.0" prefHeight="188.0" prefWidth="352.0">
          <children>
             <Label disable="true" layoutX="-1.0" layoutY="13.0" text="3. Debugging Method" />
-            <ChoiceBox disable="true" layoutX="194.0" layoutY="9.0" prefWidth="150.0" value="disable">
+            <ComboBox disable="true" layoutX="194.0" layoutY="9.0" prefWidth="150.0" value="disable">
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="disable" />
@@ -32,9 +32,9 @@
                      <String fx:value="enable8" />
                   </FXCollections>
                </items>
-            </ChoiceBox>
+            </ComboBox>
             <Label disable="true" layoutX="-1.0" layoutY="43.0" text="4. BH1(TTL/RS485) Function" />
-            <ChoiceBox disable="true" layoutX="194.0" layoutY="39.0" prefWidth="150.0" value="8Pin Input(BCD)">
+            <ComboBox disable="true" layoutX="194.0" layoutY="39.0" prefWidth="150.0" value="8Pin Input(BCD)">
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="TTL/RS485" />
@@ -47,9 +47,9 @@
                      <String fx:value="8Pin Input(BitBGSch)" />
                   </FXCollections>
                </items>
-            </ChoiceBox>
+            </ComboBox>
             <Label disable="true" layoutX="-1.0" layoutY="73.0" text="5. J4(4pin) Function" />
-            <ChoiceBox disable="true" layoutX="194.0" layoutY="69.0" prefWidth="150.0" value="Relay Out">
+            <ComboBox disable="true" layoutX="194.0" layoutY="69.0" prefWidth="150.0" value="Relay Out">
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="Relay Out" />
@@ -62,9 +62,9 @@
                      <String fx:value="Relay 4Port" />
                   </FXCollections>
                </items>
-            </ChoiceBox>
+            </ComboBox>
             <Label disable="true" layoutX="-1.0" layoutY="103.0" text="6. J2(RS232) Baudrate" />
-            <ChoiceBox disable="true" layoutX="194.0" layoutY="99.0" prefWidth="150.0" value="115200">
+            <ComboBox disable="true" layoutX="194.0" layoutY="99.0" prefWidth="150.0" value="115200">
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="9600" />
@@ -77,9 +77,9 @@
                      <String fx:value="921600" />
                   </FXCollections>
                </items>
-            </ChoiceBox>
+            </ComboBox>
             <Label disable="true" layoutX="-1.0" layoutY="133.0" text="7. J3(TTL) Baudrate" />
-            <ChoiceBox disable="true" layoutX="194.0" layoutY="129.0" prefWidth="150.0" value="115200">
+            <ComboBox disable="true" layoutX="194.0" layoutY="129.0" prefWidth="150.0" value="115200">
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="9600" />
@@ -92,9 +92,9 @@
                      <String fx:value="921600" />
                   </FXCollections>
                </items>
-            </ChoiceBox>
+            </ComboBox>
             <Label disable="true" layoutX="-1.0" layoutY="163.0" text="8. BH1(TTL/RS485) Baudrate" />
-            <ChoiceBox disable="true" layoutX="194.0" layoutY="159.0" prefWidth="150.0" value="115200">
+            <ComboBox disable="true" layoutX="194.0" layoutY="159.0" prefWidth="150.0" value="115200">
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="9600" />
@@ -107,7 +107,7 @@
                      <String fx:value="921600" />
                   </FXCollections>
                </items>
-            </ChoiceBox>
+            </ComboBox>
          </children>
       </Pane>
       <Label layoutX="13.0" layoutY="260.0" text="9. Address" />

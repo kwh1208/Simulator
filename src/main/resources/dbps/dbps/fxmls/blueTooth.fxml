@@ -3,20 +3,20 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="300.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.blueToothController">
+<AnchorPane fx:id="bluetoothAP" prefHeight="212.0" prefWidth="451.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.blueToothController">
    <children>
-      <Pane layoutX="22.0" layoutY="19.0" prefHeight="278.0" prefWidth="518.0">
+      <Pane layoutX="25.0" layoutY="15.0" prefHeight="183.0" prefWidth="404.0" style="-fx-border-color: black">
          <children>
-            <Label layoutX="62.0" layoutY="79.0" text="Label" />
-            <TextField fx:id="ble_id" layoutX="173.0" layoutY="75.0" />
-            <Label layoutX="62.0" layoutY="131.0" text="Label" />
-            <TextField fx:id="ble_password" layoutX="173.0" layoutY="134.0" />
-            <Button layoutX="50.0" layoutY="223.0" mnemonicParsing="false" text="Search" onMouseClicked="#search"/>
-            <Button layoutX="140.0" layoutY="223.0" mnemonicParsing="false" text="Set" onMouseClicked="#set"/>
-            <Button layoutX="246.0" layoutY="223.0" mnemonicParsing="false" text="BeginBLE" onMouseClicked="#begin"/>
-            <Button layoutX="343.0" layoutY="223.0" mnemonicParsing="false" text="EndBLE" onMouseClicked="#end"/>
+            <Label layoutX="7.0" layoutY="33.0" text="블루투스 이름" />
+            <TextField fx:id="ble_id" layoutX="239.0" layoutY="29.0" prefHeight="21.0" prefWidth="152.0" />
+            <Label layoutX="7.0" layoutY="71.0" text="블루투스 비밀번호" />
+            <TextField fx:id="ble_password" layoutX="239.0" layoutY="67.0" prefHeight="21.0" prefWidth="152.0" />
+            <Button layoutX="6.0" layoutY="103.0" mnemonicParsing="false" onMouseClicked="#search" prefHeight="27.0" prefWidth="90.0" text="Search" />
+            <Button layoutX="105.0" layoutY="103.0" mnemonicParsing="false" onMouseClicked="#set" prefHeight="27.0" prefWidth="90.0" text="Set" />
+            <Button layoutX="204.0" layoutY="103.0" mnemonicParsing="false" onMouseClicked="#begin" prefHeight="27.0" prefWidth="90.0" text="BeginBLE" />
+            <Button layoutX="303.0" layoutY="103.0" mnemonicParsing="false" onMouseClicked="#end" prefHeight="27.0" prefWidth="90.0" text="EndBLE" />
+            <Button layoutX="339.0" layoutY="141.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="54.0" text="닫기" />
          </children>
       </Pane>
-      <Button layoutX="479.0" layoutY="329.0" mnemonicParsing="false" text="닫기" />
    </children>
 </AnchorPane>

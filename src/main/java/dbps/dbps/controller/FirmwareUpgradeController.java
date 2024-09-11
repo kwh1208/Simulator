@@ -26,7 +26,9 @@ public class FirmwareUpgradeController {
 
     @FXML
     public void initialize() {
-//        firmwareUpgradeAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/firmwareUpgrade.css").toExternalForm());
+        firmwareUpgradeAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/firmware.css").toExternalForm());
+        firmwareInformation.setEditable(false);
+        firmwareFileInformation.setEditable(false);
     }
 
 
