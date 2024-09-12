@@ -1,6 +1,5 @@
 package dbps.dbps.controller;
 
-import dbps.dbps.service.MsgMaker;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -40,7 +39,6 @@ public class DisplaySignalSettingController {
     @FXML
     private Button readBtn;
 
-    MsgMaker msgMaker = MsgMaker.getInstance();
     SerialPortManager serialPortManager = SerialPortManager.getManager();
 
     @FXML
@@ -83,7 +81,7 @@ public class DisplaySignalSettingController {
     public void signalTransfer() {
         String selectedSignal = signalList.getSelectionModel().getSelectedItem();
         String signalProtocol = makePerfectProtocol(selectedSignal);
-        String transferProtocol = msgMaker.makeMsgASCii(signalProtocol);
+        String transferProtocol = "!["+signalProtocol+"!]";
         serialPortManager.sendMsgAndGetMsg(transferProtocol);
     }
 
@@ -147,12 +145,10 @@ public class DisplaySignalSettingController {
         Integer time = spinnerForSec.getValue();
         int originalTime = RESPONSE_LATENCY;
         RESPONSE_LATENCY = time;
-
-
         signalList.getItems().forEach(signal -> {
             String signalProtocol = SignalMap.get(signal);
             signalList.getSelectionModel().select(signal);
-            String transferProtocol = msgMaker.makeMsgASCii(signalProtocol);
+            String transferProtocol = "!["+signalProtocol+"!]";
             serialPortManager.sendMsgAndGetMsg(transferProtocol);
             try {
                 Thread.sleep(time * 1000);

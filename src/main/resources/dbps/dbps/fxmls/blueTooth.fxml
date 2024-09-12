@@ -15,7 +15,7 @@
             <Button layoutX="105.0" layoutY="103.0" mnemonicParsing="false" onMouseClicked="#set" prefHeight="27.0" prefWidth="90.0" text="Set" />
             <Button layoutX="204.0" layoutY="103.0" mnemonicParsing="false" onMouseClicked="#begin" prefHeight="27.0" prefWidth="90.0" text="BeginBLE" />
             <Button layoutX="303.0" layoutY="103.0" mnemonicParsing="false" onMouseClicked="#end" prefHeight="27.0" prefWidth="90.0" text="EndBLE" />
-            <Button layoutX="339.0" layoutY="141.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="54.0" text="닫기" />
+            <Button layoutX="339.0" layoutY="141.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="27.0" prefWidth="54.0" text="닫기" />
          </children>
       </Pane>
    </children>
