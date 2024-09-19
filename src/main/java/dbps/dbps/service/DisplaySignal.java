@@ -2,9 +2,13 @@ package dbps.dbps.service;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static dbps.dbps.Constants.hexStringToByteArray;
+
 //표출신호별 전송 프로토콜 저장
 public class DisplaySignal {
-    public static Map<String, String> SignalMap = new HashMap<>();
+    public static Map<String, String> SignalMap_ASC = new HashMap<>();
+    public static Map<String, String> SignalMap_HEX = new HashMap<>();
 
     private static DisplaySignal instance = null;
 
@@ -16,54 +20,102 @@ public class DisplaySignal {
     }
 
     private DisplaySignal() {
-        initialize();
+        initialize_ASCii();
+        initialize_HEX();
     }
 
-    public void initialize(){
-        SignalMap.put("32D-P16D1S11", "0052B111");
-        SignalMap.put("16D-P16D1S41", "0052A141");
-        SignalMap.put("16D-P16D1S31", "0052A131");
-        SignalMap.put("16D-P16D1S21", "0052A121");
-        SignalMap.put("16D-P16D1S11", "0052A111");
-        SignalMap.put("16D-P16D1S10-1", "0052A110");
-        SignalMap.put("08D-P64D1S91 - 11", "00528191");
-        SignalMap.put("08D-P64D1S61", "00528161");
-        SignalMap.put("08D-P64D1S41 - 11", "00528141");
-        SignalMap.put("08D-P64D1S31", "00528131");
-        SignalMap.put("08D-P64D1S21", "00528121");
-        SignalMap.put("08D-P32D1S32", "00528132");
-        SignalMap.put("08D-P32D1S31", "00528131");
-        SignalMap.put("08D-P32D1S22 - 9 < 1", "00528122");
-        SignalMap.put("08D-P32D1S12", "00528112");
-        SignalMap.put("08D-P32D1S11", "00528111");
-        SignalMap.put("08D-P16D2S81", "00528281");
-        SignalMap.put("08D-P16D2S23 - 9^1", "00528231");
-        SignalMap.put("08D-P16D2S23 - 1^2", "00528223");
-        SignalMap.put("08D-P16D2S21", "00528221");
-        SignalMap.put("08D-P16D2S11 - 1^9", "00528211");
-        SignalMap.put("08D-P16D2S10 - 1^9", "00528210");
-        SignalMap.put("08D-P128D1S51", "00528151");
-        SignalMap.put("08D-P128D1S42", "00528142");
-        SignalMap.put("04D-P64D1S11", "00524111");
-        SignalMap.put("04D-P32D4S21", "00524221");
-        SignalMap.put("04D-P32D4S11", "00524211");
-        SignalMap.put("04D-P32D2S71", "00524271");
-        SignalMap.put("04D-P32D2S61", "00524261");
-        SignalMap.put("04D-P32D2S51", "00524251");
-        SignalMap.put("04D-P32D2S41", "00524411");
-        SignalMap.put("04D-P32D2S31 - 2 < 1 ^ 4 < 3", "00524231");
-        SignalMap.put("04D-P16D4S21-1^5^9^13", "00524421");
-        SignalMap.put("04D-P16D4S11-1^5^9^13", "00524411");
-        SignalMap.put("04D-D2-SA1-A4E8A8E8A4", "005242:1");
-        SignalMap.put("04D-D2-SA1-A4E8A8E8", "005242:2");
-        SignalMap.put("02D-P64D2S41", "00522241");
-        SignalMap.put("02D-P64D2S31", "00522231");
-        SignalMap.put("02D-P64D2S21", "00522221");
-        SignalMap.put("02D-P256D2S21", "00522241");
-        SignalMap.put("02D-P128D2S21", "00522121");
-        SignalMap.put("01D-P64D4S21-4^8^12^16", "00521421");
-        SignalMap.put("01D-P128D2S31", "00521231");
-        SignalMap.put("01D-P128D2S21", "00521221");
+    public void initialize_ASCii(){
+        SignalMap_ASC.put("32D-P16D1S11", "0052B111");
+        SignalMap_ASC.put("16D-P16D1S41", "0052A141");
+        SignalMap_ASC.put("16D-P16D1S31", "0052A131");
+        SignalMap_ASC.put("16D-P16D1S21", "0052A121");
+        SignalMap_ASC.put("16D-P16D1S11", "0052A111");
+        SignalMap_ASC.put("16D-P16D1S10-1", "0052A110");
+        SignalMap_ASC.put("08D-P64D1S91 - 11", "00528191");
+        SignalMap_ASC.put("08D-P64D1S61", "00528161");
+        SignalMap_ASC.put("08D-P64D1S41 - 11", "00528141");
+        SignalMap_ASC.put("08D-P64D1S31", "00528131");
+        SignalMap_ASC.put("08D-P64D1S21", "00528121");
+        SignalMap_ASC.put("08D-P32D1S32", "00528132");
+        SignalMap_ASC.put("08D-P32D1S31", "00528131");
+        SignalMap_ASC.put("08D-P32D1S22 - 9 < 1", "00528122");
+        SignalMap_ASC.put("08D-P32D1S12", "00528112");
+        SignalMap_ASC.put("08D-P32D1S11", "00528111");
+        SignalMap_ASC.put("08D-P16D2S81", "00528281");
+        SignalMap_ASC.put("08D-P16D2S23 - 9^1", "00528231");
+        SignalMap_ASC.put("08D-P16D2S23 - 1^2", "00528223");
+        SignalMap_ASC.put("08D-P16D2S21", "00528221");
+        SignalMap_ASC.put("08D-P16D2S11 - 1^9", "00528211");
+        SignalMap_ASC.put("08D-P16D2S10 - 1^9", "00528210");
+        SignalMap_ASC.put("08D-P128D1S51", "00528151");
+        SignalMap_ASC.put("08D-P128D1S42", "00528142");
+        SignalMap_ASC.put("04D-P32D4S11", "00524211");
+        SignalMap_ASC.put("04D-P32D2S71", "00524271");
+        SignalMap_ASC.put("04D-P32D2S61", "00524261");
+        SignalMap_ASC.put("04D-P32D2S51", "00524251");
+        SignalMap_ASC.put("04D-P32D2S41", "00524411");
+        SignalMap_ASC.put("04D-P32D2S11", "00524211");
+        SignalMap_ASC.put("04D-P32D2S21", "00524221");
+        SignalMap_ASC.put("04D-P32D2S31 - 2 < 1 ^ 4 < 3", "00524231");
+        SignalMap_ASC.put("04D-P16D4S21-1^5^9^13", "00524421");
+        SignalMap_ASC.put("04D-P16D4S11-1^5^9^13", "00524411");
+        SignalMap_ASC.put("04D-D2-SA1-A4E8A8E8A4", "005242:1");
+        SignalMap_ASC.put("04D-D2-SA1-A4E8A8E8", "005242:2");
+        SignalMap_ASC.put("02D-P64D2S41", "00522241");
+        SignalMap_ASC.put("02D-P64D2S31", "00522231");
+        SignalMap_ASC.put("02D-P64D2S21", "00522221");
+        SignalMap_ASC.put("02D-P256D2S41", "00522241");
+        SignalMap_ASC.put("02D-P128D2S21", "00522121");
+        SignalMap_ASC.put("01D-P64D4S21-4^8^12^16", "00521421");
+        SignalMap_ASC.put("01D-P128D2S31", "00521231");
+        SignalMap_ASC.put("01D-P128D2S21", "00521221");
+    }
+
+    public void initialize_HEX(){
+        SignalMap_HEX.put("32D-P16D1S11", "10 02 00 00 07 49 00 20 01 11");//01 01 10 03
+        SignalMap_HEX.put("16D-P16D1S41", "10 02 00 00 07 49 00 10 01 01");
+        SignalMap_HEX.put("16D-P16D1S31", "10 02 00 00 07 49 00 10 01 31");
+        SignalMap_HEX.put("16D-P16D1S21", "10 02 00 00 07 49 00 10 01 21");
+        SignalMap_HEX.put("16D-P16D1S11", "10 02 00 00 07 49 00 10 01 11");
+        SignalMap_HEX.put("16D-P16D1S10-1", "10 02 00 00 07 49 00 10 01 01");
+        SignalMap_HEX.put("08D-P64D1S91 - 11", "10 02 00 00 07 49 00 08 01 91");
+        SignalMap_HEX.put("08D-P64D1S61", "10 02 00 00 07 49 00 08 01 61");
+        SignalMap_HEX.put("08D-P64D1S41 - 11", "10 02 00 00 07 49 00 08 01 41");
+        SignalMap_HEX.put("08D-P64D1S31", "10 02 00 00 07 49 00 08 01 31");
+        SignalMap_HEX.put("08D-P64D1S21", "10 02 00 00 07 49 00 08 01 21");
+        SignalMap_HEX.put("08D-P32D1S32", "10 02 00 00 07 49 00 08 01 32");
+        SignalMap_HEX.put("08D-P32D1S31", "10 02 00 00 07 49 00 08 01 31");
+        SignalMap_HEX.put("08D-P32D1S22 - 9 < 1", "10 02 00 00 07 49 00 08 01 22");
+        SignalMap_HEX.put("08D-P32D1S12", "10 02 00 00 07 49 00 08 01 12");
+        SignalMap_HEX.put("08D-P32D1S11", "10 02 00 00 07 49 00 08 01 11");
+        SignalMap_HEX.put("08D-P16D2S81", "10 02 00 00 07 49 00 08 02 81");
+        SignalMap_HEX.put("08D-P16D2S23 - 9^1", "10 02 00 00 07 49 00 08 02 31");
+        SignalMap_HEX.put("08D-P16D2S23 - 1^2", "10 02 00 00 07 49 00 08 02 23");
+        SignalMap_HEX.put("08D-P16D2S21", "10 02 00 00 07 49 00 08 02 21");
+        SignalMap_HEX.put("08D-P16D2S11 - 1^9", "10 02 00 00 07 49 00 08 02 11");
+        SignalMap_HEX.put("08D-P16D2S10 - 1^9", "10 02 00 00 07 49 00 08 02 10");
+        SignalMap_HEX.put("08D-P128D1S51", "10 02 00 00 07 49 00 08 01 51");
+        SignalMap_HEX.put("08D-P128D1S42", "10 02 00 00 07 49 00 08 01 42");
+        SignalMap_HEX.put("04D-P64D1S11", "10 02 00 00 07 49 00 04 01 11");
+        SignalMap_HEX.put("04D-P32D2S71", "10 02 00 00 07 49 00 04 02 71");
+        SignalMap_HEX.put("04D-P32D2S61", "10 02 00 00 07 49 00 04 02 61");
+        SignalMap_HEX.put("04D-P32D2S51", "10 02 00 00 07 49 00 04 02 51");
+        SignalMap_HEX.put("04D-P32D2S41", "10 02 00 00 07 49 00 04 02 41");
+        SignalMap_ASC.put("04D-P32D2S11", "10 02 00 00 07 49 00 04 02 11");
+        SignalMap_ASC.put("04D-P32D2S21", "10 02 00 00 07 49 00 04 02 21");
+        SignalMap_HEX.put("04D-P32D2S31 - 2 < 1 ^ 4 < 3", "10 02 00 00 07 49 00 04 02 31");
+        SignalMap_HEX.put("04D-P16D4S21-1^5^9^13", "10 02 00 00 07 49 00 04 04 21");
+        SignalMap_HEX.put("04D-P16D4S11-1^5^9^13", "10 02 00 00 07 49 00 04 04 11");
+        SignalMap_HEX.put("04D-D2-SA1-A4E8A8E8A4", "10 02 00 00 07 49 00 04 02 A1");
+        SignalMap_HEX.put("04D-D2-SA1-A4E8A8E8", "10 02 00 00 07 49 00 04 02 A2");
+        SignalMap_HEX.put("02D-P64D2S41", "10 02 00 00 07 49 00 02 02 41");
+        SignalMap_HEX.put("02D-P64D2S31", "10 02 00 00 07 49 00 02 02 31");
+        SignalMap_HEX.put("02D-P64D2S21", "10 02 00 00 07 49 00 02 02 21");
+        SignalMap_HEX.put("02D-P256D2S41", "10 02 00 00 07 49 00 02 02 41");
+        SignalMap_HEX.put("02D-P128D2S21", "10 02 00 00 07 49 00 02 01 21");
+        SignalMap_HEX.put("01D-P64D4S21-4^8^12^16", "10 02 00 00 07 49 00 01 04 21");
+        SignalMap_HEX.put("01D-P128D2S31", "10 02 00 00 07 49 00 01 02 31");
+        SignalMap_HEX.put("01D-P128D2S21", "10 02 00 00 07 49 00 01 02 21");
     }
 }
 
