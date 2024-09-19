@@ -50,7 +50,7 @@ public class LogService {
         // 텍스트 추가 및 스타일 적용
         int start = logTextArea.getLength();
         logTextArea.appendText(logMessage);
-        logTextArea.setStyle(start, start+logMessage.length(),"-fx-fill: red; -fx-font-weight: bold;");
+        logTextArea.setStyle(start, start+logMessage.length(),"-fx-fill: #FFA500; -fx-font-weight: bold;");
 
         scrollToBottom();
     }

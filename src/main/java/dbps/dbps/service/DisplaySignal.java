@@ -3,9 +3,23 @@ package dbps.dbps.service;
 import java.util.HashMap;
 import java.util.Map;
 //표출신호별 전송 프로토콜 저장
-public class displaySignal {
+public class DisplaySignal {
     public static Map<String, String> SignalMap = new HashMap<>();
-    public static void tmp(){
+
+    private static DisplaySignal instance = null;
+
+    public static DisplaySignal getInstance() {
+        if (instance == null) {
+            instance = new DisplaySignal();
+        }
+        return instance;
+    }
+
+    private DisplaySignal() {
+        initialize();
+    }
+
+    public void initialize(){
         SignalMap.put("32D-P16D1S11", "0052B111");
         SignalMap.put("16D-P16D1S41", "0052A141");
         SignalMap.put("16D-P16D1S31", "0052A131");
@@ -54,6 +68,10 @@ public class displaySignal {
 }
 
 /**
+ * RGB RBG GRB GBR BRG BGR NC1
+ *  1   2   3   4   5   6   7
+ * 138IC L800 No IC 595IC SUM2017TD IC
+ *  1     2     3     5       6
  * 32D-P16D1S11 RGB
  * 32D-P16D1S11 RBG
  * 32D-P16D1S11 GRB

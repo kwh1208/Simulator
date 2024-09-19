@@ -130,9 +130,9 @@ public class UnderTheLineLeftController {
             serialPortManager.closePort(OPEN_PORT_NAME);
             serialPortManager.openPort(OPEN_PORT_NAME, SERIAL_BAUDRATE);
         }
-        if (CONNECT_TYPE.equals("clientTCP")) {
+        if (CONNECT_TYPE.equals("TCP")) {
             tcpManager.disconnect();
-            tcpManager.connect(CLIENT_TCP_IP, CLIENT_TCP_PORT);
+            tcpManager.connect(TCP_IP, TCP_PORT);
         }
     }
 
@@ -150,9 +150,9 @@ public class UnderTheLineLeftController {
             serialPortManager.closePort(OPEN_PORT_NAME);
             serialPortManager.openPort(OPEN_PORT_NAME, SERIAL_BAUDRATE);
         }
-        if (CONNECT_TYPE.equals("clientTCP")) {
+        if (CONNECT_TYPE.equals("TCP")) {
             tcpManager.disconnect();
-            tcpManager.connect(CLIENT_TCP_IP, CLIENT_TCP_PORT);
+            tcpManager.connect(TCP_IP, TCP_PORT);
         }
     }
 }

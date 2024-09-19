@@ -1,6 +1,11 @@
 .choice-box .context-menu {
     -fx-background-color: #1C1F26;
-    -fx-pref-width: 150; /* 컨텍스트 메뉴 너비를 오른쪽 CSS와 동일하게 설정 */
+    -fx-pref-width: 100;
+}
+
+.wide-choice-box .list-cell {
+    -fx-pref-width: 150px;
+    -fx-background-color: #1C1F26;
 }
 .choice-box .menu-item:focused {
     -fx-background-color: orange;
@@ -71,6 +76,10 @@
     -fx-border-color: transparent;
 }
 
+.list-cell{
+    -fx-pref-height: 25px;
+}
+
 .list-view {
     -fx-background-color: #1C1F26; /* 전체 ListView 배경색 */
 }
@@ -86,6 +95,6 @@
 }
 
 .list-cell:filled:selected, .list-cell:filled:selected:focused {
-    -fx-background-color: #444444; /* 선택된 항목의 배경색 */
-    -fx-text-fill: white; /* 선택된 항목의 텍스트 색상 */
+    -fx-background-color: orange; /* 선택된 항목의 배경색 */
+    -fx-text-fill: black; /* 선택된 항목의 텍스트 색상 */
 }

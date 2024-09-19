@@ -13,7 +13,6 @@ public class AsciiMsgTransceiver {
     private final LogService logService;
     private final UDPManager udpManager;
     private final TCPManager tcpManager;
-    private final WiFiManager wiFiManager;
 
 
     private AsciiMsgTransceiver() {
@@ -21,7 +20,6 @@ public class AsciiMsgTransceiver {
         logService = LogService.getLogService();
         udpManager = UDPManager.getUDPManager();
         tcpManager = TCPManager.getManager();
-        wiFiManager = WiFiManager.getInstance();
     }
 
     public static AsciiMsgTransceiver getInstance() {
@@ -30,7 +28,6 @@ public class AsciiMsgTransceiver {
         }
         return instance;
     }
-
 
     public String sendMessages(String msg) {
         //현재 serial, bluetooth, udp, tcp, rs485, WiFi 중에 어떤 것인지 파악.
@@ -46,17 +43,15 @@ public class AsciiMsgTransceiver {
                     receivedMsg = serialPortManager.sendMsgAndGetMsg(msg);
             case "UDP" -> //udp로 메세지 전송
                     receivedMsg = udpManager.sendASCMsg(msg);
-            case "clientTCP" -> //tcp로 메세지 전송
+            case "TCP" -> //tcp로 메세지 전송
                     receivedMsg = tcpManager.sendASCMsg(msg);
-            case "WiFi" -> //WiFi로 메세지 전송
-                    receivedMsg = wiFiManager.sendMsg(msg);
         }
         logService.updateInfoLog("전송 메세지: " + msg);
 
         //시간 바꾸거나, 펌웨어 같은 일부 특수한 경우에 반환값 사용.
         return msgReceive(receivedMsg, msg);
     }
-
+//
 
     private String msgReceive(String receiveMsg, String msg) {
         //실시간 메세지, 페이지 메세지
@@ -160,6 +155,10 @@ public class AsciiMsgTransceiver {
                 logService.updateInfoLog("받은 메세지 : " + receiveMsg);
                 logService.updateInfoLog("밝기 조절에 성공했습니다.");
             }
+            if (cmd.equals("52")){
+                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+                logService.updateInfoLog("표출신호 설정에 성공했습니다.");
+            }
             if (cmd.equals("54")){
                 logService.updateInfoLog("받은 메세지 : " + receiveMsg);
                 logService.updateInfoLog("표출 속도 변경에 성공했습니다.");
@@ -195,6 +194,10 @@ public class AsciiMsgTransceiver {
             if (cmd.equals("85")){
                 logService.updateInfoLog("받은 메세지 : " + receiveMsg);
                 logService.updateInfoLog("하트비트 세팅에 성공했습니다.");
+            }
+            if (cmd.equals("B4")){
+                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+                logService.updateInfoLog("잔상지연 설정에 성공했습니다.");
             }
 
 

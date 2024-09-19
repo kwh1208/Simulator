@@ -17,14 +17,12 @@ public class HexMsgTransceiver {
     private final LogService logService;
     private final UDPManager udpManager;
     private final TCPManager tcpManager;
-    private final WiFiManager wiFiManager;
 
     private HexMsgTransceiver() {
         serialPortManager = SerialPortManager.getManager();
         logService = LogService.getLogService();
         udpManager = UDPManager.getUDPManager();
         tcpManager = TCPManager.getManager();
-        wiFiManager = WiFiManager.getInstance();
     }
 
     public static HexMsgTransceiver getInstance() {
@@ -45,10 +43,8 @@ public class HexMsgTransceiver {
             receivedMsg = serialPortManager.sendMsgAndGetMsgHex(msg);
             case "UDP" -> //udp로 메세지 전송
                     receivedMsg = udpManager.sendMsgAndGetMsgHex(msg);
-            case "clientTCP" -> //tcp로 메세지 전송
+            case "TCP" -> //tcp로 메세지 전송
                 receivedMsg = tcpManager.sendMsgAndGetMsgHex(msg);
-            case "WiFi" -> //WiFi로 메세지 전송
-                    receivedMsg = wiFiManager.sendMsgAndGetMsgHex(msg);
         }
 
         //시간 바꾸거나, 펌웨어 같은 일부 특수한 경우에 반환값 사용.

@@ -10,6 +10,7 @@ import dbps.dbps.service.connectManager.TCPManager;
 import dbps.dbps.service.connectManager.UDPManager;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -233,15 +234,21 @@ public class CommunicationSettingController {
     //통신속도 찾기
     public void findCommunicationSpeed() {
         // UI 업데이트를 JavaFX 애플리케이션 스레드에서 즉시 실행
-        Platform.runLater(() -> loadingSpinner.setVisible(true));
+        Task<Integer> findSpeedTask = serialPortManager.findSpeedTask;
 
-        int speed = serialPortManager.findSpeed(); // 속도 찾기
+        findSpeedTask.setOnSucceeded(event -> {
+            // Task가 성공적으로 완료된 후 값을 가져옴
+            Integer speed = findSpeedTask.getValue(); // Task의 결과 값 (통신 속도)
 
-        SERIAL_BAUDRATE = speed;
+            if (speed != null && speed > 0) {
+                SERIAL_BAUDRATE = speed; // 속도 값 저장
 
-        serialSpeedChoiceBox.setValue(String.valueOf(speed));
+                // ChoiceBox UI를 업데이트
+                serialSpeedChoiceBox.setValue(String.valueOf(speed));
+            }
+        });
 
-        Platform.runLater(() -> loadingSpinner.setVisible(false));
+        new Thread(findSpeedTask).start();
     }
 
     //포트열기, 접속하기
@@ -259,7 +266,14 @@ public class CommunicationSettingController {
     }
 
     private void connectServerTCP() {
+        String IPAddress = serverIPAddress.getText();
+        int port = Integer.parseInt(serverIPPort.getText());
 
+        tcpManager.setIP(IPAddress);
+        tcpManager.setPORT(port);
+
+        TCP_IP = IPAddress;
+        TCP_PORT = port;
     }
 
     private void connectClientTCP() {
@@ -269,8 +283,8 @@ public class CommunicationSettingController {
         tcpManager.setIP(IPAddress);
         tcpManager.setPORT(port);
 
-        CLIENT_TCP_IP = IPAddress;
-        CLIENT_TCP_PORT = port;
+        TCP_IP = IPAddress;
+        TCP_PORT = port;
     }
 
     private void connectUDP(){
@@ -349,14 +363,13 @@ public class CommunicationSettingController {
                 }
             }
         } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn)) {
-            CONNECT_TYPE = "clientTCP";
+            CONNECT_TYPE = "TCP";
             connectClientTCP();
             tcpManager.connect(tcpManager.getIP(), tcpManager.getPORT());
         } else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)) {
-//            CONNECT_TYPE = "serverTCP";
-//            connectServerTCP();
-//            tcpManager.connect(tcpManager.getIP(), tcpManager.getPORT());
-            //
+            CONNECT_TYPE = "TCP";
+            connectServerTCP();
+            tcpManager.connect(tcpManager.getIP(), tcpManager.getPORT());
         } else {
             CONNECT_TYPE = "UDP";
             connectUDP();

@@ -2,6 +2,8 @@ package dbps.dbps.service.connectManager;
 
 import com.fazecast.jSerialComm.SerialPort;
 import dbps.dbps.service.LogService;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,18 +44,16 @@ public class SerialPortManager {
         logService.updateInfoLog(portName + " 포트가 열렸습니다.");
     }
 
-    public SerialPort openPortNoLog(String portName, int baudRate){
+    public void openPortNoLog(String portName, int baudRate){
         if (serialPortMap.containsKey(portName)&&isPortOpen(portName)){
-            serialPortMap.get(portName).closePort();
-            serialPortMap.remove(portName);
+            return;
         }
 
         SerialPort port = SerialPort.getCommPort(portName);
         port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY *1000, 0);
+        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
         port.openPort();
-
-        return port;
+        serialPortMap.put(portName, port);
     }
 
 
@@ -195,34 +195,72 @@ public class SerialPortManager {
         return length >= 2 && buffer[length - 2] == (byte) 0x10 && buffer[length - 1] == (byte) 0x03;
     }
 
-    public int findSpeed() {
-        int[] baudRates = {2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600};
+    public Task<Integer> findSpeedTask = new Task<>() {
+        @Override
+        protected Integer call() throws Exception {
+            int[] baudRates = {9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600};
 
-        for (int baudRate : baudRates) {
-            try {
-                SerialPort port = openPortNoLog(OPEN_PORT_NAME, baudRate);
-                OutputStream outputStream = port.getOutputStream();
-                InputStream inputStream = port.getInputStream();
-                if (!port.isOpen()){
-                    logService.warningLog("포트를 열 수 없습니다.");
-                }
+            serialPortMap.get(OPEN_PORT_NAME).closePort();
+            for (int baudRate : baudRates) {
+                try {
+                    openPortNoLog(OPEN_PORT_NAME, baudRate);
+                    Thread.sleep(1000);  // 포트가 열릴 시간을 기다림
+                    SerialPort port = serialPortMap.get(OPEN_PORT_NAME);
+                    OutputStream outputStream = port.getOutputStream();
+                    InputStream inputStream = port.getInputStream();
 
-                String msg = "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
-                outputStream.write(hexStringToByteArray(msg));
-                outputStream.flush();
-                Thread.sleep(100);
-                byte[] buffer = new byte[1024];
-                int numRead = inputStream.read(buffer, 0, buffer.length);
-                String response = bytesToHex(buffer, numRead);
-                if (!response.isBlank()) {
-                    logService.updateInfoLog("통신 속도 찾기 성공");
-                    logService.updateInfoLog(OPEN_PORT_NAME +"의 적정 통신 속도는 "+ baudRate + "입니다.");
-                    return baudRate;
+                    if (!port.isOpen()) {
+                        // 포트를 열 수 없을 때 로그 업데이트
+                        Platform.runLater(() -> logService.warningLog("포트를 열 수 없습니다."));
+                        continue;
+                    }
+
+                    // 포트가 열렸을 때 로그 업데이트
+                    Platform.runLater(() -> logService.updateInfoLog("현재 속도 " + baudRate + "에서 응답을 대기 중..."));
+
+                    String msg = "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                    outputStream.write(hexStringToByteArray(msg));
+                    outputStream.flush();
+
+                    byte[] buffer = new byte[1024];
+                    int numRead =  0;
+                    long timeout = RESPONSE_LATENCY * 1000;
+                    long startTime = System.currentTimeMillis();
+
+                    // 응답 대기
+                    while (System.currentTimeMillis() - startTime < timeout) {
+                        if (inputStream.available() > 0) {
+                            int bytesRead = inputStream.read(buffer, numRead, buffer.length - numRead);
+                            if (bytesRead > 0) {
+                                numRead += bytesRead;
+                                startTime = System.currentTimeMillis();
+                                if (dataReceivedIsComplete(buffer, numRead)) {
+                                    break;
+                                }
+                            }
+                        } else {
+                            Thread.sleep(50);  // 짧은 대기 시간
+                        }
+                    }
+
+                    String response = bytesToHex(buffer, numRead);
+
+                    if (!response.isBlank()) {
+                        // 통신 속도 찾기 성공 로그 업데이트
+                        Platform.runLater(() -> logService.updateInfoLog(OPEN_PORT_NAME + "의 적정 통신 속도는 " + baudRate + "입니다."));
+                        return baudRate;
+                    }
+
+                    closePortNoLog(OPEN_PORT_NAME);
+                } catch (IOException | InterruptedException e) {
+                    // 예외 발생 시 로그 업데이트
+                    Platform.runLater(() -> logService.warningLog("예외 발생: " + e.getMessage()));
                 }
-                closePortNoLog(OPEN_PORT_NAME);
-            } catch (IOException | InterruptedException e) {
             }
+
+            // 통신 속도를 찾지 못한 경우 경고 로그 업데이트
+            Platform.runLater(() -> logService.warningLog("적정 통신 속도를 찾지 못했습니다."));
+            return 0;
         }
-        return 0;
-    }
+    };
 }

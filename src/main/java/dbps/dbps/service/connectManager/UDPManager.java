@@ -90,7 +90,6 @@ public class UDPManager {
         try{
             InetAddress serverAddr = InetAddress.getByName(IP);
             byte[] sendData = hexStringToByteArray(msg);
-            System.out.println("msg = " + msg);
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddr, PORT);
             socket.send(sendPacket);
 
@@ -133,7 +132,6 @@ public class UDPManager {
             InetAddress serverAddr = InetAddress.getByName(IP);
             DatagramPacket sendPacket = new DatagramPacket(CONNECT_START, CONNECT_START.length, serverAddr, PORT);
             socket.send(sendPacket);
-
 
             byte[] receiveBuffer = new byte[1024];
             receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
