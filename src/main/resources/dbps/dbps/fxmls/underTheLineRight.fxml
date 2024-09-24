@@ -13,7 +13,7 @@
     <children>
         <Label alignment="CENTER" layoutX="88.5" layoutY="-12.0" prefHeight="25.0" prefWidth="150.0"
                style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white;-fx-font-size: 17; -fx-font-weight: bolder" text="릴레이 신호 출력" textFill="WHITE"/>
-        <ComboBox layoutX="18.0" layoutY="20.0" prefHeight="27.0" prefWidth="109.0" value="None">
+        <ComboBox fx:id="relayBox1" layoutX="18.0" layoutY="20.0" prefHeight="27.0" prefWidth="109.0" value="None">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="None" />
@@ -51,7 +51,7 @@
             </items>
         </ComboBox>
         <Label layoutX="143.0" layoutY="23.0" text="x 100ms" />
-        <ComboBox layoutX="18.0" layoutY="50.0" prefHeight="27.0" prefWidth="109.0" value="None">
+        <ComboBox fx:id="relayBox2" layoutX="18.0" layoutY="50.0" prefHeight="27.0" prefWidth="109.0" value="None">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="None" />

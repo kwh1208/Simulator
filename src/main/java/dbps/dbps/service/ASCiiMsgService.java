@@ -24,10 +24,8 @@ public class ASCiiMsgService {
     private static final String FILE_NAME = "messages.txt";
     public static Stage makeMsgWindow;
 
-    //싱글톤
     private static ASCiiMsgService instance = null;
 
-    //DI용
     private final LogService logService;
 
     private ASCiiMsgService() {
@@ -68,6 +66,7 @@ public class ASCiiMsgService {
             doReset(transmitMsgContents, transmitMsgs);
             logService.updateInfoLog("메세지가 초기화 되었습니다.");
         }
+
     }
 
     /**

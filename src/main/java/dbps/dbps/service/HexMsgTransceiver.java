@@ -83,7 +83,7 @@ public class HexMsgTransceiver {
         switch (command) {
             case "40" -> handleScreenSizeSetting(splitMsg, msg);
             case "66" -> handleTimeRead(receiveMsg, splitMsg);
-            default -> handleDefaultCommands(command, status, receiveMsg, splitMsg);
+            default -> handleDefaultCommands(status, receiveMsg, splitMsg);
         }
         return receiveMsg;
     }
@@ -121,27 +121,13 @@ public class HexMsgTransceiver {
         }
     }
 
-    private void handleDefaultCommands(String command, String status, String receiveMsg, String[] splitMsg) {
+    private void handleDefaultCommands(String status, String receiveMsg, String[] splitMsg) {
         // 단순 상태 코드 확인 및 로그 출력
         if (status.equals("00")) {
             logService.updateInfoLog("받은 메세지 : " + receiveMsg); // 받은 메세지 출력
         } else {
             chkErrorCode(receiveMsg, splitMsg);
         }
-    }
-
-    private String getSuccessMessage(String command) {
-        return switch (command) {
-            case "4C" -> "페이지 메세지 개수 등록에 성공했습니다.";
-            case "4B" -> "페이지 메모리 전체 삭제에 성공했습니다.";
-            case "4A" -> "하드 리셋에 성공했습니다.";
-            case "41" -> "화면 on/off에 성공했습니다.";
-            case "4F" -> "배경이미지 호출에 성공했습니다.";
-            case "44" -> "화면 밝기 조절에 성공했습니다.";
-            case "47" -> "시간 동기화에 성공했습니다.";
-            case "42" -> "화면 단일색으로 채우기에 성공했습니다.";
-            default -> null;
-        };
     }
 
     private void chkErrorCode(String receiveMsg, String[] splitMsg) {
