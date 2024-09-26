@@ -111,6 +111,10 @@ public class AsciiMsgTransceiver {
 
             return time;
         }
+        if (cmd.equals("81")){
+            logService.updateInfoLog("펌웨어 버전 : " + receiveMsg);
+            return receiveMsg;
+        }
 
         if (status == '0') { // 정상 처리
             if (cmd.equals("83")) { // 맥주소 읽기

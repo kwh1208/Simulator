@@ -6,9 +6,9 @@
 <AnchorPane fx:id="firmwareUpgradeAP" style="-fx-background-color: #333333" prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.FirmwareUpgradeController">
    <children>
       <Label layoutX="39.0" layoutY="30.0" text="컨트롤러 펌웨어 정보:" />
-      <TextField fx:id="firmwareInformation" editable="false" layoutX="39.0" layoutY="65.0" prefHeight="102.0" prefWidth="431.0" />
+      <TextArea  fx:id="firmwareInformation" editable="false" layoutX="39.0" layoutY="65.0" prefHeight="102.0" prefWidth="431.0" />
       <Label layoutX="39.0" layoutY="197.0" text="업로드할 펌웨어 정보:" />
-      <TextField fx:id="firmwareFileInformation" editable="false" layoutX="39.0" layoutY="229.0" prefHeight="83.0" prefWidth="431.0" />
+      <TextArea  fx:id="firmwareFileInformation" editable="false" layoutX="39.0" layoutY="229.0" prefHeight="83.0" prefWidth="431.0" />
       <Label layoutX="39.0" layoutY="336.0" text="파일 경로:" />
       <TextField fx:id="fileLocation" layoutX="39.0" layoutY="361.0" prefHeight="21.0" prefWidth="431.0" />
       <Button layoutX="39.0" layoutY="405.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="30.0" prefWidth="125.0" text="읽기" />

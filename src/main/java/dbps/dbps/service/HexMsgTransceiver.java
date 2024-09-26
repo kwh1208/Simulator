@@ -3,11 +3,13 @@ package dbps.dbps.service;
 import dbps.dbps.service.connectManager.*;
 
 
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
+import static dbps.dbps.Constants.hexStringToByteArray;
 
 public class HexMsgTransceiver {
 
@@ -83,10 +85,15 @@ public class HexMsgTransceiver {
         switch (command) {
             case "40" -> handleScreenSizeSetting(splitMsg, msg);
             case "66" -> handleTimeRead(receiveMsg, splitMsg);
+            case "6F" -> {
+                return receiveMsg;
+            }
+
             default -> handleDefaultCommands(status, receiveMsg, splitMsg);
         }
         return receiveMsg;
     }
+
 
     private void handleScreenSizeSetting(String[] splitMsg, String msg) {
         if (!splitMsg[7].equals(msg.split(" ")[7]) || !splitMsg[8].equals(msg.split(" ")[8])) {

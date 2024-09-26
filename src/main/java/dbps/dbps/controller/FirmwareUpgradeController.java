@@ -1,7 +1,13 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.service.AsciiMsgTransceiver;
+import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.LogService;
+import dbps.dbps.service.connectManager.SerialPortManager;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -9,14 +15,19 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import static dbps.dbps.Constants.IS_ASCII;
+import static dbps.dbps.Constants.uploadFirmwarePath;
 
 public class FirmwareUpgradeController {
 
     @FXML
-    public TextField firmwareInformation;
+    public TextArea firmwareInformation;
 
     @FXML
-    public TextField firmwareFileInformation;
+    public TextArea firmwareFileInformation;
 
     @FXML
     public TextField fileLocation;
@@ -24,16 +35,37 @@ public class FirmwareUpgradeController {
     @FXML
     public AnchorPane firmwareUpgradeAP;
 
+    AsciiMsgTransceiver asciiMsgTransceiver;
+    HexMsgTransceiver hexMsgTransceiver;
+    LogService logService;
+
     @FXML
     public void initialize() {
         firmwareUpgradeAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/firmware.css").toExternalForm());
         firmwareInformation.setEditable(false);
         firmwareFileInformation.setEditable(false);
+
+        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+        hexMsgTransceiver = HexMsgTransceiver.getInstance();
+        logService = LogService.getLogService();
     }
 
 
-    public void read(MouseEvent mouseEvent) {
-        //msg maker통해서 정보읽어오는 신호 보내기
+    public void read() {
+        if (IS_ASCII){
+            String version = asciiMsgTransceiver.sendMessages("![0081!]");
+            firmwareInformation.setText(version.substring(6, version.length()-2));
+        }
+        else {
+            String version = hexMsgTransceiver.sendMessages("10 02 00 00 02 6F F1 10 03");
+            String[] version_split = version.split(" ");
+            StringBuilder result = new StringBuilder();
+
+            for (int i = 7; i < version_split.length; i++) {
+                result.append((char) Integer.parseInt(version_split[i], 16));
+            }
+            firmwareInformation.setText(result.toString());
+        }
     }
 
     public void open(MouseEvent mouseEvent) {
@@ -51,10 +83,47 @@ public class FirmwareUpgradeController {
         }
 
         //파일 정보읽어서 firmwareFileInformation에 업데이트
+        firmwareFileInformation.setText(selectedFile.getAbsolutePath());
     }
 
-    public void send(MouseEvent mouseEvent) {
+    public void send() {
+        if (firmwareInformation.getText().isEmpty()){
+            logService.warningLog("컨트롤러의 버전을 먼저 읽어주세요.");
+        }
+        String firmwareInformationText = firmwareInformation.getText();
+        String firmwareFileInformationText = firmwareFileInformation.getText();
+        int index1 = firmwareInformationText.indexOf("DIBD");
+        int index2 = firmwareFileInformationText.indexOf("DIBD");
 
+        String result1;
+        String result2;
+        if (index1 != -1 && index1 + "DIBD".length() + 4 <= firmwareInformationText.length()) {
+            result1 = firmwareInformationText.substring(index1 + "DIBD".length(), index1 + "DIBD".length() + 4);
+        } else {
+            System.out.println("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
+            return;
+        }
+
+        if (index2 != -1 && index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
+            result2 = firmwareFileInformationText.substring(index2 + "DIBD".length(), index2 + "DIBD".length() + 4);
+        } else {
+            System.out.println("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
+            return;
+        }
+
+        if (!result1.equals(result2)){
+            System.out.println("업로드할 수 없습니다. 컨트롤러의 펌웨어와 동일한 펌웨어를 업로드해주세요.");
+        }
+
+        uploadFirmwarePath = firmwareFileInformationText;
+
+        if (!Files.exists(Path.of(uploadFirmwarePath))){
+            System.out.println("파일 없음.");
+        }
+        SerialPortManager serialPortManager = SerialPortManager.getManager();
+        Task<Void> firmwareUpload = serialPortManager.firmwareUpload;
+
+        new Thread(firmwareUpload).start();
     }
 
     public void close(MouseEvent mouseEvent) {

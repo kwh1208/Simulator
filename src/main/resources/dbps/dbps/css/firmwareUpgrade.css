@@ -6,7 +6,6 @@
 .text-field:focused{
     -fx-border-color: orange;
 }
-
 .button {
     -fx-font-size : 15px; /* 폰트 크기 */
     -fx-background-color: #222222; /* 버튼 배경색 */

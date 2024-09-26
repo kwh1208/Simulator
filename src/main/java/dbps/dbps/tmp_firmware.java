@@ -2,8 +2,6 @@ package dbps.dbps;
 
 import com.fazecast.jSerialComm.SerialPort;
 import java.io.*;
-import java.nio.file.*;
-import java.util.Arrays;
 
 import static dbps.dbps.Constants.*;
 
@@ -47,16 +45,22 @@ public class tmp_firmware {
         };
 
         // CRC 계산 함수
-        public static int calcCRC(byte[] buf, int length) {
+        public static int calcCRC(byte[] buf1, byte[] buf2, int length1, int startIdx, int length2) {
             int crc = 0x0000;  // CRC 초기값
 
-            // 0부터 length까지 계산
-            for (int i = 0; i < length; i++) {
-                int byteVal = buf[i] & 0xFF;
+            // buf1에 대한 CRC 계산
+            for (int i = 0; i < length1; i++) {
+                int byteVal = buf1[i] & 0xFF;
                 int tableIndex = (crc ^ byteVal) & 0xFF;
                 crc = (crc >> 8) ^ wCRCTable[tableIndex];
             }
-            System.out.println();
+
+            // buf2 (firmwareData)의 startIdx부터 length2 크기만큼에 대한 CRC 계산
+            for (int i = 0; i < length2; i++) {
+                int byteVal = buf2[startIdx + i] & 0xFF;
+                int tableIndex = (crc ^ byteVal) & 0xFF;
+                crc = (crc >> 8) ^ wCRCTable[tableIndex];
+            }
 
             return crc & 0xFFFF;
         }
@@ -67,7 +71,6 @@ public class tmp_firmware {
     private int packetSize = 1024;
     private int totalPackets;
     private OutputStream outputStream;
-    private InputStream inputStream;
 
     // 시리얼 포트 열기 및 설정 (추가해야 할 부분)
     public void openSerialPort() throws IOException {
@@ -77,7 +80,6 @@ public class tmp_firmware {
         port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 3000, 3000);
         port.openPort();
         outputStream = new BufferedOutputStream(port.getOutputStream());
-        inputStream = new BufferedInputStream(port.getInputStream());
     }
 
     public void closeSerialPort() throws IOException {
@@ -88,140 +90,84 @@ public class tmp_firmware {
     }
 
     // 데이터를 패킷 단위로 전송하는 메소드
-    public void dataTransferClick() {
-        try {
-            // 리소스 파일에서 펌웨어 데이터를 읽어옴
-            InputStream firmwareStream = getClass().getResourceAsStream("/dbps/dbps/DIBD502S_08C_02R020C_V2.5.3-UM.bin");
+    public static boolean sendFontData() {
+        boolean connect = false;
+        int totBlockCnt = 0;
+        int[][] fontBlockCnt = new int[4][3];
+        int totPacketCnt = 0;
+        int packetCnt = 0;
+        String fileName = "";
+        int dataSize = 1024;
+        FileInputStream file = null;
+        byte[] nData = null;
 
-            if (firmwareStream == null) {
-                throw new FileNotFoundException("Firmware file not found!");
-            }
+        int[] fontKindBlockCnt = new int[8];
+        int iCodeIndex = 0;
+        int iFontCount = 1;
 
-            // 펌웨어 데이터를 읽어 바이트 배열로 저장
-            firmwareData = firmwareStream.readAllBytes();
-            firmwareStream.close();  // 스트림 닫기
+        // Assuming cbFont2, cbFont3, cbFont4 are checkboxes (or similar logic)
+//        if (cbFont2.isChecked()) iFontCount++;
+//        if (cbFont3.isChecked()) iFontCount++;
+//        if (cbFont4.isChecked()) iFontCount++;
+//
+//        try {
+//            int topSize = 0x7f;
+//            for (int j = 0; j < iFontCount; j++) {
+//                for (int i = 0; i < 3; i++) {
+//                    String comboBoxValue = findComponent("cbFontKind" + (j + 1) + (i + 1));
+//                    iCodeIndex = findCodeIndex(comboBoxValue);
+//                    if (iCodeIndex == 6) {
+//                        String editValue = findComponent("eFont" + (j + 1) + (i + 1));
+//                        fileName = editValue;
+//                        File fileObj = new File(fileName);
+//                        if (fileObj.exists()) {
+//                            file = new FileInputStream(fileName);
+//                            int fileSize = file.available() - 16;
+//                            fileSize = fileSize / 32;
+//                            if (fileSize > topSize) {
+//                                topSize = fileSize;
+//                                fontKindAddr[1][6] = 0xe000 + fileSize;
+//                            }
+//                            if (file != null) {
+//                                file.close();
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        // Processing font block counts
+//        for (int i = 1; i < 8; i++) {
+//            if (i == 1) {
+//                fontKindBlockCnt[i] = ((fontKindAddr[1][i] - fontKindAddr[0][i]) + 1) * 16;
+//            } else {
+//                fontKindBlockCnt[i] = ((fontKindAddr[1][i] - fontKindAddr[0][i]) + 1) * 32;
+//            }
+//            if (fontKindBlockCnt[i] % dataSize == 0) {
+//                fontKindBlockCnt[i] = fontKindBlockCnt[i] / dataSize;
+//            } else {
+//                fontKindBlockCnt[i] = fontKindBlockCnt[i] / dataSize + 1;
+//            }
+//        }
 
-            // 패킷 개수 계산
-            totalPackets = (firmwareData.length + packetSize - 1) / packetSize;
-            //600V
-//            firmwareData[512] = (byte) totalPackets;
-//            firmwareData[513] = (byte) (totalPackets >> 8);
-            //502S 미변경
-//            firmwareData[512] = (byte) totalPackets;
-//            firmwareData[513] = (byte) (totalPackets >> 8);
+        // Remaining logic: handling file transmission, packet processing, error handling
+        // ...
 
-            // 앞부분에 추가할 고정된 4바이트 값 (CRC 계산에만 사용)
-            byte[] headerPrefix = new byte[4];
-            //{0x00, 0x44, 0x07, (byte) 0x9F};
-            //{주소, isize 상하위데이터, 명령코드}
-
-            byte[] sendFirmwareData = new byte[2 + headerPrefix.length + packetSize + 2]; // 10 02 + 패킷 크기, 헤더 등 포함
-
-            sendPacket(hexStringToByteArray("10 02 00 00 02 6F F1 10 03"), hexStringToByteArray("10 02 00 00 02 6F F1 10 03").length);
-
-            for (int i = 0; i < totalPackets; i++) {
-                int currentPacketSize = (i == totalPackets - 1)
-                        ? firmwareData.length % packetSize
-                        : packetSize;
-
-                // 헤더 정보 설정
-                sendFirmwareData[0] = 0X00;
-                sendFirmwareData[1] = (byte) (((currentPacketSize+7)>>8)|(0x40));
-                sendFirmwareData[2] = (byte) ((currentPacketSize+7)& 0xFF);
-                sendFirmwareData[3] = (byte) 0X9F;
-                sendFirmwareData[4] = (byte) totalPackets;
-                sendFirmwareData[5] = (byte) (totalPackets >> 8);
-                sendFirmwareData[6] = (byte) i;
-                sendFirmwareData[7] = (byte) (i >> 8);
-
-                // 펌웨어 데이터 복사
-                System.arraycopy(firmwareData, i * packetSize, sendFirmwareData, 8, currentPacketSize);
-
-                // CRC 계산 (패킷의 10번째 바이트부터 currentPacketSize까지 사용)
-                int crc = CRC16.calcCRC(sendFirmwareData, currentPacketSize+8);
-
-                byte[] finalData = new byte[6 + sendFirmwareData.length];
-                System.arraycopy(sendFirmwareData, 0, finalData, 2, sendFirmwareData.length);
-                finalData[0] = 0x10;
-                finalData[1] = 0x02;
-                finalData[currentPacketSize+10] = (byte) Byte.toUnsignedInt((byte) (crc & 0xFF));
-                finalData[currentPacketSize+11] = (byte) Byte.toUnsignedInt((byte)((crc >> 8) & 0xFF)) ;
-                finalData[currentPacketSize+12] = 0x10;
-                finalData[currentPacketSize+13] = 0x03;
-
-                // 패킷 내용을 헥사코드 형태로 출력
-                System.out.print("Sending packet " + (i + 1) + "/" + totalPackets + ": [");
-                for (int k = 0; k < 14 + currentPacketSize; k++) {
-                    System.out.printf("%02X", Byte.toUnsignedInt(finalData[k]));
-                    if (k < 13 + currentPacketSize) {
-                        System.out.print(" ");
-                    }
-                }
-                System.out.println("]");
-
-                // 데이터 전송
-                sendPacket(finalData, 14 + currentPacketSize);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 시리얼 포트를 통해 패킷을 전송하는 메소드
-    private boolean sendPacket(byte[] packet, int length) {
-        try {
-            if (outputStream != null) {
-                outputStream.write(Arrays.copyOf(packet, length)); // 실제 전송
-                outputStream.flush();
-
-                byte[] buffer = new byte[1024];
-                int totalBytesRead = 0;
-                long timeout = RESPONSE_LATENCY * 1000;
-                long startTime = System.currentTimeMillis();
-
-                while (System.currentTimeMillis() - startTime < timeout) {
-                    if (inputStream.available() > 0) {
-                        int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-                        if (bytesRead > 0) {
-                            totalBytesRead += bytesRead;
-                            startTime = System.currentTimeMillis();
-
-                            if (dataReceivedIsComplete(buffer, totalBytesRead)) {
-                                break;
-                            }
-                        }
-                    } else {
-                        Thread.sleep(50);
-                    }
-                }
-
-                System.out.println("Received: " + bytesToHex(buffer, totalBytesRead));
-                return true;
-            } else {
-                System.err.println("Output stream is not available.");
-                return false;
-            }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private static boolean dataReceivedIsComplete(byte[] buffer, int length) {
-        return length > 0 && buffer[length - 1]==(byte) ']' && buffer[length - 2]==(byte) '!';
+        return connect;
     }
 
     public static void main(String[] args) {
-        //52508
-
-
         tmp_firmware transfer = new tmp_firmware();
         try {
             transfer.openSerialPort(); // 실제 시리얼 포트를 열어야 합니다.
-            transfer.dataTransferClick();  // 데이터 전송
+            transfer.sendFontData();  // 데이터 전송
             transfer.closeSerialPort(); // 시리얼 포트 닫기
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 }
+//41.24초

@@ -8,6 +8,17 @@
 .text-field:focused{
     -fx-border-color: orange;
 }
+
+.text-area{
+    -fx-background-color: black;
+    -fx-control-inner-background: black;
+    -fx-background-radius: 0;
+    -fx-text-fill: white;
+}
+.text-area:focused{
+    -fx-border-color: orange;
+}
+
 .label{
     -fx-text-fill: #E0E0E0;
     -fx-font-size: 15px;
