@@ -133,6 +133,14 @@ public class ASCiiMsgController {
 
     @FXML
     public void preview(MouseEvent event) {
+        Button clickedBtn = (Button) event.getSource();
+        int num = Integer.parseInt(clickedBtn.getId().substring(10));
+        TextField targetTextField = transmitMsgs.get(num - 1);
+        //구현 계획
+        //기본표시 설정 창에서 먼저 가져오고 추가된 값 있으면 기존값에서 갈아끼움.
+        //화면설정 크기에서 가져와서 크기 만들고.
+        //그렇게 메세지 완성된거 기준으로 미리보기 띄우면 됨.
+
         msgService.preview(event, transmitMsgs);
     }
 

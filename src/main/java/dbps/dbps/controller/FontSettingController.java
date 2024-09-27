@@ -117,6 +117,12 @@ public class FontSettingController {
     }
 
     public void send(MouseEvent mouseEvent) {
+        /**
+         * 일단 전광판 끔
+         * 그다음에 폰트 그룹 갯수 확인
+         * 차례로 폰트 보냄.
+         * 다시 전광판 킴
+         */
     }
 
     public void close(MouseEvent mouseEvent) {

@@ -1,8 +1,8 @@
 package dbps.dbps.service.connectManager;
 
 import com.fazecast.jSerialComm.SerialPort;
+import dbps.dbps.Constants;
 import dbps.dbps.service.LogService;
-import dbps.dbps.tmp_firmware;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 
@@ -211,8 +211,7 @@ public class SerialPortManager {
 
                 // 패킷 개수 계산
                 int packetSize = 1024;
-                int totalPackets = (firmwareData.length + packetSize - 1) / packetSize;
-                //600, 500
+                int totalPackets = (firmwareData.length + packetSize - 1) / packetSize;                //600, 500
 //            firmwareData[512] = (byte) totalPackets;
 //            firmwareData[513] = (byte) (totalPackets >> 8);
                 //502
@@ -251,7 +250,7 @@ public class SerialPortManager {
                     };
 
                     // CRC 계산
-                    int crc = tmp_firmware.CRC16.calcCRC(headerData, firmwareData, headerData.length, i * packetSize, currentPacketSize);
+                    int crc = calcCRC(headerData, firmwareData, headerData.length, i * packetSize, currentPacketSize);
 
                     // 패킷 데이터 크기 (시작/종료 시퀀스 + 헤더 + 펌웨어 데이터 + CRC + 종료 시퀀스)
                     byte[] packet = new byte[2 + headerData.length + currentPacketSize + 4];

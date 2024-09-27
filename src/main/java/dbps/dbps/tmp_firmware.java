@@ -2,6 +2,7 @@ package dbps.dbps;
 
 import com.fazecast.jSerialComm.SerialPort;
 import java.io.*;
+import java.util.Arrays;
 
 import static dbps.dbps.Constants.*;
 
@@ -67,15 +68,17 @@ public class tmp_firmware {
     }
 
     SerialPort port;
-    private byte[] firmwareData;
+    private byte[] fontData1;
+    private byte[] fontData2;
     private int packetSize = 1024;
     private int totalPackets;
     private OutputStream outputStream;
+    FontData fontData = new FontData(); // 객체 생성 시 모든 값은 기본적으로 0으로 초기화됩니다.
 
     // 시리얼 포트 열기 및 설정 (추가해야 할 부분)
     public void openSerialPort() throws IOException {
         // 시리얼 포트 설정
-        port = SerialPort.getCommPort("COM1");
+        port = SerialPort.getCommPort("COM3");
         port.setComPortParameters(115200, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
         port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 3000, 3000);
         port.openPort();
@@ -90,83 +93,226 @@ public class tmp_firmware {
     }
 
     // 데이터를 패킷 단위로 전송하는 메소드
-    public static boolean sendFontData() {
-        boolean connect = false;
-        int totBlockCnt = 0;
-        int[][] fontBlockCnt = new int[4][3];
-        int totPacketCnt = 0;
-        int packetCnt = 0;
-        String fileName = "";
-        int dataSize = 1024;
-        FileInputStream file = null;
-        byte[] nData = null;
+    public void sendFontData() throws IOException, InterruptedException {
+        InputStream font = getClass().getResourceAsStream("/dbps/dbps/ENG 08x16-DABIT(표준).fnt");
+        fontData1 = font.readAllBytes();
 
-        int[] fontKindBlockCnt = new int[8];
-        int iCodeIndex = 0;
-        int iFontCount = 1;
+        font = getClass().getResourceAsStream("/dbps/dbps/KOR 16x16-DABIT(표준).fnt");
+//        fontData2 = font.readAllBytes();
+        fontData1 = Arrays.copyOf(fontData1, fontData1.length - 16);
+//        fontData2 = Arrays.copyOf(fontData2, fontData2.length - 16);
 
-        // Assuming cbFont2, cbFont3, cbFont4 are checkboxes (or similar logic)
-//        if (cbFont2.isChecked()) iFontCount++;
-//        if (cbFont3.isChecked()) iFontCount++;
-//        if (cbFont4.isChecked()) iFontCount++;
+//        byte[] combinedFontData = new byte[fontData1.length + fontData2.length];
+
+//        System.arraycopy(fontData1, 0, combinedFontData, 0, fontData1.length);
+
+        // 두 번째 배열을 첫 번째 배열 뒤에 복사
+//        System.arraycopy(fontData2, 0, combinedFontData, fontData1.length, fontData2.length);
+
+
+        int packetSize = 1024;
+        int totalPackets = (fontData1.length + packetSize - 1) / packetSize;
+
+        String portName = "COM3";
+        SerialPort port = SerialPort.getCommPort(portName);
+        port.setComPortParameters(115200, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 3000, 3000);
+        port.openPort();
+        OutputStream outputStream = new BufferedOutputStream(port.getOutputStream());
+        InputStream inputStream = new BufferedInputStream(port.getInputStream());
+
+        outputStream.write("![00210!]".getBytes());
+        outputStream.flush();
+
+        for (int i = 0; i < totalPackets; i++) {
+            int currentPacketSize;
+            if (i == totalPackets - 1) {
+                if (fontData1.length % packetSize==0){
+                    currentPacketSize = packetSize;
+                }
+                else currentPacketSize = fontData1.length % packetSize;
+            } else {
+                currentPacketSize = packetSize;
+            }
+            byte[] packet = new byte[currentPacketSize+17];
+
+//            10 02 00 04 0A 98
+            packet[0] = 0X10;
+            packet[1] = 0X02;
+            packet[2] = 0X00;
+            packet[3] = 0X04;
+            packet[4] = 0X0A;
+            packet[5] = (byte) 0X98;
+
+            packet[6] = (byte) totalPackets;
+            packet[7] = (byte) (totalPackets >> 8);
+            packet[8] = (byte) i;
+            packet[9] = (byte) (i>>8);
+            packet[10] = (byte) totalPackets;
+            packet[11] = (byte) (totalPackets >> 8);
+            packet[12] = (byte) i;
+            packet[13] = (byte) (i>>8);
+            packet[14] = 0X01;
+
+
+            System.out.println("currentPacketSize = " + currentPacketSize);
+            if (i == totalPackets - 1){
+                System.arraycopy(fontData1, i*packetSize+16, packet, 15, currentPacketSize-16);
+            }
+            else{
+                System.arraycopy(fontData1, i*packetSize+16, packet, 15, currentPacketSize);
+            }
+
+
+
+
+            packet[packet.length-2] = 0x10;
+            packet[packet.length-1] = 0x03;
+
+            outputStream.write(packet);
+            outputStream.flush();
+
+            System.out.print("send : [");
+            for (int j = 0; j < packet.length; j++) {
+                System.out.printf("%02X ", packet[j]);
+            }
+            System.out.println("]");
+
+            byte[] buffer = new byte[1024];
+            int totalBytesRead = 0;
+
+            // 데이터 수신을 기다리는 최대 시간 (예: 1000 밀리초)
+            long timeout = RESPONSE_LATENCY * 1000;
+            long startTime = System.currentTimeMillis();
+
+            // 반복적으로 읽어 남아있는 데이터를 모두 수신
+            while (System.currentTimeMillis() - startTime < timeout) {
+                if (inputStream.available() > 0) {
+                    int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                    if (bytesRead > 0) {
+                        totalBytesRead += bytesRead;
+                        // 타임아웃 시간 갱신 (데이터 수신이 있으면 타이머 리셋)
+                        startTime = System.currentTimeMillis();
+
+                        if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                            break; // 데이터를 다 받았으면 루프 종료
+                        }
+                    }
+                } else {
+                    // 짧은 대기 시간 후 다시 읽기 시도 (바쁜 대기 방지)
+                    Thread.sleep(50);
+                }
+            }
+
+            Thread.sleep(300);
+        }
+
+
+
+
+        Thread.sleep(1000);
+
+        // 폰트 개수 설정
+//        fontData.fontCnt = 1; //폰트 그룹의 개수
 //
-//        try {
-//            int topSize = 0x7f;
-//            for (int j = 0; j < iFontCount; j++) {
-//                for (int i = 0; i < 3; i++) {
-//                    String comboBoxValue = findComponent("cbFontKind" + (j + 1) + (i + 1));
-//                    iCodeIndex = findCodeIndex(comboBoxValue);
-//                    if (iCodeIndex == 6) {
-//                        String editValue = findComponent("eFont" + (j + 1) + (i + 1));
-//                        fileName = editValue;
-//                        File fileObj = new File(fileName);
-//                        if (fileObj.exists()) {
-//                            file = new FileInputStream(fileName);
-//                            int fileSize = file.available() - 16;
-//                            fileSize = fileSize / 32;
-//                            if (fileSize > topSize) {
-//                                topSize = fileSize;
-//                                fontKindAddr[1][6] = 0xe000 + fileSize;
-//                            }
-//                            if (file != null) {
-//                                file.close();
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
+//// 시작 주소와 끝 주소 설정
+//        if(j == 0 && iCodeIndex == 1)
+//        {
+//            FontData.FontSData[j].FontAddr[i].EndAddr[0] = 0xff;
+//            FontData.FontSData[j].FontAddr[i].EndAddr[1] = 0x00;
+//            //FontKindBlockCnt[iCodeIndex] = 4096 / DataSize;
+//            //FontBlockCnt[j][i] = FontKindBlockCnt[iCodeIndex];
+//        }
+//        else
+//        {
+//            fontData.fontSData[j].fontAddr[i].startAddr[0] = uSize[0];
+//            fontData.fontSData[j].fontAddr[i].startAddr[1] = uSize[1];
+//            fontData.fontSData[j].fontAddr[i].endAddr[0] = uSize[0];
+//            fontData.fontSData[j].fontAddr[i].endAddr[1] = uSize[1];
+//        }
+//// 폭과 높이 설정
+//        if (ComboBox.getSelectedIndex() == 2) {
+//            fontData.fontSData[j].fontAddr[i].width = 32;
+//            fontData.fontSData[j].fontAddr[i].height = 32;
+//        } else {
+//            fontData.fontSData[j].fontAddr[i].width = 16;
+//            fontData.fontSData[j].fontAddr[i].height = 16;
 //        }
 //
-//        // Processing font block counts
-//        for (int i = 1; i < 8; i++) {
-//            if (i == 1) {
-//                fontKindBlockCnt[i] = ((fontKindAddr[1][i] - fontKindAddr[0][i]) + 1) * 16;
-//            } else {
-//                fontKindBlockCnt[i] = ((fontKindAddr[1][i] - fontKindAddr[0][i]) + 1) * 32;
-//            }
-//            if (fontKindBlockCnt[i] % dataSize == 0) {
-//                fontKindBlockCnt[i] = fontKindBlockCnt[i] / dataSize;
-//            } else {
-//                fontKindBlockCnt[i] = fontKindBlockCnt[i] / dataSize + 1;
-//            }
-//        }
+//// 폰트 블록 위치 설정
+//        fontData.fontSData[j].fontAddr[i].fontPos[0] = uSize[0];
+//        fontData.fontSData[j].fontAddr[i].fontPos[1] = uSize[1];
+//
+//// 폰트 데이터의 총 바이트 수 설정
+//        fontData.fontSData[j].fontByteCnt[0] = uSize[0];
+//        fontData.fontSData[j].fontByteCnt[1] = uSize[1];
+//        fontData.fontSData[j].fontByteCnt[2] = uSize[2];
+//        fontData.fontSData[j].fontByteCnt[3] = uSize[3];
+//
+//// 데이터 전송 전 패킷에 데이터 복사
+//        System.arraycopy(fontData, 0, sendFrameData, 0, tempSize);  // tempSize는 데이터의 크기
 
-        // Remaining logic: handling file transmission, packet processing, error handling
-        // ...
 
-        return connect;
+
+        byte[] bytes = hexStringToByteArray("10 02 00 00 3A 4D 01 00 10 00 00 00 00 00 00 FF 00 08 10 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 10 03");
+        outputStream.write(bytes);
+        outputStream.flush();
+
+        Thread.sleep(1000);
+
+
+        outputStream.write("![00211!]".getBytes());
+        outputStream.flush();
+
     }
+
+    private boolean dataReceivedIsCompleteHex(byte[] buffer, int length) {
+        return length >= 2 && buffer[length - 2] == (byte) 0x10 && buffer[length - 1] == (byte) 0x03;
+    }
+
+    // FontData 클래스 정의
+    class FontData {
+        int fontCnt;
+        FontSData[] fontSData = new FontSData[4];
+
+        // FontSData 클래스 정의
+        class FontSData {
+            FontAddr[] fontAddr = new FontAddr[3];
+            byte[] fontByteCnt = new byte[4];
+
+            // FontAddr 클래스 정의
+            class FontAddr {
+                byte[] startAddr = new byte[2];
+                byte[] endAddr = new byte[2];
+                int width;
+                int height;
+                byte[] fontPos = new byte[2];
+            }
+
+            FontSData() {
+                for (int i = 0; i < fontAddr.length; i++) {
+                    fontAddr[i] = new FontAddr();
+                }
+            }
+        }
+
+        FontData() {
+            for (int i = 0; i < fontSData.length; i++) {
+                fontSData[i] = new FontSData();
+            }
+        }
+    }
+
+    // 초기화 부분 (ZeroMemory 대체)
 
     public static void main(String[] args) {
         tmp_firmware transfer = new tmp_firmware();
         try {
-            transfer.openSerialPort(); // 실제 시리얼 포트를 열어야 합니다.
             transfer.sendFontData();  // 데이터 전송
-            transfer.closeSerialPort(); // 시리얼 포트 닫기
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }
