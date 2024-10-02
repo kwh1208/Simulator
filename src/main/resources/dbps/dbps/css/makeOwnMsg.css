@@ -45,7 +45,7 @@
 
 }
 
-#msgPreview{
+#defaultSetting{
     -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
 }
 #makeOwnMsgAnchorPane {

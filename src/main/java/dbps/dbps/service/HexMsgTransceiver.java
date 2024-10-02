@@ -34,7 +34,7 @@ public class HexMsgTransceiver {
         return instance;
     }
 
-    public String sendMessages(String msg) {
+    public String sendByteMessages(byte[] msg) {
         String receivedMsg = "";
 
         //로그 출력
@@ -42,18 +42,23 @@ public class HexMsgTransceiver {
 
         switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> //시리얼 및 블루투스
-            receivedMsg = serialPortManager.sendMsgAndGetMsgHex(msg);
+                    receivedMsg = serialPortManager.sendMsgAndGetMsgByte(msg);
             case "UDP" -> //udp로 메세지 전송
-                    receivedMsg = udpManager.sendMsgAndGetMsgHex(msg);
+                    receivedMsg = udpManager.sendMsgAndGetMsgByte(msg);
             case "TCP" -> //tcp로 메세지 전송
-                receivedMsg = tcpManager.sendMsgAndGetMsgHex(msg);
+                    receivedMsg = tcpManager.sendMsgAndGetMsgByte(msg);
         }
 
         //시간 바꾸거나, 펌웨어 같은 일부 특수한 경우에 반환값 사용.
         return msgReceive(receivedMsg, msg);
     }
 
-    private String msgReceive(String receiveMsg, String msg) {
+    public String sendMessages(String msg) {
+        return sendByteMessages(hexStringToByteArray(msg));
+//        receivedMsg = tcpManager.sendMsgAndGetMsgHex(msg);
+    }
+
+    private String msgReceive(String receiveMsg, byte[] msg) {
         if (receiveMsg==null) {
             return null;
         }
@@ -77,7 +82,7 @@ public class HexMsgTransceiver {
         return chkSpecificCmdCode(receiveMsg, msg);
     }
 
-    public String chkSpecificCmdCode(String receiveMsg, String msg) {
+    public String chkSpecificCmdCode(String receiveMsg, byte[] msg) {
         String[] splitMsg = receiveMsg.split(" ");
         String command = splitMsg[5];
         String status = splitMsg[6];
@@ -95,8 +100,8 @@ public class HexMsgTransceiver {
     }
 
 
-    private void handleScreenSizeSetting(String[] splitMsg, String msg) {
-        if (!splitMsg[7].equals(msg.split(" ")[7]) || !splitMsg[8].equals(msg.split(" ")[8])) {
+    private void handleScreenSizeSetting(String[] splitMsg, byte[] msg) {
+        if (!splitMsg[7].equals(String.format("%02X", msg[7])) || !splitMsg[8].equals(String.format("%02X", msg[8]))) {
             logService.warningLog("화면 크기 설정에 실패했습니다.");
             logService.warningLog(splitMsg[7] + "단, " + splitMsg[8] + "열까지만 가능합니다.");
         } else {

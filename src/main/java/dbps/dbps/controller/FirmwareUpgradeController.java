@@ -1,9 +1,9 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.service.AsciiMsgTransceiver;
+import dbps.dbps.service.FirmwareService;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.LogService;
-import dbps.dbps.service.connectManager.SerialPortManager;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -13,8 +13,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -40,6 +38,7 @@ public class FirmwareUpgradeController {
     AsciiMsgTransceiver asciiMsgTransceiver;
     HexMsgTransceiver hexMsgTransceiver;
     LogService logService;
+    FirmwareService firmwareService;
 
     @FXML
     public void initialize() {
@@ -50,6 +49,7 @@ public class FirmwareUpgradeController {
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         logService = LogService.getLogService();
+        firmwareService = FirmwareService.getFirmwareService();
     }
 
 
@@ -122,9 +122,9 @@ public class FirmwareUpgradeController {
             logService.errorLog("파일을 찾을 수 없습니다.");
             return;
         }
-        SerialPortManager serialPortManager = SerialPortManager.getManager();
+
         uploadFirmwarePath = firmwareFileInformationText;
-        Task<Void> firmwareUpload = serialPortManager.firmwareUpload;
+        Task<Void> firmwareUpload = firmwareService.firmwareUpload;
 
         new Thread(firmwareUpload).start();
     }

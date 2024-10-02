@@ -80,7 +80,7 @@ public class UDPManager {
         return length > 0 && buffer[length - 1]==(byte) ']' && buffer[length - 2]==(byte) '!';
     }
 
-    public String sendMsgAndGetMsgHex(String msg){
+    public String sendMsgAndGetMsgByte(byte[] msg){
         if (socket == null) {
             logService.warningLog("UDP 소켓이 열려있지 않습니다.");
             connect(IP, PORT);
@@ -89,8 +89,7 @@ public class UDPManager {
         DatagramPacket receivePacket;
         try{
             InetAddress serverAddr = InetAddress.getByName(IP);
-            byte[] sendData = hexStringToByteArray(msg);
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddr, PORT);
+            DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
             socket.send(sendPacket);
 
             long startTime = System.currentTimeMillis();

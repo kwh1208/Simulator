@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import static dbps.dbps.controller.ASCiiMsgController.transmitMsgs;
@@ -74,7 +75,7 @@ public class MakeOwnMsgController {
     ChoiceBox<String> fontBgColor;
 
     @FXML
-    TextField msgPreview;
+    TextField defaultSetting;
 
     @FXML
     public void initialize() {
@@ -94,14 +95,14 @@ public class MakeOwnMsgController {
     public void settingConfirm() {
         String newMsg = getSettings();
 
-        msgPreview.setText(newMsg);
+        defaultSetting.setText(newMsg);
     }
 
     //미리보기
     //완성필요
     @FXML
-    public void preview() {
-        String text = msgPreview.getText();
+    public void send() {
+        String text = defaultSetting.getText();
     }
 
     //선택지 초기상태로
@@ -127,12 +128,12 @@ public class MakeOwnMsgController {
         bgImg.setValue("사용안함");
         fontColor.setValue("노란색");
         fontBgColor.setValue("검정색");
-        msgPreview.setText("![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]");
+        defaultSetting.setText("![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]");
     }
 
 
     public void confirm() {
-        String text = msgPreview.getText();
+        String text = defaultSetting.getText();
         //텍스트를 전체화면으로 넘겨주기.
         for (TextField transmitMsg : transmitMsgs) {
             if (transmitMsg.getText().isBlank() ||transmitMsg.getText().isEmpty()) {
@@ -420,4 +421,7 @@ public class MakeOwnMsgController {
         return "0";
     }
 
+    public void read(MouseEvent mouseEvent) {
+
+    }
 }

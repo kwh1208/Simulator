@@ -11,6 +11,6 @@
         <Button fx:id="msgSendBtn1" AnchorPane.topAnchor="15.0" AnchorPane.leftAnchor="630.0" AnchorPane.bottomAnchor="543.0" AnchorPane.rightAnchor="8.0" mnemonicParsing="false" maxHeight="45.0" maxWidth="61.0" text="전송" onMouseClicked="#sendMsg"/>
         <Label layoutX="20.0" layoutY="520.0" prefHeight="13.0" prefWidth="600.0" text="색상 코드(0:None 1:Red 2:Green 3: Yellow 4:Blue 5:Purple 6:SkyBlue 7:White)" style="-fx-text-fill: #E0E0E0; -fx-font-size: 16px;"/>
         <Button layoutX="23.0" layoutY="550.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="153.0" text="메세지 초기화" onMouseClicked="#resetMsg"/>
-        <Button layoutX="187.0" layoutY="550.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="153.0" text="메세지 만들기" onMouseClicked="#makeOwnMsg"/>
+        <Button layoutX="187.0" layoutY="550.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="153.0" text="기본값 설정" onMouseClicked="#setDefault"/>
     </children>
 </AnchorPane>

@@ -1,10 +1,12 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.service.FontService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -15,6 +17,60 @@ import javafx.stage.Stage;
 import java.io.File;
 
 public class FontSettingController {
+    FontService fontService = FontService.getInstance();
+    @FXML
+    public ChoiceBox<String> fontGroup2fontSelected1;
+    @FXML
+    public TextField fontGroup2fontPath1;
+    @FXML
+    public ChoiceBox<String> fontGroup2fontSelected2;
+    @FXML
+    public TextField fontGroup2fontPath2;
+    @FXML
+    public ChoiceBox<String> fontGroup2fontSelected3;
+    @FXML
+    public TextField fontGroup2fontPath3;
+    @FXML
+    public ChoiceBox<String> fontGroup3fontSelected1;
+    @FXML
+    public TextField fontGroup3fontPath1;
+    @FXML
+    public ChoiceBox<String> fontGroup3fontSelected2;
+    @FXML
+    public TextField fontGroup3fontPath2;
+    @FXML
+    public ChoiceBox<String> fontGroup3fontSelected3;
+    @FXML
+    public TextField fontGroup3fontPath3;
+    @FXML
+    public TextField fontGroup4fontPath1;
+    @FXML
+    public TextField fontGroup4fontPath2;
+    @FXML
+    public TextField fontGroup4fontPath3;
+    @FXML
+    public ChoiceBox<String> fontGroup4fontSelected1;
+    @FXML
+    public ChoiceBox<String> fontGroup4fontSelected2;
+    @FXML
+    public ChoiceBox<String> fontGroup4fontSelected3;
+    @FXML
+    public ChoiceBox<String> fontGroup2fontsize;
+    @FXML
+    public ChoiceBox<String> fontGroup3fontsize;
+    @FXML
+    public ChoiceBox<String> fontGroup4fontsize;
+    @FXML
+    ChoiceBox<String> fontGroup1fontSelected3;
+    @FXML
+    TextField fontGroup1fontPath3;
+    @FXML
+    TextField fontGroup1fontPath2;
+    @FXML
+    ChoiceBox<String> fontGroup1fontSelected2;
+    @FXML
+    TextField fontGroup1fontPath1;
+
     @FXML
     CheckBox fontGroup1ChkBox;
 
@@ -116,13 +172,76 @@ public class FontSettingController {
         }
     }
 
-    public void send(MouseEvent mouseEvent) {
+    public void send() throws InterruptedException {
         /**
          * 일단 전광판 끔
          * 그다음에 폰트 그룹 갯수 확인
          * 차례로 폰트 보냄.
          * 다시 전광판 킴
          */
+        String[] fontGroup1Path = new String[3];
+        String[] fontGroup2Path = null;
+        String[] fontGroup3Path = null;
+        String[] fontGroup4Path = null;
+        String[] fontSize = new String[4];
+        //첫번째 그룹
+        fontGroup1Path[0] = fontGroup1fontPath1.getText();
+        if (!fontGroup1fontSelected2.getValue().equals("사용안함")){
+            fontGroup1Path[1] = fontGroup1fontPath2.getText();
+        }
+        if (!fontGroup1fontSelected3.getValue().equals("사용안함")){
+            fontGroup1Path[2] = fontGroup1fontPath3.getText();
+        }
+        fontSize[0] = "8x16/16x16";
+
+
+        //두번째 그룹
+        if (fontGroup2ChkBox.isSelected()) {
+            fontGroup2Path = new String[3];
+            if (!fontGroup2fontSelected1.getValue().equals("사용안함")){
+                fontGroup2Path[0] = fontGroup2fontPath1.getText();
+            }
+            if (!fontGroup2fontSelected2.getValue().equals("사용안함")){
+                fontGroup1Path[1] = fontGroup2fontPath2.getText();
+            }
+            if (!fontGroup2fontSelected3.getValue().equals("사용안함")){
+                fontGroup1Path[2] = fontGroup2fontPath3.getText();
+            }
+            fontSize[1] = fontGroup2fontsize.getValue();
+        }
+
+        //세번째 그룹
+        if (fontGroup3ChkBox.isSelected()){
+            fontGroup3Path = new String[3];
+            if (!fontGroup3fontSelected1.getValue().equals("사용안함")){
+                fontGroup3Path[0] = fontGroup3fontPath1.getText();
+            }
+            if (!fontGroup3fontSelected2.getValue().equals("사용안함")){
+                fontGroup3Path[1] = fontGroup3fontPath2.getText();
+            }
+            if (!fontGroup3fontSelected3.getValue().equals("사용안함")){
+                fontGroup3Path[2] = fontGroup3fontPath3.getText();
+            }
+            fontSize[2] = fontGroup3fontsize.getValue();
+        }
+
+        //네번째 그룹
+        if (fontGroup4ChkBox.isSelected()){
+            fontGroup4Path = new String[3];
+            if (!fontGroup4fontSelected1.getValue().equals("사용안함")){
+                fontGroup4Path[0] = fontGroup4fontPath1.getText();
+            }
+            if (!fontGroup3fontSelected2.getValue().equals("사용안함")){
+                fontGroup4Path[1] = fontGroup4fontPath2.getText();
+            }
+            if (!fontGroup4fontSelected3.getValue().equals("사용안함")){
+                fontGroup4Path[2] = fontGroup4fontPath3.getText();
+            }
+            fontSize[3] = fontGroup4fontsize.getValue();
+        }
+
+        fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path, fontGroup4Path, fontSize);
+
     }
 
     public void close(MouseEvent mouseEvent) {

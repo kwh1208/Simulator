@@ -133,7 +133,7 @@ public class TCPManager {
         logService.updateInfoLog("TCP 서버 연결이 종료되었습니다. IP: " + IP + ", PORT: " + PORT);
     }
 
-    public String sendMsgAndGetMsgHex(String msg) {
+    public String sendMsgAndGetMsgByte(byte[] msg){
         if (socket == null) {
             logService.warningLog("TCP 소켓이 열려있지 않습니다.");
             connect(IP, PORT);
@@ -143,7 +143,7 @@ public class TCPManager {
             InputStream input = socket.getInputStream();
             OutputStream output = socket.getOutputStream();
 
-            output.write(hexStringToByteArray(msg));
+            output.write(msg);
             output.flush();
 
             long startTime = System.currentTimeMillis();

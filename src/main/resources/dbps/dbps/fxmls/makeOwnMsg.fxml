@@ -361,11 +361,12 @@
            </items>
        </ChoiceBox>
 
-       <TextField fx:id="msgPreview" layoutX="35.0" layoutY="508.0" prefHeight="40.0" prefWidth="495.0" style="-fx-background-color: black; -fx-text-fill: white" text="![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]" />
+       <TextField fx:id="defaultSetting" layoutX="35.0" layoutY="508.0" prefHeight="40.0" prefWidth="495.0" style="-fx-background-color: black; -fx-text-fill: white" text="![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]" />
 
-       <Button layoutX="150.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#settingConfirm" prefHeight="30.0" prefWidth="81.0" text="설정 확인" />
-       <Button layoutX="250.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#preview" prefHeight="30.0" prefWidth="81.0" text="미리보기" />
-       <Button layoutX="350.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="초기화" />
-       <Button layoutX="450.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="30.0" prefWidth="81.0" text="확인"/>
+       <Button layoutX="35.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#settingConfirm" prefHeight="30.0" prefWidth="90.0" text="설정 확인" />
+       <Button layoutX="135.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="90.0" text="전송" />
+       <Button layoutX="235.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="90.0" text="초기화" />
+       <Button layoutX="335.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="30.0" prefWidth="90.0" text="읽기"/>
+       <Button layoutX="435.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="30.0" prefWidth="90.0" text="확인"/>
    </children>
 </AnchorPane>
