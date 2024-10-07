@@ -30,7 +30,7 @@
                      </FXCollections>
                  </items>
              </ChoiceBox>
-             <TextField fx:id="fontGroup1fontPath1" layoutX="175.0" layoutY="55.0" prefWidth="150.0" text="default 경로" />
+             <TextField fx:id="fontGroup1fontPath1" layoutX="175.0" layoutY="55.0" prefWidth="150.0" text="" />
              <Button fx:id="fontGroup1fontBtn1" layoutX="327.0" layoutY="54.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="15.0" text="Button" />
              <ChoiceBox fx:id="fontGroup1fontSelected2" layoutX="14.0" layoutY="90.0" prefWidth="150.0" value="한글조합형">
                  <items>

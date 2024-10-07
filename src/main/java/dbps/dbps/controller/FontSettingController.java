@@ -125,6 +125,14 @@ public class FontSettingController {
         });
 
         fontSettingAnchorPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/fontSetting.css").toExternalForm());
+
+        fontGroup1fontPath1.setText(System.getProperty("user.dir") + File.separator + "Font");
+        fontGroup1fontPath2.setText(System.getProperty("user.dir") + File.separator + "Font");
+        fontGroup1fontPath3.setText(System.getProperty("user.dir") + File.separator + "Font");
+
+        fontGroup2fontPath1.setText(System.getProperty("user.dir") + File.separator + "Font");
+        fontGroup2fontPath2.setText(System.getProperty("user.dir") + File.separator + "Font");
+        fontGroup2fontPath3.setText(System.getProperty("user.dir") + File.separator + "Font");
     }
 
 
@@ -138,20 +146,40 @@ public class FontSettingController {
                 new FileChooser.ExtensionFilter("모든 파일", "*.*")
         );
 
+        // 클릭된 버튼에서 그룹 번호와 버튼 번호 추출
+        Button clickedBtn = (Button) event.getSource();
+        String groupNum = String.valueOf(clickedBtn.getId().charAt(9));
+        String btnNum = String.valueOf(clickedBtn.getId().charAt(17));
+
+        // TextField ID를 구성하여 해당 TextField 찾기
+        String textFieldId = "fontGroup" + groupNum + "fontPath" + btnNum;
+        TextField fontPath = (TextField) fontSettingAnchorPane.lookup("#" + textFieldId);
+
+        // TextField에서 가져온 경로가 유효한지 확인
+        File initialDir = new File(fontPath.getText());
+        if (initialDir.exists() && initialDir.isDirectory()) {
+            // 경로가 존재하고 디렉터리인 경우에만 초기 디렉터리 설정
+            fileChooser.setInitialDirectory(initialDir);
+        } else {
+            // 기본 경로 설정: 실행 파일이 있는 디렉터리를 기본 경로로 설정
+            File defaultDir = new File(System.getProperty("user.dir") + File.separator + "Font");
+            if (defaultDir.exists() && defaultDir.isDirectory()) {
+                fileChooser.setInitialDirectory(defaultDir);
+            } else {
+                // 기본 폴더도 존재하지 않으면 user.dir을 설정
+                fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+            }
+        }
+
+        // FileChooser 열기
         Stage stage = (Stage) fontGroup1ChkBox.getScene().getWindow();
         File selectedFont = fileChooser.showOpenDialog(stage);
 
-        Button clickedBtn = (Button) event.getSource();
-        String groupNum = String.valueOf(clickedBtn.getId().charAt(9));
-        String BtnNum = String.valueOf(clickedBtn.getId().charAt(17));
-
+        // 선택된 폰트 경로를 TextField에 설정
         if (selectedFont != null) {
-            String textFieldId = "fontGroup" + groupNum + "fontPath" + BtnNum;
-            TextField fontPath = (TextField) fontSettingAnchorPane.lookup("#" + textFieldId);
             fontPath.setText(selectedFont.getAbsolutePath());
         }
     }
-
     //체크박스 클릭시 폰트설정 비활성화/활성화
     private void disableAllNodesInPane(Pane pane){
         for (Node node : pane.getChildren()) {

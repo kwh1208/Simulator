@@ -1,7 +1,10 @@
 package dbps.dbps.service.connectManager;
 
+import javafx.concurrent.Task;
+
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
 public class BTManager {
@@ -51,7 +54,15 @@ public class BTManager {
 
     public void begin(String password) {
         String msg = "++SET++![BT " + password + " BEGIN!]";
-        String receivedMsg = serialPortManager.sendMsgAndGetMsg(msg);
+        Task<String> sendTask = serialPortManager.sendMsgAndGetMsg(msg);
+        Thread taskThread = new Thread(sendTask);
+        taskThread.start();
+        String receivedMsg = "";
+        try {
+            receivedMsg = sendTask.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
         if (receivedMsg.equals("![DIBD BLE OK!]")){
             CONNECT_TYPE = "bluetooth";
         }

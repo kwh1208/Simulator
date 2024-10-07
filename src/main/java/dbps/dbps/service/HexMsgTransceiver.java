@@ -1,12 +1,14 @@
 package dbps.dbps.service;
 
 import dbps.dbps.service.connectManager.*;
+import javafx.concurrent.Task;
 
 
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
 import static dbps.dbps.Constants.hexStringToByteArray;
@@ -41,12 +43,45 @@ public class HexMsgTransceiver {
         logService.updateInfoLog("전송 메세지: " + msg);
 
         switch (CONNECT_TYPE) {
-            case "serial", "bluetooth", "rs485" -> //시리얼 및 블루투스
-                    receivedMsg = serialPortManager.sendMsgAndGetMsgByte(msg);
+            case "serial", "bluetooth", "rs485" -> {
+                try {
+                    // Task 객체를 생성하여 비동기 작업 실행
+                    Task<String> sendTask = serialPortManager.sendMsgAndGetMsgByte(msg);
+
+                    // 새로운 스레드에서 Task를 실행
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+
+                    // Task의 완료를 기다리고 결과를 동기적으로 가져오기
+                    receivedMsg = sendTask.get(); // get() 메서드는 Task 완료까지 대기함
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             case "UDP" -> //udp로 메세지 전송
-                    receivedMsg = udpManager.sendMsgAndGetMsgByte(msg);
+            {
+                try {
+                    Task<String> sendTask = udpManager.sendMsgAndGetMsgByte(msg);
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+
+                    receivedMsg = sendTask.get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
             case "TCP" -> //tcp로 메세지 전송
-                    receivedMsg = tcpManager.sendMsgAndGetMsgByte(msg);
+            {
+                try {
+                    Task<String> sendTask = tcpManager.sendMsgAndGetMsgByte(msg);
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+
+                    receivedMsg = sendTask.get();
+                }catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
         //시간 바꾸거나, 펌웨어 같은 일부 특수한 경우에 반환값 사용.
@@ -55,7 +90,6 @@ public class HexMsgTransceiver {
 
     public String sendMessages(String msg) {
         return sendByteMessages(hexStringToByteArray(msg));
-//        receivedMsg = tcpManager.sendMsgAndGetMsgHex(msg);
     }
 
     private String msgReceive(String receiveMsg, byte[] msg) {

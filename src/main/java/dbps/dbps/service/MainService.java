@@ -4,12 +4,11 @@ package dbps.dbps.service;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
-import lombok.Setter;
+
 
 import java.io.IOException;
 
 public class MainService {
-    @Setter
     private static Tab messageTab = null;
 
     private static MainService instance;
@@ -25,6 +24,9 @@ public class MainService {
         return instance;
     }
 
+    public static void setMessageTab(Tab messageTab) {
+        MainService.messageTab = messageTab;
+    }
 
     public void showASCiiMsgTab(){
         try {

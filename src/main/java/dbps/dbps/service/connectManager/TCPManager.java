@@ -1,8 +1,7 @@
 package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.LogService;
-import lombok.Getter;
-import lombok.Setter;
+import javafx.concurrent.Task;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,13 +11,26 @@ import static dbps.dbps.Constants.*;
 
 public class TCPManager {
 
-    @Getter
-    @Setter
+
     private String IP;
 
-    @Getter
-    @Setter
     private int PORT;
+
+    public String getIP() {
+        return IP;
+    }
+
+    public int getPORT() {
+        return PORT;
+    }
+
+    public void setIP(String IP) {
+        this.IP = IP;
+    }
+
+    public void setPORT(int PORT) {
+        this.PORT = PORT;
+    }
 
     Socket socket = null;
 
@@ -35,45 +47,50 @@ public class TCPManager {
         }
         return tcpManager;
     }
+    public Task<String> sendASCMsg(String msg){
+        return new Task<String>() {
 
-    public String sendASCMsg(String msg) {
-        if (socket == null) {
-            logService.warningLog("TCP 소켓이 열려있지 않습니다.");
-            connect(IP, PORT);
-        }
+            @Override
+            protected String call() throws Exception {
+                if (socket == null) {
+                    logService.warningLog("TCP 소켓이 열려있지 않습니다.");
+                    connect(IP, PORT);
+                }
 
-        try {
-            InputStream input = socket.getInputStream();
-            OutputStream output = socket.getOutputStream();
+                try {
+                    InputStream input = socket.getInputStream();
+                    OutputStream output = socket.getOutputStream();
 
-            output.write(msg.getBytes(Charset.forName("EUC-KR")));
-            output.flush();
+                    output.write(msg.getBytes(Charset.forName("EUC-KR")));
+                    output.flush();
 
-            long startTime = System.currentTimeMillis();
-            byte[] buffer = new byte[1024];
-            int totalBytesRead = 0;
+                    long startTime = System.currentTimeMillis();
+                    byte[] buffer = new byte[1024];
+                    int totalBytesRead = 0;
 
-            while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000) {
-                if (input.available() > 0) {
-                int bytesRead = input.read(buffer);
-                if (bytesRead > 0) {
-                    totalBytesRead += bytesRead;
+                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000) {
+                        if (input.available() > 0) {
+                            int bytesRead = input.read(buffer);
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
 
-                    startTime = System.currentTimeMillis();
+                                startTime = System.currentTimeMillis();
 
-                    if (dataReceivedIsComplete(buffer, totalBytesRead)) {
-                        break;
+                                if (dataReceivedIsComplete(buffer, totalBytesRead)) {
+                                    break;
+                                }
+                            }} else {
+                            Thread.sleep(50);
+                        }
                     }
-                }} else {
-                    Thread.sleep(50);
+                    return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                } catch (IOException | InterruptedException e){
+                    e.getMessage();
+                    logService.errorLog(msg+"전송에 실패했습니다.");
+                    return "에러발생";
                 }
             }
-            return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
-        } catch (IOException | InterruptedException e){
-            e.getMessage();
-            logService.errorLog(msg+"전송에 실패했습니다.");
-            return "에러발생";
-        }
+        };
     }
 
     private boolean dataReceivedIsComplete(byte[] buffer, int length) {
@@ -133,43 +150,49 @@ public class TCPManager {
         logService.updateInfoLog("TCP 서버 연결이 종료되었습니다. IP: " + IP + ", PORT: " + PORT);
     }
 
-    public String sendMsgAndGetMsgByte(byte[] msg){
-        if (socket == null) {
-            logService.warningLog("TCP 소켓이 열려있지 않습니다.");
-            connect(IP, PORT);
-        }
+    public Task<String> sendMsgAndGetMsgByte(byte[] msg){
+        return new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                if (socket == null) {
+                    logService.warningLog("TCP 소켓이 열려있지 않습니다.");
+                    connect(IP, PORT);
+                }
 
-        try {
-            InputStream input = socket.getInputStream();
-            OutputStream output = socket.getOutputStream();
+                try {
+                    InputStream input = socket.getInputStream();
+                    OutputStream output = socket.getOutputStream();
 
-            output.write(msg);
-            output.flush();
+                    output.write(msg);
+                    output.flush();
 
-            long startTime = System.currentTimeMillis();
-            byte[] buffer = new byte[1024];
-            int totalBytesRead = 0;
+                    long startTime = System.currentTimeMillis();
+                    byte[] buffer = new byte[1024];
+                    int totalBytesRead = 0;
 
-            while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000) {
-                if (input.available() > 0) {
-                    int bytesRead = input.read(buffer);
-                    if (bytesRead > 0) {
-                        totalBytesRead += bytesRead;
+                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000) {
+                        if (input.available() > 0) {
+                            int bytesRead = input.read(buffer);
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
 
-                        startTime = System.currentTimeMillis();
+                                startTime = System.currentTimeMillis();
 
-                        if (dataReceivedIsComplete(buffer, totalBytesRead)) {
-                            break;
+                                if (dataReceivedIsComplete(buffer, totalBytesRead)) {
+                                    break;
+                                }
+                            }
+                        } else {
+                            Thread.sleep(50);
                         }
-                    }} else {
-                    Thread.sleep(50);
+                    }
+                    return bytesToHex(buffer, totalBytesRead);
+                } catch (IOException | InterruptedException e) {
+                    logService.errorLog(msg + "전송에 실패했습니다.");
+                    return null;
                 }
             }
-            return bytesToHex(buffer, totalBytesRead);
-        } catch (IOException | InterruptedException e){
-            logService.errorLog(msg+"전송에 실패했습니다.");
-            return null;
-        }
+        };
     }
 }
 

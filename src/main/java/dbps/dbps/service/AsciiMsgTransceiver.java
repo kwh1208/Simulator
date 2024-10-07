@@ -1,8 +1,11 @@
 package dbps.dbps.service;
 
 import dbps.dbps.service.connectManager.*;
+import javafx.concurrent.Task;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
 
@@ -39,12 +42,45 @@ public class AsciiMsgTransceiver {
                 logService.errorLog("연결된 장치가 없습니다.");
                 return null;
             }
-            case "serial", "bluetooth","rs485" -> //시리얼 및 블루투스
-                    receivedMsg = serialPortManager.sendMsgAndGetMsg(msg);
+            case "serial", "bluetooth", "rs485" -> {
+                try {
+                    // Task 객체를 생성하여 비동기 작업 실행
+                    Task<String> sendTask = serialPortManager.sendMsgAndGetMsg(msg);
+
+                    // 새로운 스레드에서 Task를 실행
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+
+                    // Task의 완료를 기다리고 결과를 동기적으로 가져오기
+                    receivedMsg = sendTask.get(); // get() 메서드는 Task 완료까지 대기함
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             case "UDP" -> //udp로 메세지 전송
-                    receivedMsg = udpManager.sendASCMsg(msg);
+            {
+                try {
+                    Task<String> sendTask = udpManager.sendASCMsg(msg);
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+
+                    receivedMsg = sendTask.get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
             case "TCP" -> //tcp로 메세지 전송
-                    receivedMsg = tcpManager.sendASCMsg(msg);
+            {
+                try {
+                    Task<String> sendTask = tcpManager.sendASCMsg(msg);
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+
+                    receivedMsg = sendTask.get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
         logService.updateInfoLog("전송 메세지: " + msg);
 

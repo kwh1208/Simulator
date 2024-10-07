@@ -1,10 +1,9 @@
 module dbps.dbps {
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.graphics;
     requires com.fazecast.jSerialComm;
-    requires org.slf4j;
     requires static lombok;
-    requires jdk.jshell;
     requires java.desktop;
     requires org.fxmisc.richtext;
 
