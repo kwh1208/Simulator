@@ -1,6 +1,7 @@
 package dbps.dbps.controller;
 
 
+import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.MainService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
@@ -8,6 +9,7 @@ import javafx.scene.control.TabPane;
 
 public class MainController {
     MainService mainService;
+    ConfigService configService;
 
     @FXML
     public TabPane mainTab;
@@ -22,6 +24,7 @@ public class MainController {
         mainService = MainService.getInstance();
         mainService.setMessageTab(messageTab);
         mainService.showASCiiMsgTab();
+        configService = ConfigService.getInstance();
     }
 
 
