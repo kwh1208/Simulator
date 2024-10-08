@@ -1,6 +1,7 @@
 package dbps.dbps.service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -66,9 +67,9 @@ public class FontService {
             for (int j = 0; j < 3; j++) {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 if (now[j]!=null){
-                    InputStream fontFile = getClass().getResourceAsStream(now[j]);
                     byte[] fontData;
                     try {
+                        InputStream fontFile = new FileInputStream(now[j]);
                         fontData = fontFile.readAllBytes();
 
                         fontData = Arrays.copyOf(fontData, fontData.length - 16);
@@ -77,7 +78,9 @@ public class FontService {
                         groupPacketCnt+=Math.ceil(fontData.length/1024.0);
                         ByteBuffer tmp = ByteBuffer.allocate(2);
                         tmp.order(ByteOrder.LITTLE_ENDIAN);
-                        tmp.putInt(groupPacketCnt);
+                        tmp.putShort((short)groupPacketCnt);
+                        totalPackets+=groupPacketCnt;
+
                         byte[] tmpArray = tmp.array();
                         for (int k = 0; k < 2; k++) {
                             groupPacket.append(String.format("%02X ", tmpArray[k]));
@@ -112,6 +115,7 @@ public class FontService {
 
 
                         outputStream.write(fontData);
+                        outputStream.flush();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -129,6 +133,7 @@ public class FontService {
             }
             finalPacket.append(groupPacket);
         }
+
         for (int i = 0; i < totalPackets; i++) {
             int currentPacketSize;
             if (i == totalPackets - 1) {
@@ -163,6 +168,10 @@ public class FontService {
                 System.arraycopy(combinedData, i*packetSize+16, sendPacket, 15, currentPacketSize-16);
             }
             else{
+                System.out.println("i = " + i);
+                System.out.println("currentPacketSize = " + currentPacketSize);
+                System.out.println("sendPacket.length = " + sendPacket.length);
+                System.out.println("combinedData = " + combinedData.length);
                 System.arraycopy(combinedData, i*packetSize+16, sendPacket, 15, currentPacketSize);
             }
 
@@ -178,6 +187,7 @@ public class FontService {
             Thread.sleep(100);
         }
 
+        //앞뒤로 붙이는거 추가
         hexMsgTransceiver.sendMessages(finalPacket.toString());
         System.out.println(finalPacket);
 

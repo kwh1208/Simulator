@@ -201,12 +201,6 @@ public class FontSettingController {
     }
 
     public void send() throws InterruptedException {
-        /**
-         * 일단 전광판 끔
-         * 그다음에 폰트 그룹 갯수 확인
-         * 차례로 폰트 보냄.
-         * 다시 전광판 킴
-         */
         String[] fontGroup1Path = new String[3];
         String[] fontGroup2Path = null;
         String[] fontGroup3Path = null;

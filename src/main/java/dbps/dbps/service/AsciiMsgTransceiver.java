@@ -151,6 +151,16 @@ public class AsciiMsgTransceiver {
             logService.updateInfoLog("펌웨어 버전 : " + receiveMsg);
             return receiveMsg;
         }
+        if (cmd.equals("B3")){
+            //보드기능 읽기
+            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            return receiveMsg;
+        }
+        if (cmd.equals("B2")){
+            //보드기능 설정
+            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            return receiveMsg;
+        }
 
         if (status == '0') { // 정상 처리
             if (cmd.equals("83")) { // 맥주소 읽기

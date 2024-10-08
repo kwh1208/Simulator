@@ -10,8 +10,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
-import static dbps.dbps.Constants.CONNECT_TYPE;
-import static dbps.dbps.Constants.hexStringToByteArray;
+import static dbps.dbps.Constants.*;
 
 public class HexMsgTransceiver {
 
@@ -40,7 +39,7 @@ public class HexMsgTransceiver {
         String receivedMsg = "";
 
         //로그 출력
-        logService.updateInfoLog("전송 메세지: " + msg);
+        logService.updateInfoLog("전송 메세지: " + bytesToHex(msg, msg.length));
 
         switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> {

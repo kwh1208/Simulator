@@ -1,17 +1,16 @@
 package dbps.dbps.service;
 
 import java.io.*;
-import java.util.Map;
 import java.util.Properties;
 
 import static dbps.dbps.service.DisplaySignal.SignalMap_ASC;
 
 public class ConfigService {
     private static ConfigService instance;
-    private Properties properties;
-    private Properties displayProperties;
-    private String configFilePath;
-    private String displayFilePath;
+    private final Properties properties;
+    private final Properties displayProperties;
+    private final String configFilePath;
+    private final String displayFilePath;
 
     private ConfigService() {
         configFilePath = System.getProperty("user.dir") + File.separator + "config" + File.separator + "config.properties";
@@ -51,11 +50,76 @@ public class ConfigService {
             defaultProperties.setProperty("UDPAddr", "192.168.0.10");
             defaultProperties.setProperty("RESPONSE_LATENCY", "3");
             defaultProperties.setProperty("lastDisplaySignal", "16D-P16D1S11");
-//            defaultProperties.setProperty("fontGroup1Size", "");
-//            defaultProperties.setProperty("fontGroup1FontPath1", "");
-//            defaultProperties.setProperty("fontGroup1FontType1", "");
-//            aboutHEx
-//            aboutDefault
+            defaultProperties.setProperty("fontGroup1Size", "8X16/16X16");
+            defaultProperties.setProperty("fontGroup1FontPath1", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
+            defaultProperties.setProperty("fontGroup1FontType1", "영어(ASCII)");
+            defaultProperties.setProperty("fontGroup1FontPath2", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
+            defaultProperties.setProperty("fontGroup1FontType2", "한글조합형");
+            defaultProperties.setProperty("fontGroup1FontPath3", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
+            defaultProperties.setProperty("fontGroup1FontType3", "사용자폰트");
+
+            defaultProperties.setProperty("fontGroup2Size", "8X16/16X16");
+            defaultProperties.setProperty("fontGroup2FontPath1", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
+            defaultProperties.setProperty("fontGroup2FontType1", "영어(ASCII)");
+            defaultProperties.setProperty("fontGroup2FontPath2", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
+            defaultProperties.setProperty("fontGroup2FontType2", "한글조합형");
+            defaultProperties.setProperty("fontGroup2FontPath3", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
+            defaultProperties.setProperty("fontGroup2FontType3", "사용자폰트");
+
+            defaultProperties.setProperty("fontGroup1selected", "True");
+            defaultProperties.setProperty("fontGroup2selected", "True");
+            defaultProperties.setProperty("fontGroup3selected", "False");
+            defaultProperties.setProperty("fontGroup4selected", "False");
+
+            for (int i = 0; i <= 10; i++) {//페이지 개수(0은 실시간)
+                for (int j = 1; j < 3; j++) {//섹션 개수
+                    defaultProperties.setProperty("displayControl"+i+j, "ON");
+                    defaultProperties.setProperty("displayMethod"+i+j, "Normal");
+                    defaultProperties.setProperty("charCode"+i+j, "KS완성형 한글코드");
+                    defaultProperties.setProperty("fontSize"+i+j, "16(Standard)");
+                    defaultProperties.setProperty("fontGroup"+i+j, "FontGroup1");
+                    defaultProperties.setProperty("effectIn"+i+j, "정지효과");
+                    defaultProperties.setProperty("effectInDirection"+i+j, "방향없음");
+                    defaultProperties.setProperty("effectOut"+i+j, "사용안함");
+                    defaultProperties.setProperty("effectOutDirection"+i+j, "사용안함");
+                    defaultProperties.setProperty("effectSpeed"+i+j, "5");
+                    defaultProperties.setProperty("effectTime"+i+j, "2");
+                    defaultProperties.setProperty("xStart"+i+j, "0");
+                    defaultProperties.setProperty("xEnd"+i+j, "0");
+                    defaultProperties.setProperty("yStart"+i+j, "0");
+                    defaultProperties.setProperty("yEnd"+i+j, "0");
+                    defaultProperties.setProperty("bgImg"+i+j, "사용안함");
+                    defaultProperties.setProperty("textColor"+i+j, "1");
+                    defaultProperties.setProperty("bgColor"+i+j, "2");
+                    if (i==0) {
+                        defaultProperties.setProperty("text", "realTime 메세지");
+                    }
+                    else {
+                        defaultProperties.setProperty("text", "page "+i+"/section "+j);
+                    }
+                }
+            }
+
+            defaultProperties.setProperty("displayControlDefault", "ON");
+            defaultProperties.setProperty("displayMethodDefault", "Normal");
+            defaultProperties.setProperty("charCodeDefault", "KS완성형 한글코드");
+            defaultProperties.setProperty("fontSizeDefault", "16(Standard)");
+            defaultProperties.setProperty("fontGroupDefault", "FontGroup1");
+            defaultProperties.setProperty("effectInDefault", "정지효과");
+            defaultProperties.setProperty("effectInDirectionDefault", "방향없음");
+            defaultProperties.setProperty("effectOutDefault", "사용안함");
+            defaultProperties.setProperty("effectOutDirectionDefault", "사용안함");
+            defaultProperties.setProperty("effectSpeedDefault", "5");
+            defaultProperties.setProperty("effectTimeDefault", "2");
+            defaultProperties.setProperty("xStartDefault", "0");
+            defaultProperties.setProperty("xEndDefault", "0");
+            defaultProperties.setProperty("yStartDefault", "0");
+            defaultProperties.setProperty("yEndDefault", "0");
+            defaultProperties.setProperty("bgImgDefault", "사용안함");
+            defaultProperties.setProperty("textColorDefault", "1");
+            defaultProperties.setProperty("bgColorDefault", "2");
+            defaultProperties.setProperty("text", "![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]");
+
             defaultProperties.setProperty("pageMsgCnt", "1");
             defaultProperties.setProperty("pageMsgClear", "전체");
             defaultProperties.setProperty("displayBrightness", "100");

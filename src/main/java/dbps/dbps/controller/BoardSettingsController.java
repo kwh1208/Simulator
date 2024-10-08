@@ -94,8 +94,58 @@ public class BoardSettingsController {
     }
 
     public void Transfer() {
+        String[] baudRates = {"9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600"};
         if(group.getSelectedToggle().equals(readRadio)){
-            asciiMsgTransceiver.sendMessages("![00B30!]");
+            String result = asciiMsgTransceiver.sendMessages("![00B30!]");
+            //![00B3 0,0,0,4,4,4,00!]
+            String[] resultSplit = result.substring(7, result.length() - 2).split(",");
+
+            if (resultSplit[0].equals("0")){
+                debugMethod.setValue("Disable");
+            }else {
+                debugMethod.setValue("Enable"+resultSplit[0]);
+            }
+
+            if (resultSplit[1].equals("0")){
+                BH1_Func.setValue("TTL/RS485");
+            } else if (resultSplit[1].equals("1")) {
+                BH1_Func.setValue("CAN");
+            } else if (resultSplit[1].equals("2")) {
+                BH1_Func.setValue("12C");
+            } else if (resultSplit[1].equals("3")) {
+                BH1_Func.setValue("SPI");
+            } else if (resultSplit[1].equals("4")) {
+                BH1_Func.setValue("8Pin Input(HEX)");
+            } else if (resultSplit[1].equals("5")) {
+                BH1_Func.setValue("8Pin Input(BCD)");
+            } else if (resultSplit[1].equals("6")) {
+                BH1_Func.setValue("8Pin Input(Number)");
+            } else if (resultSplit[1].equals("7")) {
+                BH1_Func.setValue("8Pin Input(BIT BGSch)");
+            }
+
+            if (resultSplit[2].equals("0")){
+                J4_func.setValue("Relay out");
+            } else if (resultSplit[2].equals("1")){
+                J4_func.setValue("CDS");
+            } else if (resultSplit[2].equals("2")){
+                J4_func.setValue("DHT22(ONLY NoLAN)");
+            } else if (resultSplit[2].equals("3")){
+                J4_func.setValue("DS1302");
+            } else if (resultSplit[2].equals("4")){
+                J4_func.setValue("SHT31(DB502)");
+            } else if (resultSplit[2].equals("5")){
+                J4_func.setValue("2Port Input");
+            } else if (resultSplit[2].equals("6")){
+                J4_func.setValue("Relay Out & NoRTC");
+            } else if (resultSplit[2].equals("7")){
+                J4_func.setValue("Relay 4Port");
+            }
+
+            J2_baud.setValue(baudRates[Integer.parseInt(resultSplit[3])]);
+            J3_baud.setValue(baudRates[Integer.parseInt(resultSplit[4])]);
+            BH1_baud.setValue(baudRates[Integer.parseInt(resultSplit[5])]);
+
         }
         else {
             String msg = "![00B2 ";
@@ -109,7 +159,7 @@ public class BoardSettingsController {
                 msg+="0,";
             }
             else {
-                msg+=debug.replaceAll("[^0-9]", "");
+                msg+=debug.replaceAll("[^0-9]", "")+",";
             }
 
             if (BH1_F.equals("TTL/RS485")){
@@ -147,7 +197,6 @@ public class BoardSettingsController {
             } else if (J4.equals("Relay 4Port")) {
                 msg += "7,";
             }
-            String[] baudRates = {"9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600"};
             int index = java.util.Arrays.asList(baudRates).indexOf(J2);
             if (index != -1) {
                 msg += index + ",";
@@ -160,13 +209,12 @@ public class BoardSettingsController {
 
             index = java.util.Arrays.asList(baudRates).indexOf(BH1_B);
             if (index != -1) {
-                msg += index + ",";
+                msg += index;
             }
 
             msg+="!]";
             asciiMsgTransceiver.sendMessages(msg);
         }
-
 
 
     }
