@@ -207,7 +207,6 @@ public class AsciiMsgTransceiver {
             }
             if (cmd.equals("52")){
                 logService.updateInfoLog("받은 메세지 : " + receiveMsg);
-                logService.updateInfoLog("표출신호 설정에 성공했습니다.");
             }
             if (cmd.equals("54")){
                 logService.updateInfoLog("받은 메세지 : " + receiveMsg);

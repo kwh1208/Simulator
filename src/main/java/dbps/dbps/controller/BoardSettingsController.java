@@ -101,7 +101,7 @@ public class BoardSettingsController {
             String[] resultSplit = result.substring(7, result.length() - 2).split(",");
 
             if (resultSplit[0].equals("0")){
-                debugMethod.setValue("Disable");
+                debugMethod.setValue("disable");
             }else {
                 debugMethod.setValue("Enable"+resultSplit[0]);
             }
