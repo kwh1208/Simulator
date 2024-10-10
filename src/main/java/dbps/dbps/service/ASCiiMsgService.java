@@ -3,6 +3,7 @@ package dbps.dbps.service;
 
 import dbps.dbps.Simulator;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -10,6 +11,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -18,6 +20,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import static dbps.dbps.Constants.SIZE_COLUMN;
+import static dbps.dbps.Constants.SIZE_ROW;
 
 
 public class ASCiiMsgService {
@@ -74,7 +79,7 @@ public class ASCiiMsgService {
      * @param transmitMsgs
      */
 
-    public void preview(MouseEvent event, List<TextField> transmitMsgs){
+    public void preview(MouseEvent event, List<TextField> transmitMsgs) {
         Button clickedButton = (Button) event.getSource();
         String buttonId = clickedButton.getId();
 
@@ -82,7 +87,25 @@ public class ASCiiMsgService {
         TextField targetTextField = transmitMsgs.get(num - 1);
         String inputText = targetTextField.getText();
 
+
         //메세지 미리보기
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/preview.fxml"));
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);  // 모달창 설정
+        stage.setTitle("Preview Window");
+
+        // Scene 생성 및 크기 지정
+        Scene scene = null;
+        try {
+            scene = new Scene(fxmlLoader.load(), SIZE_ROW*16*4, SIZE_COLUMN*16*4);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        stage.setScene(scene);
+
+        // 모달 창 표시
+        stage.showAndWait();
+
     }
 
     //

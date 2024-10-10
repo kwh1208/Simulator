@@ -20,6 +20,11 @@ public class BasicSettingController {
     public void initialize() {
         configService = ConfigService.getInstance();
         mainService = MainService.getInstance();
+        if (IS_ASCII){
+            protocolFormat.setValue("아스키 프로토콜");
+        } else {
+            protocolFormat.setValue("헥사 프로토콜");
+        }
         protocolFormat.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.equals("아스키 프로토콜")) {
                 mainService.showASCiiMsgTab();
@@ -31,13 +36,6 @@ public class BasicSettingController {
                 configService.setProperty("IS_ASCII", "false");
             }
         });
-
-
-        if (IS_ASCII){
-            protocolFormat.setValue("아스키 프로토콜");
-        } else {
-            protocolFormat.setValue("헥사 프로토콜");
-        }
 
     }
 }

@@ -17,22 +17,6 @@ public class Constants {
     @FXML
     public void initialize() {
         configService = ConfigService.getInstance();
-
-        IS_ASCII = Boolean.getBoolean(configService.getProperty("IS_ASCII"));
-        CONNECT_TYPE = configService.getProperty("connectType");
-        OPEN_PORT_NAME = configService.getProperty("openPortName");
-        SERIAL_BAUDRATE = Integer.parseInt(configService.getProperty("serialSpeed"));
-        RS485_ADDR_NUM = configService.getProperty("RS485_ADDR_NUM");
-        TCP_IP = configService.getProperty("clientTCPAddr");
-        TCP_PORT = Integer.parseInt(configService.getProperty("clientTCPPort"));
-        UDP_IP = configService.getProperty("UDPAddr");
-        UDP_PORT = Integer.parseInt(configService.getProperty("UDPPort"));
-        SIZE_ROW = Integer.parseInt(configService.getProperty("displayRowSize"));
-        SIZE_COLUMN = Integer.parseInt(configService.getProperty("displayColumnSize"));
-        BITS_PER_PIXEL = Integer.parseInt(configService.getProperty("bitsPerPixel"));
-        howToArrange = configService.getProperty("howToArrange");
-        RESPONSE_LATENCY = Integer.parseInt(configService.getProperty("latency"));
-        isRS = Boolean.getBoolean(configService.getProperty("isRS"));
     }
 
     public static int RESPONSE_LATENCY = 3;

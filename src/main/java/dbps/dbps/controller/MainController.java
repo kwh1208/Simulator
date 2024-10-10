@@ -7,6 +7,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
+import static dbps.dbps.Constants.IS_ASCII;
+
 public class MainController {
     MainService mainService;
     ConfigService configService;
@@ -21,10 +23,14 @@ public class MainController {
 
     @FXML
     public void initialize() {
+        configService = ConfigService.getInstance();
         mainService = MainService.getInstance();
         mainService.setMessageTab(messageTab);
-        mainService.showASCiiMsgTab();
-        configService = ConfigService.getInstance();
+        if (IS_ASCII){
+            mainService.showASCiiMsgTab();
+        }else {
+            mainService.showHEXMsgTab();
+        }
     }
 
 

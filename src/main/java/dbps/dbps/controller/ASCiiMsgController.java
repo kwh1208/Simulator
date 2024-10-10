@@ -7,6 +7,7 @@ import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.ConfigService;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -160,12 +161,10 @@ public class ASCiiMsgController {
 
 
         //화면설정 크기에서 가져와서 크기 만들고.
-        int row = SIZE_ROW;
-        int column = SIZE_COLUMN;
+
         //그렇게 메세지 완성된거 기준으로 미리보기 띄우면 됨.
 
-
-
+        //한픽셀 = 10
 
         msgService.preview(event, transmitMsgs);
     }

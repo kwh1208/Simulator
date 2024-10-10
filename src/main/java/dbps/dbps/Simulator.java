@@ -1,5 +1,6 @@
 package dbps.dbps;
 
+import dbps.dbps.service.ConfigService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -8,6 +9,13 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class Simulator extends Application {
+    @Override
+    public void init() throws Exception {
+        super.init();
+        ConfigService.getInstance();
+    }
+
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/main.fxml"));

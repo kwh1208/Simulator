@@ -24,6 +24,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -138,6 +139,53 @@ public class CommunicationSettingController {
         serverTCPRadioBtn.setToggleGroup(communicationGroup);
         UDPRadioBtn.setToggleGroup(communicationGroup);
 
+        switch (CONNECT_TYPE) {
+            case "serial":
+                communicationGroup.selectToggle(serialRadioBtn);  // Serial 버튼 선택
+                serialRadioToggle(true);
+                clientTCPRadioToggle(false);
+                serverTCPRadioToggle(false);
+                UDPRadioToggle(false);
+                connect.setText("포트열기");
+                shutConnect.setText("포트닫기");
+                break;
+            case "clientTCP":
+                communicationGroup.selectToggle(clientTCPRadioBtn);  // Client TCP 버튼 선택
+                serialRadioToggle(false);
+                clientTCPRadioToggle(true);
+                serverTCPRadioToggle(false);
+                UDPRadioToggle(false);
+                connect.setText("접속하기");
+                shutConnect.setText("접속끊기");
+                break;
+            case "serverTCP":
+                communicationGroup.selectToggle(serverTCPRadioBtn);  // Server TCP 버튼 선택
+                serialRadioToggle(false);
+                clientTCPRadioToggle(false);
+                serverTCPRadioToggle(true);
+                UDPRadioToggle(false);
+                connect.setText("접속하기");
+                shutConnect.setText("접속끊기");
+                break;
+            case "UDP":
+                communicationGroup.selectToggle(UDPRadioBtn);  // UDP 버튼 선택
+                serialRadioToggle(false);
+                clientTCPRadioToggle(false);
+                serverTCPRadioToggle(false);
+                UDPRadioToggle(true);
+                connect.setText("접속하기");
+                shutConnect.setText("접속끊기");
+                break;
+            default:
+                // 예외 상황: 아무 것도 선택하지 않음
+                communicationGroup.selectToggle(null);
+                serialRadioToggle(false);
+                clientTCPRadioToggle(false);
+                serverTCPRadioToggle(false);
+                UDPRadioToggle(false);
+                break;
+        }
+
         communicationGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             RadioButton selectedRadioButton = (RadioButton) newValue;
             if (selectedRadioButton.equals(serialRadioBtn)) {
@@ -172,18 +220,7 @@ public class CommunicationSettingController {
 
         });
 
-        if (CONNECT_TYPE.equals("serial")){
-            serialRadioBtn.setSelected(true);
-            if (isRS){
-                RS485ChkBox.setSelected(true);
-                RS485ChoiceBox.setValue(RS485_ADDR_NUM);
-            }
-            else RS485ChkBox.setSelected(false);
-        } else if (CONNECT_TYPE.equals("TCP")){
-            clientTCPRadioBtn.setSelected(true);
-        } else if (CONNECT_TYPE.equals("UDP")){
-            UDPRadioBtn.setSelected(true);
-        }
+
 
         getSerialPortList();
 
@@ -201,6 +238,10 @@ public class CommunicationSettingController {
         delayTime.selectionModelProperty().addListener((observableValue, oldValue, newValue) -> RESPONSE_LATENCY = Integer.parseInt(delayTime.getValue()));
 
         communicationSettingAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/communicationSetting.css").toExternalForm());
+
+        if (isRS){
+            RS485ChkBox.setSelected(true);
+        }
     }
 
     //사용가능한 포트 가져오기
@@ -338,10 +379,15 @@ public class CommunicationSettingController {
 
     //다빛넷 열기
     public void openDabitNet() throws IOException {
-        // 현재 프로젝트 경로를 기준으로 상대 경로 설정
         String relativePath = "./src/main/resources/dbps/dbps/DabitNet_S.exe";
+
+        // 절대 경로로 변환 후 정리
+        String absolutePath = new File(relativePath).getCanonicalPath();
+
         // 실행할 명령어 정의
-        String command = "runas /user:Administrator " + relativePath;
+        String command = "runas /user:Administrator \"" + absolutePath + "\"";
+        System.out.println("command = " + command);
+
         // Runtime 실행
         Runtime.getRuntime().exec(command);
     }

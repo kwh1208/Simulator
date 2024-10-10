@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.Properties;
 
 import static dbps.dbps.service.DisplaySignal.SignalMap_ASC;
+import static dbps.dbps.Constants.*;
 
 public class ConfigService {
     private static ConfigService instance;
@@ -20,6 +21,22 @@ public class ConfigService {
         createFileIfNotExists(configFilePath, "config");
         createFileIfNotExists(displayFilePath, "display");
         loadProperties();
+
+        IS_ASCII = Boolean.parseBoolean(getProperty("IS_ASCII"));
+        CONNECT_TYPE = getProperty("connectType");
+        OPEN_PORT_NAME = getProperty("openPortName");
+        SERIAL_BAUDRATE = Integer.parseInt(getProperty("serialSpeed"));
+        RS485_ADDR_NUM = getProperty("RS485_ADDR_NUM");
+        TCP_IP = getProperty("clientTCPAddr");
+        TCP_PORT = Integer.parseInt(getProperty("clientTCPPort"));
+        UDP_IP = getProperty("UDPAddr");
+        UDP_PORT = Integer.parseInt(getProperty("UDPPort"));
+        SIZE_ROW = Integer.parseInt(getProperty("displayRowSize"));
+        SIZE_COLUMN = Integer.parseInt(getProperty("displayColumnSize"));
+        BITS_PER_PIXEL = getProperty("bitsPerPixel").charAt(0)-'0';
+        howToArrange = getProperty("howToArrange");
+        RESPONSE_LATENCY = Integer.parseInt(getProperty("latency"));
+        isRS = Boolean.parseBoolean(getProperty("isRS"));
     }
 
     private void createFileIfNotExists(String filePath, String fileName) {
@@ -201,7 +218,7 @@ public class ConfigService {
     }
 
     public static ConfigService getInstance() {
-        if (instance != null) {
+        if (instance == null) {
             instance = new ConfigService();
         }
         return instance;
@@ -232,6 +249,7 @@ public class ConfigService {
     public String getDisplayProperty(String key) {
         return displayProperties.getProperty(key);
     }
+    //데코엘
 
     public void setDisplayProperties(String key, String value){
         displayProperties.setProperty(key, value);

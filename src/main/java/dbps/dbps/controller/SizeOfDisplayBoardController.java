@@ -49,6 +49,14 @@ public class SizeOfDisplayBoardController {
         spinnerForColumn.setEditable(true);
         spinnerForRow.setEditable(true);
 
+        spinnerForRow.valueProperty().addListener((obs, oldValue, newValue) -> {
+            SIZE_ROW = newValue;
+        });
+
+        spinnerForColumn.valueProperty().addListener((obs, oldValue, newValue) -> {
+            SIZE_COLUMN = newValue;
+        });
+
 
         arrayChk.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue){
