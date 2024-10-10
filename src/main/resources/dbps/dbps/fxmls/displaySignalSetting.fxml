@@ -84,7 +84,7 @@
        </ChoiceBox>
        <Button layoutX="452.0" layoutY="303.0" mnemonicParsing="false" onMouseClicked="#signalTransfer" prefHeight="28.0" prefWidth="64.0" text="전송" />
        <Button layoutX="374.0" layoutY="303.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="28.0" prefWidth="64.0" text="저장" />
-       <Button layoutX="430.0" layoutY="339.0" mnemonicParsing="false" onMouseClicked="#autoTransfer" prefHeight="28.0" prefWidth="86.0" text="자동전송" />
+       <Button fx:id="autoTransfer" layoutX="430.0" layoutY="339.0" mnemonicParsing="false" onMouseClicked="#autoTransfer" prefHeight="28.0" prefWidth="86.0" text="자동전송" />
        <Spinner fx:id="spinnerForSec" layoutX="356.0" layoutY="339.0" prefHeight="28.0" prefWidth="64.0" />
        <Pane layoutX="14.0" layoutY="383.0" prefHeight="77.0" prefWidth="304.0" style="-fx-border-color: black;">
            <children>

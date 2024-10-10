@@ -22,21 +22,21 @@ public class blueToothController {
         bluetoothAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/bluetooth.css").toExternalForm());
     }
 
-    public void search(MouseEvent mouseEvent) {
+    public void search() {
         btManager.search();
     }
 
-    public void set(MouseEvent mouseEvent){
+    public void set( ){
         //++SET++![BT SETT  31  name  password!]
         btManager.set(ble_id.getText(), ble_password.getText());
     }
 
-    public void begin(MouseEvent mouseEvent) {
+    public void begin( ) {
         //++SET++![BT password             BEGIN!]
         btManager.begin(ble_password.getText());
     }
 
-    public void end(MouseEvent mouseEvent) {
+    public void end( ) {
         //++SET++![BT password             END!]
         btManager.end(ble_password.getText());
     }

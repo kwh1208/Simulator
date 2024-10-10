@@ -38,7 +38,6 @@ public class ConfigService {
 
             defaultProperties.setProperty("IS_ASCII", "true");
             defaultProperties.setProperty("connectType", "serial");
-            defaultProperties.setProperty("openPortNum", "1");
             defaultProperties.setProperty("serialSpeed", "115200");
             defaultProperties.setProperty("isRS", "false");
             defaultProperties.setProperty("RS485Num", "00");
@@ -49,7 +48,9 @@ public class ConfigService {
             defaultProperties.setProperty("UDPPort", "5109");
             defaultProperties.setProperty("UDPAddr", "192.168.0.10");
             defaultProperties.setProperty("RESPONSE_LATENCY", "3");
+            defaultProperties.setProperty("latency", "3");
             defaultProperties.setProperty("lastDisplaySignal", "16D-P16D1S11");
+
             defaultProperties.setProperty("fontGroup1Size", "8X16/16X16");
             defaultProperties.setProperty("fontGroup1FontPath1", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
             defaultProperties.setProperty("fontGroup1FontType1", "영어(ASCII)");
@@ -126,7 +127,7 @@ public class ConfigService {
             defaultProperties.setProperty("realTimeMsg", "효과 동시표출");
             defaultProperties.setProperty("displayRowSize", "2");
             defaultProperties.setProperty("displayColumnSize", "6");
-            defaultProperties.setProperty("bitsByPixel", "8BPP");
+            defaultProperties.setProperty("bitsPerPixel", "8BPP");
             defaultProperties.setProperty("howToArrange", "가로형");
             defaultProperties.setProperty("relay1", "None");
             defaultProperties.setProperty("relay2", "None");

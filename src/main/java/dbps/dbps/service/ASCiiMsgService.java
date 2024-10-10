@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 
 public class ASCiiMsgService {
@@ -27,9 +28,11 @@ public class ASCiiMsgService {
     private static ASCiiMsgService instance = null;
 
     private final LogService logService;
+    ConfigService configService;
 
     private ASCiiMsgService() {
         logService = LogService.getLogService();
+        configService = ConfigService.getInstance();
     }
 
     public static ASCiiMsgService getInstance() {
@@ -41,18 +44,7 @@ public class ASCiiMsgService {
 
     //메세지 txt 파일에 저장
     public void saveMessages(int num, String msg){
-        List<String> msgs = loadMessages();
-
-        msgs.set(num - 1, msg);
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
-            for (String line : msgs) {
-                writer.write(line);
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            //에러처리
-        }
+        configService.setProperty("ASCMsg"+num, msg);
     }
 
     //메세지 초기화 확인
@@ -63,10 +55,17 @@ public class ASCiiMsgService {
         ButtonType result = alert.showAndWait().orElse(ButtonType.CANCEL);
 
         if (result == ButtonType.OK) {
-            doReset(transmitMsgContents, transmitMsgs);
-            logService.updateInfoLog("메세지가 초기화 되었습니다.");
+            for (int i = 1; i < 10; i++) {
+                if (i==1){
+                    configService.setProperty("ASCMsg"+i, "![000Hello world!]");
+                } else if (i==2) {
+                    configService.setProperty("ASCMsg"+i, "![000/P000/C1Hello!]");
+                } else if (i == 3) {
+                    configService.setProperty("ASCMsg"+i, "![000/Y0004/E0606/S1000/C7Text 123456789 Hello World!]");
+                }
+                configService.setProperty("ASCMsg"+i, "");
+            }
         }
-
     }
 
     /**
@@ -93,62 +92,16 @@ public class ASCiiMsgService {
      * 리팩토링
      */
 
-    public void setDefaultMessages(List<String> messages) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
-            for (String message : messages) {
-                writer.write(message);
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            //에러처리
-        }
-    }
-
     //메세지 불러오기
     public List<String> loadMessages() {
         List<String> messages = new ArrayList<>();
-        File file = new File(FILE_NAME);
 
-        if (!file.exists()) {
-            messages.add("![000Hello world!]");
-            messages.add("![000/C1Hello /C2World!]");
-            messages.add("![000/Y0004/E0606/S1000/C7Text 123456789 Hello World!]");
-            for (int i = 4; i <= 9; i++) {
-                messages.add("");
-            }
-            setDefaultMessages(messages);
-            return messages;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                messages.add(line);
-            }
-        } catch (IOException e) {
-            //에러처리
+        for (int i = 1; i < 10; i++) {
+            String value = configService.getProperty("ASCMsg" + i);
+            messages.add(value);
         }
 
         return messages;
-    }
-
-    //저장한 메세지 모두 지우고 초기화.
-    private void doReset(List<String> transmitMsgContents, List<TextField> transmitMsgs) {
-        //메세지 지워
-        try {
-            Files.delete(Paths.get("messages.txt"));
-        } catch (IOException e) {
-            e.getStackTrace();
-        }
-
-        //새로 만들어
-        List<String> messages = loadMessages();
-
-        //textField에 메세지 넣어
-        for (int i = 0; i < messages.size(); i++) {
-            transmitMsgContents.set(i, messages.get(i));
-            transmitMsgs.get(i).setText(messages.get(i));
-        }
     }
 
     //메세지 만들기 창 띄우기

@@ -27,7 +27,7 @@ public class FontService {
         return instance;
     }
     
-    public void sendFont(String[] fontGroup1, String[] fontGroup2, String[] fontGroup3, String[] fontGroup4, String[] fontSize) throws InterruptedException {
+    public void sendFont(String[] fontGroup1, String[] fontGroup2, String[] fontGroup3, String[] fontGroup4, String[] fontSize, String[] fontType) throws InterruptedException {
         int packetSize = 1024;
         int totalPackets = 0;
         byte[] combinedData = null;
@@ -91,8 +91,24 @@ public class FontService {
                         }
                         else {
                             tmp.clear();
-                            //종류따라서 다른거
-                            tmp.putInt(fontKindAddr[0][5]);
+                            //사용안함, 영어, 유니코드 완성, 유니코드 일본어, 유니코드 중국어, 한글조합형, 사용자 폰트, 유니코드 전체
+                            if (fontType[3*i+j].equals("영어(ASCII)")){
+                                tmp.putInt(fontKindAddr[0][1]);
+                            } else if (fontType[3*i+j].equals("유니코드 완성형")) {
+                                tmp.putInt(fontKindAddr[0][2]);
+                            } else if (fontType[3*i+j].equals("유니코드 일본어")) {
+                                tmp.putInt(fontKindAddr[0][3]);
+                            } else if (fontType[3*i+j].equals("유니코드 중국어")) {
+                                tmp.putInt(fontKindAddr[0][4]);
+                            } else if (fontType[3*i+j].equals("한글조합형")) {
+                                tmp.putInt(fontKindAddr[0][5]);
+                            } else if (fontType[3 * i + j].equals("사용자폰트")) {
+                                tmp.putInt(fontKindAddr[0][6]);
+                            } else if (fontType[3*i+j].equals("유니코드 전체")) {
+                                tmp.putInt(fontKindAddr[0][7]);
+                            } else{
+                                tmp.putInt(fontKindAddr[0][0]);
+                            }
                             for (int k = 0; k < 2; k++) {
                                 groupPacket.append(String.format("%02X ", tmpArray[k]));
                             }
@@ -104,7 +120,23 @@ public class FontService {
                         }
                         else {
                             tmp.clear();
-                            tmp.putInt(fontKindAddr[1][5]);
+                            if (fontType[3*i+j].equals("영어(ASCII)")){
+                                tmp.putInt(fontKindAddr[1][1]);
+                            } else if (fontType[3*i+j].equals("유니코드 완성형")) {
+                                tmp.putInt(fontKindAddr[1][2]);
+                            } else if (fontType[3*i+j].equals("유니코드 일본어")) {
+                                tmp.putInt(fontKindAddr[1][3]);
+                            } else if (fontType[3*i+j].equals("유니코드 중국어")) {
+                                tmp.putInt(fontKindAddr[1][4]);
+                            } else if (fontType[3*i+j].equals("한글조합형")) {
+                                tmp.putInt(fontKindAddr[1][5]);
+                            } else if (fontType[3 * i + j].equals("사용자폰트")) {
+                                tmp.putInt(fontKindAddr[1][6]);
+                            } else if (fontType[3*i+j].equals("유니코드 전체")) {
+                                tmp.putInt(fontKindAddr[1][7]);
+                            } else{
+                                tmp.putInt(fontKindAddr[1][0]);
+                            }
                             for (int k = 0; k < 2; k++) {
                                 groupPacket.append(String.format("%02X ", tmpArray[k]));
                             }
@@ -112,7 +144,11 @@ public class FontService {
 
                         //w&h
                         //사이즈따라서 groupPacket에 추가
-
+                        String size = extractTwoCharsAroundX(now[j], 'x');
+                        String width = size.substring(0, 2);
+                        String height = size.substring(3, 5);
+                        groupPacket.append(String.format("%02X ", Integer.parseInt(width)));
+                        groupPacket.append(String.format("%02X ", Integer.parseInt(height)));
 
                         outputStream.write(fontData);
                         outputStream.flush();
@@ -194,6 +230,16 @@ public class FontService {
 
 
         hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03");
+    }
+
+    public static String extractTwoCharsAroundX(String input, char target) {
+        int index = input.indexOf(target); // 'x'의 인덱스를 찾기
+        if (index == -1 || index < 2 || index > input.length() - 3) {
+            return "Invalid Position"; // 'x'가 없거나 앞뒤에 두 글자가 없는 경우 처리
+        }
+
+        // 'x' 앞뒤 두 글자씩 추출
+        return input.substring(index - 2, index + 3);
     }
 
 }

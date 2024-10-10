@@ -40,11 +40,16 @@ public class DisplaySignalSettingController {
     @FXML
     private Spinner<Integer> spinnerForAfter;
 
+    @FXML
+    private Button autoTransfer;
+
     AsciiMsgTransceiver asciiMsgTransceiver;
 
     HexMsgTransceiver hexMsgTransceiver;
 
     DisplaySignal displaySignal;
+
+    private Timeline timeline;
 
     @FXML
     private void initialize() {
@@ -220,16 +225,22 @@ public class DisplaySignalSettingController {
 
     @FXML
     public void autoTransfer() {
+        if(autoTransfer.getText().equals("해제")){
+            timeline.stop(); // Timeline 중지
+            timeline = null; // 객체 초기화
+            autoTransfer.setText("자동 전송"); // 버튼 텍스트를 원래대로 변경
+            return; // 함수 종료
+        }
+        int signalCount = signalList.getItems().size();
         Integer time = spinnerForSec.getValue(); // 지연 시간을 가져옴 (초 단위)
         int originalTime = RESPONSE_LATENCY;
         RESPONSE_LATENCY = time;
-
-        // Signal 리스트와 인덱스를 가져옴
-        int signalCount = signalList.getItems().size();
-        Timeline timeline = new Timeline();
+        int startIdx = signalList.getSelectionModel().getSelectedIndex();
+        System.out.println("startIdx = " + startIdx);
+        timeline = new Timeline();
         timeline.setCycleCount(signalCount); // 각 신호에 대해 반복
 
-        for (int i = 0; i < signalCount; i++) {
+        for (int i = startIdx; i < signalCount; i++) {
             int index = i; // 람다식 내부에서 사용될 인덱스
             KeyFrame keyFrame = new KeyFrame(Duration.seconds(i * time), event -> {
                 // 신호를 선택하여 UI에 반영
@@ -241,7 +252,13 @@ public class DisplaySignalSettingController {
         }
 
         // 작업이 끝나면 원래의 대기 시간을 복구
-        timeline.setOnFinished(event -> RESPONSE_LATENCY = originalTime);
+        timeline.setOnFinished(event -> {
+            RESPONSE_LATENCY = originalTime;
+            autoTransfer.setText("자동 전송"); // 모든 작업이 끝나면 버튼 텍스트를 원래대로 변경
+            timeline = null; // 타임라인 초기화
+        });
+
+        autoTransfer.setText("해제"); // 자동 전송 시작 시 버튼 텍스트 변경
         timeline.play(); // 타임라인 시작
     }
 

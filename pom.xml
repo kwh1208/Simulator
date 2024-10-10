@@ -70,6 +70,11 @@
             <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>3.3.1</version>
+        </dependency>
     </dependencies>
 
     <!-- Maven 빌드 플러그인 설정 -->
@@ -84,6 +89,29 @@
                     <mainClass>dbps.dbps.Simulator</mainClass>
                     <launcher>DBPSApp</launcher>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/DabitNet_S</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources/dbps/dbps/DabitNet_S</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Maven Shade 플러그인: 모든 의존성을 포함하여 fat jar 생성 -->

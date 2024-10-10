@@ -1,8 +1,12 @@
 package dbps.dbps;
 
+import dbps.dbps.service.ConfigService;
+import javafx.fxml.FXML;
+
 public class Constants {
     //현재 연결 방법(serial, tcp, udp, RS485, WiFi, Bluetooth)
     public static String CONNECT_TYPE = "none";
+    ConfigService configService;
 
     public static byte[] CONNECT_START = {
             (byte) 0x10, (byte) 0x02, (byte) 0x00, (byte) 0x00, (byte) 0x0B,
@@ -10,6 +14,26 @@ public class Constants {
             (byte) 0x34, (byte) 0x35, (byte) 0x36, (byte) 0x37, (byte) 0x38,
             (byte) 0x39, (byte) 0x10, (byte) 0x03
     };
+    @FXML
+    public void initialize() {
+        configService = ConfigService.getInstance();
+
+        IS_ASCII = Boolean.getBoolean(configService.getProperty("IS_ASCII"));
+        CONNECT_TYPE = configService.getProperty("connectType");
+        OPEN_PORT_NAME = configService.getProperty("openPortName");
+        SERIAL_BAUDRATE = Integer.parseInt(configService.getProperty("serialSpeed"));
+        RS485_ADDR_NUM = configService.getProperty("RS485_ADDR_NUM");
+        TCP_IP = configService.getProperty("clientTCPAddr");
+        TCP_PORT = Integer.parseInt(configService.getProperty("clientTCPPort"));
+        UDP_IP = configService.getProperty("UDPAddr");
+        UDP_PORT = Integer.parseInt(configService.getProperty("UDPPort"));
+        SIZE_ROW = Integer.parseInt(configService.getProperty("displayRowSize"));
+        SIZE_COLUMN = Integer.parseInt(configService.getProperty("displayColumnSize"));
+        BITS_PER_PIXEL = Integer.parseInt(configService.getProperty("bitsPerPixel"));
+        howToArrange = configService.getProperty("howToArrange");
+        RESPONSE_LATENCY = Integer.parseInt(configService.getProperty("latency"));
+        isRS = Boolean.getBoolean(configService.getProperty("isRS"));
+    }
 
     public static int RESPONSE_LATENCY = 3;
 
@@ -19,7 +43,9 @@ public class Constants {
 
     public static String OPEN_PORT_NAME = null;
 
-    public static int RS485_ADDR_NUM = 0;
+    public static String RS485_ADDR_NUM = "00";
+
+    public static boolean isRS = false;
 
     public static String TCP_IP = "";
 
@@ -32,6 +58,7 @@ public class Constants {
     public static int SIZE_ROW = 0;
     public static int SIZE_COLUMN = 0;
     public static int BITS_PER_PIXEL = 0;
+    public static String howToArrange = "가로형";
     public static String uploadFirmwarePath = "";
 
     private static final int[] wCRCTable = {

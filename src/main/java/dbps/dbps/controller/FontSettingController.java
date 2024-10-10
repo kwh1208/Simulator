@@ -202,17 +202,21 @@ public class FontSettingController {
 
     public void send() throws InterruptedException {
         String[] fontGroup1Path = new String[3];
+        String[] fontType = new String[12];
         String[] fontGroup2Path = null;
         String[] fontGroup3Path = null;
         String[] fontGroup4Path = null;
         String[] fontSize = new String[4];
         //첫번째 그룹
         fontGroup1Path[0] = fontGroup1fontPath1.getText();
+        fontType[0] = "영어";
         if (!fontGroup1fontSelected2.getValue().equals("사용안함")){
             fontGroup1Path[1] = fontGroup1fontPath2.getText();
+            fontType[1] = fontGroup1fontSelected2.getValue();
         }
         if (!fontGroup1fontSelected3.getValue().equals("사용안함")){
             fontGroup1Path[2] = fontGroup1fontPath3.getText();
+            fontType[2] = fontGroup1fontSelected3.getValue();
         }
         fontSize[0] = "8x16/16x16";
 
@@ -222,12 +226,15 @@ public class FontSettingController {
             fontGroup2Path = new String[3];
             if (!fontGroup2fontSelected1.getValue().equals("사용안함")){
                 fontGroup2Path[0] = fontGroup2fontPath1.getText();
+                fontType[3] = fontGroup2fontSelected1.getValue();
             }
             if (!fontGroup2fontSelected2.getValue().equals("사용안함")){
                 fontGroup1Path[1] = fontGroup2fontPath2.getText();
+                fontType[4] = fontGroup2fontSelected2.getValue();
             }
             if (!fontGroup2fontSelected3.getValue().equals("사용안함")){
                 fontGroup1Path[2] = fontGroup2fontPath3.getText();
+                fontType[5] = fontGroup2fontSelected3.getValue();
             }
             fontSize[1] = fontGroup2fontsize.getValue();
         }
@@ -237,12 +244,15 @@ public class FontSettingController {
             fontGroup3Path = new String[3];
             if (!fontGroup3fontSelected1.getValue().equals("사용안함")){
                 fontGroup3Path[0] = fontGroup3fontPath1.getText();
+                fontType[6] = fontGroup3fontSelected1.getValue();
             }
             if (!fontGroup3fontSelected2.getValue().equals("사용안함")){
                 fontGroup3Path[1] = fontGroup3fontPath2.getText();
+                fontType[7] = fontGroup3fontSelected2.getValue();
             }
             if (!fontGroup3fontSelected3.getValue().equals("사용안함")){
                 fontGroup3Path[2] = fontGroup3fontPath3.getText();
+                fontType[8] = fontGroup3fontSelected3.getValue();
             }
             fontSize[2] = fontGroup3fontsize.getValue();
         }
@@ -252,17 +262,20 @@ public class FontSettingController {
             fontGroup4Path = new String[3];
             if (!fontGroup4fontSelected1.getValue().equals("사용안함")){
                 fontGroup4Path[0] = fontGroup4fontPath1.getText();
+                fontType[9] = fontGroup4fontSelected1.getValue();
             }
             if (!fontGroup3fontSelected2.getValue().equals("사용안함")){
                 fontGroup4Path[1] = fontGroup4fontPath2.getText();
+                fontType[10] = fontGroup4fontSelected2.getValue();
             }
             if (!fontGroup4fontSelected3.getValue().equals("사용안함")){
                 fontGroup4Path[2] = fontGroup4fontPath3.getText();
+                fontType[11] = fontGroup4fontSelected3.getValue();
             }
             fontSize[3] = fontGroup4fontsize.getValue();
         }
 
-        fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path, fontGroup4Path, fontSize);
+        fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path,  fontGroup4Path, fontSize, fontType);
 
     }
 

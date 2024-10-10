@@ -4,6 +4,7 @@ package dbps.dbps.controller;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ASCiiMsgService;
 import dbps.dbps.service.AsciiMsgTransceiver;
+import dbps.dbps.service.ConfigService;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -16,6 +17,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+
+import static dbps.dbps.Constants.SIZE_COLUMN;
+import static dbps.dbps.Constants.SIZE_ROW;
 
 public class ASCiiMsgController {
 
@@ -36,6 +40,7 @@ public class ASCiiMsgController {
 
     ASCiiMsgService msgService = ASCiiMsgService.getInstance();
     AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+    ConfigService configService = ConfigService.getInstance();
     public static List<TextField> transmitMsgs = new ArrayList<>();
     private List<Button> msgSaveBtns = new ArrayList<>();
     private List<Button> msgSendBtns = new ArrayList<>();
@@ -151,13 +156,16 @@ public class ASCiiMsgController {
         String yStart = "00";
         String yEnd = "00";
         String textColor = "Yellow";
-        String bgColor = "Yellow";
+        String bgColor = "Black";
 
 
         //화면설정 크기에서 가져와서 크기 만들고.
-        int row = 2;
-        int column = 6;
+        int row = SIZE_ROW;
+        int column = SIZE_COLUMN;
         //그렇게 메세지 완성된거 기준으로 미리보기 띄우면 됨.
+
+
+
 
         msgService.preview(event, transmitMsgs);
     }

@@ -4,6 +4,7 @@ package dbps.dbps.controller;
 
 import com.fazecast.jSerialComm.SerialPort;
 import dbps.dbps.Simulator;
+import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.TCPManager;
@@ -40,6 +41,7 @@ public class CommunicationSettingController {
 
     HexMsgTransceiver hexMsgTransceiver;
     UDPManager udpManager;
+    ConfigService configService;
 
     @FXML
     private AnchorPane communicationSettingAP;
@@ -124,6 +126,7 @@ public class CommunicationSettingController {
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         tcpManager = TCPManager.getManager();
         udpManager = UDPManager.getUDPManager();
+        configService = ConfigService.getInstance();
 
 
         //delayTime 변경하면 delayTime 값 변경
@@ -169,18 +172,28 @@ public class CommunicationSettingController {
 
         });
 
-        serialRadioBtn.setSelected(true);
+        if (CONNECT_TYPE.equals("serial")){
+            serialRadioBtn.setSelected(true);
+            if (isRS){
+                RS485ChkBox.setSelected(true);
+                RS485ChoiceBox.setValue(RS485_ADDR_NUM);
+            }
+            else RS485ChkBox.setSelected(false);
+        } else if (CONNECT_TYPE.equals("TCP")){
+            clientTCPRadioBtn.setSelected(true);
+        } else if (CONNECT_TYPE.equals("UDP")){
+            UDPRadioBtn.setSelected(true);
+        }
 
         getSerialPortList();
 
         serialPortComboBox.setValue(serialPortComboBox.getItems().get(0));
 
-
         serialPortComboBox.valueProperty().addListener((observableValue, oldValue, newValue) -> {
             serialPortComboBox.setValue(newValue);
+            configService.setProperty("openPortName", newValue);
         });
         serialPortComboBox.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
-
 
         RS485ChkBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> RS485ChoiceBox.setVisible(newValue));
 
@@ -245,6 +258,7 @@ public class CommunicationSettingController {
 
                 // ChoiceBox UI를 업데이트
                 serialSpeedChoiceBox.setValue(String.valueOf(speed));
+                configService.setProperty("serialSpeed", String.valueOf(speed));
             }
         });
 
@@ -271,6 +285,8 @@ public class CommunicationSettingController {
 
         tcpManager.setIP(IPAddress);
         tcpManager.setPORT(port);
+        configService.setProperty("serverTCPAddr", IPAddress);
+        configService.setProperty("serverTCPPort", String.valueOf(port));
 
         TCP_IP = IPAddress;
         TCP_PORT = port;
@@ -282,6 +298,8 @@ public class CommunicationSettingController {
 
         tcpManager.setIP(IPAddress);
         tcpManager.setPORT(port);
+        configService.setProperty("clientTCPAddr", IPAddress);
+        configService.setProperty("clientTCPPort", String.valueOf(port));
 
         TCP_IP = IPAddress;
         TCP_PORT = port;
@@ -293,6 +311,8 @@ public class CommunicationSettingController {
 
         udpManager.setIP(IPAddress);
         udpManager.setPORT(port);
+        configService.setProperty("UDPAddr", IPAddress);
+        configService.setProperty("UDPPort", String.valueOf(port));
 
         UDP_IP = IPAddress;
         UDP_PORT = port;
@@ -317,7 +337,13 @@ public class CommunicationSettingController {
     }
 
     //다빛넷 열기
-    public void openDabitNet(){
+    public void openDabitNet() throws IOException {
+        // 현재 프로젝트 경로를 기준으로 상대 경로 설정
+        String relativePath = "./src/main/resources/dbps/dbps/DabitNet_S.exe";
+        // 실행할 명령어 정의
+        String command = "runas /user:Administrator " + relativePath;
+        // Runtime 실행
+        Runtime.getRuntime().exec(command);
     }
 
     //블루투스 열기
@@ -348,7 +374,7 @@ public class CommunicationSettingController {
             if (RS485ChkBox.isSelected()){
                 CONNECT_TYPE = "rs485";
                 serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
-                RS485_ADDR_NUM = Integer.parseInt(RS485ChoiceBox.getValue().replaceAll("[^0-9]", ""));
+                RS485_ADDR_NUM = RS485ChoiceBox.getValue().replaceAll("[^0-9]", "");
                 String msg = "10 02 "+String.format("%02x", RS485_ADDR_NUM)+" 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
                 String receivedMsg = hexMsgTransceiver.sendMessages(msg);
                 if (!receivedMsg.split(" ")[5].equals("6A")){
