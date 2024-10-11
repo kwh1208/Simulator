@@ -4,11 +4,9 @@ import dbps.dbps.service.connectManager.*;
 import javafx.concurrent.Task;
 
 
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.*;
 
@@ -65,6 +63,7 @@ public class HexMsgTransceiver {
                     taskThread.start();
 
                     receivedMsg = sendTask.get();
+                    System.out.println("receivedMsg = " + receivedMsg);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -85,6 +84,43 @@ public class HexMsgTransceiver {
 
         //시간 바꾸거나, 펌웨어 같은 일부 특수한 경우에 반환값 사용.
         return msgReceive(receivedMsg, msg);
+    }
+
+    public void sendByteMessagesNoLog(byte[] msg) {
+        switch (CONNECT_TYPE) {
+            case "serial", "bluetooth", "rs485" -> {
+                try {
+                    // Task 객체를 생성하여 비동기 작업 실행
+                    Task<String> sendTask = serialPortManager.sendMsgAndGetMsgByteNoLog(msg);
+
+                    // 새로운 스레드에서 Task를 실행
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            case "UDP" -> //udp로 메세지 전송
+            {
+                try {
+                    Task<String> sendTask = udpManager.sendMsgAndGetMsgByte(msg);
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case "TCP" -> //tcp로 메세지 전송
+            {
+                try {
+                    Task<String> sendTask = tcpManager.sendMsgAndGetMsgByte(msg);
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+                }catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
     public String sendMessages(String msg) {

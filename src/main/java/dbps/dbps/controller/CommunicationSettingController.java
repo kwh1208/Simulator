@@ -385,8 +385,10 @@ public class CommunicationSettingController {
         String absolutePath = new File(relativePath).getCanonicalPath();
 
         // 실행할 명령어 정의
-        String command = "runas /user:Administrator \"" + absolutePath + "\"";
-        System.out.println("command = " + command);
+        String command = String.format(
+                "powershell -Command \"Start-Process -FilePath '%s' -Verb runAs\"",
+                absolutePath
+        );
 
         // Runtime 실행
         Runtime.getRuntime().exec(command);
