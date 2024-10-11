@@ -40,8 +40,8 @@ public class SizeOfDisplayBoardController {
     public void initialize(){
         dpPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/sizeOfDisplayBoard.css").toExternalForm());
 
-        SpinnerValueFactory<Integer> valueFactoryForRow = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, 6);
-        SpinnerValueFactory<Integer> valueFactoryForColumn = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, 2);
+        SpinnerValueFactory<Integer> valueFactoryForRow = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, SIZE_ROW);
+        SpinnerValueFactory<Integer> valueFactoryForColumn = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, SIZE_COLUMN);
 
         spinnerForRow.setValueFactory(valueFactoryForRow);
         spinnerForColumn.setValueFactory(valueFactoryForColumn);

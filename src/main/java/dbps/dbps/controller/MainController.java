@@ -3,7 +3,6 @@ package dbps.dbps.controller;
 
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.MainService;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;

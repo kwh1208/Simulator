@@ -9,7 +9,6 @@ import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.TCPManager;
 import dbps.dbps.service.connectManager.UDPManager;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -46,9 +45,6 @@ public class CommunicationSettingController {
 
     @FXML
     private AnchorPane communicationSettingAP;
-
-    @FXML
-    private ProgressIndicator loadingSpinner;
 
     /**
      * 시리얼

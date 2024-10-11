@@ -9,12 +9,12 @@
 <children>
     <Label alignment="CENTER" layoutX="95.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0"
            style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white;-fx-font-size: 17; -fx-font-weight: bolder" text="전광판 크기" textFill="WHITE"/>
-    <Label layoutX="20.0" layoutY="25.0" text="단수" />
-    <Spinner fx:id="spinnerForColumn" layoutX="175.0" layoutY="18.0" prefHeight="25.0" prefWidth="64.0" />
+    <Label layoutX="20.0" layoutY="25.0" text="세로" />
+    <Spinner fx:id="spinnerForRow" layoutX="175.0" layoutY="18.0" prefHeight="25.0" prefWidth="64.0" />
     <Label layoutX="245.0" layoutY="26.0" prefHeight="13.0" prefWidth="80.0" text="X16 Pixels" />
 
-    <Label layoutX="20.0" layoutY="56.0" text="열수" />
-    <Spinner fx:id="spinnerForRow" layoutX="175.0" layoutY="51.0" prefHeight="25.0" prefWidth="64.0" />
+    <Label layoutX="20.0" layoutY="56.0" text="가로" />
+    <Spinner fx:id="spinnerForColumn" layoutX="175.0" layoutY="51.0" prefHeight="25.0" prefWidth="64.0" />
     <Label layoutX="245.0" layoutY="58.0" prefHeight="13.0" prefWidth="80.0" text="X16 Pixels" />
 
     <Label layoutX="20.0" layoutY="87.0" text="픽셀당 비트수" />

@@ -4,10 +4,8 @@ package dbps.dbps.controller;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ASCiiMsgService;
 import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.ConfigService;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -19,8 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import static dbps.dbps.Constants.SIZE_COLUMN;
-import static dbps.dbps.Constants.SIZE_ROW;
 
 public class ASCiiMsgController {
 
@@ -41,7 +37,6 @@ public class ASCiiMsgController {
 
     ASCiiMsgService msgService = ASCiiMsgService.getInstance();
     AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
-    ConfigService configService = ConfigService.getInstance();
     public static List<TextField> transmitMsgs = new ArrayList<>();
     private List<Button> msgSaveBtns = new ArrayList<>();
     private List<Button> msgSendBtns = new ArrayList<>();

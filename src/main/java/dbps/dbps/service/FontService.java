@@ -1,6 +1,5 @@
 package dbps.dbps.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,20 +8,16 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static dbps.dbps.Constants.hexStringToByteArray;
 
 public class FontService {
     private static FontService instance = null;
-    private final LogService logService;
     HexMsgTransceiver hexMsgTransceiver;
     //사용안함, 영어, 유니코드 완성, 유니코드 일본어, 유니코드 중국어, 한글조합형, 사용자 폰트, 유니코드 전체
     private int[][] fontKindAddr = {{0, 0, 0xac00, 0x3040, 0x4e00, 0x8861, 0xe000, 0}, {0, 0x7f, 0xd7a3, 0x30ff, 0x9fff, 0xd3bd, 0xe07f, 0xd7a3}};
 
     private FontService(){
-        logService = LogService.getLogService();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
     }
 

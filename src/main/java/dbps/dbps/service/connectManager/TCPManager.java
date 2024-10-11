@@ -30,7 +30,6 @@ public class TCPManager {
 
     public void setPORT(int PORT) {
         this.PORT = PORT;
-
     }
 
     Socket socket = null;

@@ -3,7 +3,6 @@ package dbps.dbps.service;
 
 import dbps.dbps.Simulator;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -15,11 +14,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import static dbps.dbps.Constants.SIZE_COLUMN;
 import static dbps.dbps.Constants.SIZE_ROW;
@@ -80,31 +76,32 @@ public class ASCiiMsgService {
      */
 
     public void preview(MouseEvent event, List<TextField> transmitMsgs) {
-//        Button clickedButton = (Button) event.getSource();
-//        String buttonId = clickedButton.getId();
-//
-//        int num = Integer.parseInt(buttonId.substring(10));
-//        TextField targetTextField = transmitMsgs.get(num - 1);
-//        String inputText = targetTextField.getText();
-//
-//
-//        //메세지 미리보기
-//        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/preview.fxml"));
-//        Stage stage = new Stage();
-//        stage.initModality(Modality.APPLICATION_MODAL);  // 모달창 설정
-//        stage.setTitle("Preview Window");
-//
-//        // Scene 생성 및 크기 지정
-//        Scene scene = null;
-//        try {
-//            scene = new Scene(fxmlLoader.load(), SIZE_ROW*16*4, SIZE_COLUMN*16*4);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        stage.setScene(scene);
-//
-//        // 모달 창 표시
-//        stage.showAndWait();
+        Button clickedButton = (Button) event.getSource();
+        String buttonId = clickedButton.getId();
+
+        int num = Integer.parseInt(buttonId.substring(10));
+        TextField targetTextField = transmitMsgs.get(num - 1);
+        String inputText = targetTextField.getText();
+
+
+        //메세지 미리보기
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/preview.fxml"));
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);  // 모달창 설정
+
+        stage.setTitle("Preview Window "+SIZE_ROW+" X "+SIZE_COLUMN);
+
+        // Scene 생성 및 크기 지정
+        Scene scene = null;
+        try {
+            scene = new Scene(fxmlLoader.load(), SIZE_COLUMN*16*4, SIZE_ROW*16*4);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        stage.setScene(scene);
+
+        // 모달 창 표시
+        stage.showAndWait();
 
     }
 
@@ -122,6 +119,7 @@ public class ASCiiMsgService {
         for (int i = 1; i < 10; i++) {
             String value = configService.getProperty("ASCMsg" + i);
             messages.add(value);
+            System.out.println("value = " + value);
         }
 
         return messages;

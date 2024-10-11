@@ -1,11 +1,8 @@
 package dbps.dbps.service;
 
-import com.fazecast.jSerialComm.SerialPort;
 import javafx.concurrent.Task;
 
-import java.io.BufferedOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import static dbps.dbps.Constants.*;
 import static dbps.dbps.Constants.calcCRC;
@@ -14,10 +11,8 @@ public class FirmwareService {
 
     private static FirmwareService instance = null;
     HexMsgTransceiver hexMsgTransceiver;
-    private final LogService logService;
 
     private FirmwareService() {
-        logService = LogService.getLogService();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
     }
 

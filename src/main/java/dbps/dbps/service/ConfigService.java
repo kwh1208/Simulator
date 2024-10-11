@@ -23,7 +23,6 @@ public class ConfigService {
         loadProperties();
 
         IS_ASCII = Boolean.parseBoolean(getProperty("IS_ASCII"));
-        CONNECT_TYPE = getProperty("connectType");
         OPEN_PORT_NAME = getProperty("openPortName");
         SERIAL_BAUDRATE = Integer.parseInt(getProperty("serialSpeed"));
         RS485_ADDR_NUM = getProperty("RS485_ADDR_NUM");
@@ -32,7 +31,9 @@ public class ConfigService {
         UDP_IP = getProperty("UDPAddr");
         UDP_PORT = Integer.parseInt(getProperty("UDPPort"));
         SIZE_ROW = Integer.parseInt(getProperty("displayRowSize"));
+        System.out.println("SIZE_ROW = " + SIZE_ROW);
         SIZE_COLUMN = Integer.parseInt(getProperty("displayColumnSize"));
+        System.out.println("SIZE_COLUMN = " + SIZE_COLUMN);
         BITS_PER_PIXEL = getProperty("bitsPerPixel").charAt(0)-'0';
         howToArrange = getProperty("howToArrange");
         RESPONSE_LATENCY = Integer.parseInt(getProperty("latency"));
@@ -113,7 +114,7 @@ public class ConfigService {
                         defaultProperties.setProperty("text", "realTime 메세지");
                     }
                     else {
-                        defaultProperties.setProperty("text", "page "+i+"/section "+j);
+                        defaultProperties.setProperty("text"+i+j, "page "+i+"/section "+j);
                     }
                 }
             }
@@ -136,7 +137,7 @@ public class ConfigService {
             defaultProperties.setProperty("bgImgDefault", "사용안함");
             defaultProperties.setProperty("textColorDefault", "1");
             defaultProperties.setProperty("bgColorDefault", "2");
-            defaultProperties.setProperty("text", "![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]");
+            defaultProperties.setProperty("settingText", "![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]");
 
             defaultProperties.setProperty("pageMsgCnt", "1");
             defaultProperties.setProperty("pageMsgClear", "전체");

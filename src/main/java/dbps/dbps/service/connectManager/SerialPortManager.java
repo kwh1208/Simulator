@@ -85,7 +85,7 @@ public class SerialPortManager {
         return port != null && port.isOpen();
     }
     public Task<String> sendMsgAndGetMsg(String msg){
-        return new Task<String>() {
+        return new Task<>() {
             @Override
             protected String call() throws Exception {
                 String portName = OPEN_PORT_NAME;
@@ -120,7 +120,6 @@ public class SerialPortManager {
                                 if (dataReceivedIsComplete(buffer, totalBytesRead)) {
                                     break; // 데이터를 다 받았으면 루프 종료
                                 }
-
                             }
                         } else {
                             // 짧은 대기 시간 후 다시 읽기 시도 (바쁜 대기 방지)
@@ -129,8 +128,8 @@ public class SerialPortManager {
                     }
 
                     return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
-                }catch (Exception e){
-                    logService.errorLog("에러가 발생했습니다: "+e.getMessage());
+                } catch (Exception e) {
+                    logService.errorLog("에러가 발생했습니다: " + e.getMessage());
                     return null;
                 }
             }
