@@ -7,8 +7,7 @@ import dbps.dbps.service.LogService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
@@ -34,6 +33,12 @@ public class FirmwareUpgradeController {
 
     @FXML
     public AnchorPane firmwareUpgradeAP;
+
+    @FXML
+    public ProgressBar firmwareProgressIndicator;
+
+    @FXML
+    public Label firmwareProgressLabel;
 
     AsciiMsgTransceiver asciiMsgTransceiver;
     HexMsgTransceiver hexMsgTransceiver;
@@ -77,6 +82,12 @@ public class FirmwareUpgradeController {
                 new FileChooser.ExtensionFilter("펌웨어 파일", "*.bin"),
                 new FileChooser.ExtensionFilter("모든 파일", "*.*")
         );
+        File defaultDir = new File(System.getProperty("user.dir") + File.separator + "Firmware");
+        if (defaultDir.exists() && defaultDir.isDirectory()) {
+            fileChooser.setInitialDirectory(defaultDir);
+        } else {
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        }
         Stage stage = (Stage) (((Node) mouseEvent.getSource()).getScene().getWindow());
         File selectedFile = fileChooser.showOpenDialog(stage);
 
@@ -89,6 +100,7 @@ public class FirmwareUpgradeController {
     }
 
     public void send() {
+        System.out.println("test");
         if (firmwareInformation.getText().isEmpty()){
             logService.warningLog("컨트롤러의 버전을 먼저 확인해주세요.");
         }
@@ -124,7 +136,31 @@ public class FirmwareUpgradeController {
         }
 
         uploadFirmwarePath = firmwareFileInformationText;
-        Task<Void> firmwareUpload = firmwareService.firmwareUpload;
+        Task<Void> firmwareUpload = firmwareService.firmwareUpload(firmwareProgressIndicator, firmwareProgressLabel);
+        firmwareProgressIndicator.setVisible(false);
+        firmwareUpload.setOnRunning(e -> {
+            // Task가 시작될 때 로딩 애니메이션 표시
+            firmwareProgressIndicator.setVisible(true);
+            firmwareProgressLabel.setVisible(true);
+        });
+
+        firmwareUpload.setOnSucceeded(e -> {
+            // Task가 성공적으로 끝났을 때 로딩 애니메이션 숨김
+            firmwareProgressIndicator.setVisible(false);
+            firmwareProgressLabel.setVisible(false);
+        });
+
+        firmwareUpload.setOnFailed(e -> {
+            // Task가 실패했을 때 로딩 애니메이션 숨김
+            firmwareProgressIndicator.setVisible(false);
+            firmwareProgressLabel.setVisible(false);
+        });
+
+        firmwareUpload.setOnCancelled(e -> {
+            // Task가 취소됐을 때 로딩 애니메이션 숨김
+            firmwareProgressIndicator.setVisible(false);
+            firmwareProgressLabel.setVisible(false);
+        });
 
         new Thread(firmwareUpload).start();
     }

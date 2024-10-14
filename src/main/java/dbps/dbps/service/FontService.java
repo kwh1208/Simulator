@@ -30,7 +30,6 @@ public class FontService {
     
     public void sendFont(String[] fontGroup1, String[] fontGroup2, String[] fontGroup3, String[] fontGroup4, String[] fontType) throws InterruptedException {
         hexMsgTransceiver.sendMessages("10 02 00 00 02 45 00 10 03");
-        System.out.println("10 02 00 00 02 45 00 10 03");
         Thread.sleep(500);
 
         int packetSize = 1024;
@@ -254,7 +253,6 @@ public class FontService {
         System.out.println("]");
 
         Thread.sleep(200);
-        System.out.println("10 02 00 00 02 45 01 10 03");
         hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03");
     }
 

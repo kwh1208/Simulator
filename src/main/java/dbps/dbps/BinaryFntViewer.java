@@ -20,7 +20,7 @@ public class BinaryFntViewer extends Application {
     private static final int CHAR_WIDTH = 8;
     private static final int CHAR_HEIGHT = 16;
     private static final int PIXEL_SIZE = 10; // 각 픽셀의 크기
-    private static final int CHAR_SPACING = 10; // 글자 간 간격
+    private static final int CHAR_SPACING = 0; // 글자 간 간격      w
 
     public static void main(String[] args) {
         launch(args);

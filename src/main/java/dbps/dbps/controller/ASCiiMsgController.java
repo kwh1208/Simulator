@@ -12,10 +12,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 
 public class ASCiiMsgController {
@@ -140,19 +137,21 @@ public class ASCiiMsgController {
         //구현 계획
         //기본표시 설정 창에서 먼저 가져오고 추가된 값 있으면 기존값에서 갈아끼움.
 
-        String textSize = "16";
-        String fontGroup = "1";
-        String effectIn = "정지효과";
-        String effectInDirection = "효과방향";
-        String effectOut = "정지효과";
-        String effectOutDirection = "효과방향";
-        String effectTime = "15";
-        String xStart = "00";
-        String xEnd = "00";
-        String yStart = "00";
-        String yEnd = "00";
-        String textColor = "Yellow";
-        String bgColor = "Black";
+        HashMap<String, String> textEffect = new HashMap<>();
+        textEffect.put("textSize", "16");
+        textEffect.put("fontGroup", "1");
+        textEffect.put("effectIn", "정지효과");
+        textEffect.put("effectInDirection", "효과방향");
+        textEffect.put("effectOut", "정지효과");
+        textEffect.put("effectOutDirection", "효과방향");
+        textEffect.put("effectTime", "15");
+        textEffect.put("xStart", "00");
+        textEffect.put("yStart", "00");
+        textEffect.put("xEnd", "00");
+        textEffect.put("yEnd", "00");
+        textEffect.put("textColor", "yellow");
+        textEffect.put("bgColor", "black");
+
 
 
         //화면설정 크기에서 가져와서 크기 만들고.
@@ -161,7 +160,7 @@ public class ASCiiMsgController {
 
         //한픽셀 = 10
 
-        msgService.preview(event, transmitMsgs);
+        msgService.preview(targetTextField, textEffect);
     }
 
 

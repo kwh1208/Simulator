@@ -146,10 +146,6 @@ public class AsciiMsgTransceiver {
 
             return time;
         }
-        if (cmd.equals("81")){
-            logService.updateInfoLog("펌웨어 버전 : " + receiveMsg);
-            return receiveMsg;
-        }
         if (cmd.equals("B3")){
             //보드기능 읽기
             logService.updateInfoLog("받은 메세지 : " + receiveMsg);
@@ -158,6 +154,15 @@ public class AsciiMsgTransceiver {
         if (cmd.equals("B2")){
             //보드기능 설정
             logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            return receiveMsg;
+        }
+        if (cmd.equals("33")){
+            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            return receiveMsg;
+        }
+        if (cmd.equals("81")){
+            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            logService.updateInfoLog("펌웨어 정보 읽기에 성공했습니다.");
             return receiveMsg;
         }
 
@@ -231,9 +236,9 @@ public class AsciiMsgTransceiver {
                 logService.updateInfoLog("받은 메세지 : " + receiveMsg);
                 logService.updateInfoLog("화면 단색 채우기에 성공했습니다.");
             }
-            if (cmd.equals("81")){
+            if (cmd.equals("32")){
                 logService.updateInfoLog("받은 메세지 : " + receiveMsg);
-                logService.updateInfoLog("펌웨어 정보 읽기에 성공했습니다.");
+                logService.updateInfoLog("default 설정에 성공했습니다.");
             }
             if (cmd.equals("82")){
                 logService.updateInfoLog("받은 메세지 : " + receiveMsg);

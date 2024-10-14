@@ -18,11 +18,13 @@ public class ConfigService {
         displayFilePath = System.getProperty("user.dir") + File.separator + "config" + File.separator + "display.properties";
         properties = new Properties();
         displayProperties = new Properties();
+        DisplaySignal.getInstance().initialize_ASCii();
         createFileIfNotExists(configFilePath, "config");
         createFileIfNotExists(displayFilePath, "display");
         loadProperties();
 
         IS_ASCII = Boolean.parseBoolean(getProperty("IS_ASCII"));
+        CONNECT_TYPE = getProperty("connectType");
         OPEN_PORT_NAME = getProperty("openPortName");
         SERIAL_BAUDRATE = Integer.parseInt(getProperty("serialSpeed"));
         RS485_ADDR_NUM = getProperty("RS485_ADDR_NUM");
@@ -31,9 +33,7 @@ public class ConfigService {
         UDP_IP = getProperty("UDPAddr");
         UDP_PORT = Integer.parseInt(getProperty("UDPPort"));
         SIZE_ROW = Integer.parseInt(getProperty("displayRowSize"));
-        System.out.println("SIZE_ROW = " + SIZE_ROW);
         SIZE_COLUMN = Integer.parseInt(getProperty("displayColumnSize"));
-        System.out.println("SIZE_COLUMN = " + SIZE_COLUMN);
         BITS_PER_PIXEL = getProperty("bitsPerPixel").charAt(0)-'0';
         howToArrange = getProperty("howToArrange");
         RESPONSE_LATENCY = Integer.parseInt(getProperty("latency"));
@@ -51,7 +51,7 @@ public class ConfigService {
                 } else if (i == 3) {
                     defaultProperties.setProperty("ASCMsg"+i, "![000/Y0004/E0606/S1000/C7Text 123456789 Hello World!]");
                 }
-                defaultProperties.setProperty("ASCMsg"+i, "");
+                else defaultProperties.setProperty("ASCMsg"+i, "");
             }
 
             defaultProperties.setProperty("IS_ASCII", "true");
@@ -91,7 +91,7 @@ public class ConfigService {
             defaultProperties.setProperty("fontGroup4selected", "False");
 
             for (int i = 0; i <= 10; i++) {//페이지 개수(0은 실시간)
-                for (int j = 1; j < 3; j++) {//섹션 개수
+                for (int j =0; j < 3; j++) {//섹션 개수
                     defaultProperties.setProperty("displayControl"+i+j, "ON");
                     defaultProperties.setProperty("displayMethod"+i+j, "Normal");
                     defaultProperties.setProperty("charCode"+i+j, "KS완성형 한글코드");
@@ -109,12 +109,12 @@ public class ConfigService {
                     defaultProperties.setProperty("yEnd"+i+j, "0");
                     defaultProperties.setProperty("bgImg"+i+j, "사용안함");
                     defaultProperties.setProperty("textColor"+i+j, "1");
-                    defaultProperties.setProperty("bgColor"+i+j, "2");
+                    defaultProperties.setProperty("bgColor"+i+j, "0");
                     if (i==0) {
-                        defaultProperties.setProperty("text", "realTime 메세지");
+                        defaultProperties.setProperty("text"+i+j, "realTime 메세지 "+j);
                     }
                     else {
-                        defaultProperties.setProperty("text"+i+j, "page "+i+"/section "+j);
+                        defaultProperties.setProperty("text"+i+j, "page "+i+"-section "+j);
                     }
                 }
             }

@@ -214,6 +214,7 @@ public class SerialPortManager {
                     outputStream.flush();
 
                     // 수신된 모든 데이터를 Hex로 변환하여 반환
+                    inputStream.readAllBytes();
                     return null;
                 } catch (Exception e) {
                     logService.errorLog("에러가 발생했습니다: " + e.getMessage());

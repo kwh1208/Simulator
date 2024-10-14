@@ -132,7 +132,6 @@ public class UDPManager {
                         }
                         Thread.sleep(50);
                     }
-                    System.out.println(receivePacket.getData());
                     return bytesToHex(receivePacket.getData(), receivePacket.getLength());
                 }catch (IOException | InterruptedException e){
                     //에러 처리

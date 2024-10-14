@@ -1,7 +1,13 @@
 package dbps.dbps.service;
 
+import dbps.dbps.controller.FirmwareUpgradeController;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 import static dbps.dbps.Constants.*;
@@ -22,13 +28,16 @@ public class FirmwareService {
         }
         return instance;
     }
+    //ProgressIndicator firmwareProgressIndicator;
+    //        Label firmwareProgressLabel;
 
-    public Task<Void> firmwareUpload = new Task<>() {
+    public Task<Void> firmwareUpload(ProgressBar progressBar, Label progressLabel) {
+        return new Task<Void>() {
         @Override
         protected Void call() throws Exception {
             try {
                 // 리소스 파일에서 펌웨어 데이터를 읽어옴
-                InputStream firmwareStream = getClass().getResourceAsStream(uploadFirmwarePath);
+                InputStream firmwareStream = new FileInputStream(uploadFirmwarePath);
 
                 if (firmwareStream == null) {
                     return null;
@@ -48,13 +57,11 @@ public class FirmwareService {
                     firmwareData[512] = (byte) totalPackets;
                     firmwareData[513] = (byte) (totalPackets >> 8);
                 }
-
                 // 앞부분에 추가할 고정된 4바이트 값 (CRC 계산에만 사용)
 //            //{0x00, 0x44, 0x07, (byte) 0x9F};
 //            //{주소, isize 상하위데이터, 명령코드}
 
-                hexMsgTransceiver.sendByteMessages(hexStringToByteArray("10 02 00 00 02 6F F1 10 03"));
-
+                hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray("10 02 00 00 02 6F F1 10 03"));
 
                 for (int i = 0; i < totalPackets; i++) {
                     int currentPacketSize = (i == totalPackets - 1)
@@ -82,7 +89,6 @@ public class FirmwareService {
                     // 10 02 (시작 시퀀스)
                     packet[0] = 0x10;
                     packet[1] = 0x02;
-
                     // 헤더 복사
                     System.arraycopy(headerData, 0, packet, 2, headerData.length);
 
@@ -97,15 +103,27 @@ public class FirmwareService {
                     packet[2 + headerData.length + currentPacketSize + 2] = 0x10;
                     packet[2 + headerData.length + currentPacketSize + 3] = 0x03;
 
-                    hexMsgTransceiver.sendByteMessages(packet);
+                    hexMsgTransceiver.sendByteMessagesNoLog(packet);
 
-                    Thread.sleep(100);
+                    int finalI = i;
+                    Platform.runLater(() -> {
+                        // ProgressBar 업데이트 (0 ~ 1.0 범위)
+                        progressBar.setProgress((double) finalI / totalPackets);
+
+                        // Label 업데이트 (i/totalPackets)
+                        progressLabel.setText((finalI + 1) + "/" + totalPackets);
+                    });
+
+                    Thread.sleep(200);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
+            Thread.sleep(500);
+            //포트닫고열기
             return null;
         }
     };
+}
 }

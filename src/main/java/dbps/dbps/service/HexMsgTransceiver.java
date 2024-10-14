@@ -63,7 +63,6 @@ public class HexMsgTransceiver {
                     taskThread.start();
 
                     receivedMsg = sendTask.get();
-                    System.out.println("receivedMsg = " + receivedMsg);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -157,7 +156,10 @@ public class HexMsgTransceiver {
         String status = splitMsg[6];
 
         switch (command) {
-            case "40" -> handleScreenSizeSetting(splitMsg, msg);
+            case "40" -> {
+                handleScreenSizeSetting(splitMsg, msg);
+                logService.updateInfoLog("받은 메세지 : "+receiveMsg);
+            }
             case "66" -> handleTimeRead(receiveMsg, splitMsg);
             case "6F" -> {
                 return receiveMsg;
@@ -174,7 +176,6 @@ public class HexMsgTransceiver {
             logService.warningLog("화면 크기 설정에 실패했습니다.");
             logService.warningLog(splitMsg[7] + "단, " + splitMsg[8] + "열까지만 가능합니다.");
         } else {
-            logService.updateInfoLog("받은 메세지 : " + msg);
             logService.updateInfoLog("화면 크기 설정에 성공했습니다.");
         }
     }

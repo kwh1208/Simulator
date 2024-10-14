@@ -89,8 +89,8 @@ public class SizeOfDisplayBoardController {
     private void displaySizeASC() {
         String msg = "![0040";
 
-        msg+=String.format("%02d",spinnerForColumn.getValue());
         msg+=String.format("%02d",spinnerForRow.getValue());
+        msg+=String.format("%02d",spinnerForColumn.getValue());
         switch (howToArray.getValue()){
             case "가로형(default)":
                 msg+="0";
@@ -116,7 +116,7 @@ public class SizeOfDisplayBoardController {
     }
 
     private void displaySizeHEX() {
-        String msg = "10 02 00 00 05 40";
+        String msg = "10 02 00 00 07 40";
 
         switch (String.valueOf(colorNum.getValue()).charAt(0)){
             case 50:
@@ -129,8 +129,8 @@ public class SizeOfDisplayBoardController {
                 msg+=" 08";
                 break;
         }
-        msg += String.format(" %02d",spinnerForColumn.getValue());
         msg += String.format(" %02d",spinnerForRow.getValue());
+        msg += String.format(" %02d",spinnerForColumn.getValue());
         switch (howToArray.getValue()){
             case "가로형(default)":
                 msg+=" 00";
@@ -151,7 +151,7 @@ public class SizeOfDisplayBoardController {
                 msg+=" 05";
                 break;
         }
-        msg+=" 10 03";
+        msg+=" 00 F1 10 03";
 
         hexMsgTransceiver.sendMessages(msg);
 

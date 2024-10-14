@@ -1,6 +1,7 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
+import dbps.dbps.service.AsciiMsgTransceiver;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
@@ -8,7 +9,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
-import static dbps.dbps.controller.ASCiiMsgController.transmitMsgs;
 import static dbps.dbps.service.ASCiiMsgService.makeMsgWindow;
 import static java.lang.Integer.parseInt;
 
@@ -77,6 +77,8 @@ public class MakeOwnMsgController {
     @FXML
     TextField defaultSetting;
 
+    AsciiMsgTransceiver asciiMsgTransceiver;
+
     @FXML
     public void initialize() {
         // 선택 항목 리스너 설정
@@ -87,6 +89,7 @@ public class MakeOwnMsgController {
             bgImg.getItems().add(String.valueOf(i));
         }
 
+        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         makeOwnMsgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/makeOwnMsg.css").toExternalForm());
     }
 
@@ -103,6 +106,7 @@ public class MakeOwnMsgController {
     @FXML
     public void send() {
         String text = defaultSetting.getText();
+        asciiMsgTransceiver.sendMessages(text);
     }
 
     //선택지 초기상태로
@@ -132,17 +136,7 @@ public class MakeOwnMsgController {
     }
 
 
-    public void confirm() {
-        String text = defaultSetting.getText();
-        //텍스트를 전체화면으로 넘겨주기.
-        for (TextField transmitMsg : transmitMsgs) {
-            if (transmitMsg.getText().isBlank() ||transmitMsg.getText().isEmpty()) {
-                transmitMsg.setText(text);
-                makeMsgWindow.close();
-                return;
-            }
-        }
-        transmitMsgs.get(transmitMsgs.size() - 1).setText(text);
+    public void close() {
         makeMsgWindow.close();
     }
 
@@ -191,7 +185,8 @@ public class MakeOwnMsgController {
      */
 
     private String getSettings() {
-        String text = "![000";
+        String text = "![0032";
+        text += "/P0000";
         text += "/D"+setDText(displayControl.getValue(), displayMethod.getValue());
         text += "/F"+setFText(charCodes.getValue(), fontSize.getValue());
         text += "/E"+setEText(effectIn.getValue(),inDirection.getValue());
@@ -422,6 +417,7 @@ public class MakeOwnMsgController {
     }
 
     public void read(MouseEvent mouseEvent) {
-
+        String result = asciiMsgTransceiver.sendMessages("![00330!]");
+        defaultSetting.setText(result);
     }
 }

@@ -1,6 +1,7 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.service.AsciiMsgTransceiver;
+import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.DisplaySignal;
 import dbps.dbps.service.HexMsgTransceiver;
 import javafx.animation.KeyFrame;
@@ -18,6 +19,9 @@ import static dbps.dbps.service.DisplaySignal.SignalMap_ASC;
 import static dbps.dbps.service.DisplaySignal.SignalMap_HEX;
 
 public class DisplaySignalSettingController {
+
+    @FXML
+    public TextArea memo;
 
     @FXML
     private AnchorPane displaySignalAP;
@@ -48,6 +52,8 @@ public class DisplaySignalSettingController {
     HexMsgTransceiver hexMsgTransceiver;
 
     DisplaySignal displaySignal;
+
+    ConfigService configService;
 
     private Timeline timeline;
 
@@ -82,12 +88,14 @@ public class DisplaySignalSettingController {
                 scanOrder.setValue("138 IC");
                 scanOrder.setDisable(true);
             }
+            memo.setText(configService.getDisplayProperty(signalList.getFocusModel().getFocusedItem()));
         });
 
         displaySignalAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/displaySignal.css").toExternalForm());
         displaySignal = DisplaySignal.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
+        configService = ConfigService.getInstance();
     }
 
     //현재창 닫기
@@ -236,7 +244,6 @@ public class DisplaySignalSettingController {
         int originalTime = RESPONSE_LATENCY;
         RESPONSE_LATENCY = time;
         int startIdx = signalList.getSelectionModel().getSelectedIndex();
-        System.out.println("startIdx = " + startIdx);
         timeline = new Timeline();
         timeline.setCycleCount(signalCount); // 각 신호에 대해 반복
 
@@ -278,6 +285,6 @@ public class DisplaySignalSettingController {
     }
 
     public void save(MouseEvent mouseEvent) {
-        //현재내용 저장.
+        configService.setDisplayProperties(signalList.getFocusModel().getFocusedItem(), memo.getText());
     }
 }

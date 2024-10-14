@@ -70,7 +70,7 @@ public class BoardSettingsController {
 
     @FXML
     public void openCommunicationSetting(MouseEvent mouseEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/boardSettings.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/communicationSetting.fxml"));
         Parent root = fxmlLoader.load();
 
         Stage modalStage = new Stage();
@@ -103,7 +103,7 @@ public class BoardSettingsController {
             if (resultSplit[0].equals("0")){
                 debugMethod.setValue("disable");
             }else {
-                debugMethod.setValue("Enable"+resultSplit[0]);
+                debugMethod.setValue("enable"+resultSplit[0]);
             }
 
             if (resultSplit[1].equals("0")){
@@ -125,7 +125,7 @@ public class BoardSettingsController {
             }
 
             if (resultSplit[2].equals("0")){
-                J4_func.setValue("Relay out");
+                J4_func.setValue("Relay Out");
             } else if (resultSplit[2].equals("1")){
                 J4_func.setValue("CDS");
             } else if (resultSplit[2].equals("2")){
