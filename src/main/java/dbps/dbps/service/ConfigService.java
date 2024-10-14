@@ -18,6 +18,7 @@ public class ConfigService {
         displayFilePath = System.getProperty("user.dir") + File.separator + "config" + File.separator + "display.properties";
         properties = new Properties();
         displayProperties = new Properties();
+        DisplaySignal.getInstance().initialize_ASCii();
         createFileIfNotExists(configFilePath, "config");
         createFileIfNotExists(displayFilePath, "display");
         loadProperties();
@@ -50,7 +51,7 @@ public class ConfigService {
                 } else if (i == 3) {
                     defaultProperties.setProperty("ASCMsg"+i, "![000/Y0004/E0606/S1000/C7Text 123456789 Hello World!]");
                 }
-                defaultProperties.setProperty("ASCMsg"+i, "");
+                else defaultProperties.setProperty("ASCMsg"+i, "");
             }
 
             defaultProperties.setProperty("IS_ASCII", "true");
@@ -90,7 +91,7 @@ public class ConfigService {
             defaultProperties.setProperty("fontGroup4selected", "False");
 
             for (int i = 0; i <= 10; i++) {//페이지 개수(0은 실시간)
-                for (int j = 1; j < 3; j++) {//섹션 개수
+                for (int j =0; j < 3; j++) {//섹션 개수
                     defaultProperties.setProperty("displayControl"+i+j, "ON");
                     defaultProperties.setProperty("displayMethod"+i+j, "Normal");
                     defaultProperties.setProperty("charCode"+i+j, "KS완성형 한글코드");
@@ -108,12 +109,12 @@ public class ConfigService {
                     defaultProperties.setProperty("yEnd"+i+j, "0");
                     defaultProperties.setProperty("bgImg"+i+j, "사용안함");
                     defaultProperties.setProperty("textColor"+i+j, "1");
-                    defaultProperties.setProperty("bgColor"+i+j, "2");
+                    defaultProperties.setProperty("bgColor"+i+j, "0");
                     if (i==0) {
-                        defaultProperties.setProperty("text", "realTime 메세지");
+                        defaultProperties.setProperty("text"+i+j, "realTime 메세지 "+j);
                     }
                     else {
-                        defaultProperties.setProperty("text", "page "+i+"/section "+j);
+                        defaultProperties.setProperty("text"+i+j, "page "+i+"-section "+j);
                     }
                 }
             }
@@ -136,7 +137,7 @@ public class ConfigService {
             defaultProperties.setProperty("bgImgDefault", "사용안함");
             defaultProperties.setProperty("textColorDefault", "1");
             defaultProperties.setProperty("bgColorDefault", "2");
-            defaultProperties.setProperty("text", "![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]");
+            defaultProperties.setProperty("settingText", "![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]");
 
             defaultProperties.setProperty("pageMsgCnt", "1");
             defaultProperties.setProperty("pageMsgClear", "전체");

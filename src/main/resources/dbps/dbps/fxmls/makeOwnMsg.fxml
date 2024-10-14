@@ -193,7 +193,7 @@
        </ChoiceBox>
 
        <Label layoutX="34.0" layoutY="320.0" text="11. 유지시간" />
-       <ChoiceBox fx:id="effectTime" layoutX="177.0" layoutY="316.0" prefHeight="21.0" prefWidth="139.0" value="2">
+       <ChoiceBox fx:id="effectTime" layoutX="177.0" layoutY="316.0" prefHeight="21.0" prefWidth="139.0" value="2초">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="0초" />
@@ -367,6 +367,6 @@
        <Button layoutX="135.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="90.0" text="전송" />
        <Button layoutX="235.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="90.0" text="초기화" />
        <Button layoutX="335.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="30.0" prefWidth="90.0" text="읽기"/>
-       <Button layoutX="435.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="30.0" prefWidth="90.0" text="확인"/>
+       <Button layoutX="435.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="30.0" prefWidth="90.0" text="닫기"/>
    </children>
 </AnchorPane>

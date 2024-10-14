@@ -85,7 +85,7 @@ public class SerialPortManager {
         return port != null && port.isOpen();
     }
     public Task<String> sendMsgAndGetMsg(String msg){
-        return new Task<String>() {
+        return new Task<>() {
             @Override
             protected String call() throws Exception {
                 String portName = OPEN_PORT_NAME;
@@ -99,7 +99,7 @@ public class SerialPortManager {
                     OutputStream outputStream = port.getOutputStream();
                     InputStream inputStream = port.getInputStream();
 
-                    byte[] dataToSend = msg.getBytes();
+                    byte[] dataToSend = msg.getBytes(Charset.forName("EUC-KR"));
                     outputStream.write(dataToSend);
                     outputStream.flush();
 
@@ -120,7 +120,6 @@ public class SerialPortManager {
                                 if (dataReceivedIsComplete(buffer, totalBytesRead)) {
                                     break; // 데이터를 다 받았으면 루프 종료
                                 }
-
                             }
                         } else {
                             // 짧은 대기 시간 후 다시 읽기 시도 (바쁜 대기 방지)
@@ -129,8 +128,8 @@ public class SerialPortManager {
                     }
 
                     return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
-                }catch (Exception e){
-                    logService.errorLog("에러가 발생했습니다: "+e.getMessage());
+                } catch (Exception e) {
+                    logService.errorLog("에러가 발생했습니다: " + e.getMessage());
                     return null;
                 }
             }
@@ -184,6 +183,7 @@ public class SerialPortManager {
                             Thread.sleep(50);
                         }
                     }
+                    inputStream.close();
 
                     // 수신된 모든 데이터를 Hex로 변환하여 반환
                     return bytesToHex(buffer, totalBytesRead);
@@ -195,54 +195,33 @@ public class SerialPortManager {
         };
     };
 
-    public String sendMsgAndGetMsgBytetmp(byte[] msg){
-        String portName = OPEN_PORT_NAME;
-        SerialPort port = serialPortMap.get(portName);
+    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg){
+        return new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String portName = OPEN_PORT_NAME;
+                SerialPort port = serialPortMap.get(portName);
 
-        if (port == null || !isPortOpen(portName)) {
-            openPort(portName, SERIAL_BAUDRATE);
-            port = serialPortMap.get(portName);
-        }
+                if (port == null || !isPortOpen(portName)) {
+                    openPort(portName, SERIAL_BAUDRATE);
+                    port = serialPortMap.get(portName);
+                }
 
-        try {
-            OutputStream outputStream = port.getOutputStream();
-            InputStream inputStream = port.getInputStream();
-            outputStream.write(msg);
-            outputStream.flush();
+                try {
+                    OutputStream outputStream = port.getOutputStream();
+                    InputStream inputStream = port.getInputStream();
+                    outputStream.write(msg);
+                    outputStream.flush();
 
-            // 읽기용 버퍼 초기화
-            byte[] buffer = new byte[1024];
-            int totalBytesRead = 0;
-
-            // 데이터 수신을 기다리는 최대 시간 (예: 1000 밀리초)
-            long timeout = RESPONSE_LATENCY * 1000;
-            long startTime = System.currentTimeMillis();
-
-            // 반복적으로 읽어 남아있는 데이터를 모두 수신
-            while (System.currentTimeMillis() - startTime < timeout) {
-                if (inputStream.available() > 0) {
-                    int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-                    if (bytesRead > 0) {
-                        totalBytesRead += bytesRead;
-                        // 타임아웃 시간 갱신 (데이터 수신이 있으면 타이머 리셋)
-                        startTime = System.currentTimeMillis();
-
-                        if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
-                            break; // 데이터를 다 받았으면 루프 종료
-                        }
-                    }
-                } else {
-                    // 짧은 대기 시간 후 다시 읽기 시도 (바쁜 대기 방지)
-                    Thread.sleep(50);
+                    // 수신된 모든 데이터를 Hex로 변환하여 반환
+                    inputStream.readAllBytes();
+                    return null;
+                } catch (Exception e) {
+                    logService.errorLog("에러가 발생했습니다: " + e.getMessage());
+                    return null;
                 }
             }
-
-            // 수신된 모든 데이터를 Hex로 변환하여 반환
-            return bytesToHex(buffer, totalBytesRead);
-        } catch (Exception e) {
-            logService.errorLog("에러가 발생했습니다: " + e.getMessage());
-            return null;
-        }
+        };
     }
 
     private boolean dataReceivedIsCompleteHex(byte[] buffer, int length) {

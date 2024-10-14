@@ -275,7 +275,7 @@ public class FontSettingController {
             fontSize[3] = fontGroup4fontsize.getValue();
         }
 
-        fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path,  fontGroup4Path, fontSize, fontType);
+        fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path,  fontGroup4Path, fontType);
 
     }
 

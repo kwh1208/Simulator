@@ -1,6 +1,7 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
+import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.HexMsgTransceiver;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -9,6 +10,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static dbps.dbps.Constants.*;
@@ -99,12 +101,15 @@ public class HEXMessageController {
     @FXML
     private TextField msgPreview;
 
+    ConfigService configService;
+
     ToggleGroup msgTypeGroup = new ToggleGroup();
 
     ToggleGroup sectionGroup = new ToggleGroup();
 
     @FXML
     private void initialize() {
+        configService = ConfigService.getInstance();
         HEXMsgAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/hexMessage.css").toExternalForm());
 
         realTimeMsg.setToggleGroup(msgTypeGroup);
@@ -127,13 +132,88 @@ public class HEXMessageController {
                     pageMsgCnt.setVisible(true);
                     pageCntLabel.setVisible(true);
                 }
+                doMsgSettings();
             }
+        });
+
+        pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)->{
+            doMsgSettings();
+        });
+
+        sectionGroup.selectedToggleProperty().addListener((observable, oldValue, newValue)->{
+            doMsgSettings();
         });
 
         effectOut.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateOutDirections(newValue));
         effectIn.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateInDirections(newValue));
 
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
+        doMsgSettings();
+    }
+
+    private void doMsgSettings() {
+        int sectionNum = 0;
+        int pageMsgNum = pageMsgCnt.getSelectionModel().getSelectedIndex()+1;
+        if (section1.isSelected()) {
+            sectionNum = 1;
+        } else if (section2.isSelected()){
+            sectionNum = 2;
+        }
+        if (realTimeMsg.isSelected()) {
+            pageMsgNum = 0;
+        }
+        displayControl.setValue(configService.getProperty("displayControl"+pageMsgNum+sectionNum));
+        displayMethod.setValue(configService.getProperty("displayMethod"+pageMsgNum+sectionNum));
+        charCodes.setValue(configService.getProperty("charCode"+pageMsgNum+sectionNum));
+        fontSize.setValue(configService.getProperty("fontSize"+pageMsgNum+sectionNum));
+        fontGroup.setValue(configService.getProperty("fontGroup"+pageMsgNum+sectionNum));
+        effectIn.setValue(configService.getProperty("effectIn"+pageMsgNum+sectionNum));
+        inDirection.setValue(configService.getProperty("effectInDirection"+pageMsgNum+sectionNum));
+        effectOut.setValue(configService.getProperty("effectOut"+pageMsgNum+sectionNum));
+        outDirection.setValue(configService.getProperty("effectOutDirection"+pageMsgNum+sectionNum));
+        effectSpeed.setValue(configService.getProperty("effectSpeed"+pageMsgNum+sectionNum));
+        effectTime.setValue(configService.getProperty("effectTime"+pageMsgNum+sectionNum));
+        xStart.setValue(configService.getProperty("xStart"+pageMsgNum+sectionNum));
+        yStart.setValue(configService.getProperty("yStart"+pageMsgNum+sectionNum));
+        xEnd.setValue(configService.getProperty("xEnd"+pageMsgNum+sectionNum));
+        yEnd.setValue(configService.getProperty("yEnd"+pageMsgNum+sectionNum));
+        bgImg.setValue(configService.getProperty("bgImg"+pageMsgNum+sectionNum));
+        textColor.setText(configService.getProperty("textColor"+pageMsgNum+sectionNum));
+        bgColor.setText(configService.getProperty("bgColor"+pageMsgNum+sectionNum));
+        msgPreview.setText(configService.getProperty("text"+pageMsgNum+sectionNum));
+    }
+
+    public void save(MouseEvent mouseEvent) {
+        int sectionNum = 0;
+        int pageMsgNum = pageMsgCnt.getSelectionModel().getSelectedIndex();
+        if (section1.isSelected()) {
+            sectionNum = 1;
+        } else if (section2.isSelected()){
+            sectionNum = 2;
+        }
+        if (realTimeMsg.isSelected()) {
+            pageMsgNum = 0;
+        }
+
+        configService.setProperty("displayControl"+pageMsgNum+sectionNum, displayControl.getValue());
+        configService.setProperty("displayMethod"+pageMsgNum+sectionNum, displayMethod.getValue());
+        configService.setProperty("charCode"+pageMsgNum+sectionNum, charCodes.getValue());
+        configService.setProperty("fontSize"+pageMsgNum+sectionNum, fontSize.getValue());
+        configService.setProperty("fontGroup"+pageMsgNum+sectionNum, fontGroup.getValue());
+        configService.setProperty("effectIn"+pageMsgNum+sectionNum, effectIn.getValue());
+        configService.setProperty("effectInDirection"+pageMsgNum+sectionNum, inDirection.getValue());
+        configService.setProperty("effectOut"+pageMsgNum+sectionNum, effectOut.getValue());
+        configService.setProperty("effectOutDirection"+pageMsgNum+sectionNum, outDirection.getValue());
+        configService.setProperty("effectSpeed"+pageMsgNum+sectionNum, effectSpeed.getValue());
+        configService.setProperty("effectTime"+pageMsgNum+sectionNum, effectTime.getValue());
+        configService.setProperty("xStart"+pageMsgNum+sectionNum, xStart.getValue());
+        configService.setProperty("yStart"+pageMsgNum+sectionNum, yStart.getValue());
+        configService.setProperty("xEnd"+pageMsgNum+sectionNum, xEnd.getValue());
+        configService.setProperty("yEnd"+pageMsgNum+sectionNum, yEnd.getValue());
+        configService.setProperty("bgImg"+pageMsgNum+sectionNum, bgImg.getValue());
+        configService.setProperty("textColor"+pageMsgNum+sectionNum, textColor.getText());
+        configService.setProperty("bgColor"+pageMsgNum+sectionNum, bgColor.getText());
+        configService.setProperty("text"+pageMsgNum+sectionNum, msgPreview.getText());
     }
 
     public void send() {
@@ -163,7 +243,7 @@ public class HEXMessageController {
         String xEndValue = xEnd.getValue();
         String yEndValue = yEnd.getValue();
         String bgImgValue = bgImg.getValue();
-        String textcolorValue = textColor.getText();
+        String textColorValue = textColor.getText();
         String bgColorValue = bgColor.getText();
         String text = msgPreview.getText();
 
@@ -251,19 +331,21 @@ public class HEXMessageController {
 
         //배경이미지
         msg+=bgImgValue.equals("사용안함") ? "00 ": String.format("%02d ", Integer.parseInt(bgImgValue));
-
-        for (int i = 0; i < textBytes.length; i++) {
+        //글자
+        for (int i = 0; i < text.length(); i++) {
             String tmp = "";
             if (bgColorValue.length()>i){
                 tmp+=String.valueOf(bgColorValue.charAt(i));
             }else {
                 tmp+=String.valueOf(bgColorValue.charAt(bgColorValue.length()-1));
             }
-            if (textcolorValue.length()>i) {
-                tmp += String.valueOf(textcolorValue.charAt(i));
+
+            if (textColorValue.length()>i) {
+                tmp += String.valueOf(textColorValue.charAt(i));
             } else{
-                tmp += String.valueOf(textcolorValue.charAt(textcolorValue.length()-1));
+                tmp += String.valueOf(textColorValue.charAt(textColorValue.length()-1));
             }
+
             int add = 0;
             switch (fontGroupValue){
                 case "FontGroup1"->{
@@ -279,11 +361,18 @@ public class HEXMessageController {
                     add = 0;
                 }
             }
+
             int tmpValue = Integer.parseInt(tmp, 16);
+            String resultHex = "";
+            System.out.println("길이  = "+String.valueOf(text.charAt(i)).getBytes(Charset.forName("EUC-KR")).length);
 
-            String resultHex = String.format("%02X", tmpValue + add);
+            resultHex = String.format("%02X ", tmpValue + add);
+            if (String.valueOf(text.charAt(i)).getBytes(Charset.forName("EUC-KR")).length!=1){
+                resultHex += String.format("%02X ", 0);
 
-            msg+=resultHex+" ";
+            }
+
+            msg+=resultHex;
         }
 
 
@@ -292,36 +381,6 @@ public class HEXMessageController {
         msg += "10 03";
 
         return msg;
-    }
-
-    private String selectColor(String input) {
-        switch (input) {
-            case "검은색" -> {
-                return "0";
-            }
-            case "빨간색" -> {
-                return "1";
-            }
-            case "초록색" -> {
-                return "2";
-            }
-            case "노란색" -> {
-                return "3";
-            }
-            case "파란색" -> {
-                return "4";
-            }
-            case "분홍색" -> {
-                return "5";
-            }
-            case "하늘색" -> {
-                return "6";
-            }
-            case "흰색" -> {
-                return "7";
-            }
-        }
-        return "0";
     }
 
     private String makeEffectTime(String effectTimeValue) {

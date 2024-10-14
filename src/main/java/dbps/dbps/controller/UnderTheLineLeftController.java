@@ -124,16 +124,6 @@ public class UnderTheLineLeftController {
             asciiMsgTransceiver.sendMessages("![0041!]");
         }
         else hexMsgTransceiver.sendMessages("10 02 00 00 02 89 00 10 03");
-
-        Thread.sleep(4500);
-        if (CONNECT_TYPE.equals("serial")) {
-            serialPortManager.closePort(OPEN_PORT_NAME);
-            serialPortManager.openPort(OPEN_PORT_NAME, SERIAL_BAUDRATE);
-        }
-        if (CONNECT_TYPE.equals("TCP")) {
-            tcpManager.disconnect();
-            tcpManager.connect(TCP_IP, TCP_PORT);
-        }
     }
 
     public void hardReset() throws InterruptedException {
@@ -144,15 +134,6 @@ public class UnderTheLineLeftController {
         else {
             String msg = "10 02 00 00 04 4A 0"+BITS_PER_PIXEL+" 0"+SIZE_ROW+" 0"+SIZE_COLUMN+ " 10 03";
             hexMsgTransceiver.sendMessages(msg);
-        }
-        Thread.sleep(4500);
-        if (CONNECT_TYPE.equals("serial")) {
-            serialPortManager.closePort(OPEN_PORT_NAME);
-            serialPortManager.openPort(OPEN_PORT_NAME, SERIAL_BAUDRATE);
-        }
-        if (CONNECT_TYPE.equals("TCP")) {
-            tcpManager.disconnect();
-            tcpManager.connect(TCP_IP, TCP_PORT);
         }
     }
 }

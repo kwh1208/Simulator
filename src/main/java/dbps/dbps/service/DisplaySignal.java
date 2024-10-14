@@ -3,7 +3,6 @@ package dbps.dbps.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import static dbps.dbps.Constants.hexStringToByteArray;
 
 //표출신호별 전송 프로토콜 저장
 public class DisplaySignal {
