@@ -82,6 +82,7 @@ public class BinaryFntViewer extends Application {
             return null;
         }
 
+
         try (FileInputStream fis = new FileInputStream(file)) {
             // 파일의 헤더(16바이트)를 건너뜀
             fis.skip(16);

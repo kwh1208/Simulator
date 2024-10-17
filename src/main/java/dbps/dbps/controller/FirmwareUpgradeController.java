@@ -106,8 +106,8 @@ public class FirmwareUpgradeController {
         }
         String firmwareInformationText = firmwareInformation.getText();
         String firmwareFileInformationText = firmwareFileInformation.getText();
-        int index1 = firmwareInformationText.indexOf("DIBD");
-        int index2 = firmwareFileInformationText.indexOf("DIBD");
+        int index1 = firmwareInformationText.lastIndexOf("DIBD");
+        int index2 = firmwareFileInformationText.lastIndexOf("DIBD");
 
         String result1;
         String result2;
@@ -117,9 +117,12 @@ public class FirmwareUpgradeController {
             logService.errorLog("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
             return;
         }
-
-        if (index2 != -1 && index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
-            result2 = firmwareFileInformationText.substring(index2 + "DIBD".length(), index2 + "DIBD".length() + 4);
+        if (index2==-1){
+            index2 = firmwareFileInformationText.lastIndexOf("DB");
+            result2 = firmwareFileInformationText.substring(index2 +"DB".length(), index2 + "DB".length() + 4);
+        }
+        else if (index2 != -1 && index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
+            result2 = firmwareFileInformationText.substring(index2 , index2 + "DIBD".length() + 4);
         } else {
             logService.errorLog("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
             return;

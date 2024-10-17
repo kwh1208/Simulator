@@ -1,13 +1,11 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.service.FontService;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -17,37 +15,40 @@ import javafx.stage.Stage;
 import java.io.File;
 
 public class FontSettingController {
+    public Label fontProgressLabel;
+    public ProgressBar fontProgressBar;
+    public Label fontCapacity;
     FontService fontService = FontService.getInstance();
     @FXML
     public ChoiceBox<String> fontGroup2fontSelected1;
     @FXML
-    public TextField fontGroup2fontPath1;
+    public TextArea fontGroup2fontPath1;
     @FXML
     public ChoiceBox<String> fontGroup2fontSelected2;
     @FXML
-    public TextField fontGroup2fontPath2;
+    public TextArea fontGroup2fontPath2;
     @FXML
     public ChoiceBox<String> fontGroup2fontSelected3;
     @FXML
-    public TextField fontGroup2fontPath3;
+    public TextArea fontGroup2fontPath3;
     @FXML
     public ChoiceBox<String> fontGroup3fontSelected1;
     @FXML
-    public TextField fontGroup3fontPath1;
+    public TextArea fontGroup3fontPath1;
     @FXML
     public ChoiceBox<String> fontGroup3fontSelected2;
     @FXML
-    public TextField fontGroup3fontPath2;
+    public TextArea fontGroup3fontPath2;
     @FXML
     public ChoiceBox<String> fontGroup3fontSelected3;
     @FXML
-    public TextField fontGroup3fontPath3;
+    public TextArea fontGroup3fontPath3;
     @FXML
-    public TextField fontGroup4fontPath1;
+    public TextArea fontGroup4fontPath1;
     @FXML
-    public TextField fontGroup4fontPath2;
+    public TextArea fontGroup4fontPath2;
     @FXML
-    public TextField fontGroup4fontPath3;
+    public TextArea fontGroup4fontPath3;
     @FXML
     public ChoiceBox<String> fontGroup4fontSelected1;
     @FXML
@@ -63,13 +64,13 @@ public class FontSettingController {
     @FXML
     ChoiceBox<String> fontGroup1fontSelected3;
     @FXML
-    TextField fontGroup1fontPath3;
+    TextArea fontGroup1fontPath3;
     @FXML
-    TextField fontGroup1fontPath2;
+    TextArea fontGroup1fontPath2;
     @FXML
     ChoiceBox<String> fontGroup1fontSelected2;
     @FXML
-    TextField fontGroup1fontPath1;
+    TextArea fontGroup1fontPath1;
 
     @FXML
     CheckBox fontGroup1ChkBox;
@@ -133,6 +134,38 @@ public class FontSettingController {
         fontGroup2fontPath1.setText(System.getProperty("user.dir") + File.separator + "Font");
         fontGroup2fontPath2.setText(System.getProperty("user.dir") + File.separator + "Font");
         fontGroup2fontPath3.setText(System.getProperty("user.dir") + File.separator + "Font");
+
+        moveCursorRight(fontGroup1fontPath1);
+        moveCursorRight(fontGroup1fontPath2);
+        moveCursorRight(fontGroup1fontPath3);
+        moveCursorRight(fontGroup2fontPath1);
+        moveCursorRight(fontGroup2fontPath2);
+        moveCursorRight(fontGroup2fontPath3);
+        moveCursorRight(fontGroup3fontPath1);
+        moveCursorRight(fontGroup3fontPath2);
+        moveCursorRight(fontGroup3fontPath3);
+        moveCursorRight(fontGroup4fontPath1);
+        moveCursorRight(fontGroup4fontPath2);
+        moveCursorRight(fontGroup4fontPath3);
+    }
+
+    private void moveCursorRight(TextArea textArea) {
+        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            moveCaretToEnd(textArea);
+        });
+
+        // 포커스를 얻거나 잃을 때마다 커서를 오른쪽 끝으로 이동
+        textArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            moveCaretToEnd(textArea);
+        });
+
+        // 초기 커서 위치 설정 (텍스트 끝으로)
+        moveCaretToEnd(textArea);
+    }
+
+
+    private void moveCaretToEnd(TextArea textArea) {
+        textArea.positionCaret(textArea.getText().length());  // 커서를 텍스트 끝으로 이동
     }
 
 
@@ -151,11 +184,11 @@ public class FontSettingController {
         String groupNum = String.valueOf(clickedBtn.getId().charAt(9));
         String btnNum = String.valueOf(clickedBtn.getId().charAt(17));
 
-        // TextField ID를 구성하여 해당 TextField 찾기
-        String textFieldId = "fontGroup" + groupNum + "fontPath" + btnNum;
-        TextField fontPath = (TextField) fontSettingAnchorPane.lookup("#" + textFieldId);
+        // TextArea ID를 구성하여 해당 TextArea 찾기
+        String TextAreaId = "fontGroup" + groupNum + "fontPath" + btnNum;
+        TextArea fontPath = (TextArea) fontSettingAnchorPane.lookup("#" + TextAreaId);
 
-        // TextField에서 가져온 경로가 유효한지 확인
+        // TextArea에서 가져온 경로가 유효한지 확인
         File initialDir = new File(fontPath.getText());
         if (initialDir.exists() && initialDir.isDirectory()) {
             // 경로가 존재하고 디렉터리인 경우에만 초기 디렉터리 설정
@@ -175,10 +208,12 @@ public class FontSettingController {
         Stage stage = (Stage) fontGroup1ChkBox.getScene().getWindow();
         File selectedFont = fileChooser.showOpenDialog(stage);
 
-        // 선택된 폰트 경로를 TextField에 설정
+        // 선택된 폰트 경로를 TextArea에 설정
         if (selectedFont != null) {
             fontPath.setText(selectedFont.getAbsolutePath());
         }
+
+        moveCaretToEnd(fontPath);
     }
     //체크박스 클릭시 폰트설정 비활성화/활성화
     private void disableAllNodesInPane(Pane pane){
@@ -275,12 +310,42 @@ public class FontSettingController {
             fontSize[3] = fontGroup4fontsize.getValue();
         }
 
-        fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path,  fontGroup4Path, fontType);
+        Task<Void> fontSend = fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path, fontGroup4Path, fontType, fontProgressBar, fontProgressLabel);
+
+        fontSend.setOnRunning(e -> {
+            // Task가 시작될 때 로딩 애니메이션 표시
+            fontProgressBar.setVisible(true);
+            fontProgressLabel.setVisible(true);
+        });
+
+        fontSend.setOnSucceeded(e -> {
+            // Task가 성공적으로 끝났을 때 로딩 애니메이션 숨김
+            fontProgressBar.setVisible(false);
+            fontProgressLabel.setVisible(false);
+        });
+
+        fontSend.setOnFailed(e -> {
+            // Task가 실패했을 때 로딩 애니메이션 숨김
+            fontProgressBar.setVisible(false);
+            fontProgressLabel.setVisible(false);
+        });
+
+        fontSend.setOnCancelled(e -> {
+            // Task가 취소됐을 때 로딩 애니메이션 숨김
+            fontProgressBar.setVisible(false);
+            fontProgressLabel.setVisible(false);
+        });
+
+        new Thread(fontSend).start();
 
     }
 
     public void close(MouseEvent mouseEvent) {
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();
+    }
+
+    public void fontName(MouseEvent mouseEvent) {
+
     }
 }

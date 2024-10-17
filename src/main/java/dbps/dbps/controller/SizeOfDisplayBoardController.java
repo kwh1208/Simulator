@@ -3,7 +3,6 @@ package dbps.dbps.controller;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
@@ -19,9 +18,6 @@ public class SizeOfDisplayBoardController {
 
     @FXML
     public ChoiceBox<String> colorNum;
-
-    @FXML
-    public CheckBox arrayChk;
 
     @FXML
     public ChoiceBox<String> howToArray;
@@ -55,15 +51,6 @@ public class SizeOfDisplayBoardController {
 
         spinnerForColumn.valueProperty().addListener((obs, oldValue, newValue) -> {
             SIZE_COLUMN = newValue;
-        });
-
-
-        arrayChk.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue){
-                howToArray.setDisable(false);
-            }else{
-                howToArray.setDisable(true);
-            }
         });
 
         setInitialValues();

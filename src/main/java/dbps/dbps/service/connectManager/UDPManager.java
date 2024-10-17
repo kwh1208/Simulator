@@ -89,6 +89,8 @@ public class UDPManager {
                     //에러 처리
                     logService.errorLog(msg+"전송에 실패했습니다.");
                     return "에러코드";
+                } finally {
+                    disconnect();
                 }
             }
         };
@@ -135,6 +137,8 @@ public class UDPManager {
                     return bytesToHex(receivePacket.getData(), receivePacket.getLength());
                 }catch (IOException | InterruptedException e){
                     //에러 처리
+                } finally {
+                    disconnect();
                 }
                 return null;
             }
@@ -170,6 +174,8 @@ public class UDPManager {
         }catch (IOException e){
             //에러처리
             logService.errorLog("UDP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
+        } finally {
+            disconnect();
         }
     }
 

@@ -285,13 +285,13 @@ public class HEXMessageController {
             case "Off":
                 msg += "00 ";
                 break;
-            case "On":
+            case "ON":
                 msg += "63 ";
                 break;
-            default:
-                msg += Integer.toHexString(Integer.parseInt(displayControlValue))+" ";
         }
 
+        //10 02 00 00 39 94 00 00 63 00 00 03 18 00 00 05 00 00 00 00 00 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 BE C8 B3 E7 BE C8 B3 E7 BE C8 B3 E7 BE C8 B3 E7 BE C8 B3 E7 10 03
+        //10 02 00 00 39 94 00 00 63 00 00 03 18 00 00 05 02 00 00 00 00 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 BE C8 B3 E7 BE C8 B3 E7 BE C8 B3 E7 BE C8 B3 E7 BE C8 B3 E7 10 0
         //표시방법
         msg+= displayMethodValue.equals("Normal") ? "00 ":"01 ";
 
@@ -364,7 +364,6 @@ public class HEXMessageController {
 
             int tmpValue = Integer.parseInt(tmp, 16);
             String resultHex = "";
-            System.out.println("길이  = "+String.valueOf(text.charAt(i)).getBytes(Charset.forName("EUC-KR")).length);
 
             resultHex = String.format("%02X ", tmpValue + add);
             if (String.valueOf(text.charAt(i)).getBytes(Charset.forName("EUC-KR")).length!=1){
@@ -374,6 +373,7 @@ public class HEXMessageController {
 
             msg+=resultHex;
         }
+
 
 
         msg+=bytesToHex(textBytes, textBytes.length);
@@ -424,6 +424,9 @@ public class HEXMessageController {
     private String makeEffect(String effect, String direction){
         switch (effect){
             case "효과없음"->{
+                return "00 ";
+            }
+            case "사용안함"->{
                 return "00 ";
             }
             case "정지효과"-> {

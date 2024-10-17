@@ -88,6 +88,8 @@ public class TCPManager {
                     e.getMessage();
                     logService.errorLog(msg+"전송에 실패했습니다.");
                     return "에러발생";
+                } finally {
+                    disconnect();
                 }
             }
         };
@@ -135,6 +137,8 @@ public class TCPManager {
 
         }catch (IOException e){
             logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
+        } finally {
+            disconnect();
         }
     }
 
@@ -190,6 +194,8 @@ public class TCPManager {
                 } catch (IOException | InterruptedException e) {
                     logService.errorLog(msg + "전송에 실패했습니다.");
                     return null;
+                } finally {
+                    disconnect();
                 }
             }
         };

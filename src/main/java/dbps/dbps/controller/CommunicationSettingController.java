@@ -412,7 +412,7 @@ public class CommunicationSettingController {
 
     //컨트롤러 연결하고 확인신호 보내기
     @FXML
-    public void controllerConnect(){
+    public void controllerConnect() throws IOException {
         //시리얼 일때
         if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)){
             if (RS485ChkBox.isSelected()){

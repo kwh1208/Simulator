@@ -4,12 +4,13 @@ package dbps.dbps.controller;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ASCiiMsgService;
 import dbps.dbps.service.AsciiMsgTransceiver;
+import dbps.dbps.service.ConfigService;
+import dbps.dbps.service.PreviewService;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.util.*;
@@ -18,27 +19,17 @@ import java.util.*;
 public class ASCiiMsgController {
 
     @FXML
+    public Button msgSaveBtn;
+    @FXML
     private AnchorPane ASCiiMsgAnchorPane;
-
-    @FXML
-    private TextField transmitMsg1;
-
-    @FXML
-    private Button msgSaveBtn1;
-
-    @FXML
-    private Button msgSendBtn1;
-
-    @FXML
-    private Button previewBtn1;
 
     ASCiiMsgService msgService = ASCiiMsgService.getInstance();
     AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
     public static List<TextField> transmitMsgs = new ArrayList<>();
-    private List<Button> msgSaveBtns = new ArrayList<>();
     private List<Button> msgSendBtns = new ArrayList<>();
-    private List<Button> previewBtns = new ArrayList<>();
     private List<String> transmitMsgContents;
+    PreviewService previewService;
+    ConfigService configService;
 
     private final KeyCode[] KONAMI_CODE = {
             KeyCode.UP, KeyCode.UP, KeyCode.DOWN, KeyCode.DOWN,
@@ -52,47 +43,14 @@ public class ASCiiMsgController {
     @FXML
     public void initialize() {
         transmitMsgContents = msgService.loadMessages();
-
-        transmitMsgs.add(transmitMsg1);
-        msgSaveBtns.add(msgSaveBtn1);
-        msgSendBtns.add(msgSendBtn1);
-        previewBtns.add(previewBtn1);
-        transmitMsg1.setText(transmitMsgContents.get(0));
+        previewService = PreviewService.getInstance();
+        configService = ConfigService.getInstance();
 
         makeMsgContainer();
 
         ASCiiMsgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/ASCiiMsg.css").toExternalForm());
 
-        transmitMsg1.setOnKeyPressed(event -> {
-            KeyCode keyCode = event.getCode();
-            inputQueue.add(keyCode); // 입력된 키를 큐에 추가
-
-            // 큐의 크기가 정해진 시퀀스의 길이를 초과하면 가장 오래된 입력 제거
-            if (inputQueue.size() > KONAMI_CODE.length) {
-                inputQueue.poll();
-            }
-
-            // 현재 입력된 키 시퀀스가 정해진 시퀀스와 일치하는지 확인
-            if (checkSequence()) {
-                //숨겨진 기능!
-                inputQueue.clear(); // 일치 시 입력 기록 초기화
-            }
-        });
-
     }
-
-    private boolean checkSequence() {
-        if (inputQueue.size() != KONAMI_CODE.length) return false;
-
-        int i = 0;
-        for (KeyCode code : inputQueue) {
-            if (code != KONAMI_CODE[i++]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 
     /**
      * 실제 작동하는 기능들
@@ -100,14 +58,13 @@ public class ASCiiMsgController {
 
     //text파일에 저장
     @FXML
-    public void saveMsg(Event event) {
-        Button clickedBtn = (Button) event.getSource();
-        int num = Integer.parseInt(clickedBtn.getId().substring(10));
-        TextField targetTextField = transmitMsgs.get(num - 1);
+    public void saveMsg() {
+        List<String> msgList = new ArrayList<>();
+        for (int i = 1; i < transmitMsgs.size(); i++) {
+            msgList.add(transmitMsgs.get(i-1).getText());
+        }
 
-        String inputText = targetTextField.getText();
-
-        msgService.saveMessages(num, inputText);
+        msgService.saveMessages(msgList);
     }
 
     //기기에 메세지 전송
@@ -121,47 +78,62 @@ public class ASCiiMsgController {
 
     @FXML
     public void resetMsg() {
-        msgService.resetMsg(transmitMsgContents, transmitMsgs);
+        msgService.resetMsg();
+        for (int i = 0; i < transmitMsgs.size(); i++) {
+            transmitMsgs.get(i).setText(configService.getProperty("ASCMsg"+(i+1)));
+        }
     }
 
     @FXML
     public void setDefault(){
-        msgService.makeOwnMsg();
+        previewService.preview("1234", new HashMap<>());
+//        msgService.makeOwnMsg();
     }
 
-    @FXML
-    public void preview(MouseEvent event) {
-        Button clickedBtn = (Button) event.getSource();
-        int num = Integer.parseInt(clickedBtn.getId().substring(10));
-        TextField targetTextField = transmitMsgs.get(num - 1);
-        //구현 계획
-        //기본표시 설정 창에서 먼저 가져오고 추가된 값 있으면 기존값에서 갈아끼움.
-
-        HashMap<String, String> textEffect = new HashMap<>();
-        textEffect.put("textSize", "16");
-        textEffect.put("fontGroup", "1");
-        textEffect.put("effectIn", "정지효과");
-        textEffect.put("effectInDirection", "효과방향");
-        textEffect.put("effectOut", "정지효과");
-        textEffect.put("effectOutDirection", "효과방향");
-        textEffect.put("effectTime", "15");
-        textEffect.put("xStart", "00");
-        textEffect.put("yStart", "00");
-        textEffect.put("xEnd", "00");
-        textEffect.put("yEnd", "00");
-        textEffect.put("textColor", "yellow");
-        textEffect.put("bgColor", "black");
-
-
-
-        //화면설정 크기에서 가져와서 크기 만들고.
-
-        //그렇게 메세지 완성된거 기준으로 미리보기 띄우면 됨.
-
-        //한픽셀 = 10
-
-        msgService.preview(targetTextField, textEffect);
-    }
+//    @FXML
+//    public void preview(MouseEvent event) {
+//        Button clickedBtn = (Button) event.getSource();
+//        int num = Integer.parseInt(clickedBtn.getId().substring(10));
+//        TextField targetTextField = transmitMsgs.get(num - 1);
+//        //구현 계획
+//        //기본표시 설정 창에서 먼저 가져오고 추가된 값 있으면 기존값에서 갈아끼움.
+//
+//        HashMap<String, String> textEffect = new HashMap<>();
+//        textEffect.put("textSize", "16");
+//        textEffect.put("fontGroup", "1");
+//        textEffect.put("effectIn", "정지효과");
+//        textEffect.put("effectInDirection", "효과방향");
+//        textEffect.put("effectOut", "정지효과");
+//        textEffect.put("effectOutDirection", "효과방향");
+//        textEffect.put("effectTime", "15");
+//        textEffect.put("xStart", "00");
+//        textEffect.put("yStart", "00");
+//        textEffect.put("xEnd", "00");
+//        textEffect.put("yEnd", "00");
+//        textEffect.put("textColor", "yellow");
+//        textEffect.put("bgColor", "black");
+//
+//
+//
+//        //화면설정 크기에서 가져와서 크기 만들고.
+//
+//        //그렇게 메세지 완성된거 기준으로 미리보기 띄우면 됨.
+//
+//        //한픽셀 = 10
+//
+////        String fullText = targetTextField.getText().substring(5, targetTextField.getText().length()-2);
+////        String[] split = fullText.split("/");
+////        String text = "";
+////        String[] deco = new String[split.length];
+////        for (int i = 0; i < split.length; i++) {
+////            if (split[i].startsWith("/")){
+////
+////            }
+////        }
+//
+//
+//        previewService.preview(targetTextField.getText(), textEffect);
+//    }
 
 
     /**
@@ -171,44 +143,22 @@ public class ASCiiMsgController {
 
 
     private void makeMsgContainer() {
-        for (int i = 2; i < 10; i++) {
+        for (int i = 1; i < 10; i++) {
             TextField textField = new TextField();
             textField.setMaxHeight(45.0);
-            textField.setMaxWidth(466.0);
+            textField.setMaxWidth(565.0);
             AnchorPane.setLeftAnchor(textField, 11.0);
             AnchorPane.setTopAnchor(textField, 15.0 + (i - 1) * 55.0);
-            AnchorPane.setRightAnchor(textField, 223.0);
+            AnchorPane.setRightAnchor(textField, 91.0);
             AnchorPane.setBottomAnchor(textField, 543 - (i - 1) * 55.0);
             textField.setId("transmitMsg" + i);
             textField.setText(transmitMsgContents.get(i - 1));
             transmitMsgs.add(textField);
 
-            Button previewButton = new Button("미리보기");
-            previewButton.setPrefHeight(45.0);
-            previewButton.setPrefWidth(80.0);
-            AnchorPane.setLeftAnchor(previewButton, 481.0);
-            AnchorPane.setTopAnchor(previewButton, 15.0 + (i - 1) * 55.0);
-            AnchorPane.setBottomAnchor(previewButton, 543 - (i - 1) * 55.0);
-            AnchorPane.setRightAnchor(previewButton, 139.0);
-            previewButton.setId("previewBtn" + i);
-            previewButton.setOnMouseClicked(this::preview);
-            previewBtns.add(previewButton);
-
-            Button saveButton = new Button("저장");
-            saveButton.setPrefHeight(45.0);
-            saveButton.setPrefWidth(61.0);
-            AnchorPane.setLeftAnchor(saveButton, 565.0);
-            AnchorPane.setTopAnchor(saveButton, 15.0 + (i - 1) * 55.0);
-            AnchorPane.setRightAnchor(saveButton, 73.5);
-            AnchorPane.setBottomAnchor(saveButton, 543 - (i - 1) * 55.0);
-            saveButton.setId("msgSaveBtn" + i);
-            saveButton.setOnMouseClicked(this::saveMsg);
-            msgSaveBtns.add(saveButton);
-
             Button sendButton = new Button("전송");
             sendButton.setPrefHeight(45.0);
             sendButton.setPrefWidth(61.0);
-            AnchorPane.setLeftAnchor(sendButton, 630.0);
+            AnchorPane.setLeftAnchor(sendButton, 620.0);
             AnchorPane.setTopAnchor(sendButton, 15.0 + (i - 1) * 55.0);
             AnchorPane.setBottomAnchor(sendButton, 543 - (i - 1) * 55.0);
             AnchorPane.setRightAnchor(sendButton, 8.0);
@@ -216,7 +166,7 @@ public class ASCiiMsgController {
             sendButton.setOnMouseClicked(this::sendMsg);
             msgSendBtns.add(sendButton);
 
-            ASCiiMsgAnchorPane.getChildren().addAll(textField, previewButton, saveButton, sendButton);
+            ASCiiMsgAnchorPane.getChildren().addAll(textField,  sendButton);
         }
     }
 }

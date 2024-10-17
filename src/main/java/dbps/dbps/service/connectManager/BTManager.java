@@ -1,5 +1,6 @@
 package dbps.dbps.service.connectManager;
 
+import dbps.dbps.service.AsciiMsgTransceiver;
 import javafx.concurrent.Task;
 
 import java.nio.charset.Charset;
@@ -10,7 +11,7 @@ import static dbps.dbps.Constants.CONNECT_TYPE;
 public class BTManager {
 
     private static BTManager instance = null;
-    SerialPortManager serialPortManager;
+    AsciiMsgTransceiver asciiMsgTransceiver;
 
     public static BTManager getInstance() {
         if (instance == null) {
@@ -20,11 +21,11 @@ public class BTManager {
     }
 
     private BTManager() {
-        serialPortManager = SerialPortManager.getManager();
+        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
     }
 
     public void search() {
-        serialPortManager.sendMsgAndGetMsg("++SET++![BT SEARCHING DIBD!]");
+        asciiMsgTransceiver.sendMessages("++SET++![BT SEARCHING DIBD!]");
     }
 
     public void set(String Id, String password) {
@@ -49,20 +50,12 @@ public class BTManager {
 
         msg += new String(realId, Charset.forName("EUC-KR")) + "  " + new String(realPassword, Charset.forName("EUC-KR")) + "!]";
 
-        serialPortManager.sendMsgAndGetMsg(msg);
+        asciiMsgTransceiver.sendMessages(msg);
     }
 
     public void begin(String password) {
         String msg = "++SET++![BT " + password + " BEGIN!]";
-        Task<String> sendTask = serialPortManager.sendMsgAndGetMsg(msg);
-        Thread taskThread = new Thread(sendTask);
-        taskThread.start();
-        String receivedMsg = "";
-        try {
-            receivedMsg = sendTask.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        String receivedMsg = asciiMsgTransceiver.sendMessages(msg);
         if (receivedMsg.equals("![DIBD BLE OK!]")){
             CONNECT_TYPE = "bluetooth";
         }
@@ -70,7 +63,7 @@ public class BTManager {
 
     public void end(String password) {
         String msg = "++SET++![BT " + password + " END!]";
-        serialPortManager.sendMsgAndGetMsg(msg);
+        asciiMsgTransceiver.sendMessages(msg);
     }
 
 

@@ -124,7 +124,7 @@ public class MakeOwnMsgController {
         outDirection.setValue("방향없음");
         sub.setValue("사용안함");
         effectSpeed.setValue("15");
-        effectTime.setValue("2");
+        effectTime.setValue("2초");
         xStart.setValue("0");
         yStart.setValue("0");
         xEnd.setValue("0");
@@ -179,10 +179,6 @@ public class MakeOwnMsgController {
 
         directionBox.getSelectionModel().selectFirst(); // 첫 번째 항목 선택
     }
-
-    /**
-     * 미완성
-     */
 
     private String getSettings() {
         String text = "![0032";
@@ -369,7 +365,7 @@ public class MakeOwnMsgController {
 
 
         if (value2.contains("초")) {
-            result += String.format("%02d", (int)(Double.parseDouble(value2.replaceAll("[^\\d]", ""))*2));
+            result += String.format("%02d", (int)(Double.parseDouble(value2.replaceAll("[^\\d.]", ""))*2));
         } else {
             if (value2.equals("2분")){
                 result+="90";

@@ -5,6 +5,7 @@ import javafx.concurrent.Task;
 
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -80,6 +81,8 @@ public class HexMsgTransceiver {
                 }
             }
         }
+        System.out.println("msg = " + Arrays.toString(msg));
+        System.out.println("receivedMsg = " + receivedMsg);
 
         //시간 바꾸거나, 펌웨어 같은 일부 특수한 경우에 반환값 사용.
         return msgReceive(receivedMsg, msg);
@@ -95,6 +98,8 @@ public class HexMsgTransceiver {
                     // 새로운 스레드에서 Task를 실행
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
+
+                    String s = sendTask.get();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

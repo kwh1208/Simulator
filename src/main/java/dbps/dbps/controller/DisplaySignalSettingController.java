@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.DisplaySignal;
@@ -7,11 +8,18 @@ import dbps.dbps.service.HexMsgTransceiver;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.io.IOException;
 
 import static dbps.dbps.Constants.IS_ASCII;
 import static dbps.dbps.Constants.RESPONSE_LATENCY;
@@ -236,7 +244,7 @@ public class DisplaySignalSettingController {
         if(autoTransfer.getText().equals("해제")){
             timeline.stop(); // Timeline 중지
             timeline = null; // 객체 초기화
-            autoTransfer.setText("자동 전송"); // 버튼 텍스트를 원래대로 변경
+            autoTransfer.setText("자동전송"); // 버튼 텍스트를 원래대로 변경
             return; // 함수 종료
         }
         int signalCount = signalList.getItems().size();
@@ -286,5 +294,24 @@ public class DisplaySignalSettingController {
 
     public void save(MouseEvent mouseEvent) {
         configService.setDisplayProperties(signalList.getFocusModel().getFocusedItem(), memo.getText());
+    }
+
+    public void search(MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/displayList.fxml"));
+        Parent root = fxmlLoader.load();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle("통신 설정");
+
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.showAndWait();
     }
 }
