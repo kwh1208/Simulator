@@ -1,18 +1,24 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Simulator;
 import dbps.dbps.service.FontService;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 
 public class FontSettingController {
     public Label fontProgressLabel;
@@ -345,7 +351,22 @@ public class FontSettingController {
         stage.close();
     }
 
-    public void fontName(MouseEvent mouseEvent) {
+    public void fontName(MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/fontName.fxml"));
+        Parent root = fxmlLoader.load();
 
+        Stage modalStage = new Stage();
+        modalStage.setTitle("폰트 이름 설정");
+
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.showAndWait();
     }
 }

@@ -166,7 +166,6 @@ public class ConfigService {
                 try (FileWriter writer = new FileWriter(configFile)) {
                     defaultProperties.store(writer, "Default configuration");
                 }
-                System.out.println("Created default configuration file at: " + filePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }

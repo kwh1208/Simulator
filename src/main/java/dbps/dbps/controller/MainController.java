@@ -49,7 +49,6 @@ public class MainController {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("Desktop is not supported. Cannot open the URL.");
         }
     }
 }

@@ -165,6 +165,16 @@ public class AsciiMsgTransceiver {
             logService.updateInfoLog("펌웨어 정보 읽기에 성공했습니다.");
             return receiveMsg;
         }
+        if (cmd.equals("96")){
+            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            logService.updateInfoLog("폰트 이름 설정에 성공했습니다.");
+            return receiveMsg;
+        }
+        if (cmd.equals("95")){
+            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            logService.updateInfoLog("폰트 이름 설정에 성공했습니다.");
+            return receiveMsg;
+        }
 
         if (status == '0') { // 정상 처리
             if (cmd.equals("83")) { // 맥주소 읽기

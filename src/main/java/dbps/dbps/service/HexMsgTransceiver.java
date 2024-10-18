@@ -81,8 +81,6 @@ public class HexMsgTransceiver {
                 }
             }
         }
-        System.out.println("msg = " + Arrays.toString(msg));
-        System.out.println("receivedMsg = " + receivedMsg);
 
         //시간 바꾸거나, 펌웨어 같은 일부 특수한 경우에 반환값 사용.
         return msgReceive(receivedMsg, msg);

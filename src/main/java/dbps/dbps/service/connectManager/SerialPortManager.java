@@ -42,7 +42,9 @@ public class SerialPortManager {
         port.openPort();
         serialPortMap.put(portName, port);
         configService.setProperty("openPortNum", portName);
-        logService.updateInfoLog(portName + " 포트가 열렸습니다.");
+        Platform.runLater(()->{
+            logService.updateInfoLog(portName + " 포트가 열렸습니다.");
+        });
     }
 
     public void openPortNoLog(String portName, int baudRate){

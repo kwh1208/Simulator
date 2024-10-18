@@ -100,7 +100,6 @@ public class FirmwareUpgradeController {
     }
 
     public void send() {
-        System.out.println("test");
         if (firmwareInformation.getText().isEmpty()){
             logService.warningLog("컨트롤러의 버전을 먼저 확인해주세요.");
         }

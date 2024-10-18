@@ -266,11 +266,6 @@ public class FontService {
                 finalPacket[1] = 0x02;
                 finalPacket[finalPacket.length-2] = 0x10;
                 finalPacket[finalPacket.length-1] = 0x03;
-                System.out.print("send : [");
-                for (int j = 0; j < finalPacket.length; j++) {
-                    System.out.printf("%02X ", finalPacket[j]);
-                }
-                System.out.println("]");
                 hexMsgTransceiver.sendByteMessages(finalPacket);
 
                 hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ");
