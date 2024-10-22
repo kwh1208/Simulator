@@ -292,6 +292,9 @@ public class SerialPortManager {
                     Platform.runLater(() -> logService.updateInfoLog("현재 속도 " + baudRate + "에서 응답을 대기 중..."));
 
                     String msg = "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                    if (isRS){
+                        msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                    }
                     outputStream.write(hexStringToByteArray(msg));
                     outputStream.flush();
 

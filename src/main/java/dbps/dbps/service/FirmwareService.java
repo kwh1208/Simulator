@@ -58,8 +58,11 @@ public class FirmwareService {
                 // 앞부분에 추가할 고정된 4바이트 값 (CRC 계산에만 사용)
 //            //{0x00, 0x44, 0x07, (byte) 0x9F};
 //            //{주소, isize 상하위데이터, 명령코드}
-
-                hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray("10 02 00 00 02 6F F1 10 03"));
+                String msg = "10 02 00 00 02 6F F1 10 03";
+                if (isRS){
+                    msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 02 6F F1 10 03";
+                }
+                hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
 
                 for (int i = 0; i < totalPackets; i++) {
                     int currentPacketSize = (i == totalPackets - 1)
@@ -77,6 +80,9 @@ public class FirmwareService {
                             (byte) i,
                             (byte) (i >> 8)
                     };
+                    if (isRS){
+                        headerData[0] = (byte)RS485_ADDR_NUM;
+                    }
 
                     // CRC 계산
                     int crc = calcCRC(headerData, firmwareData, headerData.length, i * packetSize, currentPacketSize);

@@ -44,7 +44,7 @@ public class AdvancedSettingController {
 
         modalStage.showAndWait();
     }
-
+    //표출신호 창 띄우는 함수
     public void transferSignalSetting(MouseEvent mouseEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/displaySignalSetting.fxml"));
         Parent root = fxmlLoader.load();

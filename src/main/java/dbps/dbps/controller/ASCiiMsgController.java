@@ -86,8 +86,8 @@ public class ASCiiMsgController {
 
     @FXML
     public void setDefault(){
-        previewService.preview("1234", new HashMap<>());
-//        msgService.makeOwnMsg();
+//        previewService.preview("1234", new HashMap<>());
+        msgService.makeOwnMsg();
     }
 
 //    @FXML

@@ -17,8 +17,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static dbps.dbps.Constants.IS_ASCII;
-import static dbps.dbps.Constants.uploadFirmwarePath;
+import static dbps.dbps.Constants.*;
 
 public class FirmwareUpgradeController {
 
@@ -60,11 +59,19 @@ public class FirmwareUpgradeController {
 
     public void read() {
         if (IS_ASCII){
-            String version = asciiMsgTransceiver.sendMessages("![0081!]");
+            String msg = "![0081!]";
+            if (isRS){
+                msg = "!["+convertRS485AddrASCii()+"081!]";
+            }
+            String version = asciiMsgTransceiver.sendMessages(msg);
             firmwareInformation.setText(version.substring(6, version.length()-2));
         }
         else {
-            String version = hexMsgTransceiver.sendMessages("10 02 00 00 02 6F F1 10 03");
+            String msg = "10 02 00 00 02 6F F1 10 03";
+            if (isRS){
+                msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+ "00 02 6F F1 10 03";
+            }
+            String version = hexMsgTransceiver.sendMessages(msg);
             String[] version_split = version.split(" ");
             StringBuilder result = new StringBuilder();
 

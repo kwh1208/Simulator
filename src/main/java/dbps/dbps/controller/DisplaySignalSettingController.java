@@ -21,8 +21,7 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 
-import static dbps.dbps.Constants.IS_ASCII;
-import static dbps.dbps.Constants.RESPONSE_LATENCY;
+import static dbps.dbps.Constants.*;
 import static dbps.dbps.service.DisplaySignal.SignalMap_ASC;
 import static dbps.dbps.service.DisplaySignal.SignalMap_HEX;
 
@@ -129,7 +128,11 @@ public class DisplaySignalSettingController {
     }
 
     private String makePerfectProtocolHEX(String selectedSignal) {
-        String result = SignalMap_HEX.get(selectedSignal);
+        String result = "10 02 00 ";
+        if (isRS){
+            result = "10 02 " + String.format("%02X ", RS485_ADDR_NUM);
+        }
+        result += SignalMap_HEX.get(selectedSignal);
         switch (colorScan.getValue()){
             case "RGB":
                 result = result + " 01";
@@ -283,13 +286,20 @@ public class DisplaySignalSettingController {
         Integer after = spinnerForAfter.getValue();
 
         String msg = "![00B4"+before+" "+after+"!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"0B4"+before+" "+after+"!]";
+        }
 
         asciiMsgTransceiver.sendMessages(msg);
     }
 
     @FXML
     public void read() {
-        asciiMsgTransceiver.sendMessages("![00B50!]");
+        String msg = "![00B50!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"0B50!]";
+        }
+        asciiMsgTransceiver.sendMessages(msg);
     }
 
     public void save(MouseEvent mouseEvent) {

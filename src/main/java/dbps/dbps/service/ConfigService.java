@@ -26,7 +26,7 @@ public class ConfigService {
         CONNECT_TYPE = getProperty("connectType");
         OPEN_PORT_NAME = getProperty("openPortName");
         SERIAL_BAUDRATE = Integer.parseInt(getProperty("serialSpeed"));
-        RS485_ADDR_NUM = getProperty("RS485_ADDR_NUM");
+        RS485_ADDR_NUM = Integer.parseInt(getProperty("RS485_ADDR_NUM"));
         TCP_IP = getProperty("clientTCPAddr");
         TCP_PORT = Integer.parseInt(getProperty("clientTCPPort"));
         UDP_IP = getProperty("UDPAddr");

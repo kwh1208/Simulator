@@ -66,7 +66,7 @@ public class ASCiiMsgService {
                 if (i==1){
                     configService.setProperty("ASCMsg"+i, "![000Hello world!]");
                 } else if (i==2) {
-                    configService.setProperty("ASCMsg"+i, "![000/P000/C1Hello!]");
+                    configService.setProperty("ASCMsg"+i, "![000/C1Hello /C2World!]");
                 } else if (i == 3) {
                     configService.setProperty("ASCMsg"+i, "![000/Y0004/E0606/S1000/C7Text 123456789 Hello World!]");
                 }

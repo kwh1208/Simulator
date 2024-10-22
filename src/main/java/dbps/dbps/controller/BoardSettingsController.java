@@ -18,6 +18,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import static dbps.dbps.Constants.convertRS485AddrASCii;
+import static dbps.dbps.Constants.isRS;
+
 public class BoardSettingsController {
     @FXML
     public RadioButton settingRadio;
@@ -97,6 +100,9 @@ public class BoardSettingsController {
         String[] baudRates = {"9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600"};
         if(group.getSelectedToggle().equals(readRadio)){
             String result = asciiMsgTransceiver.sendMessages("![00B30!]");
+            if (isRS){
+                result = "!["+convertRS485AddrASCii()+"0B30";
+            }
             //![00B3 0,0,0,4,4,4,00!]
             String[] resultSplit = result.substring(7, result.length() - 2).split(",");
 
@@ -149,6 +155,9 @@ public class BoardSettingsController {
         }
         else {
             String msg = "![00B2 ";
+            if (isRS){
+                msg = "!["+convertRS485AddrASCii()+"0B2 ";
+            }
             String debug = debugMethod.getValue();
             String BH1_F = BH1_Func.getValue();
             String J4 = J4_func.getValue();

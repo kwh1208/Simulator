@@ -228,7 +228,16 @@ public class CommunicationSettingController {
         });
         serialPortComboBox.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
 
-        RS485ChkBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> RS485ChoiceBox.setVisible(newValue));
+        RS485ChkBox.selectedProperty().addListener((observableValue, oldValue, newValue) ->
+                {RS485ChoiceBox.setVisible(newValue);
+                    if (newValue){
+                        isRS = true;
+                    }
+                    else {
+                        isRS = false;
+                    }
+                }
+        );
 
         //응답시간 변경
         delayTime.selectionModelProperty().addListener((observableValue, oldValue, newValue) -> RESPONSE_LATENCY = Integer.parseInt(delayTime.getValue()));
@@ -375,7 +384,7 @@ public class CommunicationSettingController {
 
     //다빛넷 열기
     public void openDabitNet() throws IOException {
-        String relativePath = "./src/main/resources/dbps/dbps/DabitNet_S.exe";
+        String relativePath = "./DabitNet_S.exe";
 
         // 절대 경로로 변환 후 정리
         String absolutePath = new File(relativePath).getCanonicalPath();
@@ -418,8 +427,8 @@ public class CommunicationSettingController {
             if (RS485ChkBox.isSelected()){
                 CONNECT_TYPE = "rs485";
                 serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
-                RS485_ADDR_NUM = RS485ChoiceBox.getValue().replaceAll("[^0-9]", "");
-                String msg = "10 02 "+String.format("%02x", RS485_ADDR_NUM)+" 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                RS485_ADDR_NUM = Integer.parseInt(RS485ChoiceBox.getValue().replaceAll("[^0-9]", ""));
+                String msg = "10 02 "+convertRS485AddrASCii()+" 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
                 String receivedMsg = hexMsgTransceiver.sendMessages(msg);
                 if (!receivedMsg.split(" ")[5].equals("6A")){
                     CONNECT_TYPE = "none";

@@ -15,8 +15,7 @@ import javafx.stage.Stage;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
-import static dbps.dbps.Constants.IS_ASCII;
-import static dbps.dbps.Constants.hexStringToByteArray;
+import static dbps.dbps.Constants.*;
 
 public class FontNameController {
     @FXML
@@ -83,7 +82,7 @@ public class FontNameController {
         field.setTextFormatter(new TextFormatter<>(change -> {
             // 입력된 문자열을 UTF-8로 변환하여 바이트 수 계산
             String newText = change.getControlNewText();
-            int byteLength = 0;
+            int byteLength;
             try {
                 byteLength = newText.getBytes("EUC-KR").length;
             } catch (UnsupportedEncodingException e) {
@@ -107,7 +106,11 @@ public class FontNameController {
         //10 02 00 00 03 48 01 32 10 03
         if (IS_ASCII){
             if (readRadio.isSelected()) {
-                String result = asciiMsgTransceiver.sendMessages("![00960!]");
+                String msg = "![00960!]";
+                if (isRS){
+                    msg = "!["+convertRS485AddrASCii()+"0960!]";
+                }
+                String result = asciiMsgTransceiver.sendMessages(msg);
 
                 result = result.substring(8, result.length()-2);
                 String[] fontNames = getFontName(result.getBytes(Charset.forName("EUC-KR")));
@@ -124,6 +127,9 @@ public class FontNameController {
                 sendMsg[0] = "!".getBytes(Charset.forName("EUC-KR"))[0];
                 sendMsg[1] = "[".getBytes(Charset.forName("EUC-KR"))[0];
                 sendMsg[2] = "0".getBytes(Charset.forName("EUC-KR"))[0];
+                if (isRS){
+                    sendMsg[2] = (convertRS485AddrASCii().getBytes("EUC-KR"))[0];
+                }
                 sendMsg[3] = "0".getBytes(Charset.forName("EUC-KR"))[0];
                 sendMsg[4] = "9".getBytes(Charset.forName("EUC-KR"))[0];
                 sendMsg[5] = "5".getBytes(Charset.forName("EUC-KR"))[0];
@@ -167,7 +173,11 @@ public class FontNameController {
         }
         else {
             if (readRadio.isSelected()) {
-                String[] tmp = hexMsgTransceiver.sendMessages("10 02 00 00 03 48 01 32 10 03").split(" ");
+                String msg = "10 02 00 00 03 48 01 32 10 03";
+                if (isRS){
+                    msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 03 48 01 32 10 03";
+                }
+                String[] tmp = hexMsgTransceiver.sendMessages(msg).split(" ");
                 StringBuilder result = new StringBuilder();
                 for (int i = 7; i <= 224; i++) {
                     result.append(tmp[i]).append(" ");
@@ -188,6 +198,9 @@ public class FontNameController {
                 sendMsg[0] = (byte) 0x10;
                 sendMsg[1] = (byte) 0x02;
                 sendMsg[2] = (byte) 0x00;
+                if (isRS){
+                    sendMsg[2] = (byte) RS485_ADDR_NUM;
+                }
                 sendMsg[3] = (byte) 0x00;
                 sendMsg[4] = (byte) 0xDB;
                 sendMsg[5] = (byte) 0x48;

@@ -3,6 +3,12 @@ package dbps.dbps.service;
 import javafx.scene.control.ScrollPane;
 import org.fxmisc.richtext.InlineCssTextArea;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -12,8 +18,29 @@ public class LogService {
     private static LogService logService = null;
     public ScrollPane scrollPane;
     public InlineCssTextArea logTextArea;
+    private String logFilePath;
 
     private LogService() {
+        String currentDir = System.getProperty("user.dir");
+
+        // 로그 파일 경로 설정 (현재 디렉토리와 파일 이름)
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = dateFormat.format(new Date());
+
+        // 로그 파일 경로 설정 (현재 디렉토리와 파일 이름: log_날짜.txt)
+        this.logFilePath = currentDir + File.separator + "log_" + currentDate + ".txt";
+
+        // 로그 파일이 없으면 생성
+        Path logFilePath = Paths.get(this.logFilePath);
+        if (Files.notExists(logFilePath)) {
+            try {
+                Files.createFile(logFilePath);  // 로그 파일 생성
+                System.out.println("Log file created: " + logFilePath.toAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Failed to create log file: " + e.getMessage());
+            }
+        }
     }
 
     public static LogService getLogService(){
@@ -38,6 +65,8 @@ public class LogService {
         // 텍스트 추가 및 스타일 적용
         logTextArea.append(logMessage + "\n", "-fx-fill: white; -fx-padding: 0 0 5px 0;");
         scrollToBottom();
+
+        writeLogToFile(logMessage);
     }
 
     // 경고 로그 추가
@@ -53,6 +82,7 @@ public class LogService {
         logTextArea.setStyle(start, start+logMessage.length(),"-fx-fill: #FFA500; -fx-font-weight: bold;");
 
         scrollToBottom();
+        writeLogToFile(logMessage);
     }
 
     // 에러 로그 추가
@@ -67,6 +97,16 @@ public class LogService {
         logTextArea.appendText(logMessage);
         logTextArea.setStyle(start, logTextArea.getLength(), "-fx-fill: red; -fx-font-weight: bold;");
         scrollToBottom();
+
+        writeLogToFile(logMessage);
+    }
+
+    private void writeLogToFile(String logMessage) {
+        try (FileWriter writer = new FileWriter(logFilePath, true)) {
+            writer.write(logMessage + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // 로그 클리어

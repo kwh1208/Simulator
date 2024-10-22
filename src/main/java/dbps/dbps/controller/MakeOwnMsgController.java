@@ -9,6 +9,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
+import static dbps.dbps.Constants.convertRS485AddrASCii;
+import static dbps.dbps.Constants.isRS;
 import static dbps.dbps.service.ASCiiMsgService.makeMsgWindow;
 import static java.lang.Integer.parseInt;
 
@@ -132,7 +134,11 @@ public class MakeOwnMsgController {
         bgImg.setValue("사용안함");
         fontColor.setValue("노란색");
         fontBgColor.setValue("검정색");
-        defaultSetting.setText("![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]");
+        String msg = "![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]";
+        }
+        defaultSetting.setText(msg);
     }
 
 
@@ -182,6 +188,9 @@ public class MakeOwnMsgController {
 
     private String getSettings() {
         String text = "![0032";
+        if (isRS){
+            text = "!["+convertRS485AddrASCii()+"032";
+        }
         text += "/P0000";
         text += "/D"+setDText(displayControl.getValue(), displayMethod.getValue());
         text += "/F"+setFText(charCodes.getValue(), fontSize.getValue());
@@ -413,7 +422,11 @@ public class MakeOwnMsgController {
     }
 
     public void read(MouseEvent mouseEvent) {
-        String result = asciiMsgTransceiver.sendMessages("![00330!]");
+        String msg = "![00330!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"0330!]";
+        }
+        String result = asciiMsgTransceiver.sendMessages(msg);
         defaultSetting.setText(result);
     }
 }

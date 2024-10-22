@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-import static dbps.dbps.Constants.IS_ASCII;
+import static dbps.dbps.Constants.*;
 
 public class SettingController {
 
@@ -32,9 +32,8 @@ public class SettingController {
     public void initialize(){
     }
 
-
+    @FXML
     public void communicationSettingClicked(MouseEvent mouseEvent) throws IOException {
-
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/communicationSetting.fxml"));
         Parent root = fxmlLoader.load();
 
@@ -57,6 +56,9 @@ public class SettingController {
 //        ![005099!]
         if (IS_ASCII){
             String msg = "![0050";
+            if (isRS){
+                msg = "!["+convertRS485AddrASCii()+"050";
+            }
             switch (displayBright.getValue()){
                 case "100%(기본)": msg += "99"; break;
                 case "75%": msg += "75"; break;
@@ -70,6 +72,9 @@ public class SettingController {
 
         } else{
             String msg = "10 02 00 00 02 44 ";
+            if (isRS){
+                msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 02 44";
+            }
             switch (displayBright.getValue()){
                 case "100%(기본)": msg += "64"; break;
                 case "75%": msg += "48"; break;
@@ -86,6 +91,9 @@ public class SettingController {
         if (IS_ASCII){
             //![0062N!] : 동시, ![0062Y!] : 개별
             String msg = "![0062";
+            if (isRS){
+                msg = "!["+convertRS485AddrASCii()+"062";
+            }
             if (pageMsgType.getValue().contains("동시")){
                 msg += "N";
             } else{

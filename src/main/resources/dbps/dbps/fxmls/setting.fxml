@@ -12,7 +12,7 @@
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="605.0" prefWidth="590.0" style="-fx-border-color: black; -fx-border-width: 1 0 0 0">
         <children>
             <!--통신설정 버튼-->
-            <Button fx:id="communicationSettings" layoutX="85.0" layoutY="10.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="176.0" text="통신 설정" onMouseClicked="#communicationSettingClicked" style="-fx-font-weight: bolder; -fx-font-size: 17"/>
+            <Button layoutX="85.0" layoutY="10.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="176.0" text="통신 설정" onMouseClicked="#communicationSettingClicked" style="-fx-font-weight: bolder; -fx-font-size: 17"/>
             <!--프로그램 설정-->
             <fx:include source="basicSetting.fxml"/>
 

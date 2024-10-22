@@ -39,7 +39,7 @@ public class MainController {
     }
 
     public void handleHelpAction() {
-        String url = "http://www.dabitsol.com/files/DabitSimulator_UserManual_v9.0.pdf"; // 여기에 원하는 URL 입력
+        String url = "https://publish.obsidian.md/dabitdocs"; // 여기에 원하는 URL 입력
 
         if (Desktop.isDesktopSupported()) {
             Desktop desktop = Desktop.getDesktop();

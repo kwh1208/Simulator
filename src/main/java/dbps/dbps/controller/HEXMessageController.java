@@ -251,11 +251,11 @@ public class HEXMessageController {
         String msg = "10 02 ";
 
         //rs485인 경우 변경
-        if (!CONNECT_TYPE.equals("RS485")) {
+        if (!isRS) {
             msg += "00 ";
         } else {
             //rs485면 주소
-            msg += "01 ";
+            msg += String.format("02X ", RS485_ADDR_NUM);
         }
 
         //msg 길이
@@ -290,8 +290,6 @@ public class HEXMessageController {
                 break;
         }
 
-        //10 02 00 00 39 94 00 00 63 00 00 03 18 00 00 05 00 00 00 00 00 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 BE C8 B3 E7 BE C8 B3 E7 BE C8 B3 E7 BE C8 B3 E7 BE C8 B3 E7 10 03
-        //10 02 00 00 39 94 00 00 63 00 00 03 18 00 00 05 02 00 00 00 00 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 BE C8 B3 E7 BE C8 B3 E7 BE C8 B3 E7 BE C8 B3 E7 BE C8 B3 E7 10 0
         //표시방법
         msg+= displayMethodValue.equals("Normal") ? "00 ":"01 ";
 

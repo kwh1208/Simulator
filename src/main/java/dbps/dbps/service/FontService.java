@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static dbps.dbps.Constants.hexStringToByteArray;
+import static dbps.dbps.Constants.*;
 
 public class FontService {
     private static FontService instance = null;
@@ -221,6 +221,9 @@ public class FontService {
                     sendPacket[0] = 0X10;
                     sendPacket[1] = 0X02;
                     sendPacket[2] = 0X00;
+                    if (isRS){
+                        sendPacket[2] = (byte) RS485_ADDR_NUM;
+                    }
                     sendPacket[3] = 0X04;
                     sendPacket[4] = 0X0A;
                     sendPacket[5] = (byte) 0X98;
@@ -245,9 +248,8 @@ public class FontService {
                     sendPacket[sendPacket.length-2] = 0x10;
                     sendPacket[sendPacket.length-1] = 0x03;
 
-                    isSending = true;
                     hexMsgTransceiver.sendByteMessagesNoLog(sendPacket);
-                    isSending = false;
+
                     Thread.sleep(200);
 
                     int finalI = i;
@@ -267,6 +269,8 @@ public class FontService {
                 finalPacket[finalPacket.length-2] = 0x10;
                 finalPacket[finalPacket.length-1] = 0x03;
                 hexMsgTransceiver.sendByteMessages(finalPacket);
+
+                Thread.sleep(1000);
 
                 hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ");
 

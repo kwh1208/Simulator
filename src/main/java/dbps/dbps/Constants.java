@@ -27,7 +27,7 @@ public class Constants {
 
     public static String OPEN_PORT_NAME = null;
 
-    public static String RS485_ADDR_NUM = "00";
+    public static int RS485_ADDR_NUM = 0;
 
     public static boolean isRS = false;
 
@@ -122,5 +122,11 @@ public class Constants {
         }
 
         return hexString.toString();
+    }
+
+    public static String convertRS485AddrASCii(){
+        String[] arr = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V"};
+
+        return arr[RS485_ADDR_NUM];
     }
 }
