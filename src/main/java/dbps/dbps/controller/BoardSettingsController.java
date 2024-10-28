@@ -24,10 +24,8 @@ import static dbps.dbps.Constants.isRS;
 public class BoardSettingsController {
     @FXML
     public RadioButton settingRadio;
-
     @FXML
     public RadioButton readRadio;
-
     @FXML
     public Pane boardDisable;
     @FXML
@@ -44,15 +42,19 @@ public class BoardSettingsController {
     public ComboBox<String> J3_baud;
     @FXML
     public ComboBox<String> BH1_baud;
+
     AsciiMsgTransceiver asciiMsgTransceiver;
 
     ToggleGroup group = new ToggleGroup();
+
     @FXML
     public void initialize() {
+        //그룹화
         settingRadio.setToggleGroup(group);
         readRadio.setToggleGroup(group);
         readRadio.setSelected(true);
 
+        //
         group.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (group.getSelectedToggle() == settingRadio) {
                 //3~8까지 활성화

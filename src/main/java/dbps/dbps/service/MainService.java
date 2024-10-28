@@ -38,7 +38,6 @@ public class MainService {
         }
     }
 
-
     public void showHEXMsgTab(){
         try {
             Node hexContent = FXMLLoader.load(getClass().getResource("/dbps/dbps/fxmls/HEXMessage.fxml"));

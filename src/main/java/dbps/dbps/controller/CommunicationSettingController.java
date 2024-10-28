@@ -189,6 +189,8 @@ public class CommunicationSettingController {
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(false);
+                CONNECT_TYPE = "serial";
+                configService.setProperty("connectType", "serial");
                 connect.setText("포트열기");
                 shutConnect.setText("포트닫기");
             } else if (selectedRadioButton.equals(clientTCPRadioBtn)) {
@@ -196,6 +198,9 @@ public class CommunicationSettingController {
                 clientTCPRadioToggle(true);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(false);
+                CONNECT_TYPE = "clientTCP";
+                configService.setProperty("connectType", "clientTCP");
+                System.out.println("CONNECT_TYPE = " + CONNECT_TYPE);
                 connect.setText("접속하기");
                 shutConnect.setText("접속끊기");
             } else if (selectedRadioButton.equals(serverTCPRadioBtn)) {
@@ -203,6 +208,7 @@ public class CommunicationSettingController {
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(true);
                 UDPRadioToggle(false);
+                CONNECT_TYPE = "serverTCP";
                 connect.setText("접속하기");
                 shutConnect.setText("접속끊기");
             } else  {
@@ -210,13 +216,11 @@ public class CommunicationSettingController {
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(true);
+                CONNECT_TYPE = "UDP";
                 connect.setText("접속하기");
                 shutConnect.setText("접속끊기");
             }
-
         });
-
-
 
         getSerialPortList();
 
@@ -442,11 +446,11 @@ public class CommunicationSettingController {
                 }
             }
         } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn)) {
-            CONNECT_TYPE = "TCP";
+            CONNECT_TYPE = "clientTCP";
             connectClientTCP();
             tcpManager.connect(tcpManager.getIP(), tcpManager.getPORT());
         } else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)) {
-            CONNECT_TYPE = "TCP";
+            CONNECT_TYPE = "serverTCP";
             connectServerTCP();
             tcpManager.connect(tcpManager.getIP(), tcpManager.getPORT());
         } else {

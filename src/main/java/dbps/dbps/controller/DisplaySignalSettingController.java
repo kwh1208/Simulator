@@ -117,7 +117,10 @@ public class DisplaySignalSettingController {
         if (IS_ASCII){
         String selectedSignal = signalList.getSelectionModel().getSelectedItem();
         String signalProtocol = makePerfectProtocol(selectedSignal);
-        String transferProtocol = "!["+signalProtocol+"!]";
+        String transferProtocol;
+        if (isRS){
+            transferProtocol = "!["+convertRS485AddrASCii()+signalProtocol+"!]";
+        }else transferProtocol = "![0"+signalProtocol+"!]";
         asciiMsgTransceiver.sendMessages(transferProtocol);
         }
         else {

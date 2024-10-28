@@ -11,7 +11,6 @@
     <Label alignment="CENTER" layoutX="85.0" layoutY="-12.0" prefHeight="18.0" prefWidth="140.0" text="프로그램 설정"
            style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 17" />
     <Label layoutX="14.0" layoutY="30.0" text="프로토콜 형식" style="-fx-font-size: 15"/>
-    <Label layoutX="14.0" layoutY="66.0" text="프로그램 언어" style="-fx-font-size: 15"/>
     <ChoiceBox fx:id="protocolFormat" layoutX="170.0" layoutY="24.0" prefHeight="25.0" prefWidth="130.0" value="아스키 프로토콜">
         <items>
             <FXCollections fx:factory="observableArrayList">
@@ -20,11 +19,11 @@
             </FXCollections>
         </items>
     </ChoiceBox>
+    <Label layoutX="14.0" layoutY="66.0" text="프로그램 언어" style="-fx-font-size: 15"/>
     <ChoiceBox layoutX="170.0" layoutY="60.0" prefHeight="25.0" prefWidth="130" value="한국어" disable="true">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="한국어" />
-                <String fx:value="English" />
             </FXCollections>
         </items>
     </ChoiceBox>

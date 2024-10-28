@@ -35,10 +35,8 @@ public class LogService {
         if (Files.notExists(logFilePath)) {
             try {
                 Files.createFile(logFilePath);  // 로그 파일 생성
-                System.out.println("Log file created: " + logFilePath.toAbsolutePath());
             } catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("Failed to create log file: " + e.getMessage());
             }
         }
     }

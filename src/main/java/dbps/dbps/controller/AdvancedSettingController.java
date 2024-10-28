@@ -24,7 +24,7 @@ public class AdvancedSettingController {
     }
 
 
-    // 폰트 설정 모달창을 띄우는 함수
+    // 폰트 설정 모달창
     @FXML
     public void fontSetting(MouseEvent mouseEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/fontSetting.fxml"));
@@ -44,7 +44,7 @@ public class AdvancedSettingController {
 
         modalStage.showAndWait();
     }
-    //표출신호 창 띄우는 함수
+    //표출신호 창
     public void transferSignalSetting(MouseEvent mouseEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/displaySignalSetting.fxml"));
         Parent root = fxmlLoader.load();
@@ -63,7 +63,7 @@ public class AdvancedSettingController {
 
         modalStage.showAndWait();
     }
-
+    //보드기능 설정 창
     public void boardSetting(MouseEvent mouseEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/boardSettings.fxml"));
         Parent root = fxmlLoader.load();
@@ -83,6 +83,7 @@ public class AdvancedSettingController {
         modalStage.showAndWait();
     }
 
+    //펌웨어 모달창
     public void firmwareInfo(MouseEvent mouseEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/firmwareUpgrade.fxml"));
         Parent root = fxmlLoader.load();

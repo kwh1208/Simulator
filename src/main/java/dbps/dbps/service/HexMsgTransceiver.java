@@ -1,6 +1,7 @@
 package dbps.dbps.service;
 
 import dbps.dbps.service.connectManager.*;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 
@@ -38,7 +39,9 @@ public class HexMsgTransceiver {
         String receivedMsg = "";
 
         //로그 출력
-        logService.updateInfoLog("전송 메세지: " + bytesToHex(msg, msg.length));
+        Platform.runLater(()->{
+            logService.updateInfoLog("전송 메세지: " + bytesToHex(msg, msg.length));
+        });
 
         switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> {
@@ -68,7 +71,7 @@ public class HexMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
-            case "TCP" -> //tcp로 메세지 전송
+            case "clientTCP" -> //tcp로 메세지 전송
             {
                 try {
                     Task<String> sendTask = tcpManager.sendMsgAndGetMsgByte(msg);
@@ -209,7 +212,7 @@ public class HexMsgTransceiver {
     private void handleDefaultCommands(String status, String receiveMsg, String[] splitMsg) {
         // 단순 상태 코드 확인 및 로그 출력
         if (status.equals("00")) {
-            logService.updateInfoLog("받은 메세지 : " + receiveMsg); // 받은 메세지 출력
+            Platform.runLater(()->logService.updateInfoLog("받은 메세지 : " + receiveMsg)); // 받은 메세지 출력
         } else {
             chkErrorCode(receiveMsg, splitMsg);
         }

@@ -68,7 +68,7 @@ public class AsciiMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
-            case "TCP" -> //tcp로 메세지 전송
+            case "clientTCP" -> //tcp로 메세지 전송
             {
                 try {
                     Task<String> sendTask = tcpManager.sendASCMsg(msg);
@@ -76,6 +76,7 @@ public class AsciiMsgTransceiver {
                     taskThread.start();
 
                     receivedMsg = sendTask.get();
+                    System.out.println("receivedMsg = " + receivedMsg);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

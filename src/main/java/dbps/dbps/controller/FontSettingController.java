@@ -108,6 +108,7 @@ public class FontSettingController {
                 disableAllNodesInPane((Pane) fontGroup4ChkBox.getParent());
                 fontGroup2ChkBox.setDisable(false);
             }
+            updateFontSize();
         });
 
         fontGroup3ChkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -120,6 +121,7 @@ public class FontSettingController {
                 disableAllNodesInPane((Pane) fontGroup4ChkBox.getParent());
                 fontGroup3ChkBox.setDisable(false);
             }
+            updateFontSize();
         });
 
         fontGroup4ChkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -129,6 +131,7 @@ public class FontSettingController {
                 disableAllNodesInPane((Pane) fontGroup4ChkBox.getParent());
                 fontGroup4ChkBox.setDisable(false);
             }
+            updateFontSize();
         });
 
         fontSettingAnchorPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/fontSetting.css").toExternalForm());
@@ -153,6 +156,40 @@ public class FontSettingController {
         moveCursorRight(fontGroup4fontPath1);
         moveCursorRight(fontGroup4fontPath2);
         moveCursorRight(fontGroup4fontPath3);
+
+        fontGroup1fontSelected2.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateFontSize();
+        });
+        fontGroup1fontSelected3.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateFontSize();
+        });
+        fontGroup2fontSelected1.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateFontSize();
+        });
+        fontGroup2fontSelected2.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateFontSize();
+        });
+        fontGroup2fontSelected3.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateFontSize();
+        });
+        fontGroup3fontSelected1.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateFontSize();
+        });
+        fontGroup3fontSelected2.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateFontSize();
+        });
+        fontGroup3fontSelected3.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateFontSize();
+        });
+        fontGroup4fontSelected1.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateFontSize();
+        });
+        fontGroup4fontSelected2.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateFontSize();
+        });
+        fontGroup4fontSelected3.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateFontSize();
+        });
     }
 
     private void moveCursorRight(TextArea textArea) {
@@ -220,6 +257,7 @@ public class FontSettingController {
         }
 
         moveCaretToEnd(fontPath);
+        updateFontSize();
     }
     //체크박스 클릭시 폰트설정 비활성화/활성화
     private void disableAllNodesInPane(Pane pane){
@@ -270,11 +308,11 @@ public class FontSettingController {
                 fontType[3] = fontGroup2fontSelected1.getValue();
             }
             if (!fontGroup2fontSelected2.getValue().equals("사용안함")){
-                fontGroup1Path[1] = fontGroup2fontPath2.getText();
+                fontGroup2Path[1] = fontGroup2fontPath2.getText();
                 fontType[4] = fontGroup2fontSelected2.getValue();
             }
             if (!fontGroup2fontSelected3.getValue().equals("사용안함")){
-                fontGroup1Path[2] = fontGroup2fontPath3.getText();
+                fontGroup2Path[2] = fontGroup2fontPath3.getText();
                 fontType[5] = fontGroup2fontSelected3.getValue();
             }
             fontSize[1] = fontGroup2fontsize.getValue();
@@ -369,4 +407,100 @@ public class FontSettingController {
 
         modalStage.showAndWait();
     }
+
+    private void updateFontSize(){
+//        long totalFileSize = 0;
+//        //1번폰트그룹
+//        totalFileSize+=getFileSize(fontGroup1fontPath1.getText());
+//        if (!fontGroup1fontSelected2.getSelectionModel().getSelectedItem().equals("사용안함")){
+//            String size = extractTwoCharsAroundX(fontGroup1fontPath2.getText(), 'x');
+//            System.out.println("size = " + size);
+//            long size_int = Long.parseLong(size.substring(0, 2)) * Long.parseLong(size.substring(3, 5)) / 16;
+//            switch (fontGroup1fontSelected2.getSelectionModel().getSelectedItem()){
+//                case "유니코드 완성형": totalFileSize+=size_int* 11172L;
+//                case "유니코드 일본어": totalFileSize+=size_int* 192L;
+//                case "유니코드 중국어": totalFileSize+=size_int* 20992L;
+//                case "한글 조합형": totalFileSize+=size_int* 360L;
+//                case "유니코드 전체": totalFileSize+=getFileSize(fontGroup1fontPath2.getText());
+//            }
+//        }
+//        if (!fontGroup1fontSelected3.getSelectionModel().getSelectedItem().equals("사용안함")){
+//            totalFileSize+=getFileSize(fontGroup1fontPath3.getText());
+//        }
+//        //2번폰트그룹
+//        if (!fontGroup2fontSelected1.getSelectionModel().getSelectedItem().equals("사용안함")){
+//            totalFileSize+=getFileSize(fontGroup2fontPath1.getText());
+//        }
+//        if (!fontGroup2fontSelected2.getSelectionModel().getSelectedItem().equals("사용안함")){
+//            String size = extractTwoCharsAroundX(fontGroup2fontPath2.getText(), 'x');
+//            long size_int = Long.parseLong(size.substring(0, 2)) * Long.parseLong(size.substring(3, 5)) / 16;
+//            switch (fontGroup2fontSelected2.getSelectionModel().getSelectedItem()){
+//                case "유니코드 완성형": totalFileSize+=size_int* 11172L;
+//                case "유니코드 일본어": totalFileSize+=size_int* 192L;
+//                case "유니코드 중국어": totalFileSize+=size_int* 20992L;
+//                case "한글 조합형": totalFileSize+=size_int* 360L;
+//                case "유니코드 전체": totalFileSize+=getFileSize(fontGroup2fontPath2.getText());
+//            }
+//        }
+//        if (!fontGroup2fontSelected3.getSelectionModel().getSelectedItem().equals("사용안함")){
+//            totalFileSize+=getFileSize(fontGroup2fontPath3.getText());
+//        }
+//        //3번폰트그룹
+//        if (!fontGroup3fontSelected1.getSelectionModel().getSelectedItem().equals("사용안함")){
+//            totalFileSize+=getFileSize(fontGroup3fontPath1.getText());
+//        }
+//        if (!fontGroup3fontSelected2.getSelectionModel().getSelectedItem().equals("사용안함")){
+//            String size = extractTwoCharsAroundX(fontGroup3fontPath2.getText(), 'x');
+//            long size_int = Long.parseLong(size.substring(0, 2)) * Long.parseLong(size.substring(3, 5)) / 16;
+//            switch (fontGroup3fontSelected2.getSelectionModel().getSelectedItem()){
+//                case "유니코드 완성형": totalFileSize+=size_int* 11172L;
+//                case "유니코드 일본어": totalFileSize+=size_int* 192L;
+//                case "유니코드 중국어": totalFileSize+=size_int* 20992L;
+//                case "한글 조합형": totalFileSize+=size_int* 360L;
+//                case "유니코드 전체": totalFileSize+=getFileSize(fontGroup3fontPath2.getText());
+//            }
+//        }
+//        if (!fontGroup3fontSelected3.getSelectionModel().getSelectedItem().equals("사용안함")){
+//            totalFileSize+=getFileSize(fontGroup3fontPath3.getText());
+//        }
+//        //4번폰트그룹
+//        if (!fontGroup4fontSelected1.getSelectionModel().getSelectedItem().equals("사용안함")){
+//            totalFileSize+=getFileSize(fontGroup4fontPath1.getText());
+//        }
+//        if (!fontGroup4fontSelected2.getSelectionModel().getSelectedItem().equals("사용안함")){
+//            String size = extractTwoCharsAroundX(fontGroup4fontPath2.getText(), 'x');
+//            long size_int = Long.parseLong(size.substring(0, 2)) * Long.parseLong(size.substring(3, 5)) / 16;
+//            switch (fontGroup4fontSelected2.getSelectionModel().getSelectedItem()){
+//                case "유니코드 완성형": totalFileSize+=size_int* 11172L;
+//                case "유니코드 일본어": totalFileSize+=size_int* 192L;
+//                case "유니코드 중국어": totalFileSize+=size_int* 20992L;
+//                case "한글 조합형": totalFileSize+=size_int* 360L;
+//                case "유니코드 전체": totalFileSize+=getFileSize(fontGroup4fontPath2.getText());
+//            }
+//        }
+//        if (!fontGroup4fontSelected3.getSelectionModel().getSelectedItem().equals("사용안함")){
+//            totalFileSize+=getFileSize(fontGroup4fontPath3.getText());
+//        }
+//
+//        fontCapacity.setText(totalFileSize+"/3145727 Byte");
+    }
+
+    private long getFileSize(String filePath){
+        File file = new File(filePath);
+        if (file.exists() && file.isFile()) {
+            return file.length()-16;
+        }
+        return 0;
+    }
+
+    public String extractTwoCharsAroundX(String input, char target) {
+        int index = input.indexOf(target); // 'x'의 인덱스를 찾기
+        if (index == -1 || index < 2 || index > input.length() - 3) {
+            return "Invalid Position"; // 'x'가 없거나 앞뒤에 두 글자가 없는 경우 처리
+        }
+
+        // 'x' 앞뒤 두 글자씩 추출
+        return input.substring(index - 2, index + 3);
+    }
+
 }

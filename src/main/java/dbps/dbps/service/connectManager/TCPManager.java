@@ -1,6 +1,7 @@
 package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.LogService;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 import java.io.*;
@@ -52,11 +53,12 @@ public class TCPManager {
 
             @Override
             protected String call() throws Exception {
-                if (socket == null) {
-                    logService.warningLog("TCP 소켓이 열려있지 않습니다.");
+                if (socket.isClosed()) {
+                    Platform.runLater(()->{
+                        logService.warningLog("TCP 소켓이 열려있지 않습니다.");
+                    });
                     connect(IP, PORT);
                 }
-
                 try {
                     InputStream input = socket.getInputStream();
                     OutputStream output = socket.getOutputStream();
@@ -86,10 +88,10 @@ public class TCPManager {
                     return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
                 } catch (IOException | InterruptedException e){
                     e.getMessage();
-                    logService.errorLog(msg+"전송에 실패했습니다.");
+                    Platform.runLater(()->{
+                        logService.errorLog(msg+" 전송에 실패했습니다.");
+                    });
                     return "에러발생";
-                } finally {
-                    disconnect();
                 }
             }
         };
@@ -102,7 +104,9 @@ public class TCPManager {
 
     //접속하기
     public void connect(String IP, int PORT){
-        logService.updateInfoLog("TCP 서버에 연결합니다. IP: " + IP + ", PORT: " + PORT);
+        Platform.runLater(()->{
+            logService.updateInfoLog("TCP 서버에 연결합니다. IP: " + IP + ", PORT: " + PORT);
+        });
         this.IP = IP;
         this.PORT = PORT;
 
@@ -129,16 +133,21 @@ public class TCPManager {
             String response = bytesToHex(buffer, bytesRead);
 
             if (response.equals("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03 ")){
-                logService.updateInfoLog("TCP 서버에 연결되었습니다. IP : " + IP + ", PORT: " + PORT);
+                Platform.runLater(()->{
+                    logService.updateInfoLog("TCP 서버에 연결되었습니다. IP : " + IP + ", PORT: " + PORT);
+                    logService.updateInfoLog(response);
+                });
             } else {
-                logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
+                Platform.runLater(()->{
+                    logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
+                });
             }
 
 
         }catch (IOException e){
-            logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
-        } finally {
-            disconnect();
+            Platform.runLater(()->{
+                logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
+            });
         }
     }
 
@@ -150,16 +159,19 @@ public class TCPManager {
         } catch (IOException e) {
             e.getStackTrace();
         }
-        socket = null;
-        logService.updateInfoLog("TCP 서버 연결이 종료되었습니다. IP: " + IP + ", PORT: " + PORT);
+        Platform.runLater(()->{
+            logService.updateInfoLog("TCP 서버 연결이 종료되었습니다. IP: " + IP + ", PORT: " + PORT);
+        });
     }
 
     public Task<String> sendMsgAndGetMsgByte(byte[] msg){
         return new Task<>() {
             @Override
             protected String call() throws Exception {
-                if (socket == null) {
-                    logService.warningLog("TCP 소켓이 열려있지 않습니다.");
+                if (socket.isClosed()) {
+                    Platform.runLater(()->{
+                        logService.warningLog("TCP 소켓이 열려있지 않습니다.");
+                    });
                     connect(IP, PORT);
                 }
 

@@ -23,25 +23,19 @@ public class ASCiiMsgController {
     @FXML
     private AnchorPane ASCiiMsgAnchorPane;
 
-    ASCiiMsgService msgService = ASCiiMsgService.getInstance();
-    AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
-    public static List<TextField> transmitMsgs = new ArrayList<>();
-    private List<Button> msgSendBtns = new ArrayList<>();
-    private List<String> transmitMsgContents;
+    ASCiiMsgService msgService;
+    AsciiMsgTransceiver asciiMsgTransceiver;
     PreviewService previewService;
     ConfigService configService;
 
-    private final KeyCode[] KONAMI_CODE = {
-            KeyCode.UP, KeyCode.UP, KeyCode.DOWN, KeyCode.DOWN,
-            KeyCode.LEFT, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.RIGHT,
-            KeyCode.B, KeyCode.A
-    };
-
-    // 사용자가 입력한 키를 저장할 큐
-    private Queue<KeyCode> inputQueue = new LinkedList<>();
+    public static List<TextField> transmitMsgs = new ArrayList<>();
+    private List<Button> msgSendBtns = new ArrayList<>();
+    private List<String> transmitMsgContents;
 
     @FXML
     public void initialize() {
+        msgService = ASCiiMsgService.getInstance();
+        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         transmitMsgContents = msgService.loadMessages();
         previewService = PreviewService.getInstance();
         configService = ConfigService.getInstance();
@@ -49,12 +43,7 @@ public class ASCiiMsgController {
         makeMsgContainer();
 
         ASCiiMsgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/ASCiiMsg.css").toExternalForm());
-
     }
-
-    /**
-     * 실제 작동하는 기능들
-     */
 
     //text파일에 저장
     @FXML
@@ -76,6 +65,7 @@ public class ASCiiMsgController {
         asciiMsgTransceiver.sendMessages(targetTextField.getText());
     }
 
+    //메세지 초기화
     @FXML
     public void resetMsg() {
         msgService.resetMsg();
@@ -84,12 +74,13 @@ public class ASCiiMsgController {
         }
     }
 
+    //기본 속성 설정 창
     @FXML
     public void setDefault(){
-//        previewService.preview("1234", new HashMap<>());
         msgService.makeOwnMsg();
     }
 
+    //미리보기
 //    @FXML
 //    public void preview(MouseEvent event) {
 //        Button clickedBtn = (Button) event.getSource();
@@ -138,10 +129,8 @@ public class ASCiiMsgController {
 
     /**
      * 리팩토링용
-     * 처음 시작할때 textField와 버튼을 만들어주는 메소드
+     * 시작시 textField와 버튼을 만들어주는 메소드
      */
-
-
     private void makeMsgContainer() {
         for (int i = 1; i < 10; i++) {
             TextField textField = new TextField();

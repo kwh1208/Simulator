@@ -21,27 +21,31 @@ public class blueToothController {
 
         bluetoothAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/bluetooth.css").toExternalForm());
     }
-
+    //블루투스 검색
     public void search() {
+        //++SET++![BT SEARCHING DIBD!]
         btManager.search();
     }
 
+    //블루투스 이름 및 비밀번호 설정
     public void set( ){
         //++SET++![BT SETT  31  name  password!]
         btManager.set(ble_id.getText(), ble_password.getText());
     }
 
+    //블루투스 통신 시작
     public void begin( ) {
         //++SET++![BT password             BEGIN!]
         btManager.begin(ble_password.getText());
     }
 
+    //블루투스 통신 종료
     public void end( ) {
         //++SET++![BT password             END!]
         btManager.end(ble_password.getText());
     }
 
-
+    //창종료
     public void close(MouseEvent mouseEvent) {
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();

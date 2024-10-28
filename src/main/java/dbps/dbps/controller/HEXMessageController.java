@@ -16,8 +16,6 @@ import java.nio.charset.StandardCharsets;
 import static dbps.dbps.Constants.*;
 
 public class HEXMessageController {
-
-
     HexMsgTransceiver hexMsgTransceiver;
 
     @FXML
@@ -226,7 +224,6 @@ public class HEXMessageController {
         String msgType = ((RadioButton) msgTypeGroup.getSelectedToggle()).getText();
         String pageMsgCntValue = pageMsgCnt.getValue();
         String section = ((RadioButton) sectionGroup.getSelectedToggle()).getText();
-
         String displayControlValue = displayControl.getValue();
         String displayMethodValue = displayMethod.getValue();
         String charCodesValue = charCodes.getValue();
@@ -329,6 +326,7 @@ public class HEXMessageController {
 
         //배경이미지
         msg+=bgImgValue.equals("사용안함") ? "00 ": String.format("%02d ", Integer.parseInt(bgImgValue));
+
         //글자
         for (int i = 0; i < text.length(); i++) {
             String tmp = "";
@@ -366,10 +364,12 @@ public class HEXMessageController {
             resultHex = String.format("%02X ", tmpValue + add);
             if (String.valueOf(text.charAt(i)).getBytes(Charset.forName("EUC-KR")).length!=1){
                 resultHex += String.format("%02X ", 0);
-
             }
 
             msg+=resultHex;
+            if (charCodes.getValue().equals("UTF16유니코드")&&String.valueOf(text.charAt(i)).getBytes(Charset.forName("EUC-KR")).length==1){
+                msg+=String.format("%02X ", 0);
+            }
         }
 
 

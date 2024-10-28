@@ -33,7 +33,6 @@ public class SerialPortManager {
 
     public void openPort(String portName, int baudRate){
         if (serialPortMap.containsKey(portName)&&isPortOpen(portName)){
-            logService.updateInfoLog(portName + " 포트가 열려있습니다.");
             return;
         }
         SerialPort port = SerialPort.getCommPort(portName);
@@ -214,7 +213,7 @@ public class SerialPortManager {
                 SerialPort port = serialPortMap.get(portName);
 
                 if (port == null || !isPortOpen(portName)) {
-                    openPort(portName, SERIAL_BAUDRATE);
+                    openPortNoLog(portName, SERIAL_BAUDRATE);
                     port = serialPortMap.get(portName);
                 }
 
@@ -258,7 +257,7 @@ public class SerialPortManager {
                     logService.errorLog("에러가 발생했습니다: " + e.getMessage());
                     return null;
                 } finally {
-                    closePort(portName);
+                    closePortNoLog(portName);
                 }
             }
         };

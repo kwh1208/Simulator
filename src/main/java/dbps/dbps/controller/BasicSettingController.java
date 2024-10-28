@@ -12,19 +12,28 @@ public class BasicSettingController {
     @FXML
     public Pane basicPane;
 
+
     MainService mainService;
     ConfigService configService;
+
     @FXML
     public ChoiceBox<String> protocolFormat;
+
+
     @FXML
     public void initialize() {
         configService = ConfigService.getInstance();
+
+        //초기설정에 따라서 메세지 탭 변경
         mainService = MainService.getInstance();
         if (IS_ASCII){
             protocolFormat.setValue("아스키 프로토콜");
         } else {
             protocolFormat.setValue("헥사 프로토콜");
         }
+
+
+        //드롭다운 감지해서 탭 변경
         protocolFormat.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.equals("아스키 프로토콜")) {
                 mainService.showASCiiMsgTab();

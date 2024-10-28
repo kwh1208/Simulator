@@ -55,9 +55,9 @@ public class ConfigService {
             defaultProperties.setProperty("IS_ASCII", "true");
             defaultProperties.setProperty("connectType", "serial");
             defaultProperties.setProperty("serialSpeed", "115200");
+            defaultProperties.setProperty("RS485_ADDR_NUM", "0");
             defaultProperties.setProperty("openPortNum", "1");
             defaultProperties.setProperty("isRS", "false");
-            defaultProperties.setProperty("RS485Num", "00");
             defaultProperties.setProperty("clientTCPAddr", "192.168.0.10");
             defaultProperties.setProperty("clientTCPPort", "5100");
             defaultProperties.setProperty("serverTCPAddr", "192.168.0.10");
@@ -95,13 +95,13 @@ public class ConfigService {
                     defaultProperties.setProperty("displayMethod"+i+j, "Normal");
                     defaultProperties.setProperty("charCode"+i+j, "KS완성형 한글코드");
                     defaultProperties.setProperty("fontSize"+i+j, "16(Standard)");
-                    defaultProperties.setProperty("fontGroup"+i+j, "FontGroup1");
+                    defaultProperties.setProperty("fontGroup"+i+j, "FontGroup0");
                     defaultProperties.setProperty("effectIn"+i+j, "정지효과");
                     defaultProperties.setProperty("effectInDirection"+i+j, "방향없음");
                     defaultProperties.setProperty("effectOut"+i+j, "사용안함");
                     defaultProperties.setProperty("effectOutDirection"+i+j, "사용안함");
                     defaultProperties.setProperty("effectSpeed"+i+j, "5");
-                    defaultProperties.setProperty("effectTime"+i+j, "2");
+                    defaultProperties.setProperty("effectTime"+i+j, "2초");
                     defaultProperties.setProperty("xStart"+i+j, "0");
                     defaultProperties.setProperty("xEnd"+i+j, "0");
                     defaultProperties.setProperty("yStart"+i+j, "0");
