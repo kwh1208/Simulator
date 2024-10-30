@@ -2,6 +2,7 @@ package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
 import dbps.dbps.service.FontService;
+import dbps.dbps.service.ResourceManager;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -391,6 +392,7 @@ public class FontSettingController {
 
     public void fontName(MouseEvent mouseEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/fontName.fxml"));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
         Parent root = fxmlLoader.load();
 
         Stage modalStage = new Stage();

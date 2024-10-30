@@ -3,10 +3,11 @@ package dbps.dbps.service.connectManager;
 import com.fazecast.jSerialComm.SerialPort;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.LogService;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,9 +42,9 @@ public class SerialPortManager {
         port.openPort();
         serialPortMap.put(portName, port);
         configService.setProperty("openPortNum", portName);
-        Platform.runLater(()->{
-            logService.updateInfoLog(portName + " 포트가 열렸습니다.");
-        });
+
+        logService.updateInfoLog(portName + " 포트가 열렸습니다.");
+
     }
 
     public void openPortNoLog(String portName, int baudRate){
@@ -65,10 +66,10 @@ public class SerialPortManager {
             SerialPort serialPort = serialPortMap.get(portName);
             if (serialPort.isOpen()){
                 serialPort.closePort();
-                Platform.runLater(() -> {
-                    // UI 변경 작업 (예: 로그 업데이트, 텍스트 필드 업데이트 등)
-                    logService.updateInfoLog("포트가 닫혔습니다.");
-                });
+
+
+                logService.updateInfoLog("포트가 닫혔습니다.");
+
             } else {
                 logService.updateInfoLog(portName + " 포트가 이미 닫혀 있습니다.");
             }
@@ -283,12 +284,12 @@ public class SerialPortManager {
 
                     if (!port.isOpen()) {
                         // 포트를 열 수 없을 때 로그 업데이트
-                        Platform.runLater(() -> logService.warningLog("포트를 열 수 없습니다."));
+                        logService.warningLog("포트를 열 수 없습니다.");
                         continue;
                     }
 
                     // 포트가 열렸을 때 로그 업데이트
-                    Platform.runLater(() -> logService.updateInfoLog("현재 속도 " + baudRate + "에서 응답을 대기 중..."));
+                    logService.updateInfoLog("현재 속도 " + baudRate + "에서 응답을 대기 중...");
 
                     String msg = "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
                     if (isRS){
@@ -322,19 +323,19 @@ public class SerialPortManager {
 
                     if (!response.isBlank()) {
                         // 통신 속도 찾기 성공 로그 업데이트
-                        Platform.runLater(() -> logService.updateInfoLog(OPEN_PORT_NAME + "의 적정 통신 속도는 " + baudRate + "입니다."));
+                        logService.updateInfoLog(OPEN_PORT_NAME + "의 적정 통신 속도는 " + baudRate + "입니다.");
                         return baudRate;
                     }
 
                     closePortNoLog(OPEN_PORT_NAME);
                 } catch (IOException | InterruptedException e) {
                     // 예외 발생 시 로그 업데이트
-                    Platform.runLater(() -> logService.warningLog("예외 발생: " + e.getMessage()));
+                    logService.warningLog("예외 발생: " + e.getMessage());
                 }
             }
 
             // 통신 속도를 찾지 못한 경우 경고 로그 업데이트
-            Platform.runLater(() -> logService.warningLog("적정 통신 속도를 찾지 못했습니다."));
+            logService.warningLog("적정 통신 속도를 찾지 못했습니다.");
             return 0;
         }
     };

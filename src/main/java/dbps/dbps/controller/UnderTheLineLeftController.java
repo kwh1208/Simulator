@@ -153,12 +153,18 @@ public class UnderTheLineLeftController {
             }
             asciiMsgTransceiver.sendMessages(msg);
         }
-        String msg = "10 02 00 00 02 89 00 10 03";
+        else{
+            String msg = "10 02 00 00 02 89 00 10 03";
         if (isRS){
             msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 02 89 00 10 03";
         }
         else hexMsgTransceiver.sendMessages(msg);
+        }
     }
+
+    /**
+     * 누리콘
+     */
 
     public void hardReset(){
         if (IS_ASCII){

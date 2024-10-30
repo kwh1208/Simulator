@@ -7,8 +7,8 @@
 <?import java.lang.String?>
 <AnchorPane prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplayListController">
    <children>
-      <TextField fx:id="search" layoutX="13.0" layoutY="13.0" prefHeight="21.0" prefWidth="377.0" promptText="모듈정보를 입력해주세요."/>
-      <Label layoutX="13.0" layoutY="37.0" prefHeight="21.0" prefWidth="64.0" text="모듈정보" />
+      <TextField fx:id="search" layoutX="13.0" layoutY="13.0" prefHeight="21.0" prefWidth="377.0" promptText="%modulePrompt"/>
+      <Label layoutX="13.0" layoutY="37.0" prefHeight="21.0" prefWidth="64.0" text="%moduleInfo" />
       <ListView fx:id="moduleList" layoutX="13.0" layoutY="61.0" prefHeight="449.0" prefWidth="377.0" >
          <items>
             <FXCollections fx:factory="observableArrayList">
@@ -51,9 +51,9 @@
             </FXCollections>
          </items>
       </ListView>
-      <Button layoutX="232.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="30.0" prefWidth="74.0" text="적용" />
-      <Button layoutX="316.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="30.0" prefWidth="74.0" text="닫기" />
-      <Label layoutX="14.0" layoutY="523.0" prefHeight="21.0" prefWidth="85.0" text="표출신호" />
+      <Button layoutX="232.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="30.0" prefWidth="74.0" text="%sendButton" />
+      <Button layoutX="316.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="30.0" prefWidth="74.0" text="%close" />
+      <Label layoutX="14.0" layoutY="523.0" prefHeight="21.0" prefWidth="85.0" text="%displaySignal" />
       <TextField fx:id="displaySignal" layoutX="113.0" layoutY="523.0" prefHeight="21.0" prefWidth="276.0" />
    </children>
 </AnchorPane>

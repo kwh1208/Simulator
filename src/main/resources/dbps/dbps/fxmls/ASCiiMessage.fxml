@@ -5,9 +5,9 @@
 
 <AnchorPane fx:id="ASCiiMsgAnchorPane" prefHeight="596.0" prefWidth="590.0" style="-fx-border-color: black; -fx-border-width: 1 0 0 0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.ASCiiMsgController">
     <children>
-        <Label layoutX="20.0" layoutY="520.0" prefHeight="13.0" prefWidth="600.0" style="-fx-text-fill: #E0E0E0; -fx-font-size: 16px;" text="색상 코드(0:None 1:Red 2:Green 3: Yellow 4:Blue 5:Purple 6:SkyBlue 7:White)" />
-        <Button layoutX="23.0" layoutY="550.0" mnemonicParsing="false" onMouseClicked="#resetMsg" prefHeight="29.0" prefWidth="153.0" text="메세지 초기화" />
-        <Button fx:id="msgSaveBtn" layoutX="558.0" layoutY="546.0" maxHeight="45.0" maxWidth="61.0" mnemonicParsing="false" onMouseClicked="#saveMsg" text="저장" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="558.0" AnchorPane.rightAnchor="80.5" AnchorPane.topAnchor="546.0" />
-        <Button layoutX="187.0" layoutY="550.0" mnemonicParsing="false" onMouseClicked="#setDefault" prefHeight="29.0" prefWidth="153.0" text="기본값 설정" />
+        <Label layoutX="20.0" layoutY="520.0" prefHeight="13.0" prefWidth="600.0" style="-fx-text-fill: #E0E0E0; -fx-font-size: 16px;" text="%colorCode" />
+        <Button layoutX="23.0" layoutY="550.0" mnemonicParsing="false" onMouseClicked="#resetMsg" prefHeight="29.0" prefWidth="153.0" text="%initButton" />
+        <Button fx:id="msgSaveBtn" layoutX="558.0" layoutY="546.0" maxHeight="45.0" maxWidth="61.0" mnemonicParsing="false" onMouseClicked="#saveMsg" text="%saveButton" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="558.0" AnchorPane.rightAnchor="80.5" AnchorPane.topAnchor="546.0" />
+        <Button layoutX="187.0" layoutY="550.0" mnemonicParsing="false" onMouseClicked="#setDefault" prefHeight="29.0" prefWidth="153.0" text="%defaultSetting" />
     </children>
 </AnchorPane>

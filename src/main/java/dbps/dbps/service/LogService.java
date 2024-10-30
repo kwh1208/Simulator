@@ -1,5 +1,6 @@
 package dbps.dbps.service;
 
+import javafx.application.Platform;
 import javafx.scene.control.ScrollPane;
 import org.fxmisc.richtext.InlineCssTextArea;
 
@@ -61,8 +62,10 @@ public class LogService {
         String logMessage = "[" + formattedTime + "] " + additionalLog;
 
         // 텍스트 추가 및 스타일 적용
-        logTextArea.append(logMessage + "\n", "-fx-fill: white; -fx-padding: 0 0 5px 0;");
-        scrollToBottom();
+        Platform.runLater(()->{
+            logTextArea.append(logMessage + "\n", "-fx-fill: white; -fx-padding: 0 0 5px 0;");
+            scrollToBottom();
+        });
 
         writeLogToFile(logMessage);
     }
@@ -75,11 +78,13 @@ public class LogService {
         String logMessage = "[" + formattedTime + "] [WARNING!] " + additionalLog+"\n";
 
         // 텍스트 추가 및 스타일 적용
-        int start = logTextArea.getLength();
-        logTextArea.appendText(logMessage);
-        logTextArea.setStyle(start, start+logMessage.length(),"-fx-fill: #FFA500; -fx-font-weight: bold;");
+        Platform.runLater(()->{
+            int start = logTextArea.getLength();
+            logTextArea.appendText(logMessage);
+            logTextArea.setStyle(start, start+logMessage.length(),"-fx-fill: #FFA500; -fx-font-weight: bold;");
+            scrollToBottom();
+        });
 
-        scrollToBottom();
         writeLogToFile(logMessage);
     }
 
@@ -91,10 +96,13 @@ public class LogService {
         String logMessage = "[" + formattedTime + "] [ERROR!] " + additionalLog + "\n" + "\u200B";
 
         // 텍스트 추가 및 스타일 적용
-        int start = logTextArea.getLength();
-        logTextArea.appendText(logMessage);
-        logTextArea.setStyle(start, logTextArea.getLength(), "-fx-fill: red; -fx-font-weight: bold;");
-        scrollToBottom();
+        Platform.runLater(() -> {
+            // 텍스트 추가 및 스타일 적용
+            int start = logTextArea.getLength();
+            logTextArea.appendText(logMessage);
+            logTextArea.setStyle(start, logTextArea.getLength(), "-fx-fill: red; -fx-font-weight: bold;");
+            scrollToBottom();
+        });
 
         writeLogToFile(logMessage);
     }

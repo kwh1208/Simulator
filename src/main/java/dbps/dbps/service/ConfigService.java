@@ -67,6 +67,7 @@ public class ConfigService {
             defaultProperties.setProperty("RESPONSE_LATENCY", "3");
             defaultProperties.setProperty("latency", "3");
             defaultProperties.setProperty("lastDisplaySignal", "16D-P16D1S11");
+            defaultProperties.setProperty("PROGRAM_LANGUAGE", "korean");
 
             defaultProperties.setProperty("fontGroup1Size", "8X16/16X16");
             defaultProperties.setProperty("fontGroup1FontPath1", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
@@ -191,6 +192,9 @@ public class ConfigService {
         }
     }
 
+    /**
+     * ttl, tcp
+     */
     public void setProperty(String key, String value) {
         properties.setProperty(key, value);
         saveProperties();

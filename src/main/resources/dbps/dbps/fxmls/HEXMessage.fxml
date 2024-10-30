@@ -368,9 +368,8 @@
         <TextField fx:id="bgColor" layoutX="197.0" layoutY="476.0" prefHeight="35.0" prefWidth="468.0" style="-fx-background-color: black; -fx-text-fill: white" text="" />
         <Label layoutX="34.0" layoutY="523.0" text="18. 문구" />
         <TextField fx:id="msgPreview" layoutX="197.0" layoutY="514.0" prefHeight="35.0" prefWidth="468.0" style="-fx-background-color: black; -fx-text-fill: white" text="" />
-        <Button layoutX="35.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#preview" prefHeight="30.0" prefWidth="81.0" text="미리보기" />
-        <Button layoutX="380.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="30.0" prefWidth="81.0" text="저장" />
-        <Button layoutX="480.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="초기화" />
-        <Button layoutX="580.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="81.0" text="전송" />
+        <Button layoutX="380.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="30.0" prefWidth="81.0" text="%sendButton" />
+        <Button layoutX="480.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="%initButton" />
+        <Button layoutX="580.0" layoutY="553.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="81.0" text="%saveButton" />
     </children>
 </AnchorPane>

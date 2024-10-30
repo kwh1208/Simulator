@@ -55,7 +55,6 @@ public class UDPManager {
             @Override
             protected String call() throws Exception {
                 if (socket == null) {
-                    logService.warningLog("UDP 소켓이 열려있지 않습니다.");
                     connect(IP, PORT);
                 }
 
@@ -89,8 +88,6 @@ public class UDPManager {
                     //에러 처리
                     logService.errorLog(msg+"전송에 실패했습니다.");
                     return "에러코드";
-                } finally {
-                    disconnect();
                 }
             }
         };
@@ -100,12 +97,15 @@ public class UDPManager {
         return length > 0 && buffer[length - 1]==(byte) ']' && buffer[length - 2]==(byte) '!';
     }
 
+    private boolean dataReceivedIsCompleteHex(byte[] buffer, int length) {
+        return length >= 2 && buffer[length - 2] == (byte) 0x10 && buffer[length - 1] == (byte) 0x03;
+    }
+
     public Task<String> sendMsgAndGetMsgByte(byte[] msg){
         return new Task<String>() {
             @Override
             protected String call() throws Exception {
                 if (socket == null) {
-                    logService.warningLog("UDP 소켓이 열려있지 않습니다.");
                     connect(IP, PORT);
                 }
 
@@ -128,7 +128,51 @@ public class UDPManager {
                             startTime = System.currentTimeMillis();  // 수신 시간 갱신
 
                             // 데이터 처리 로직
-                            if (dataReceivedIsComplete(receiveBuffer, totalBytesRead)) {
+                            if (dataReceivedIsCompleteHex(receiveBuffer, totalBytesRead)) {
+                                break;
+                            }
+                        }
+                        Thread.sleep(50);
+                    }
+                    return bytesToHex(receivePacket.getData(), receivePacket.getLength());
+                }catch (IOException | InterruptedException e){
+                    //에러 처리
+                } finally {
+                    disconnect();
+                }
+                return null;
+            }
+        };
+    }
+
+    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg){
+        return new Task<String>() {
+            @Override
+            protected String call() throws Exception {
+                if (socket == null) {
+                    connect(IP, PORT);
+                }
+
+                DatagramPacket receivePacket;
+                try{
+                    InetAddress serverAddr = InetAddress.getByName(IP);
+                    DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
+                    socket.send(sendPacket);
+
+                    long startTime = System.currentTimeMillis();
+                    byte[] receiveBuffer = new byte[1024];
+                    int totalBytesRead = 0;
+                    receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+
+                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000){
+                        socket.receive(receivePacket);
+                        int bytesRead = receivePacket.getLength();  // 수신된 바이트 수
+                        if (bytesRead > 0) {
+                            totalBytesRead += bytesRead;
+                            startTime = System.currentTimeMillis();  // 수신 시간 갱신
+
+                            // 데이터 처리 로직
+                            if (dataReceivedIsCompleteHex(receiveBuffer, totalBytesRead)) {
                                 break;
                             }
                         }
@@ -157,7 +201,7 @@ public class UDPManager {
             InetAddress serverAddr = InetAddress.getByName(IP);
             DatagramPacket sendPacket = new DatagramPacket(CONNECT_START, CONNECT_START.length, serverAddr, PORT);
             socket.send(sendPacket);
-
+            logService.updateInfoLog("전송 메세지: 10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
             byte[] receiveBuffer = new byte[1024];
             receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
             socket.receive(receivePacket);
@@ -174,8 +218,6 @@ public class UDPManager {
         }catch (IOException e){
             //에러처리
             logService.errorLog("UDP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
-        } finally {
-            disconnect();
         }
     }
 

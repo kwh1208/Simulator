@@ -1,10 +1,11 @@
 package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.LogService;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.Charset;
 
@@ -54,9 +55,6 @@ public class TCPManager {
             @Override
             protected String call() throws Exception {
                 if (socket.isClosed()) {
-                    Platform.runLater(()->{
-                        logService.warningLog("TCP 소켓이 열려있지 않습니다.");
-                    });
                     connect(IP, PORT);
                 }
                 try {
@@ -70,9 +68,10 @@ public class TCPManager {
                     byte[] buffer = new byte[1024];
                     int totalBytesRead = 0;
 
-                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000) {
+                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000L) {
                         if (input.available() > 0) {
                             int bytesRead = input.read(buffer);
+
                             if (bytesRead > 0) {
                                 totalBytesRead += bytesRead;
 
@@ -88,9 +87,9 @@ public class TCPManager {
                     return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
                 } catch (IOException | InterruptedException e){
                     e.getMessage();
-                    Platform.runLater(()->{
-                        logService.errorLog(msg+" 전송에 실패했습니다.");
-                    });
+
+                    logService.errorLog(msg+" 전송에 실패했습니다.");
+
                     return "에러발생";
                 }
             }
@@ -101,12 +100,16 @@ public class TCPManager {
         return length > 0 && buffer[length - 1]==(byte) ']' && buffer[length - 2]==(byte) '!';
     }
 
+    private boolean dataReceivedIsCompleteHex(byte[] buffer, int length) {
+        return length >= 2 && buffer[length - 2] == (byte) 0x10 && buffer[length - 1] == (byte) 0x03;
+    }
+
 
     //접속하기
     public void connect(String IP, int PORT){
-        Platform.runLater(()->{
-            logService.updateInfoLog("TCP 서버에 연결합니다. IP: " + IP + ", PORT: " + PORT);
-        });
+
+        logService.updateInfoLog("TCP 서버에 연결합니다. IP: " + IP + ", PORT: " + PORT);
+
         this.IP = IP;
         this.PORT = PORT;
 
@@ -121,11 +124,14 @@ public class TCPManager {
             output.write(CONNECT_START);
             output.flush();
 
+            logService.updateInfoLog("전송 메세지 : 10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
+
+
             byte[] buffer = new byte[1024];
             int bytesRead = input.read(buffer);
 
             if (bytesRead == -1) {
-                logService.errorLog("서버로부터 데이터를 읽지 못했습니다.");
+                logService.errorLog("IP : "+IP+", PORT : "+PORT+" 연결에 실패했습니다.");
                 return;
             }
 
@@ -133,21 +139,21 @@ public class TCPManager {
             String response = bytesToHex(buffer, bytesRead);
 
             if (response.equals("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03 ")){
-                Platform.runLater(()->{
-                    logService.updateInfoLog("TCP 서버에 연결되었습니다. IP : " + IP + ", PORT: " + PORT);
-                    logService.updateInfoLog(response);
-                });
+
+                logService.updateInfoLog("받은 메세지 : "+response);
+                logService.updateInfoLog("TCP 서버에 연결되었습니다. IP : " + IP + ", PORT: " + PORT);
+
             } else {
-                Platform.runLater(()->{
-                    logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
-                });
+
+                logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
+
             }
 
 
         }catch (IOException e){
-            Platform.runLater(()->{
-                logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
-            });
+
+            logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
+
         }
     }
 
@@ -159,9 +165,9 @@ public class TCPManager {
         } catch (IOException e) {
             e.getStackTrace();
         }
-        Platform.runLater(()->{
-            logService.updateInfoLog("TCP 서버 연결이 종료되었습니다. IP: " + IP + ", PORT: " + PORT);
-        });
+
+        logService.updateInfoLog("TCP 서버 연결이 종료되었습니다. IP: " + IP + ", PORT: " + PORT);
+
     }
 
     public Task<String> sendMsgAndGetMsgByte(byte[] msg){
@@ -169,9 +175,6 @@ public class TCPManager {
             @Override
             protected String call() throws Exception {
                 if (socket.isClosed()) {
-                    Platform.runLater(()->{
-                        logService.warningLog("TCP 소켓이 열려있지 않습니다.");
-                    });
                     connect(IP, PORT);
                 }
 
@@ -186,7 +189,7 @@ public class TCPManager {
                     byte[] buffer = new byte[1024];
                     int totalBytesRead = 0;
 
-                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000) {
+                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000L) {
                         if (input.available() > 0) {
                             int bytesRead = input.read(buffer);
                             if (bytesRead > 0) {
@@ -194,7 +197,7 @@ public class TCPManager {
 
                                 startTime = System.currentTimeMillis();
 
-                                if (dataReceivedIsComplete(buffer, totalBytesRead)) {
+                                if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
                                     break;
                                 }
                             }
@@ -205,6 +208,51 @@ public class TCPManager {
                     return bytesToHex(buffer, totalBytesRead);
                 } catch (IOException | InterruptedException e) {
                     logService.errorLog(msg + "전송에 실패했습니다.");
+                    return null;
+                } finally {
+                    disconnect();
+                }
+            }
+        };
+    }
+
+    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg){
+        return new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                if (socket.isClosed()) {
+                    connect(IP, PORT);
+                }
+
+                try {
+                    InputStream input = socket.getInputStream();
+                    OutputStream output = socket.getOutputStream();
+
+                    output.write(msg);
+                    output.flush();
+
+                    long startTime = System.currentTimeMillis();
+                    byte[] buffer = new byte[1024];
+                    int totalBytesRead = 0;
+
+                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000L) {
+                        if (input.available() > 0) {
+                            int bytesRead = input.read(buffer);
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
+
+                                startTime = System.currentTimeMillis();
+
+                                if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                                    break;
+                                }
+                            }
+                        } else {
+                            Thread.sleep(50);
+                        }
+                    }
+                    return bytesToHex(buffer, totalBytesRead);
+                } catch (IOException | InterruptedException e) {
                     return null;
                 } finally {
                     disconnect();

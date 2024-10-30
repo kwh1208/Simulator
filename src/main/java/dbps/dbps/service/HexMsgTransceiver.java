@@ -1,12 +1,12 @@
 package dbps.dbps.service;
 
-import dbps.dbps.service.connectManager.*;
+import dbps.dbps.service.connectManager.SerialPortManager;
+import dbps.dbps.service.connectManager.TCPManager;
+import dbps.dbps.service.connectManager.UDPManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 
-
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -39,9 +39,9 @@ public class HexMsgTransceiver {
         String receivedMsg = "";
 
         //로그 출력
-        Platform.runLater(()->{
-            logService.updateInfoLog("전송 메세지: " + bytesToHex(msg, msg.length));
-        });
+
+        logService.updateInfoLog("전송 메세지: " + bytesToHex(msg, msg.length));
+
 
         switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> {
@@ -89,7 +89,7 @@ public class HexMsgTransceiver {
         return msgReceive(receivedMsg, msg);
     }
 
-    public void sendByteMessagesNoLog(byte[] msg) {
+    public String sendByteMessagesNoLog(byte[] msg) {
         switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> {
                 try {
@@ -100,7 +100,7 @@ public class HexMsgTransceiver {
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 
-                    String s = sendTask.get();
+                    return sendTask.get();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -108,24 +108,29 @@ public class HexMsgTransceiver {
             case "UDP" -> //udp로 메세지 전송
             {
                 try {
-                    Task<String> sendTask = udpManager.sendMsgAndGetMsgByte(msg);
+                    Task<String> sendTask = udpManager.sendMsgAndGetMsgByteNoLog(msg);
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
+
+                    return sendTask.get();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
-            case "TCP" -> //tcp로 메세지 전송
+            case "clientTCP" -> //tcp로 메세지 전송
             {
                 try {
-                    Task<String> sendTask = tcpManager.sendMsgAndGetMsgByte(msg);
+                    Task<String> sendTask = tcpManager.sendMsgAndGetMsgByteNoLog(msg);
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
+
+                    return sendTask.get();
                 }catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
         }
+        return null;
     }
 
     public String sendMessages(String msg) {
@@ -212,7 +217,7 @@ public class HexMsgTransceiver {
     private void handleDefaultCommands(String status, String receiveMsg, String[] splitMsg) {
         // 단순 상태 코드 확인 및 로그 출력
         if (status.equals("00")) {
-            Platform.runLater(()->logService.updateInfoLog("받은 메세지 : " + receiveMsg)); // 받은 메세지 출력
+            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
         } else {
             chkErrorCode(receiveMsg, splitMsg);
         }

@@ -1,10 +1,7 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
-import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.ConfigService;
-import dbps.dbps.service.DisplaySignal;
-import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -311,6 +308,7 @@ public class DisplaySignalSettingController {
 
     public void search(MouseEvent mouseEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/displayList.fxml"));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
         Parent root = fxmlLoader.load();
 
         Stage modalStage = new Stage();

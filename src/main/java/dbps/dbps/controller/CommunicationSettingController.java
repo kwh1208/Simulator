@@ -1,11 +1,12 @@
 package dbps.dbps.controller;
 
 
-
 import com.fazecast.jSerialComm.SerialPort;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.LogService;
+import dbps.dbps.service.ResourceManager;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.TCPManager;
 import dbps.dbps.service.connectManager.UDPManager;
@@ -22,13 +23,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-
 
 import static dbps.dbps.Constants.*;
 
@@ -42,6 +41,7 @@ public class CommunicationSettingController {
     HexMsgTransceiver hexMsgTransceiver;
     UDPManager udpManager;
     ConfigService configService;
+    LogService logService;
 
     @FXML
     private AnchorPane communicationSettingAP;
@@ -124,6 +124,7 @@ public class CommunicationSettingController {
         tcpManager = TCPManager.getManager();
         udpManager = UDPManager.getUDPManager();
         configService = ConfigService.getInstance();
+        logService = LogService.getLogService();
 
 
         //delayTime 변경하면 delayTime 값 변경
@@ -200,7 +201,6 @@ public class CommunicationSettingController {
                 UDPRadioToggle(false);
                 CONNECT_TYPE = "clientTCP";
                 configService.setProperty("connectType", "clientTCP");
-                System.out.println("CONNECT_TYPE = " + CONNECT_TYPE);
                 connect.setText("접속하기");
                 shutConnect.setText("접속끊기");
             } else if (selectedRadioButton.equals(serverTCPRadioBtn)) {
@@ -353,6 +353,10 @@ public class CommunicationSettingController {
 
         TCP_IP = IPAddress;
         TCP_PORT = port;
+
+
+        logService.updateInfoLog("IP :"+IPAddress+" Port :"+port+"가 열렸습니다.");
+
     }
 
     private void connectUDP(){
@@ -406,6 +410,7 @@ public class CommunicationSettingController {
     //블루투스 열기
     public void openBluetooth(MouseEvent mouseEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/blueTooth.fxml"));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
         Parent root = fxmlLoader.load();
 
         Stage modalStage = new Stage();
@@ -433,17 +438,11 @@ public class CommunicationSettingController {
                 serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
                 RS485_ADDR_NUM = Integer.parseInt(RS485ChoiceBox.getValue().replaceAll("[^0-9]", ""));
                 String msg = "10 02 "+convertRS485AddrASCii()+" 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
-                String receivedMsg = hexMsgTransceiver.sendMessages(msg);
-                if (!receivedMsg.split(" ")[5].equals("6A")){
-                    CONNECT_TYPE = "none";
-                }
+                hexMsgTransceiver.sendMessages(msg);
             } else {
                 CONNECT_TYPE = "serial";
                 serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
-                String receiveMsg = hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
-                if (!receiveMsg.split(" ")[5].equals("6A")){
-                    CONNECT_TYPE = "none";
-                }
+                hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
             }
         } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn)) {
             CONNECT_TYPE = "clientTCP";

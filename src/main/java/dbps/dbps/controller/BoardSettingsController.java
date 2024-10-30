@@ -2,6 +2,7 @@ package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
+import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -76,6 +77,7 @@ public class BoardSettingsController {
     @FXML
     public void openCommunicationSetting(MouseEvent mouseEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/communicationSetting.fxml"));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
         Parent root = fxmlLoader.load();
 
         Stage modalStage = new Stage();

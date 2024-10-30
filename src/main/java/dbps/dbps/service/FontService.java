@@ -35,8 +35,10 @@ public class FontService {
         return new Task<>() {
             @Override
             protected Void call() throws Exception {
-                hexMsgTransceiver.sendMessages("10 02 00 00 02 45 00 10 03");
-                Thread.sleep(300);
+                String returnMsg = hexMsgTransceiver.sendMessages("10 02 00 00 02 45 00 10 03");
+                if (!returnMsg.equals("10 02 00 00 02 45 00 10 03 ")){
+                    wait();
+                }
 
                 int packetSize = 1024;
                 int totalPackets = 0;
@@ -126,7 +128,6 @@ public class FontService {
                                         fontData = Arrays.copyOfRange(fontData, startIndex, endIndex);
                                     }
                                 }
-                                System.out.println(Math.ceil(fontData.length/1024.0));
                                 //pos start end w h 순서로 추가
                                 //pos
                                 ByteBuffer tmp = ByteBuffer.allocate(2);
@@ -147,7 +148,12 @@ public class FontService {
                                     tmp.clear();
                                     //사용안함, 영어, 유니코드 완성, 유니코드 일본어, 유니코드 중국어, 한글조합형, 사용자 폰트, 유니코드 전체
                                     if (fontType[3*i+j].equals("영어(ASCII)")){
-                                        tmp.putShort((short)fontKindAddr[0][1]);
+                                        if (!now[0].contains("08")){
+                                            tmp.putShort((short)0X0020);
+                                        }
+                                        else {
+                                            tmp.putShort((short)fontKindAddr[0][1]);
+                                        }
                                     } else if (fontType[3*i+j].equals("유니코드 완성형")) {
                                         tmp.putShort((short)fontKindAddr[0][2]);
                                     } else if (fontType[3*i+j].equals("유니코드 일본어")) {
@@ -239,7 +245,6 @@ public class FontService {
                 //만약에 유니코드면 시작점 지정.
                 //송신패킷 생성
                 //groupFontPackets
-                System.out.println(totalPackets);
                 for (int i = 0; i < groupNum; i++) {
                     combinedData = new byte[groupFontPackets.get(i).size()];
                     for (Byte b : groupFontPackets.get(i)) {
@@ -268,8 +273,8 @@ public class FontService {
                         sendPacket[7] = (byte) (totalPackets >> 8);
                         sendPacket[8] = (byte) sentPacket;
                         sendPacket[9] = (byte) (sentPacket>>8);
-                        sendPacket[10] = (byte) groupPackets[sendGroupNum];
-                        sendPacket[11] = (byte) (groupPackets[sendGroupNum] >> 8);
+                        sendPacket[10] = (byte) groupPackets[i];
+                        sendPacket[11] = (byte) (groupPackets[i] >> 8);
                         sendPacket[12] = (byte) j;
                         sendPacket[13] = (byte) (j>>8);
                         sendPacket[14] = 0X01;
@@ -285,16 +290,17 @@ public class FontService {
                         sendPacket[sendPacket.length-2] = 0x10;
                         sendPacket[sendPacket.length-1] = 0x03;
 
-                        hexMsgTransceiver.sendByteMessagesNoLog(sendPacket);
+                        returnMsg = hexMsgTransceiver.sendByteMessagesNoLog(sendPacket);
+                        if (!returnMsg.equals("10 02 00 00 02 98 00 10 03 ")){
+                            wait();
+                        }
                         System.out.print("send = [");
                         for (byte b : sendPacket) {
                             System.out.printf("%02X ", b);
                         }
                         System.out.println("]");
 
-                        Thread.sleep(200);
-
-                        int finalI = j;
+                        int finalI = (i*groupPackets[i])+j;
                         int total = totalPackets;
                         Platform.runLater(() -> {
                             // ProgressBar 업데이트 (0 ~ 1.0 범위)
@@ -311,9 +317,10 @@ public class FontService {
                 finalPacket[1] = 0x02;
                 finalPacket[finalPacket.length-2] = 0x10;
                 finalPacket[finalPacket.length-1] = 0x03;
-                hexMsgTransceiver.sendByteMessages(finalPacket);
-
-                Thread.sleep(200);
+                returnMsg = hexMsgTransceiver.sendByteMessages(finalPacket);
+                if (!returnMsg.equals("10 02 00 00 02 4D 00 10 03 ")){
+                    wait();
+                }
 
                 hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ");
 
