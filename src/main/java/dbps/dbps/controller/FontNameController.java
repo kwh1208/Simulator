@@ -9,6 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -39,6 +40,8 @@ public class FontNameController {
     @FXML
     public RadioButton sendRadio;
 
+    public AnchorPane fontNameAP;
+
     ToggleGroup group;
 
     AsciiMsgTransceiver asciiMsgTransceiver;
@@ -46,6 +49,7 @@ public class FontNameController {
 
     @FXML
     public void initialize() {
+        fontNameAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/fontName.css").toExternalForm());
         group = new ToggleGroup();
         readRadio.setToggleGroup(group);
         sendRadio.setToggleGroup(group);

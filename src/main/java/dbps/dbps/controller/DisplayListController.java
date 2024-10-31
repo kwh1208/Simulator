@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.util.HashMap;
@@ -16,6 +17,7 @@ public class DisplayListController {
     public TextField displaySignal;
     public ListView<String> moduleList;
     public TextField search;
+    public AnchorPane displayListAP;
     HashMap<String, String> displayModuleMap = new HashMap<>();
     ObservableList<String> dataList;
     FilteredList<String> filteredData;
@@ -37,6 +39,7 @@ public class DisplayListController {
             });
         });
 
+        displayListAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/displayList.css").toExternalForm());
 
         moduleList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             displaySignal.setText(displayModuleMap.get(newValue));
