@@ -50,7 +50,7 @@ public class TCPManager {
         return tcpManager;
     }
     public Task<String> sendASCMsg(String msg){
-        return new Task<String>() {
+        return new Task<>() {
 
             @Override
             protected String call() throws Exception {
@@ -80,15 +80,16 @@ public class TCPManager {
                                 if (dataReceivedIsComplete(buffer, totalBytesRead)) {
                                     break;
                                 }
-                            }} else {
+                            }
+                        } else {
                             Thread.sleep(50);
                         }
                     }
                     return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
-                } catch (IOException | InterruptedException e){
+                } catch (IOException | InterruptedException e) {
                     e.getMessage();
 
-                    logService.errorLog(msg+" 전송에 실패했습니다.");
+                    logService.errorLog(msg + " 전송에 실패했습니다.");
 
                     return "에러발생";
                 }

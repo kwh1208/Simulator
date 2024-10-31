@@ -18,6 +18,7 @@ public class DisplayListController {
     public ListView<String> moduleList;
     public TextField search;
     public AnchorPane displayListAP;
+    public static String SELECTED_SIGNAL = null;
     HashMap<String, String> displayModuleMap = new HashMap<>();
     ObservableList<String> dataList;
     FilteredList<String> filteredData;
@@ -56,6 +57,7 @@ public class DisplayListController {
         displayModuleMap.put("L800-32X16-4S-V3.0(L800)","04D-P32D2S61");
         displayModuleMap.put("户外P8-4 16*32-V4.1","04D-P32D2S61");
         displayModuleMap.put("YS-P10-320x160-4S-2735-V2","04D-P32D2S61");
+        displayModuleMap.put("HS-64W1-CFN-0801", "08D-P64D1S71");
         displayModuleMap.put("VL300-T110-1","01D-P64D4S21-4^8^12^16");
         displayModuleMap.put("VL250F111-1","01D-P64D4S21-4^8^12^16");
         displayModuleMap.put("VL160T110-1","01D-P64D4S21-4^8^12^16");
@@ -86,7 +88,10 @@ public class DisplayListController {
     }
 
     public void confirm(MouseEvent mouseEvent) {
+        SELECTED_SIGNAL = displaySignal.getText();
 
+        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        stage.close();
     }
 
     public void close(MouseEvent mouseEvent) {

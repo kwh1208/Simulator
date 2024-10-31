@@ -45,7 +45,7 @@ public class ConfigService {
                 if (i==1){
                     defaultProperties.setProperty("ASCMsg"+i, "![000Hello world!]");
                 } else if (i==2) {
-                    defaultProperties.setProperty("ASCMsg"+i, "![000/P000/C1Hello!]");
+                    defaultProperties.setProperty("ASCMsg"+i, "![000/C1Hello /C2World!]");
                 } else if (i == 3) {
                     defaultProperties.setProperty("ASCMsg"+i, "![000/Y0004/E0606/S1000/C7Text 123456789 Hello World!]");
                 }

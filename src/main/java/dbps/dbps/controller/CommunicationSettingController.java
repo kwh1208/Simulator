@@ -25,8 +25,12 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.List;
 
 import static dbps.dbps.Constants.*;
@@ -152,8 +156,6 @@ public class CommunicationSettingController {
                 clientTCPRadioToggle(true);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(false);
-                connect.setText("접속하기");
-                shutConnect.setText("접속끊기");
                 break;
             case "serverTCP":
                 communicationGroup.selectToggle(serverTCPRadioBtn);  // Server TCP 버튼 선택
@@ -161,8 +163,6 @@ public class CommunicationSettingController {
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(true);
                 UDPRadioToggle(false);
-                connect.setText("접속하기");
-                shutConnect.setText("접속끊기");
                 break;
             case "UDP":
                 communicationGroup.selectToggle(UDPRadioBtn);  // UDP 버튼 선택
@@ -170,8 +170,6 @@ public class CommunicationSettingController {
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(true);
-                connect.setText("접속하기");
-                shutConnect.setText("접속끊기");
                 break;
             default:
                 // 예외 상황: 아무 것도 선택하지 않음
@@ -201,24 +199,18 @@ public class CommunicationSettingController {
                 UDPRadioToggle(false);
                 CONNECT_TYPE = "clientTCP";
                 configService.setProperty("connectType", "clientTCP");
-                connect.setText("접속하기");
-                shutConnect.setText("접속끊기");
             } else if (selectedRadioButton.equals(serverTCPRadioBtn)) {
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(true);
                 UDPRadioToggle(false);
                 CONNECT_TYPE = "serverTCP";
-                connect.setText("접속하기");
-                shutConnect.setText("접속끊기");
             } else  {
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(true);
                 CONNECT_TYPE = "UDP";
-                connect.setText("접속하기");
-                shutConnect.setText("접속끊기");
             }
         });
 
@@ -251,6 +243,8 @@ public class CommunicationSettingController {
         if (isRS){
             RS485ChkBox.setSelected(true);
         }
+
+        getServerIP();
     }
 
     //사용가능한 포트 가져오기
@@ -514,5 +508,50 @@ public class CommunicationSettingController {
             findSpeedBtn.setDisable(true);
             openDeviceManagerBtn.setDisable(true);
         }
+    }
+
+    private void getServerIP(){
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface network = interfaces.nextElement();
+
+                // 네트워크 인터페이스가 활성화되고, 루프백이 아닌 경우에만 확인
+                if (network.isUp() && !network.isLoopback()) {
+                    Enumeration<InetAddress> addresses = network.getInetAddresses();
+                    while (addresses.hasMoreElements()) {
+                        InetAddress address = addresses.nextElement();
+
+                        // IPv4 주소만 출력 (IPv6 제외)
+                        if (!address.isLoopbackAddress() && address instanceof java.net.Inet4Address) {
+                            String IPAddress = address.getHostAddress();
+                            serverIPAddress.setText(IPAddress);
+                        }
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void openMqtt(MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/mqtt.fxml"));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
+        Parent root = fxmlLoader.load();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle("Mqtt 설정");
+
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.showAndWait();
     }
 }

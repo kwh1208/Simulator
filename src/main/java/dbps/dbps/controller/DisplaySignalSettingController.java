@@ -19,6 +19,7 @@ import javafx.util.Duration;
 import java.io.IOException;
 
 import static dbps.dbps.Constants.*;
+import static dbps.dbps.controller.DisplayListController.SELECTED_SIGNAL;
 import static dbps.dbps.service.DisplaySignal.SignalMap_ASC;
 import static dbps.dbps.service.DisplaySignal.SignalMap_HEX;
 
@@ -111,7 +112,7 @@ public class DisplaySignalSettingController {
 
     @FXML
     public void signalTransfer() {
-        if (IS_ASCII){
+        if (IS_ASCII||signalList.getSelectionModel().getSelectedItem().equals("08D-P64D1S71")){
         String selectedSignal = signalList.getSelectionModel().getSelectedItem();
         String signalProtocol = makePerfectProtocol(selectedSignal);
         String transferProtocol;
@@ -311,6 +312,8 @@ public class DisplaySignalSettingController {
         fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
         Parent root = fxmlLoader.load();
 
+        DisplayListController controller = fxmlLoader.getController();
+
         Stage modalStage = new Stage();
         modalStage.setTitle("통신 설정");
 
@@ -322,6 +325,11 @@ public class DisplaySignalSettingController {
         Scene scene = new Scene(root);
         modalStage.setScene(scene);
         modalStage.setResizable(false);
+
+        modalStage.setOnHiding(event -> {
+            int targetIndex = signalList.getItems().indexOf(SELECTED_SIGNAL);
+            signalList.getSelectionModel().select(targetIndex);
+        });
 
         modalStage.showAndWait();
     }

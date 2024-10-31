@@ -1,9 +1,9 @@
 package dbps.dbps.service;
 
+import dbps.dbps.service.connectManager.MQTTManager;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.TCPManager;
 import dbps.dbps.service.connectManager.UDPManager;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 import java.text.SimpleDateFormat;
@@ -20,12 +20,14 @@ public class HexMsgTransceiver {
     private final LogService logService;
     private final UDPManager udpManager;
     private final TCPManager tcpManager;
+    private final MQTTManager mqttManager;
 
     private HexMsgTransceiver() {
         serialPortManager = SerialPortManager.getManager();
         logService = LogService.getLogService();
         udpManager = UDPManager.getUDPManager();
         tcpManager = TCPManager.getManager();
+        mqttManager = MQTTManager.getInstance();
     }
 
     public static HexMsgTransceiver getInstance() {
@@ -79,7 +81,18 @@ public class HexMsgTransceiver {
                     taskThread.start();
 
                     receivedMsg = sendTask.get();
-                }catch (Exception e) {
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case "mqtt" -> {
+                try {
+                    Task<String> sendTask = mqttManager.sendMsgAndGetMsgByte(msg);
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+
+                    receivedMsg = sendTask.get();
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -120,12 +133,23 @@ public class HexMsgTransceiver {
             case "clientTCP" -> //tcp로 메세지 전송
             {
                 try {
-                    Task<String> sendTask = tcpManager.sendMsgAndGetMsgByteNoLog(msg);
+                    Task<String> sendTask = tcpManager.sendMsgAndGetMsgByte(msg);
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 
                     return sendTask.get();
-                }catch (Exception e) {
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case "mqtt" -> {
+                try {
+                    Task<String> sendTask = mqttManager.sendMsgAndGetMsgByte(msg);
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+
+                    return sendTask.get();
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -138,17 +162,17 @@ public class HexMsgTransceiver {
     }
 
     private String msgReceive(String receiveMsg, byte[] msg) {
-        if (receiveMsg==null) {
+        if (receiveMsg == null) {
             return null;
         }
         String[] splitMsg = receiveMsg.split(" ");
-        if (splitMsg[5].equals("94")){
+        if (splitMsg[5].equals("94")) {
             chkErrorCode(receiveMsg, splitMsg);
         }
-        if (splitMsg[5].equals("6A")){
+        if (splitMsg[5].equals("6A")) {
             //특수 메세지
             for (int i = 6; i < 16; i++) {
-                if (splitMsg[i].equals("3"+i)){
+                if (splitMsg[i].equals("3" + i)) {
                     logService.errorLog("커맨드가 없습니다.");
                     return null;
                 }
@@ -169,7 +193,7 @@ public class HexMsgTransceiver {
         switch (command) {
             case "40" -> {
                 handleScreenSizeSetting(splitMsg, msg);
-                logService.updateInfoLog("받은 메세지 : "+receiveMsg);
+                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
             }
             case "66" -> handleTimeRead(receiveMsg, splitMsg);
             case "6F" -> {
@@ -224,15 +248,11 @@ public class HexMsgTransceiver {
     }
 
     private void chkErrorCode(String receiveMsg, String[] splitMsg) {
-        switch (splitMsg[6]){
-            case "10" ->
-                    logService.errorLog("커맨드가 없습니다. " + receiveMsg);
-            case "20" ->
-                    logService.warningLog("No Function(커맨드 비활성) " + receiveMsg);
-            case "40" ->
-                    logService.updateInfoLog("데이터가 허용 범위를 벗어났습니다. " + receiveMsg);
-            case "80" ->
-                    logService.updateInfoLog("알 수 없는 에러가 발생했습니다." + receiveMsg);
+        switch (splitMsg[6]) {
+            case "10" -> logService.errorLog("커맨드가 없습니다. " + receiveMsg);
+            case "20" -> logService.warningLog("No Function(커맨드 비활성) " + receiveMsg);
+            case "40" -> logService.updateInfoLog("데이터가 허용 범위를 벗어났습니다. " + receiveMsg);
+            case "80" -> logService.updateInfoLog("알 수 없는 에러가 발생했습니다." + receiveMsg);
         }
     }
 }

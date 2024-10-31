@@ -21,6 +21,7 @@
                <String fx:value="户外P8-4 16*32-V4.1"/>
                <String fx:value="YS-P10-320x160-4S-2735-V2"/>
                <String fx:value="VL300-T110-1"/>
+               <String fx:value="HS-64W1-CFN-0801"/>
                <String fx:value="VL250F111-1"/>
                <String fx:value="VL160T110-1"/>
                <String fx:value="VL200T110-1"/>
@@ -50,7 +51,7 @@
             </FXCollections>
          </items>
       </ListView>
-      <Button layoutX="232.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="30.0" prefWidth="74.0" text="%sendButton" />
+      <Button layoutX="232.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="30.0" prefWidth="74.0" text="%confirmButton" />
       <Button layoutX="316.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="30.0" prefWidth="74.0" text="%close" />
       <Label layoutX="20.0" layoutY="523.0" prefHeight="21.0" prefWidth="85.0" text="%displaySignal" />
       <TextField fx:id="displaySignal" layoutX="90.0" layoutY="521.0" prefHeight="21.0" prefWidth="290.0" editable="false"/>

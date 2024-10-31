@@ -1,5 +1,6 @@
 package dbps.dbps.service;
 
+import dbps.dbps.service.connectManager.MQTTManager;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.TCPManager;
 import dbps.dbps.service.connectManager.UDPManager;
@@ -17,6 +18,7 @@ public class AsciiMsgTransceiver {
     private final LogService logService;
     private final UDPManager udpManager;
     private final TCPManager tcpManager;
+    private final MQTTManager mqttManager;
 
 
     private AsciiMsgTransceiver() {
@@ -24,6 +26,7 @@ public class AsciiMsgTransceiver {
         logService = LogService.getLogService();
         udpManager = UDPManager.getUDPManager();
         tcpManager = TCPManager.getManager();
+        mqttManager = MQTTManager.getInstance();
     }
 
     public static AsciiMsgTransceiver getInstance() {
@@ -74,6 +77,17 @@ public class AsciiMsgTransceiver {
             {
                 try {
                     Task<String> sendTask = tcpManager.sendASCMsg(msg);
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+
+                    receivedMsg = sendTask.get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case "mqtt" -> {
+                try {
+                    Task<String> sendTask = mqttManager.sendASCMsg(msg);
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 
