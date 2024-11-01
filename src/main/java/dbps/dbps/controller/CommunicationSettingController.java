@@ -94,7 +94,7 @@ public class CommunicationSettingController {
     private RadioButton serverTCPRadioBtn;
 
     @FXML
-    private TextField serverIPAddress;
+    private ChoiceBox<String> serverIPAddress;
 
     @FXML
     private TextField serverIPPort;
@@ -324,7 +324,7 @@ public class CommunicationSettingController {
     }
 
     private void connectServerTCP() {
-        String IPAddress = serverIPAddress.getText();
+        String IPAddress = serverIPAddress.getValue();
         int port = Integer.parseInt(serverIPPort.getText());
 
         tcpManager.setIP(IPAddress);
@@ -510,7 +510,11 @@ public class CommunicationSettingController {
         }
     }
 
-    private void getServerIP(){
+    private void getServerIP() {
+        // 기존 항목을 비우고 새로 추가할 IP 주소 리스트 가져오기
+        ObservableList<String> ipAddresses = serverIPAddress.getItems();
+        ipAddresses.clear();  // 리스트 초기화
+
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
@@ -522,16 +526,21 @@ public class CommunicationSettingController {
                     while (addresses.hasMoreElements()) {
                         InetAddress address = addresses.nextElement();
 
-                        // IPv4 주소만 출력 (IPv6 제외)
+                        // IPv4 주소만 추가 (IPv6 제외)
                         if (!address.isLoopbackAddress() && address instanceof java.net.Inet4Address) {
                             String IPAddress = address.getHostAddress();
-                            serverIPAddress.setText(IPAddress);
+                            ipAddresses.add(IPAddress); // IP 주소를 리스트에 추가
                         }
                     }
                 }
             }
         } catch (SocketException e) {
             e.printStackTrace();
+        }
+
+        // 첫 번째 IP 주소 선택 (선택사항)
+        if (!ipAddresses.isEmpty()) {
+            serverIPAddress.getSelectionModel().select(0);
         }
     }
 

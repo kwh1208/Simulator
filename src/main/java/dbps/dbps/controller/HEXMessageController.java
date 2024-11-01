@@ -147,71 +147,146 @@ public class HEXMessageController {
 
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         doMsgSettings();
+
+        displayControl.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("displayControl"+getMsgNum(), newValue);
+                });
+
+        displayMethod.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("displayMethod"+getMsgNum(), newValue);
+                }
+        );
+        charCodes.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("charCodes"+getMsgNum(), newValue);
+                }
+        );
+        fontSize.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("fontSize"+getMsgNum(), newValue);
+                }
+        );
+        fontGroup.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("fontGroup"+getMsgNum(), newValue);
+                }
+        );
+        effectIn.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("effectIn"+getMsgNum(), newValue);
+                }
+        );
+        effectOut.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("effectOut"+getMsgNum(), newValue);
+                }
+        );
+        outDirection.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("outDirection"+getMsgNum(), newValue);
+                }
+        );
+        effectSpeed.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("effectSpeed"+getMsgNum(), newValue);
+                }
+        );
+        effectTime.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("effectTime"+getMsgNum(), newValue);
+                }
+        );
+        xStart.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("xStart"+getMsgNum(), newValue);
+                }
+        );
+        yStart.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("yStart"+getMsgNum(), newValue);
+                }
+        );
+        xEnd.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("xEnd"+getMsgNum(), newValue);
+                }
+        );
+        yEnd.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("yEnd"+getMsgNum(), newValue);
+                }
+        );
+        bgImg.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    configService.setProperty("bgImg"+getMsgNum(), newValue);
+                }
+        );
+    }
+
+    private String getMsgNum() {
+        String i = "0";
+        if (!realTimeMsg.isSelected()) {
+            i= pageMsgCnt.getValue();
+        }
+        String j = "0";
+        if (section0.isSelected()){
+            j="0";
+        } else if (section1.isSelected()) {
+            j="1";
+        } else {
+            j="2";
+        }
+        return i+j;
     }
 
     private void doMsgSettings() {
-        int sectionNum = 0;
-        int pageMsgNum = pageMsgCnt.getSelectionModel().getSelectedIndex()+1;
-        if (section1.isSelected()) {
-            sectionNum = 1;
-        } else if (section2.isSelected()){
-            sectionNum = 2;
-        }
-        if (realTimeMsg.isSelected()) {
-            pageMsgNum = 0;
-        }
-        displayControl.setValue(configService.getProperty("displayControl"+pageMsgNum+sectionNum));
-        displayMethod.setValue(configService.getProperty("displayMethod"+pageMsgNum+sectionNum));
-        charCodes.setValue(configService.getProperty("charCode"+pageMsgNum+sectionNum));
-        fontSize.setValue(configService.getProperty("fontSize"+pageMsgNum+sectionNum));
-        fontGroup.setValue(configService.getProperty("fontGroup"+pageMsgNum+sectionNum));
-        effectIn.setValue(configService.getProperty("effectIn"+pageMsgNum+sectionNum));
-        inDirection.setValue(configService.getProperty("effectInDirection"+pageMsgNum+sectionNum));
-        effectOut.setValue(configService.getProperty("effectOut"+pageMsgNum+sectionNum));
-        outDirection.setValue(configService.getProperty("effectOutDirection"+pageMsgNum+sectionNum));
-        effectSpeed.setValue(configService.getProperty("effectSpeed"+pageMsgNum+sectionNum));
-        effectTime.setValue(configService.getProperty("effectTime"+pageMsgNum+sectionNum));
-        xStart.setValue(configService.getProperty("xStart"+pageMsgNum+sectionNum));
-        yStart.setValue(configService.getProperty("yStart"+pageMsgNum+sectionNum));
-        xEnd.setValue(configService.getProperty("xEnd"+pageMsgNum+sectionNum));
-        yEnd.setValue(configService.getProperty("yEnd"+pageMsgNum+sectionNum));
-        bgImg.setValue(configService.getProperty("bgImg"+pageMsgNum+sectionNum));
-        textColor.setText(configService.getProperty("textColor"+pageMsgNum+sectionNum));
-        bgColor.setText(configService.getProperty("bgColor"+pageMsgNum+sectionNum));
-        msgPreview.setText(configService.getProperty("text"+pageMsgNum+sectionNum));
+        String msgNum = getMsgNum();
+        
+        displayControl.setValue(configService.getProperty("displayControl"+msgNum));
+        displayMethod.setValue(configService.getProperty("displayMethod"+msgNum));
+        charCodes.setValue(configService.getProperty("charCode"+msgNum));
+        fontSize.setValue(configService.getProperty("fontSize"+msgNum));
+        fontGroup.setValue(configService.getProperty("fontGroup"+msgNum));
+        effectIn.setValue(configService.getProperty("effectIn"+msgNum));
+        inDirection.setValue(configService.getProperty("effectInDirection"+msgNum));
+        effectOut.setValue(configService.getProperty("effectOut"+msgNum));
+        outDirection.setValue(configService.getProperty("effectOutDirection"+msgNum));
+        effectSpeed.setValue(configService.getProperty("effectSpeed"+msgNum));
+        effectTime.setValue(configService.getProperty("effectTime"+msgNum));
+        xStart.setValue(configService.getProperty("xStart"+msgNum));
+        yStart.setValue(configService.getProperty("yStart"+msgNum));
+        xEnd.setValue(configService.getProperty("xEnd"+msgNum));
+        yEnd.setValue(configService.getProperty("yEnd"+msgNum));
+        bgImg.setValue(configService.getProperty("bgImg"+msgNum));
+        textColor.setText(configService.getProperty("textColor"+msgNum));
+        bgColor.setText(configService.getProperty("bgColor"+msgNum));
+        msgPreview.setText(configService.getProperty("text"+msgNum));
     }
 
-    public void save(MouseEvent mouseEvent) {
-        int sectionNum = 0;
-        int pageMsgNum = pageMsgCnt.getSelectionModel().getSelectedIndex();
-        if (section1.isSelected()) {
-            sectionNum = 1;
-        } else if (section2.isSelected()){
-            sectionNum = 2;
-        }
-        if (realTimeMsg.isSelected()) {
-            pageMsgNum = 0;
-        }
+    public void save() {
+        String msgNum = getMsgNum();
 
-        configService.setProperty("displayControl"+pageMsgNum+sectionNum, displayControl.getValue());
-        configService.setProperty("displayMethod"+pageMsgNum+sectionNum, displayMethod.getValue());
-        configService.setProperty("charCode"+pageMsgNum+sectionNum, charCodes.getValue());
-        configService.setProperty("fontSize"+pageMsgNum+sectionNum, fontSize.getValue());
-        configService.setProperty("fontGroup"+pageMsgNum+sectionNum, fontGroup.getValue());
-        configService.setProperty("effectIn"+pageMsgNum+sectionNum, effectIn.getValue());
-        configService.setProperty("effectInDirection"+pageMsgNum+sectionNum, inDirection.getValue());
-        configService.setProperty("effectOut"+pageMsgNum+sectionNum, effectOut.getValue());
-        configService.setProperty("effectOutDirection"+pageMsgNum+sectionNum, outDirection.getValue());
-        configService.setProperty("effectSpeed"+pageMsgNum+sectionNum, effectSpeed.getValue());
-        configService.setProperty("effectTime"+pageMsgNum+sectionNum, effectTime.getValue());
-        configService.setProperty("xStart"+pageMsgNum+sectionNum, xStart.getValue());
-        configService.setProperty("yStart"+pageMsgNum+sectionNum, yStart.getValue());
-        configService.setProperty("xEnd"+pageMsgNum+sectionNum, xEnd.getValue());
-        configService.setProperty("yEnd"+pageMsgNum+sectionNum, yEnd.getValue());
-        configService.setProperty("bgImg"+pageMsgNum+sectionNum, bgImg.getValue());
-        configService.setProperty("textColor"+pageMsgNum+sectionNum, textColor.getText());
-        configService.setProperty("bgColor"+pageMsgNum+sectionNum, bgColor.getText());
-        configService.setProperty("text"+pageMsgNum+sectionNum, msgPreview.getText());
+        configService.setProperty("displayControl"+msgNum, displayControl.getValue());
+        configService.setProperty("displayMethod"+msgNum, displayMethod.getValue());
+        configService.setProperty("charCode"+msgNum, charCodes.getValue());
+        configService.setProperty("fontSize"+msgNum, fontSize.getValue());
+        configService.setProperty("fontGroup"+msgNum, fontGroup.getValue());
+        configService.setProperty("effectIn"+msgNum, effectIn.getValue());
+        configService.setProperty("effectInDirection"+msgNum, inDirection.getValue());
+        configService.setProperty("effectOut"+msgNum, effectOut.getValue());
+        configService.setProperty("effectOutDirection"+msgNum, outDirection.getValue());
+        configService.setProperty("effectSpeed"+msgNum, effectSpeed.getValue());
+        configService.setProperty("effectTime"+msgNum, effectTime.getValue());
+        configService.setProperty("xStart"+msgNum, xStart.getValue());
+        configService.setProperty("yStart"+msgNum, yStart.getValue());
+        configService.setProperty("xEnd"+msgNum, xEnd.getValue());
+        configService.setProperty("yEnd"+msgNum, yEnd.getValue());
+        configService.setProperty("bgImg"+msgNum, bgImg.getValue());
+        configService.setProperty("textColor"+msgNum, textColor.getText());
+        configService.setProperty("bgColor"+msgNum, bgColor.getText());
+        configService.setProperty("text"+msgNum, msgPreview.getText());
     }
 
     public void send() {
@@ -550,7 +625,28 @@ public class HEXMessageController {
         selectEffect(effect, outDirection);
     }
 
-    public void reset(MouseEvent mouseEvent) {
+    public void reset() {
+        String msgNum = getMsgNum();
+        configService.setProperty("displayControl"+msgNum, "ON");
+        configService.setProperty("displayMethod"+msgNum, "Normal");
+        configService.setProperty("charCode"+msgNum, "KS완성형 한글코드");
+        configService.setProperty("fontSize"+msgNum, "16(Standard)");
+        configService.setProperty("fontGroup"+msgNum, "FontGroup0");
+        configService.setProperty("effectIn"+msgNum, "정지효과");
+        configService.setProperty("effectInDirection"+msgNum, "방향없음");
+        configService.setProperty("effectOut"+msgNum, "사용안함");
+        configService.setProperty("effectOutDirection"+msgNum, "사용안함");
+        configService.setProperty("effectSpeed"+msgNum, "5");
+        configService.setProperty("effectTime"+msgNum, "2초");
+        configService.setProperty("xStart"+msgNum, "0");
+        configService.setProperty("xEnd"+msgNum, "0");
+        configService.setProperty("yStart"+msgNum, "0");
+        configService.setProperty("yEnd"+msgNum, "0");
+        configService.setProperty("bgImg"+msgNum, "사용안함");
+        configService.setProperty("textColor"+msgNum, "1");
+        configService.setProperty("bgColor"+msgNum, "0");
+
+        doMsgSettings();
     }
 
     public void preview(MouseEvent mouseEvent) {

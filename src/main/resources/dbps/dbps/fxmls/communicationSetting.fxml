@@ -91,7 +91,12 @@
          <children>
             <RadioButton fx:id="serverTCPRadioBtn" layoutX="16.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="125.0" style="-fx-background-color: #333333;" text="Server TCP/IP" />
             <Label layoutX="16.0" layoutY="21.0" text="IP Address" />
-            <TextField fx:id="serverIPAddress" layoutX="210.0" layoutY="17.0" prefWidth="145.0" editable="false"/>
+            <ChoiceBox fx:id="serverIPAddress" layoutX="210.0" layoutY="17.0" prefWidth="145.0">
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                  </FXCollections>
+               </items>
+            </ChoiceBox>
             <Label layoutX="16.0" layoutY="47.0" text="IP Port" />
             <TextField fx:id="serverIPPort" layoutX="210.0" layoutY="50.0" prefWidth="145.0" />
          </children>
@@ -106,7 +111,7 @@
          </children>
       </Pane>
       <Button fx:id="connect" layoutX="17.0" layoutY="497.0" mnemonicParsing="false" onMouseClicked="#openSerialPort" prefHeight="27.0" prefWidth="100.0" text="%openPort" />
-      <Button layoutX="142.0" layoutY="497.0" mnemonicParsing="false" onMouseClicked="#openMqtt" prefHeight="27.0" prefWidth="100.0" text="Mqtt" />
+      <Button layoutX="142.0" layoutY="497.0" mnemonicParsing="false" onMouseClicked="#openMqtt" prefHeight="27.0" prefWidth="115.0" text="Mqtt" />
       <Button fx:id="shutConnect" layoutX="284.0" layoutY="497.0" mnemonicParsing="false" onMouseClicked="#closeSerialPort" prefHeight="27.0" prefWidth="100.0" text="%closePort" />
       <Button layoutX="17.0" layoutY="529.0" mnemonicParsing="false" onMouseClicked="#openDabitNet" prefHeight="27.0" prefWidth="115.0" text="DABITNET" />
       <Button layoutX="142.0" layoutY="529.0" mnemonicParsing="false" onMouseClicked="#openBluetooth" prefHeight="27.0" prefWidth="115.0" text="%bluetooth" />

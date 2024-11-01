@@ -1,6 +1,7 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
+import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.FontService;
 import dbps.dbps.service.ResourceManager;
 import javafx.concurrent.Task;
@@ -25,6 +26,7 @@ public class FontSettingController {
     public Label fontProgressLabel;
     public ProgressBar fontProgressBar;
     public Label fontCapacity;
+    ConfigService configService;
     FontService fontService = FontService.getInstance();
     @FXML
     public ChoiceBox<String> fontGroup2fontSelected1;
@@ -97,6 +99,8 @@ public class FontSettingController {
     //초기화(하위 폰트그룹이랑 그룹화)
     @FXML
     public void initialize() {
+        configService = ConfigService.getInstance();
+
         fontGroup2ChkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 ableAllNodesInPane((Pane) fontGroup2ChkBox.getParent());
@@ -137,13 +141,46 @@ public class FontSettingController {
 
         fontSettingAnchorPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/fontSetting.css").toExternalForm());
 
-        fontGroup1fontPath1.setText(System.getProperty("user.dir") + File.separator + "Font");
-        fontGroup1fontPath2.setText(System.getProperty("user.dir") + File.separator + "Font");
-        fontGroup1fontPath3.setText(System.getProperty("user.dir") + File.separator + "Font");
+        String defaultPath = System.getProperty("user.dir") + File.separator + "Font";
+        fontGroup1fontPath1.setText(configService.getProperty("fontGroup1FontPath1") != null
+                ? configService.getProperty("fontGroup1FontPath1")
+                : defaultPath);
+        fontGroup1fontPath2.setText(configService.getProperty("fontGroup1FontPath2") != null
+                ? configService.getProperty("fontGroup1FontPath2")
+                : defaultPath);
+        fontGroup1fontPath3.setText(configService.getProperty("fontGroup1FontPath3") != null
+                ? configService.getProperty("fontGroup1FontPath3")
+                : defaultPath);
 
-        fontGroup2fontPath1.setText(System.getProperty("user.dir") + File.separator + "Font");
-        fontGroup2fontPath2.setText(System.getProperty("user.dir") + File.separator + "Font");
-        fontGroup2fontPath3.setText(System.getProperty("user.dir") + File.separator + "Font");
+        fontGroup2fontPath1.setText(configService.getProperty("fontGroup2FontPath1") != null
+                ? configService.getProperty("fontGroup2FontPath1")
+                : defaultPath);
+        fontGroup2fontPath2.setText(configService.getProperty("fontGroup2FontPath2") != null
+                ? configService.getProperty("fontGroup2FontPath2")
+                : defaultPath);
+        fontGroup2fontPath3.setText(configService.getProperty("fontGroup2FontPath3") != null
+                ? configService.getProperty("fontGroup2FontPath3")
+                : defaultPath);
+
+        fontGroup3fontPath1.setText(configService.getProperty("fontGroup3FontPath1") != null
+                ? configService.getProperty("fontGroup3FontPath1")
+                : defaultPath);
+        fontGroup3fontPath2.setText(configService.getProperty("fontGroup3FontPath2") != null
+                ? configService.getProperty("fontGroup3FontPath2")
+                : defaultPath);
+        fontGroup3fontPath3.setText(configService.getProperty("fontGroup3FontPath3") != null
+                ? configService.getProperty("fontGroup3FontPath3")
+                : defaultPath);
+
+        fontGroup4fontPath1.setText(configService.getProperty("fontGroup4FontPath1") != null
+                ? configService.getProperty("fontGroup4FontPath1")
+                : defaultPath);
+        fontGroup4fontPath2.setText(configService.getProperty("fontGroup4FontPath2") != null
+                ? configService.getProperty("fontGroup4FontPath2")
+                : defaultPath);
+        fontGroup4fontPath3.setText(configService.getProperty("fontGroup4FontPath3") != null
+                ? configService.getProperty("fontGroup4FontPath3")
+                : defaultPath);
 
         moveCursorRight(fontGroup1fontPath1);
         moveCursorRight(fontGroup1fontPath2);
@@ -159,36 +196,47 @@ public class FontSettingController {
         moveCursorRight(fontGroup4fontPath3);
 
         fontGroup1fontSelected2.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            configService.setProperty("fontGroup1FontType2", newValue);
             updateFontSize();
         });
         fontGroup1fontSelected3.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            configService.setProperty("fontGroup1FontType3", newValue);
             updateFontSize();
         });
         fontGroup2fontSelected1.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            configService.setProperty("fontGroup2FontType1", newValue);
             updateFontSize();
         });
         fontGroup2fontSelected2.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            configService.setProperty("fontGroup2FontType2", newValue);
             updateFontSize();
         });
         fontGroup2fontSelected3.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            configService.setProperty("fontGroup2FontType3", newValue);
             updateFontSize();
         });
         fontGroup3fontSelected1.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            configService.setProperty("fontGroup3FontType1", newValue);
             updateFontSize();
         });
         fontGroup3fontSelected2.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            configService.setProperty("fontGroup3FontType2", newValue);
             updateFontSize();
         });
         fontGroup3fontSelected3.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            configService.setProperty("fontGroup3FontType3", newValue);
             updateFontSize();
         });
         fontGroup4fontSelected1.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            configService.setProperty("fontGroup4FontType1", newValue);
             updateFontSize();
         });
         fontGroup4fontSelected2.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            configService.setProperty("fontGroup4FontType2", newValue);
             updateFontSize();
         });
         fontGroup4fontSelected3.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            configService.setProperty("fontGroup4FontType3", newValue);
             updateFontSize();
         });
     }
@@ -255,6 +303,8 @@ public class FontSettingController {
         // 선택된 폰트 경로를 TextArea에 설정
         if (selectedFont != null) {
             fontPath.setText(selectedFont.getAbsolutePath());
+            String target = "fontGroup"+groupNum+"FontPath"+btnNum;
+            configService.setProperty(target, selectedFont.getAbsolutePath());
         }
 
         moveCaretToEnd(fontPath);

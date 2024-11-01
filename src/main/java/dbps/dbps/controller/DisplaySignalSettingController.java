@@ -303,7 +303,7 @@ public class DisplaySignalSettingController {
         asciiMsgTransceiver.sendMessages(msg);
     }
 
-    public void save(MouseEvent mouseEvent) {
+    public void save() {
         configService.setDisplayProperties(signalList.getFocusModel().getFocusedItem(), memo.getText());
     }
 
