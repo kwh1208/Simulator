@@ -3,7 +3,6 @@ package dbps.dbps.controller;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
@@ -19,9 +18,6 @@ public class SizeOfDisplayBoardController {
 
     @FXML
     public ChoiceBox<String> colorNum;
-
-    @FXML
-    public CheckBox arrayChk;
 
     @FXML
     public ChoiceBox<String> howToArray;
@@ -57,15 +53,6 @@ public class SizeOfDisplayBoardController {
             SIZE_COLUMN = newValue;
         });
 
-
-        arrayChk.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue){
-                howToArray.setDisable(false);
-            }else{
-                howToArray.setDisable(true);
-            }
-        });
-
         setInitialValues();
     }
 
@@ -88,7 +75,9 @@ public class SizeOfDisplayBoardController {
 
     private void displaySizeASC() {
         String msg = "![0040";
-
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"040";
+        }
         msg+=String.format("%02d",spinnerForRow.getValue());
         msg+=String.format("%02d",spinnerForColumn.getValue());
         switch (howToArray.getValue()){
@@ -117,6 +106,9 @@ public class SizeOfDisplayBoardController {
 
     private void displaySizeHEX() {
         String msg = "10 02 00 00 07 40";
+        if (isRS){
+            msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 07 40";
+        }
 
         switch (String.valueOf(colorNum.getValue()).charAt(0)){
             case 50:

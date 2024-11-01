@@ -2,6 +2,7 @@ package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
+import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -18,13 +19,14 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import static dbps.dbps.Constants.convertRS485AddrASCii;
+import static dbps.dbps.Constants.isRS;
+
 public class BoardSettingsController {
     @FXML
     public RadioButton settingRadio;
-
     @FXML
     public RadioButton readRadio;
-
     @FXML
     public Pane boardDisable;
     @FXML
@@ -41,15 +43,19 @@ public class BoardSettingsController {
     public ComboBox<String> J3_baud;
     @FXML
     public ComboBox<String> BH1_baud;
+
     AsciiMsgTransceiver asciiMsgTransceiver;
 
     ToggleGroup group = new ToggleGroup();
+
     @FXML
     public void initialize() {
+        //그룹화
         settingRadio.setToggleGroup(group);
         readRadio.setToggleGroup(group);
         readRadio.setSelected(true);
 
+        //
         group.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (group.getSelectedToggle() == settingRadio) {
                 //3~8까지 활성화
@@ -71,6 +77,7 @@ public class BoardSettingsController {
     @FXML
     public void openCommunicationSetting(MouseEvent mouseEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/communicationSetting.fxml"));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
         Parent root = fxmlLoader.load();
 
         Stage modalStage = new Stage();
@@ -97,6 +104,9 @@ public class BoardSettingsController {
         String[] baudRates = {"9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600"};
         if(group.getSelectedToggle().equals(readRadio)){
             String result = asciiMsgTransceiver.sendMessages("![00B30!]");
+            if (isRS){
+                result = "!["+convertRS485AddrASCii()+"0B30";
+            }
             //![00B3 0,0,0,4,4,4,00!]
             String[] resultSplit = result.substring(7, result.length() - 2).split(",");
 
@@ -149,6 +159,9 @@ public class BoardSettingsController {
         }
         else {
             String msg = "![00B2 ";
+            if (isRS){
+                msg = "!["+convertRS485AddrASCii()+"0B2 ";
+            }
             String debug = debugMethod.getValue();
             String BH1_F = BH1_Func.getValue();
             String J4 = J4_func.getValue();

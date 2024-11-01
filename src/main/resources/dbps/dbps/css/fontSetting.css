@@ -21,6 +21,12 @@
     -fx-font-size: 14px; /* 글꼴 크기 */
     -fx-text-fill: white;
 }
+
+.text-area .scroll-pane {
+    -fx-hbar-policy: never; /* 가로 스크롤바를 없앰 */
+}
+
+
 .choice-box .context-menu {
     -fx-background-color: #1C1F26;
     -fx-pref-width: 150; /* 컨텍스트 메뉴 너비를 오른쪽 CSS와 동일하게 설정 */

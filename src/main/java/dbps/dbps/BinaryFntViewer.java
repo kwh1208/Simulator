@@ -54,7 +54,6 @@ public class BinaryFntViewer extends Application {
                 // 글자 비트맵을 그리기
                 drawCharacter(gc, bitmap, startX, 50);
             } else {
-                System.out.println("Failed to load character bitmap for index: " + charIndices[i]);
             }
         }
 
@@ -78,9 +77,9 @@ public class BinaryFntViewer extends Application {
     private boolean[][] readCharacterBitmap(String filePath, int charIndex) {
         File file = new File(filePath);
         if (!file.exists()) {
-            System.out.println("File does not exist: " + filePath);
             return null;
         }
+
 
         try (FileInputStream fis = new FileInputStream(file)) {
             // 파일의 헤더(16바이트)를 건너뜀
@@ -96,7 +95,7 @@ public class BinaryFntViewer extends Application {
             int bytesRead = fis.read(charBitmapData);
 
             if (bytesRead != charSize) {
-                System.out.println("Failed to read character data.");
+
                 return null;
             }
 

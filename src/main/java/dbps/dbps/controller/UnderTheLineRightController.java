@@ -8,7 +8,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
-import static dbps.dbps.Constants.IS_ASCII;
+import static dbps.dbps.Constants.*;
 
 public class UnderTheLineRightController {
     @FXML
@@ -49,6 +49,9 @@ public class UnderTheLineRightController {
 
     public void sendRelaySignal() {
         String msg = "![0022";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"022";
+        }
         msg+=makeRelayMsg(relayBox1.getValue());
         msg+=makeRelayMsg(relayBox2.getValue());
         msg+="!]";
@@ -78,7 +81,11 @@ public class UnderTheLineRightController {
             }
             else result = String.format("%03d", Integer.parseInt(value));
             {
-                asciiMsgTransceiver.sendMessages("![0020"+result+"!]");
+                String msg = "![0020"+result+"!]";
+                if (isRS){
+                    msg = "!["+convertRS485AddrASCii()+"020"+result+"!]";
+                }
+                asciiMsgTransceiver.sendMessages(msg);
             }
         }
         else {
@@ -86,11 +93,15 @@ public class UnderTheLineRightController {
             if (!value.equals("사용안함")){
                 result = Integer.parseInt(value);
             }
-            hexMsgTransceiver.sendMessages("10 02 00 00 02 4F "+String.format("%02X ", result)+"10 03");
+            String msg = "10 02 00 00 02 4F "+String.format("%02X ", result)+"10 03";
+            if (isRS){
+                msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 02 4F "+String.format("%02X ", result)+"10 03";
+            }
+            hexMsgTransceiver.sendMessages(msg);
         }
     }
 
-    public void sendFillColor(MouseEvent mouseEvent) throws InterruptedException {
+    public void sendFillColor() throws InterruptedException {
         String value = fillColor.getValue();
         if (IS_ASCII){
             String result = "";
@@ -109,10 +120,18 @@ public class UnderTheLineRightController {
             } else if (value.equals("청록색")){
                 result = "6";
             } else result = "7";
-            asciiMsgTransceiver.sendMessages("![0070"+result+"!]");
+            String msg = "![0070"+result+"!]";
+            if (isRS){
+                msg = "!["+convertRS485AddrASCii()+"070"+result+"!]";
+            }
+            asciiMsgTransceiver.sendMessages(msg);
         }
         else {
-            hexMsgTransceiver.sendMessages("10 02 00 00 02 45 00 10 03");
+            String msg = "10 02 00 00 02 45 00 10 03";
+            if (isRS){
+                msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 02 45 00 10 03";
+            }
+            hexMsgTransceiver.sendMessages(msg);
 
             Thread.sleep(500);
 
@@ -132,7 +151,11 @@ public class UnderTheLineRightController {
             } else if (value.equals("청록색")){
                 result = "F8 ";
             } else result = "FF ";
-            hexMsgTransceiver.sendMessages("10 02 00 00 06 42 08 "+result+"00 00 00 10 03");
+            msg = "10 02 00 00 06 42 08 "+result+"00 00 00 10 03";
+            if (isRS){
+                msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 06 42 08 "+result+"00 00 00 10 03";
+            }
+            hexMsgTransceiver.sendMessages(msg);
         }
     }
 }

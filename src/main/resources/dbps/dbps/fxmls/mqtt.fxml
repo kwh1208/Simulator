@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="mqttAP" minHeight="430.0" minWidth="400.0" style="-fx-background-color: #333333;"
+            xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dbps.dbps.controller.MqttController">
+    <children>
+        <Label layoutX="36.0" layoutY="46.0" text="브로커 주소"/>
+        <TextField fx:id="mqttBroker" layoutX="126.0" layoutY="42.0" minWidth="240.0" prefHeight="21.0" prefWidth="240.0"/>
+        <Label layoutX="36.0" layoutY="96.0" text="client ID"/>
+        <TextField fx:id="mqttClientId" layoutX="126.0" layoutY="91.0" minWidth="240.0" prefHeight="21.0" prefWidth="240.0"/>
+        <Label layoutX="36.0" layoutY="146.0" text="Topic"/>
+        <TextField fx:id="mqttTopic" layoutX="126.0" layoutY="143.0" minWidth="240.0" prefHeight="21.0" prefWidth="240.0"/>
+        <Label layoutX="36.0" layoutY="202.0" text="Qos"/>
+        <ChoiceBox fx:id="mqttQos" layoutX="124.0" layoutY="198.0" minWidth="150.0">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="0"/>
+                    <String fx:value="1"/>
+                    <String fx:value="2"/>
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+        <Pane layoutX="29.0" layoutY="239.0" prefHeight="151.0" prefWidth="346.0"
+              style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
+            <children>
+                <Label layoutX="10.0" layoutY="-11.0"
+                       style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 17"
+                       text="인증정보"/>
+                <Label layoutX="25.0" layoutY="38.0" text="ID"/>
+                <TextField fx:id="mqttId" layoutX="94.0" layoutY="34.0" prefHeight="21.0" prefWidth="240.0"/>
+                <Label layoutX="25.0" layoutY="94.0" text="Password"/>
+                <TextField fx:id="mqttPwd" layoutX="94.0" layoutY="90.0" prefHeight="21.0" prefWidth="240.0"/>
+            </children>
+        </Pane>
+        <Button layoutX="250.0" layoutY="350.0" mnemonicParsing="false" onMouseClicked="#read" text="읽기"/>
+        <Button layoutX="315.0" layoutY="350.0" mnemonicParsing="false" onMouseClicked="#set" text="설정"/>
+        <Button layoutX="220.0" layoutY="383.0" mnemonicParsing="false" onMouseClicked="#connect" text="테스트 접속"/>
+        <Button layoutX="315.0" layoutY="382.0" mnemonicParsing="false" onMouseClicked="#close" text="닫기"/>
+    </children>
+</AnchorPane>

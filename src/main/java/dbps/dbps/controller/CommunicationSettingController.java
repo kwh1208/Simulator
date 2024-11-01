@@ -1,11 +1,12 @@
 package dbps.dbps.controller;
 
 
-
 import com.fazecast.jSerialComm.SerialPort;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.LogService;
+import dbps.dbps.service.ResourceManager;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.TCPManager;
 import dbps.dbps.service.connectManager.UDPManager;
@@ -22,13 +23,15 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.List;
-
 
 import static dbps.dbps.Constants.*;
 
@@ -42,6 +45,7 @@ public class CommunicationSettingController {
     HexMsgTransceiver hexMsgTransceiver;
     UDPManager udpManager;
     ConfigService configService;
+    LogService logService;
 
     @FXML
     private AnchorPane communicationSettingAP;
@@ -90,7 +94,7 @@ public class CommunicationSettingController {
     private RadioButton serverTCPRadioBtn;
 
     @FXML
-    private TextField serverIPAddress;
+    private ChoiceBox<String> serverIPAddress;
 
     @FXML
     private TextField serverIPPort;
@@ -124,6 +128,7 @@ public class CommunicationSettingController {
         tcpManager = TCPManager.getManager();
         udpManager = UDPManager.getUDPManager();
         configService = ConfigService.getInstance();
+        logService = LogService.getLogService();
 
 
         //delayTime 변경하면 delayTime 값 변경
@@ -151,8 +156,6 @@ public class CommunicationSettingController {
                 clientTCPRadioToggle(true);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(false);
-                connect.setText("접속하기");
-                shutConnect.setText("접속끊기");
                 break;
             case "serverTCP":
                 communicationGroup.selectToggle(serverTCPRadioBtn);  // Server TCP 버튼 선택
@@ -160,8 +163,6 @@ public class CommunicationSettingController {
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(true);
                 UDPRadioToggle(false);
-                connect.setText("접속하기");
-                shutConnect.setText("접속끊기");
                 break;
             case "UDP":
                 communicationGroup.selectToggle(UDPRadioBtn);  // UDP 버튼 선택
@@ -169,8 +170,6 @@ public class CommunicationSettingController {
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(true);
-                connect.setText("접속하기");
-                shutConnect.setText("접속끊기");
                 break;
             default:
                 // 예외 상황: 아무 것도 선택하지 않음
@@ -189,6 +188,8 @@ public class CommunicationSettingController {
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(false);
+                CONNECT_TYPE = "serial";
+                configService.setProperty("connectType", "serial");
                 connect.setText("포트열기");
                 shutConnect.setText("포트닫기");
             } else if (selectedRadioButton.equals(clientTCPRadioBtn)) {
@@ -196,27 +197,22 @@ public class CommunicationSettingController {
                 clientTCPRadioToggle(true);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(false);
-                connect.setText("접속하기");
-                shutConnect.setText("접속끊기");
+                CONNECT_TYPE = "clientTCP";
+                configService.setProperty("connectType", "clientTCP");
             } else if (selectedRadioButton.equals(serverTCPRadioBtn)) {
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(true);
                 UDPRadioToggle(false);
-                connect.setText("접속하기");
-                shutConnect.setText("접속끊기");
+                CONNECT_TYPE = "serverTCP";
             } else  {
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(true);
-                connect.setText("접속하기");
-                shutConnect.setText("접속끊기");
+                CONNECT_TYPE = "UDP";
             }
-
         });
-
-
 
         getSerialPortList();
 
@@ -228,7 +224,16 @@ public class CommunicationSettingController {
         });
         serialPortComboBox.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
 
-        RS485ChkBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> RS485ChoiceBox.setVisible(newValue));
+        RS485ChkBox.selectedProperty().addListener((observableValue, oldValue, newValue) ->
+                {RS485ChoiceBox.setVisible(newValue);
+                    if (newValue){
+                        isRS = true;
+                    }
+                    else {
+                        isRS = false;
+                    }
+                }
+        );
 
         //응답시간 변경
         delayTime.selectionModelProperty().addListener((observableValue, oldValue, newValue) -> RESPONSE_LATENCY = Integer.parseInt(delayTime.getValue()));
@@ -238,6 +243,8 @@ public class CommunicationSettingController {
         if (isRS){
             RS485ChkBox.setSelected(true);
         }
+
+        getServerIP();
     }
 
     //사용가능한 포트 가져오기
@@ -317,7 +324,7 @@ public class CommunicationSettingController {
     }
 
     private void connectServerTCP() {
-        String IPAddress = serverIPAddress.getText();
+        String IPAddress = serverIPAddress.getValue();
         int port = Integer.parseInt(serverIPPort.getText());
 
         tcpManager.setIP(IPAddress);
@@ -340,6 +347,10 @@ public class CommunicationSettingController {
 
         TCP_IP = IPAddress;
         TCP_PORT = port;
+
+
+        logService.updateInfoLog("IP :"+IPAddress+" Port :"+port+"가 열렸습니다.");
+
     }
 
     private void connectUDP(){
@@ -375,7 +386,7 @@ public class CommunicationSettingController {
 
     //다빛넷 열기
     public void openDabitNet() throws IOException {
-        String relativePath = "./src/main/resources/dbps/dbps/DabitNet_S.exe";
+        String relativePath = "./DabitNet_S.exe";
 
         // 절대 경로로 변환 후 정리
         String absolutePath = new File(relativePath).getCanonicalPath();
@@ -393,6 +404,7 @@ public class CommunicationSettingController {
     //블루투스 열기
     public void openBluetooth(MouseEvent mouseEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/blueTooth.fxml"));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
         Parent root = fxmlLoader.load();
 
         Stage modalStage = new Stage();
@@ -412,32 +424,26 @@ public class CommunicationSettingController {
 
     //컨트롤러 연결하고 확인신호 보내기
     @FXML
-    public void controllerConnect(){
+    public void controllerConnect() throws IOException {
         //시리얼 일때
         if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)){
             if (RS485ChkBox.isSelected()){
                 CONNECT_TYPE = "rs485";
                 serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
-                RS485_ADDR_NUM = RS485ChoiceBox.getValue().replaceAll("[^0-9]", "");
-                String msg = "10 02 "+String.format("%02x", RS485_ADDR_NUM)+" 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
-                String receivedMsg = hexMsgTransceiver.sendMessages(msg);
-                if (!receivedMsg.split(" ")[5].equals("6A")){
-                    CONNECT_TYPE = "none";
-                }
+                RS485_ADDR_NUM = Integer.parseInt(RS485ChoiceBox.getValue().replaceAll("[^0-9]", ""));
+                String msg = "10 02 "+convertRS485AddrASCii()+" 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                hexMsgTransceiver.sendMessages(msg);
             } else {
                 CONNECT_TYPE = "serial";
                 serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
-                String receiveMsg = hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
-                if (!receiveMsg.split(" ")[5].equals("6A")){
-                    CONNECT_TYPE = "none";
-                }
+                hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
             }
         } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn)) {
-            CONNECT_TYPE = "TCP";
+            CONNECT_TYPE = "clientTCP";
             connectClientTCP();
             tcpManager.connect(tcpManager.getIP(), tcpManager.getPORT());
         } else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)) {
-            CONNECT_TYPE = "TCP";
+            CONNECT_TYPE = "serverTCP";
             connectServerTCP();
             tcpManager.connect(tcpManager.getIP(), tcpManager.getPORT());
         } else {
@@ -502,5 +508,59 @@ public class CommunicationSettingController {
             findSpeedBtn.setDisable(true);
             openDeviceManagerBtn.setDisable(true);
         }
+    }
+
+    private void getServerIP() {
+        // 기존 항목을 비우고 새로 추가할 IP 주소 리스트 가져오기
+        ObservableList<String> ipAddresses = serverIPAddress.getItems();
+        ipAddresses.clear();  // 리스트 초기화
+
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface network = interfaces.nextElement();
+
+                // 네트워크 인터페이스가 활성화되고, 루프백이 아닌 경우에만 확인
+                if (network.isUp() && !network.isLoopback()) {
+                    Enumeration<InetAddress> addresses = network.getInetAddresses();
+                    while (addresses.hasMoreElements()) {
+                        InetAddress address = addresses.nextElement();
+
+                        // IPv4 주소만 추가 (IPv6 제외)
+                        if (!address.isLoopbackAddress() && address instanceof java.net.Inet4Address) {
+                            String IPAddress = address.getHostAddress();
+                            ipAddresses.add(IPAddress); // IP 주소를 리스트에 추가
+                        }
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
+        // 첫 번째 IP 주소 선택 (선택사항)
+        if (!ipAddresses.isEmpty()) {
+            serverIPAddress.getSelectionModel().select(0);
+        }
+    }
+
+    public void openMqtt(MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/mqtt.fxml"));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
+        Parent root = fxmlLoader.load();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle("Mqtt 설정");
+
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.showAndWait();
     }
 }

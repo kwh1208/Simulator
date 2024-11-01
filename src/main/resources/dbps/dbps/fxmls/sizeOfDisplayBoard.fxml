@@ -28,8 +28,8 @@
         </items>
     </ChoiceBox>
 
-    <CheckBox fx:id="arrayChk" layoutX="20.0" layoutY="116.0" mnemonicParsing="false" text="모듈배열방법" />
-    <ChoiceBox fx:id="howToArray" disable="true" layoutX="175.0" layoutY="113.0" prefHeight="25.0" prefWidth="145.0" value="가로형(default)">
+    <Label layoutX="20.0" layoutY="116.0" text="모듈배열방법" />
+    <ChoiceBox fx:id="howToArray" layoutX="175.0" layoutY="113.0" prefHeight="25.0" prefWidth="145.0" value="가로형(default)">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="가로형(default)" />

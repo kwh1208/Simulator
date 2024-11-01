@@ -17,8 +17,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static dbps.dbps.Constants.IS_ASCII;
-import static dbps.dbps.Constants.uploadFirmwarePath;
+import static dbps.dbps.Constants.*;
 
 public class FirmwareUpgradeController {
 
@@ -60,11 +59,19 @@ public class FirmwareUpgradeController {
 
     public void read() {
         if (IS_ASCII){
-            String version = asciiMsgTransceiver.sendMessages("![0081!]");
+            String msg = "![0081!]";
+            if (isRS){
+                msg = "!["+convertRS485AddrASCii()+"081!]";
+            }
+            String version = asciiMsgTransceiver.sendMessages(msg);
             firmwareInformation.setText(version.substring(6, version.length()-2));
         }
         else {
-            String version = hexMsgTransceiver.sendMessages("10 02 00 00 02 6F F1 10 03");
+            String msg = "10 02 00 00 02 6F F1 10 03";
+            if (isRS){
+                msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+ "00 02 6F F1 10 03";
+            }
+            String version = hexMsgTransceiver.sendMessages(msg);
             String[] version_split = version.split(" ");
             StringBuilder result = new StringBuilder();
 
@@ -100,14 +107,13 @@ public class FirmwareUpgradeController {
     }
 
     public void send() {
-        System.out.println("test");
         if (firmwareInformation.getText().isEmpty()){
             logService.warningLog("컨트롤러의 버전을 먼저 확인해주세요.");
         }
         String firmwareInformationText = firmwareInformation.getText();
         String firmwareFileInformationText = firmwareFileInformation.getText();
-        int index1 = firmwareInformationText.indexOf("DIBD");
-        int index2 = firmwareFileInformationText.indexOf("DIBD");
+        int index1 = firmwareInformationText.lastIndexOf("DIBD");
+        int index2 = firmwareFileInformationText.lastIndexOf("DIBD");
 
         String result1;
         String result2;
@@ -117,9 +123,12 @@ public class FirmwareUpgradeController {
             logService.errorLog("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
             return;
         }
-
-        if (index2 != -1 && index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
-            result2 = firmwareFileInformationText.substring(index2 + "DIBD".length(), index2 + "DIBD".length() + 4);
+        if (index2==-1){
+            index2 = firmwareFileInformationText.lastIndexOf("DB");
+            result2 = firmwareFileInformationText.substring(index2 +"DB".length(), index2 + "DB".length() + 4);
+        }
+        else if (index2 != -1 && index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
+            result2 = firmwareFileInformationText.substring(index2 , index2 + "DIBD".length() + 4);
         } else {
             logService.errorLog("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
             return;

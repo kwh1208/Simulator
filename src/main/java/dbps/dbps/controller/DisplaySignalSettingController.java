@@ -1,20 +1,25 @@
 package dbps.dbps.controller;
 
-import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.ConfigService;
-import dbps.dbps.service.DisplaySignal;
-import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.Simulator;
+import dbps.dbps.service.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import static dbps.dbps.Constants.IS_ASCII;
-import static dbps.dbps.Constants.RESPONSE_LATENCY;
+import java.io.IOException;
+
+import static dbps.dbps.Constants.*;
+import static dbps.dbps.controller.DisplayListController.SELECTED_SIGNAL;
 import static dbps.dbps.service.DisplaySignal.SignalMap_ASC;
 import static dbps.dbps.service.DisplaySignal.SignalMap_HEX;
 
@@ -107,10 +112,13 @@ public class DisplaySignalSettingController {
 
     @FXML
     public void signalTransfer() {
-        if (IS_ASCII){
+        if (IS_ASCII||signalList.getSelectionModel().getSelectedItem().equals("08D-P64D1S71")){
         String selectedSignal = signalList.getSelectionModel().getSelectedItem();
         String signalProtocol = makePerfectProtocol(selectedSignal);
-        String transferProtocol = "!["+signalProtocol+"!]";
+        String transferProtocol;
+        if (isRS){
+            transferProtocol = "!["+convertRS485AddrASCii()+signalProtocol+"!]";
+        }else transferProtocol = "![0"+signalProtocol+"!]";
         asciiMsgTransceiver.sendMessages(transferProtocol);
         }
         else {
@@ -121,7 +129,11 @@ public class DisplaySignalSettingController {
     }
 
     private String makePerfectProtocolHEX(String selectedSignal) {
-        String result = SignalMap_HEX.get(selectedSignal);
+        String result = "10 02 00 ";
+        if (isRS){
+            result = "10 02 " + String.format("%02X ", RS485_ADDR_NUM);
+        }
+        result += SignalMap_HEX.get(selectedSignal);
         switch (colorScan.getValue()){
             case "RGB":
                 result = result + " 01";
@@ -236,7 +248,7 @@ public class DisplaySignalSettingController {
         if(autoTransfer.getText().equals("해제")){
             timeline.stop(); // Timeline 중지
             timeline = null; // 객체 초기화
-            autoTransfer.setText("자동 전송"); // 버튼 텍스트를 원래대로 변경
+            autoTransfer.setText("자동전송"); // 버튼 텍스트를 원래대로 변경
             return; // 함수 종료
         }
         int signalCount = signalList.getItems().size();
@@ -275,16 +287,50 @@ public class DisplaySignalSettingController {
         Integer after = spinnerForAfter.getValue();
 
         String msg = "![00B4"+before+" "+after+"!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"0B4"+before+" "+after+"!]";
+        }
 
         asciiMsgTransceiver.sendMessages(msg);
     }
 
     @FXML
     public void read() {
-        asciiMsgTransceiver.sendMessages("![00B50!]");
+        String msg = "![00B50!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"0B50!]";
+        }
+        asciiMsgTransceiver.sendMessages(msg);
     }
 
-    public void save(MouseEvent mouseEvent) {
+    public void save() {
         configService.setDisplayProperties(signalList.getFocusModel().getFocusedItem(), memo.getText());
+    }
+
+    public void search(MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/displayList.fxml"));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
+        Parent root = fxmlLoader.load();
+
+        DisplayListController controller = fxmlLoader.getController();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle("통신 설정");
+
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.setOnHiding(event -> {
+            int targetIndex = signalList.getItems().indexOf(SELECTED_SIGNAL);
+            signalList.getSelectionModel().select(targetIndex);
+        });
+
+        modalStage.showAndWait();
     }
 }

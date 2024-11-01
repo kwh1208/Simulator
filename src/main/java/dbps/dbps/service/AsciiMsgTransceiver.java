@@ -1,6 +1,9 @@
 package dbps.dbps.service;
 
-import dbps.dbps.service.connectManager.*;
+import dbps.dbps.service.connectManager.MQTTManager;
+import dbps.dbps.service.connectManager.SerialPortManager;
+import dbps.dbps.service.connectManager.TCPManager;
+import dbps.dbps.service.connectManager.UDPManager;
 import javafx.concurrent.Task;
 
 import java.text.SimpleDateFormat;
@@ -15,6 +18,7 @@ public class AsciiMsgTransceiver {
     private final LogService logService;
     private final UDPManager udpManager;
     private final TCPManager tcpManager;
+    private final MQTTManager mqttManager;
 
 
     private AsciiMsgTransceiver() {
@@ -22,6 +26,7 @@ public class AsciiMsgTransceiver {
         logService = LogService.getLogService();
         udpManager = UDPManager.getUDPManager();
         tcpManager = TCPManager.getManager();
+        mqttManager = MQTTManager.getInstance();
     }
 
     public static AsciiMsgTransceiver getInstance() {
@@ -68,10 +73,21 @@ public class AsciiMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
-            case "TCP" -> //tcp로 메세지 전송
+            case "clientTCP" -> //tcp로 메세지 전송
             {
                 try {
                     Task<String> sendTask = tcpManager.sendASCMsg(msg);
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+
+                    receivedMsg = sendTask.get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case "mqtt" -> {
+                try {
+                    Task<String> sendTask = mqttManager.sendASCMsg(msg);
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 
@@ -131,7 +147,9 @@ public class AsciiMsgTransceiver {
 
                 // 원하는 출력 형식으로 변환
                 String FormatedTime = outputFormat.format(date);
+
                 logService.updateInfoLog("컨트롤러 시간은 " + FormatedTime+"입니다.");
+
             } catch (Exception e){
 
             }
@@ -165,6 +183,16 @@ public class AsciiMsgTransceiver {
             logService.updateInfoLog("펌웨어 정보 읽기에 성공했습니다.");
             return receiveMsg;
         }
+        if (cmd.equals("96")){
+            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            logService.updateInfoLog("폰트 이름 설정에 성공했습니다.");
+            return receiveMsg;
+        }
+        if (cmd.equals("95")){
+            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            logService.updateInfoLog("폰트 이름 설정에 성공했습니다.");
+            return receiveMsg;
+        }
 
         if (status == '0') { // 정상 처리
             if (cmd.equals("83")) { // 맥주소 읽기
@@ -194,8 +222,10 @@ public class AsciiMsgTransceiver {
                 logService.updateInfoLog("외부 신호 출력에 성공했습니다.");
             }
             if (cmd.equals("30")){
+
                 logService.updateInfoLog("받은 메세지 : " + receiveMsg);
                 logService.updateInfoLog("시간 동기화에 성공했습니다.");
+
             }
             if (cmd.equals("41")){
                 logService.updateInfoLog("받은 메세지 : " + receiveMsg);
