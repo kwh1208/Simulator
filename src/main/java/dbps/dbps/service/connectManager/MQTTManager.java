@@ -26,18 +26,14 @@ public class MQTTManager {
     }
 
     public String MQTT_BROKER = "";
-    public String MQTT_CLIENT = "";
     public String MQTT_TOPIC = "";
-    public int MQTT_Qos = 0;
     public String MQTT_ID = "";
     public String MQTT_PWD = "";
 
 
-    public void setMQTTInfo(String broker, String client, String topic, int qos, String id, String pwd){
+    public void setMQTTInfo(String broker,  String topic, String id, String pwd){
         MQTT_BROKER = broker;
-        MQTT_CLIENT = client;
         MQTT_TOPIC = topic;
-        MQTT_Qos = qos;
         MQTT_ID = id;
         MQTT_PWD = pwd;
     }
@@ -53,7 +49,7 @@ public class MQTTManager {
 
         try {
             // MQTT 클라이언트 생성
-            MqttClient client = new MqttClient(broker, clientId);
+            MqttClient client = new MqttClient(broker, MqttClient.generateClientId());
 
             // 연결 옵션 설정
             MqttConnectOptions connOpts = new MqttConnectOptions();
@@ -115,7 +111,7 @@ public class MQTTManager {
         return new Task<>() {
             @Override
             protected String call() throws Exception {
-                MqttClient client = new MqttClient(MQTT_BROKER, MQTT_CLIENT);
+                MqttClient client = new MqttClient(MQTT_BROKER, MqttClient.generateClientId());
 
                 MqttConnectOptions connOpts = new MqttConnectOptions();
                 connOpts.setCleanSession(true); // 클린 세션 사용
@@ -146,7 +142,7 @@ public class MQTTManager {
 
                 client.connect(connOpts);
                 MqttMessage message = new MqttMessage(msg);
-                message.setQos(MQTT_Qos);
+                message.setQos(0);
                 client.publish(MQTT_TOPIC, message);
 
                 client.subscribe("MQTT_TOPIC_RESPONSE");
@@ -168,7 +164,7 @@ public class MQTTManager {
         return new Task<>() {
             @Override
             protected String call() throws Exception {
-                MqttClient client = new MqttClient(MQTT_BROKER, MQTT_CLIENT);
+                MqttClient client = new MqttClient(MQTT_BROKER, MqttClient.generateClientId());
 
                 MqttConnectOptions connOpts = new MqttConnectOptions();
                 connOpts.setCleanSession(true); // 클린 세션 사용
@@ -199,7 +195,7 @@ public class MQTTManager {
 
                 client.connect(connOpts);
                 MqttMessage message = new MqttMessage(msg.getBytes(Charset.forName("EUC-KR")));
-                message.setQos(MQTT_Qos);
+                message.setQos(0);
                 client.publish(MQTT_TOPIC, message);
 
                 client.subscribe("MQTT_TOPIC_RESPONSE");

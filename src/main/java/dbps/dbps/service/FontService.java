@@ -317,7 +317,7 @@ public class FontService {
                 finalPacket[1] = 0x02;
                 finalPacket[finalPacket.length-2] = 0x10;
                 finalPacket[finalPacket.length-1] = 0x03;
-                returnMsg = hexMsgTransceiver.sendByteMessages(finalPacket);
+                returnMsg = String.valueOf(hexMsgTransceiver.sendByteMessages(finalPacket));
                 if (!returnMsg.equals("10 02 00 00 02 4D 00 10 03 ")){
                     wait();
                 }

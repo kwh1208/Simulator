@@ -102,7 +102,7 @@ public class UDPManager {
     }
 
     public Task<String> sendMsgAndGetMsgByte(byte[] msg){
-        return new Task<String>() {
+        return new Task<>() {
             @Override
             protected String call() throws Exception {
                 if (socket == null) {
@@ -110,7 +110,7 @@ public class UDPManager {
                 }
 
                 DatagramPacket receivePacket;
-                try{
+                try {
                     InetAddress serverAddr = InetAddress.getByName(IP);
                     DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
                     socket.send(sendPacket);
@@ -120,7 +120,7 @@ public class UDPManager {
                     int totalBytesRead = 0;
                     receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
 
-                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000){
+                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000) {
                         socket.receive(receivePacket);
                         int bytesRead = receivePacket.getLength();  // 수신된 바이트 수
                         if (bytesRead > 0) {
@@ -135,51 +135,7 @@ public class UDPManager {
                         Thread.sleep(50);
                     }
                     return bytesToHex(receivePacket.getData(), receivePacket.getLength());
-                }catch (IOException | InterruptedException e){
-                    //에러 처리
-                } finally {
-                    disconnect();
-                }
-                return null;
-            }
-        };
-    }
-
-    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg){
-        return new Task<String>() {
-            @Override
-            protected String call() throws Exception {
-                if (socket == null) {
-                    connect(IP, PORT);
-                }
-
-                DatagramPacket receivePacket;
-                try{
-                    InetAddress serverAddr = InetAddress.getByName(IP);
-                    DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
-                    socket.send(sendPacket);
-
-                    long startTime = System.currentTimeMillis();
-                    byte[] receiveBuffer = new byte[1024];
-                    int totalBytesRead = 0;
-                    receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-
-                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000){
-                        socket.receive(receivePacket);
-                        int bytesRead = receivePacket.getLength();  // 수신된 바이트 수
-                        if (bytesRead > 0) {
-                            totalBytesRead += bytesRead;
-                            startTime = System.currentTimeMillis();  // 수신 시간 갱신
-
-                            // 데이터 처리 로직
-                            if (dataReceivedIsCompleteHex(receiveBuffer, totalBytesRead)) {
-                                break;
-                            }
-                        }
-                        Thread.sleep(50);
-                    }
-                    return bytesToHex(receivePacket.getData(), receivePacket.getLength());
-                }catch (IOException | InterruptedException e){
+                } catch (IOException | InterruptedException e) {
                     //에러 처리
                 } finally {
                     disconnect();

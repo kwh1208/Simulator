@@ -1,9 +1,6 @@
 package dbps.dbps.service;
 
-import dbps.dbps.service.connectManager.MQTTManager;
-import dbps.dbps.service.connectManager.SerialPortManager;
-import dbps.dbps.service.connectManager.TCPManager;
-import dbps.dbps.service.connectManager.UDPManager;
+import dbps.dbps.service.connectManager.*;
 import javafx.concurrent.Task;
 
 import java.text.SimpleDateFormat;
@@ -19,6 +16,7 @@ public class AsciiMsgTransceiver {
     private final UDPManager udpManager;
     private final TCPManager tcpManager;
     private final MQTTManager mqttManager;
+    private final ServerTCPManager serverTCPManager;
 
 
     private AsciiMsgTransceiver() {
@@ -27,6 +25,7 @@ public class AsciiMsgTransceiver {
         udpManager = UDPManager.getUDPManager();
         tcpManager = TCPManager.getManager();
         mqttManager = MQTTManager.getInstance();
+        serverTCPManager = ServerTCPManager.getInstance();
     }
 
     public static AsciiMsgTransceiver getInstance() {
@@ -88,6 +87,17 @@ public class AsciiMsgTransceiver {
             case "mqtt" -> {
                 try {
                     Task<String> sendTask = mqttManager.sendASCMsg(msg);
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+
+                    receivedMsg = sendTask.get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case "serverTCP" ->{
+                try {
+                    Task<String> sendTask = serverTCPManager.sendASCMsg(msg);
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 

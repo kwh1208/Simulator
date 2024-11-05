@@ -38,13 +38,12 @@ public class SerialPortManager {
         }
         SerialPort port = SerialPort.getCommPort(portName);
         port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY*1000, RESPONSE_LATENCY*1000);
         port.openPort();
         serialPortMap.put(portName, port);
         configService.setProperty("openPortNum", portName);
 
         logService.updateInfoLog(portName + " 포트가 열렸습니다.");
-
     }
 
     public void openPortNoLog(String portName, int baudRate){
@@ -66,7 +65,6 @@ public class SerialPortManager {
             SerialPort serialPort = serialPortMap.get(portName);
             if (serialPort.isOpen()){
                 serialPort.closePort();
-
 
                 logService.updateInfoLog("포트가 닫혔습니다.");
 

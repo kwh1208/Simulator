@@ -92,6 +92,8 @@ public class TCPManager {
                     logService.errorLog(msg + " 전송에 실패했습니다.");
 
                     return "에러발생";
+                }finally {
+                    socket.close();
                 }
             }
         };
@@ -119,42 +121,8 @@ public class TCPManager {
 
             socket.setSoTimeout(RESPONSE_LATENCY *1000);
 
-            InputStream input = socket.getInputStream();
-            OutputStream output = socket.getOutputStream();
-
-            output.write(CONNECT_START);
-            output.flush();
-
-            logService.updateInfoLog("전송 메세지 : 10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
-
-
-            byte[] buffer = new byte[1024];
-            int bytesRead = input.read(buffer);
-
-            if (bytesRead == -1) {
-                logService.errorLog("IP : "+IP+", PORT : "+PORT+" 연결에 실패했습니다.");
-                return;
-            }
-
-            // 받은 데이터 문자열로 변환
-            String response = bytesToHex(buffer, bytesRead);
-
-            if (response.equals("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03 ")){
-
-                logService.updateInfoLog("받은 메세지 : "+response);
-                logService.updateInfoLog("TCP 서버에 연결되었습니다. IP : " + IP + ", PORT: " + PORT);
-
-            } else {
-
-                logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
-
-            }
-
-
         }catch (IOException e){
-
             logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
-
         }
     }
 
@@ -209,51 +177,6 @@ public class TCPManager {
                     return bytesToHex(buffer, totalBytesRead);
                 } catch (IOException | InterruptedException e) {
                     logService.errorLog(msg + "전송에 실패했습니다.");
-                    return null;
-                } finally {
-                    disconnect();
-                }
-            }
-        };
-    }
-
-    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg){
-        return new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                if (socket.isClosed()) {
-                    connect(IP, PORT);
-                }
-
-                try {
-                    InputStream input = socket.getInputStream();
-                    OutputStream output = socket.getOutputStream();
-
-                    output.write(msg);
-                    output.flush();
-
-                    long startTime = System.currentTimeMillis();
-                    byte[] buffer = new byte[1024];
-                    int totalBytesRead = 0;
-
-                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000L) {
-                        if (input.available() > 0) {
-                            int bytesRead = input.read(buffer);
-                            if (bytesRead > 0) {
-                                totalBytesRead += bytesRead;
-
-                                startTime = System.currentTimeMillis();
-
-                                if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
-                                    break;
-                                }
-                            }
-                        } else {
-                            Thread.sleep(50);
-                        }
-                    }
-                    return bytesToHex(buffer, totalBytesRead);
-                } catch (IOException | InterruptedException e) {
                     return null;
                 } finally {
                     disconnect();
