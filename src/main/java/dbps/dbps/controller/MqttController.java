@@ -5,13 +5,13 @@ import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.connectManager.MQTTManager;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import static dbps.dbps.Constants.*;
+import static dbps.dbps.Constants.CONNECT_START;
+import static dbps.dbps.Constants.CONNECT_TYPE;
 
 public class MqttController {
 
@@ -20,11 +20,7 @@ public class MqttController {
     @FXML
     public TextField mqttBroker;
     @FXML
-    public TextField mqttClientId;
-    @FXML
     public TextField mqttTopic;
-    @FXML
-    public ChoiceBox<String> mqttQos;
     @FXML
     public TextField mqttId;
     @FXML
@@ -52,7 +48,7 @@ public class MqttController {
 
 
     public void connect() {
-        mqttManager.setMQTTInfo(mqttBroker.getText(), mqttClientId.getText(), mqttTopic.getText(), Integer.parseInt(mqttQos.getValue()), mqttId.getText(), mqttPwd.getText());
+        mqttManager.setMQTTInfo(mqttBroker.getText(), mqttTopic.getText(), mqttId.getText(), mqttPwd.getText());
 
         CONNECT_TYPE="mqtt";
 

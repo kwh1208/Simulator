@@ -1,14 +1,12 @@
 package dbps.dbps.service;
 
-import dbps.dbps.service.connectManager.MQTTManager;
-import dbps.dbps.service.connectManager.SerialPortManager;
-import dbps.dbps.service.connectManager.TCPManager;
-import dbps.dbps.service.connectManager.UDPManager;
+import dbps.dbps.service.connectManager.*;
 import javafx.concurrent.Task;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 import static dbps.dbps.Constants.*;
 
@@ -21,6 +19,7 @@ public class HexMsgTransceiver {
     private final UDPManager udpManager;
     private final TCPManager tcpManager;
     private final MQTTManager mqttManager;
+    private final ServerTCPManager serverTCPManager;
 
     private HexMsgTransceiver() {
         serialPortManager = SerialPortManager.getManager();
@@ -28,6 +27,7 @@ public class HexMsgTransceiver {
         udpManager = UDPManager.getUDPManager();
         tcpManager = TCPManager.getManager();
         mqttManager = MQTTManager.getInstance();
+        serverTCPManager = ServerTCPManager.getInstance();
     }
 
     public static HexMsgTransceiver getInstance() {
@@ -37,70 +37,37 @@ public class HexMsgTransceiver {
         return instance;
     }
 
-    public String sendByteMessages(byte[] msg) {
-        String receivedMsg = "";
-
-        //로그 출력
+    public CompletableFuture<String> sendByteMessages(byte[] msg) {
+        CompletableFuture<String> resultFuture = new CompletableFuture<>();
 
         logService.updateInfoLog("전송 메세지: " + bytesToHex(msg, msg.length));
 
+        Task<String> sendTask = switch (CONNECT_TYPE) {
+            case "serial", "bluetooth", "rs485" -> serialPortManager.sendMsgAndGetMsgByte(msg);
+            case "UDP" -> udpManager.sendMsgAndGetMsgByte(msg);
+            case "clientTCP" -> tcpManager.sendMsgAndGetMsgByte(msg);
+            case "mqtt" -> mqttManager.sendMsgAndGetMsgByte(msg);
+            case "serverTCP" -> serverTCPManager.sendMsgAndGetMsgByte(msg);
+            default -> throw new IllegalStateException("Unexpected value: " + CONNECT_TYPE);
+        };
 
-        switch (CONNECT_TYPE) {
-            case "serial", "bluetooth", "rs485" -> {
-                try {
-                    // Task 객체를 생성하여 비동기 작업 실행
-                    Task<String> sendTask = serialPortManager.sendMsgAndGetMsgByte(msg);
-
-                    // 새로운 스레드에서 Task를 실행
-                    Thread taskThread = new Thread(sendTask);
-                    taskThread.start();
-
-                    // Task의 완료를 기다리고 결과를 동기적으로 가져오기
-                    receivedMsg = sendTask.get(); // get() 메서드는 Task 완료까지 대기함
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        sendTask.setOnSucceeded(event -> {
+            String receivedMsg = sendTask.getValue();
+            if (receivedMsg.isEmpty()){
+                logService.errorLog("통신에 실패했습니다.");
             }
-            case "UDP" -> //udp로 메세지 전송
-            {
-                try {
-                    Task<String> sendTask = udpManager.sendMsgAndGetMsgByte(msg);
-                    Thread taskThread = new Thread(sendTask);
-                    taskThread.start();
+            else logService.updateInfoLog("수신 메세지: " + receivedMsg);
 
-                    receivedMsg = sendTask.get();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            case "clientTCP" -> //tcp로 메세지 전송
-            {
-                try {
-                    Task<String> sendTask = tcpManager.sendMsgAndGetMsgByte(msg);
-                    Thread taskThread = new Thread(sendTask);
-                    taskThread.start();
+            // msgReceive 호출 결과를 CompletableFuture에 설정
+            resultFuture.complete(msgReceive(receivedMsg, msg));
+        });
 
-                    receivedMsg = sendTask.get();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            case "mqtt" -> {
-                try {
-                    Task<String> sendTask = mqttManager.sendMsgAndGetMsgByte(msg);
-                    Thread taskThread = new Thread(sendTask);
-                    taskThread.start();
+        new Thread(sendTask).start();
 
-                    receivedMsg = sendTask.get();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        //시간 바꾸거나, 펌웨어 같은 일부 특수한 경우에 반환값 사용.
-        return msgReceive(receivedMsg, msg);
+        // CompletableFuture를 반환해 비동기적으로 결과를 받을 수 있도록 함
+        return resultFuture;
     }
+
 
     public String sendByteMessagesNoLog(byte[] msg) {
         switch (CONNECT_TYPE) {
@@ -121,7 +88,7 @@ public class HexMsgTransceiver {
             case "UDP" -> //udp로 메세지 전송
             {
                 try {
-                    Task<String> sendTask = udpManager.sendMsgAndGetMsgByteNoLog(msg);
+                    Task<String> sendTask = udpManager.sendMsgAndGetMsgByte(msg);
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 
@@ -153,16 +120,27 @@ public class HexMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
+            case "serverTCP" ->{
+                try {
+                    Task<String> sendTask  = serverTCPManager.sendMsgAndGetMsgByte(msg);
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+
+                    return sendTask.get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
         return null;
     }
 
     public String sendMessages(String msg) {
-        return sendByteMessages(hexStringToByteArray(msg));
+        return String.valueOf(sendByteMessages(hexStringToByteArray(msg)));
     }
 
     private String msgReceive(String receiveMsg, byte[] msg) {
-        if (receiveMsg == null) {
+        if (receiveMsg.isEmpty()) {
             return null;
         }
         String[] splitMsg = receiveMsg.split(" ");

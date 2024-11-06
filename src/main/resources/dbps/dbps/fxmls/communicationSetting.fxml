@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="communicationSettingAP" prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.CommunicationSettingController">
+<AnchorPane fx:id="communicationSettingAP" prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dbps.dbps.controller.CommunicationSettingController">
    <children>
       <Pane layoutX="15.0" layoutY="14.0" prefHeight="161.0" prefWidth="373.0" style="-fx-border-color: black;">
          <children>
@@ -33,7 +33,6 @@
                     </FXCollections>
                 </items>
             </ChoiceBox>
-
             <CheckBox fx:id="RS485ChkBox" layoutX="14.0" layoutY="88.0" mnemonicParsing="false" text="RS-485 address" />
             <ChoiceBox fx:id="RS485ChoiceBox" layoutX="255.0" layoutY="87.0" prefHeight="21.0" prefWidth="99.0" value="Dabit 00" visible="false">
                <items>

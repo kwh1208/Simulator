@@ -4,25 +4,30 @@ package dbps.dbps.controller;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.LogService;
 import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import static dbps.dbps.Constants.*;
 
 public class SettingController {
 
-    HexMsgTransceiver hexMsgTransceiver = HexMsgTransceiver.getInstance();
-    AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance(); 
+    HexMsgTransceiver hexMsgTransceiver;
+    AsciiMsgTransceiver asciiMsgTransceiver;
+    LogService logService;
     @FXML
     public ChoiceBox<String> displayBright;
 
@@ -31,28 +36,52 @@ public class SettingController {
 
     @FXML
     public void initialize(){
+        logService = LogService.getLogService();
+        hexMsgTransceiver = HexMsgTransceiver.getInstance();
+        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
     }
 
     @FXML
-    public void communicationSettingClicked(MouseEvent mouseEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/communicationSetting.fxml"));
-        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
-        Parent root = fxmlLoader.load();
+    public void communicationSettingClicked(MouseEvent mouseEvent) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/communicationSetting.fxml"));
+            fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
+            Parent root = fxmlLoader.load();
 
-        Stage modalStage = new Stage();
-        modalStage.setTitle("통신 설정");
+            Stage modalStage = new Stage();
+            modalStage.setTitle("통신 설정");
 
-        modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.initModality(Modality.APPLICATION_MODAL);
 
-        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-        modalStage.initOwner(parentStage);
+            Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+            modalStage.initOwner(parentStage);
 
-        Scene scene = new Scene(root);
-        modalStage.setScene(scene);
-        modalStage.setResizable(false);
+            Scene scene = new Scene(root);
+            modalStage.setScene(scene);
+            modalStage.setResizable(false);
 
-        modalStage.showAndWait();
+            modalStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // 사용자에게 오류 메시지 표시 (선택 사항)
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw); // 스택 트레이스를 StringWriter에 출력
+            String stackTrace = sw.toString(); // 전체 스택 트레이스를 문자열로 변환
+
+            logService.errorLog("오류 발생:\n" + stackTrace);
+            showAlert("오류", e.getMessage());
+        }
     }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 
     public void sendDisplayBright() {
 //        ![005099!]

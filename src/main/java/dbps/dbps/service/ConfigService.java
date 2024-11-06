@@ -37,6 +37,7 @@ public class ConfigService {
         howToArrange = getProperty("howToArrange");
         RESPONSE_LATENCY = Integer.parseInt(getProperty("latency"));
         isRS = Boolean.parseBoolean(getProperty("isRS"));
+        serverTCPPort = Integer.parseInt(getProperty("serverTCPPort"));
     }
 
     private void createFileIfNotExists(String filePath, String fileName) {
@@ -56,6 +57,7 @@ public class ConfigService {
             defaultProperties.setProperty("connectType", "serial");
             defaultProperties.setProperty("serialSpeed", "115200");
             defaultProperties.setProperty("RS485_ADDR_NUM", "0");
+            defaultProperties.setProperty("serverTCPPort", "5000");
             defaultProperties.setProperty("openPortNum", "1");
             defaultProperties.setProperty("isRS", "false");
             defaultProperties.setProperty("clientTCPAddr", "192.168.0.10");

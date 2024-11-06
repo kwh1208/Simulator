@@ -220,7 +220,7 @@
       <Button layoutX="286.0" layoutY="710.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="21.0" prefWidth="69.0" text="전송" />
       <Button layoutX="366.0" layoutY="710.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="21.0" prefWidth="69.0" text="닫기" />
       <Label fx:id="fontCapacity" layoutX="16.0" layoutY="700.0" prefHeight="13.0" prefWidth="209.0" text="0/3145727 Byte" />
-       <ProgressBar fx:id="fontProgressBar" layoutX="50.0" layoutY="170.0" prefWidth="380" visible="false" style="-fx-text-fill: red" />
+       <ProgressBar fx:id="fontProgressBar" layoutX="50.0" layoutY="170.0" prefWidth="350" visible="false" />
        <Label fx:id="fontProgressLabel" layoutX="220.0" layoutY="200.0" text="1/1" visible="false" style="-fx-text-fill: orange; -fx-font-size : 17px;"/>
    </children>
 </AnchorPane>

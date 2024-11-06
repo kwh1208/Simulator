@@ -23,6 +23,8 @@ public class Constants {
 
     public static boolean IS_ASCII = false;
 
+    public static int serverTCPPort = 5000;
+
     public static int SERIAL_BAUDRATE = 115200;
 
     public static String OPEN_PORT_NAME = null;

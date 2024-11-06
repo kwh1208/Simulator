@@ -8,6 +8,7 @@ import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.LogService;
 import dbps.dbps.service.ResourceManager;
 import dbps.dbps.service.connectManager.SerialPortManager;
+import dbps.dbps.service.connectManager.ServerTCPManager;
 import dbps.dbps.service.connectManager.TCPManager;
 import dbps.dbps.service.connectManager.UDPManager;
 import javafx.collections.ObservableList;
@@ -46,6 +47,7 @@ public class CommunicationSettingController {
     UDPManager udpManager;
     ConfigService configService;
     LogService logService;
+    ServerTCPManager serverTCPManager;
 
     @FXML
     private AnchorPane communicationSettingAP;
@@ -128,6 +130,7 @@ public class CommunicationSettingController {
         tcpManager = TCPManager.getManager();
         udpManager = UDPManager.getUDPManager();
         configService = ConfigService.getInstance();
+        serverTCPManager = ServerTCPManager.getInstance();
         logService = LogService.getLogService();
 
 
@@ -216,7 +219,9 @@ public class CommunicationSettingController {
 
         getSerialPortList();
 
-        serialPortComboBox.setValue(serialPortComboBox.getItems().get(0));
+        if (!serialPortComboBox.getItems().isEmpty()) {
+            serialPortComboBox.setValue(serialPortComboBox.getItems().get(0));
+        }
 
         serialPortComboBox.valueProperty().addListener((observableValue, oldValue, newValue) -> {
             serialPortComboBox.setValue(newValue);
@@ -324,16 +329,13 @@ public class CommunicationSettingController {
     }
 
     private void connectServerTCP() {
-        String IPAddress = serverIPAddress.getValue();
         int port = Integer.parseInt(serverIPPort.getText());
 
-        tcpManager.setIP(IPAddress);
-        tcpManager.setPORT(port);
-        configService.setProperty("serverTCPAddr", IPAddress);
+        serverTCPManager.connect(port);
+        serverTCPPort = port;
         configService.setProperty("serverTCPPort", String.valueOf(port));
 
-        TCP_IP = IPAddress;
-        TCP_PORT = port;
+        logService.updateInfoLog("Port :"+port+"가 열렸습니다.");
     }
 
     private void connectClientTCP() {
@@ -350,7 +352,6 @@ public class CommunicationSettingController {
 
 
         logService.updateInfoLog("IP :"+IPAddress+" Port :"+port+"가 열렸습니다.");
-
     }
 
     private void connectUDP(){
@@ -445,7 +446,7 @@ public class CommunicationSettingController {
         } else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)) {
             CONNECT_TYPE = "serverTCP";
             connectServerTCP();
-            tcpManager.connect(tcpManager.getIP(), tcpManager.getPORT());
+            serverTCPManager.sendMsgAndGetMsgByte(CONNECT_START);
         } else {
             CONNECT_TYPE = "UDP";
             connectUDP();
