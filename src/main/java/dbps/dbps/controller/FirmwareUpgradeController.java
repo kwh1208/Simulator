@@ -63,7 +63,7 @@ public class FirmwareUpgradeController {
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"081!]";
             }
-            String version = asciiMsgTransceiver.sendMessages(msg);
+            String version = asciiMsgTransceiver.sendMessages(msg, false);
             firmwareInformation.setText(version.substring(6, version.length()-2));
         }
         else {

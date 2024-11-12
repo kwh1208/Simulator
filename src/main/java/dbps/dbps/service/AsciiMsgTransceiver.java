@@ -35,7 +35,7 @@ public class AsciiMsgTransceiver {
         return instance;
     }
 
-    public String sendMessages(String msg) {
+    public String sendMessages(String msg, boolean utf8) {
         //현재 serial, bluetooth, udp, tcp, rs485, WiFi 중에 어떤 것인지 파악.
         //열려있는 곳으로 메세지 전송
         String receivedMsg = "";
@@ -48,7 +48,7 @@ public class AsciiMsgTransceiver {
             case "serial", "bluetooth", "rs485" -> {
                 try {
                     // Task 객체를 생성하여 비동기 작업 실행
-                    Task<String> sendTask = serialPortManager.sendMsgAndGetMsg(msg);
+                    Task<String> sendTask = serialPortManager.sendMsgAndGetMsg(msg, utf8);
 
                     // 새로운 스레드에서 Task를 실행
                     Thread taskThread = new Thread(sendTask);
@@ -63,7 +63,7 @@ public class AsciiMsgTransceiver {
             case "UDP" -> //udp로 메세지 전송
             {
                 try {
-                    Task<String> sendTask = udpManager.sendASCMsg(msg);
+                    Task<String> sendTask = udpManager.sendASCMsg(msg, utf8);
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 
@@ -75,7 +75,7 @@ public class AsciiMsgTransceiver {
             case "clientTCP" -> //tcp로 메세지 전송
             {
                 try {
-                    Task<String> sendTask = tcpManager.sendASCMsg(msg);
+                    Task<String> sendTask = tcpManager.sendASCMsg(msg, utf8);
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 
@@ -97,7 +97,7 @@ public class AsciiMsgTransceiver {
             }
             case "serverTCP" ->{
                 try {
-                    Task<String> sendTask = serverTCPManager.sendASCMsg(msg);
+                    Task<String> sendTask = serverTCPManager.sendASCMsg(msg, utf8);
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 

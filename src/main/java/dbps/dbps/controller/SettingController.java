@@ -98,7 +98,7 @@ public class SettingController {
                 case "5%": msg += "05"; break;
             }
             msg += "!]";
-            asciiMsgTransceiver.sendMessages(msg);
+            asciiMsgTransceiver.sendMessages(msg, false);
             
 
         } else{
@@ -131,7 +131,7 @@ public class SettingController {
                 msg += "Y";
             }
             msg += "!]";
-            asciiMsgTransceiver.sendMessages(msg);
+            asciiMsgTransceiver.sendMessages(msg, false);
             
 
         } else {

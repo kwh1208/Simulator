@@ -55,7 +55,7 @@ public class MessageSettingController {
             }
             msg += "!]";
 
-            asciiMsgTransceiver.sendMessages(msg);
+            asciiMsgTransceiver.sendMessages(msg, false);
 
         } else {
             //10 02 00 00 02 4B 00 10 03
@@ -84,7 +84,7 @@ public class MessageSettingController {
             }
             msg += String.format("%02d", Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", "")));
             msg += "!]";
-            asciiMsgTransceiver.sendMessages(msg);
+            asciiMsgTransceiver.sendMessages(msg, false);
 
         } else {
             String msg = "10 02 00 00 02 4C ";

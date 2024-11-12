@@ -114,7 +114,7 @@ public class FontNameController {
                 if (isRS){
                     msg = "!["+convertRS485AddrASCii()+"0960!]";
                 }
-                String result = asciiMsgTransceiver.sendMessages(msg);
+                String result = asciiMsgTransceiver.sendMessages(msg, false);
 
                 result = result.substring(8, result.length()-2);
                 String[] fontNames = getFontName(result.getBytes(Charset.forName("EUC-KR")));
@@ -172,7 +172,7 @@ public class FontNameController {
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
 
-                asciiMsgTransceiver.sendMessages(new String(sendMsg, "EUC-KR"));
+                asciiMsgTransceiver.sendMessages(new String(sendMsg, "EUC-KR"), false);
             }
         }
         else {

@@ -8,11 +8,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import static dbps.dbps.Constants.*;
 
 public class TCPManager {
-
 
     private String IP;
 
@@ -49,7 +49,7 @@ public class TCPManager {
         }
         return tcpManager;
     }
-    public Task<String> sendASCMsg(String msg){
+    public Task<String> sendASCMsg(String msg, boolean utf8){
         return new Task<>() {
 
             @Override
@@ -60,8 +60,10 @@ public class TCPManager {
                 try {
                     InputStream input = socket.getInputStream();
                     OutputStream output = socket.getOutputStream();
+                    byte[] sendBytes = msg.getBytes(Charset.forName("EUC-KR"));
+                    if (utf8) sendBytes = msg.getBytes(StandardCharsets.UTF_8);
 
-                    output.write(msg.getBytes(Charset.forName("EUC-KR")));
+                    output.write(sendBytes);
                     output.flush();
 
                     long startTime = System.currentTimeMillis();

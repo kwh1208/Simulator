@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,7 +91,7 @@ public class SerialPortManager {
         SerialPort port = serialPortMap.get(portName);
         return port != null && port.isOpen();
     }
-    public Task<String> sendMsgAndGetMsg(String msg){
+    public Task<String> sendMsgAndGetMsg(String msg, boolean utf8){
         return new Task<>() {
             @Override
             protected String call() throws Exception {
@@ -106,6 +107,7 @@ public class SerialPortManager {
                     InputStream inputStream = port.getInputStream();
 
                     byte[] dataToSend = msg.getBytes(Charset.forName("EUC-KR"));
+                    if (utf8) dataToSend = msg.getBytes(StandardCharsets.UTF_8);
                     outputStream.write(dataToSend);
                     outputStream.flush();
 

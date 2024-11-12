@@ -36,9 +36,8 @@ public class FontService {
             @Override
             protected Void call() throws Exception {
                 String returnMsg = hexMsgTransceiver.sendMessages("10 02 00 00 02 45 00 10 03");
-                if (!returnMsg.equals("10 02 00 00 02 45 00 10 03 ")){
-                    wait();
-                }
+
+                Thread.sleep(200);
 
                 int packetSize = 1024;
                 int totalPackets = 0;
@@ -222,6 +221,7 @@ public class FontService {
                         }
 
                     }
+                    System.out.println(111);
                     totalPackets+=groupPackets[i];
                     ByteBuffer buffer = ByteBuffer.allocate(4);
                     buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -294,11 +294,6 @@ public class FontService {
                         if (!returnMsg.equals("10 02 00 00 02 98 00 10 03 ")){
                             wait();
                         }
-                        System.out.print("send = [");
-                        for (byte b : sendPacket) {
-                            System.out.printf("%02X ", b);
-                        }
-                        System.out.println("]");
 
                         int finalI = (i*groupPackets[i])+j;
                         int total = totalPackets;

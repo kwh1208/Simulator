@@ -22,6 +22,8 @@ public class MqttController {
     @FXML
     public TextField mqttTopic;
     @FXML
+    public TextField mqttTopic_R;
+    @FXML
     public TextField mqttId;
     @FXML
     public TextField mqttPwd;
@@ -48,7 +50,7 @@ public class MqttController {
 
 
     public void connect() {
-        mqttManager.setMQTTInfo(mqttBroker.getText(), mqttTopic.getText(), mqttId.getText(), mqttPwd.getText());
+        mqttManager.setMQTTInfo(mqttBroker.getText(), mqttTopic.getText(), mqttTopic_R.getText() ,mqttId.getText(), mqttPwd.getText());
 
         CONNECT_TYPE="mqtt";
 

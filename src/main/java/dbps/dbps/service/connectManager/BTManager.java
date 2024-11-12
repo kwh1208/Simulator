@@ -1,11 +1,9 @@
 package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.AsciiMsgTransceiver;
-import javafx.concurrent.Task;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
 public class BTManager {
@@ -25,7 +23,7 @@ public class BTManager {
     }
 
     public void search() {
-        asciiMsgTransceiver.sendMessages("++SET++![BT SEARCHING DIBD!]");
+        asciiMsgTransceiver.sendMessages("++SET++![BT SEARCHING DIBD!]", false);
     }
 
     public void set(String Id, String password) {
@@ -50,12 +48,12 @@ public class BTManager {
 
         msg += new String(realId, Charset.forName("EUC-KR")) + "  " + new String(realPassword, Charset.forName("EUC-KR")) + "!]";
 
-        asciiMsgTransceiver.sendMessages(msg);
+        asciiMsgTransceiver.sendMessages(msg, false);
     }
 
     public void begin(String password) {
         String msg = "++SET++![BT " + password + " BEGIN!]";
-        String receivedMsg = asciiMsgTransceiver.sendMessages(msg);
+        String receivedMsg = asciiMsgTransceiver.sendMessages(msg, false);
         if (receivedMsg.equals("![DIBD BLE OK!]")){
             CONNECT_TYPE = "bluetooth";
         }
@@ -63,7 +61,7 @@ public class BTManager {
 
     public void end(String password) {
         String msg = "++SET++![BT " + password + " END!]";
-        asciiMsgTransceiver.sendMessages(msg);
+        asciiMsgTransceiver.sendMessages(msg, false);
     }
 
 

@@ -103,7 +103,7 @@ public class BoardSettingsController {
     public void Transfer() {
         String[] baudRates = {"9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600"};
         if(group.getSelectedToggle().equals(readRadio)){
-            String result = asciiMsgTransceiver.sendMessages("![00B30!]");
+            String result = asciiMsgTransceiver.sendMessages("![00B30!]", false);
             if (isRS){
                 result = "!["+convertRS485AddrASCii()+"0B30";
             }
@@ -226,7 +226,7 @@ public class BoardSettingsController {
             }
 
             msg+="!]";
-            asciiMsgTransceiver.sendMessages(msg);
+            asciiMsgTransceiver.sendMessages(msg, false);
         }
 
 

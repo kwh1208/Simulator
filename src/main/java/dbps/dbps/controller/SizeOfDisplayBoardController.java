@@ -101,7 +101,7 @@ public class SizeOfDisplayBoardController {
                 break;
         }
         msg+="!]";
-        asciiMsgTransceiver.sendMessages(msg);
+        asciiMsgTransceiver.sendMessages(msg, false);
     }
 
     private void displaySizeHEX() {

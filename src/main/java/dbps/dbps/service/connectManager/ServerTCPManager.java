@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import static dbps.dbps.Constants.*;
 
@@ -97,7 +98,7 @@ public class ServerTCPManager {
         };
     }
 
-    public Task<String> sendASCMsg(String msg){
+    public Task<String> sendASCMsg(String msg, boolean utf8){
         return new Task<>() {
 
             @Override
@@ -108,8 +109,10 @@ public class ServerTCPManager {
                 try {
                     InputStream input = socket.getInputStream();
                     OutputStream output = socket.getOutputStream();
+                    byte[] sendData = msg.getBytes(Charset.forName("EUC-KR"));
+                    if (utf8) sendData = msg.getBytes(StandardCharsets.UTF_8);
 
-                    output.write(msg.getBytes(Charset.forName("EUC-KR")));
+                    output.write(sendData);
                     output.flush();
 
                     long startTime = System.currentTimeMillis();

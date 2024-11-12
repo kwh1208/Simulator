@@ -41,6 +41,7 @@ public class UnderTheLineLeftController {
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         tcpManager = TCPManager.getManager();
+
     }
     @FXML
     public void sendDisplayOn() {
@@ -49,7 +50,7 @@ public class UnderTheLineLeftController {
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"0211!]";
             }
-            asciiMsgTransceiver.sendMessages(msg);
+            asciiMsgTransceiver.sendMessages(msg, false);
             return;
         }
         String msg = "10 02 00 00 02 41 01 10 03";
@@ -65,7 +66,7 @@ public class UnderTheLineLeftController {
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"0210!]";
             }
-            asciiMsgTransceiver.sendMessages(msg);
+            asciiMsgTransceiver.sendMessages(msg, false);
             return;
         }
         String msg = "10 02 00 00 02 41 00 10 03";
@@ -84,7 +85,7 @@ public class UnderTheLineLeftController {
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"031!]";
             }
-            String time = asciiMsgTransceiver.sendMessages(msg);
+            String time = asciiMsgTransceiver.sendMessages(msg, false);
             timeBoard.setText(time);
             return;
         }
@@ -117,7 +118,7 @@ public class UnderTheLineLeftController {
             msg+=time.replace(day, dayInt);
             msg += "!]";
 
-            asciiMsgTransceiver.sendMessages(msg);
+            asciiMsgTransceiver.sendMessages(msg, false);
             
             return;
         }
@@ -151,7 +152,7 @@ public class UnderTheLineLeftController {
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"041!]";
             }
-            asciiMsgTransceiver.sendMessages(msg);
+            asciiMsgTransceiver.sendMessages(msg, false);
         }
         else{
             String msg = "10 02 00 00 02 89 00 10 03";
@@ -172,7 +173,7 @@ public class UnderTheLineLeftController {
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"042!]";
             }
-            asciiMsgTransceiver.sendMessages(msg);
+            asciiMsgTransceiver.sendMessages(msg,false);
         }
         //비트수, 세로, 가로크기 가져와서 같이 보내줘야함.
         else {

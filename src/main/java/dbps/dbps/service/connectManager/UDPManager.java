@@ -8,6 +8,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import static dbps.dbps.Constants.*;
 
@@ -50,7 +51,7 @@ public class UDPManager {
         return udpManager;
     }
 
-    public Task<String> sendASCMsg(String msg){
+    public Task<String> sendASCMsg(String msg, boolean utf8){
         return new Task<String>() {
             @Override
             protected String call() throws Exception {
@@ -62,6 +63,7 @@ public class UDPManager {
                 try{
                     InetAddress serverAddr = InetAddress.getByName(IP);
                     DatagramPacket sendPacket = new DatagramPacket(msg.getBytes(Charset.forName("EUC-KR")), msg.getBytes().length, serverAddr, PORT);
+                    if (utf8) sendPacket = new DatagramPacket(msg.getBytes(StandardCharsets.UTF_8), msg.getBytes(StandardCharsets.UTF_8).length, serverAddr, PORT);
                     socket.send(sendPacket);
 
                     long startTime = System.currentTimeMillis();

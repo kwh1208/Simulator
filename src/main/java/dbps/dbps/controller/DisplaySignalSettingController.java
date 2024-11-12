@@ -119,7 +119,7 @@ public class DisplaySignalSettingController {
         if (isRS){
             transferProtocol = "!["+convertRS485AddrASCii()+signalProtocol+"!]";
         }else transferProtocol = "![0"+signalProtocol+"!]";
-        asciiMsgTransceiver.sendMessages(transferProtocol);
+        asciiMsgTransceiver.sendMessages(transferProtocol, false);
         }
         else {
             String selectedSignal = signalList.getSelectionModel().getSelectedItem();
@@ -291,7 +291,7 @@ public class DisplaySignalSettingController {
             msg = "!["+convertRS485AddrASCii()+"0B4"+before+" "+after+"!]";
         }
 
-        asciiMsgTransceiver.sendMessages(msg);
+        asciiMsgTransceiver.sendMessages(msg, false);
     }
 
     @FXML
@@ -300,7 +300,7 @@ public class DisplaySignalSettingController {
         if (isRS){
             msg = "!["+convertRS485AddrASCii()+"0B50!]";
         }
-        asciiMsgTransceiver.sendMessages(msg);
+        asciiMsgTransceiver.sendMessages(msg, false);
     }
 
     public void save() {

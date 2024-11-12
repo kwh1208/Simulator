@@ -108,7 +108,7 @@ public class MakeOwnMsgController {
     @FXML
     public void send() {
         String text = defaultSetting.getText();
-        asciiMsgTransceiver.sendMessages(text);
+        asciiMsgTransceiver.sendMessages(text, false);
     }
 
     //선택지 초기상태로
@@ -426,7 +426,7 @@ public class MakeOwnMsgController {
         if (isRS){
             msg = "!["+convertRS485AddrASCii()+"0330!]";
         }
-        String result = asciiMsgTransceiver.sendMessages(msg);
+        String result = asciiMsgTransceiver.sendMessages(msg, false);
         defaultSetting.setText(result);
     }
 }

@@ -9,6 +9,7 @@ import dbps.dbps.service.PreviewService;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
@@ -30,6 +31,8 @@ public class ASCiiMsgController {
     public static List<TextField> transmitMsgs = new ArrayList<>();
     private List<Button> msgSendBtns = new ArrayList<>();
     private List<String> transmitMsgContents;
+    @FXML
+    private CheckBox utf_8;
 
     @FXML
     public void initialize() {
@@ -61,7 +64,7 @@ public class ASCiiMsgController {
         int num = Integer.parseInt(clickedBtn.getId().substring(10));
         TextField targetTextField = transmitMsgs.get(num - 1);
 
-        asciiMsgTransceiver.sendMessages(targetTextField.getText());
+        asciiMsgTransceiver.sendMessages(targetTextField.getText(), utf_8.isSelected());
     }
 
     //메세지 초기화
@@ -136,7 +139,7 @@ public class ASCiiMsgController {
             textField.setMaxHeight(45.0);
             textField.setMaxWidth(565.0);
             AnchorPane.setLeftAnchor(textField, 11.0);
-            AnchorPane.setTopAnchor(textField, 15.0 + (i - 1) * 55.0);
+            AnchorPane.setTopAnchor(textField, 22.0 + (i - 1) * 55.0);
             AnchorPane.setRightAnchor(textField, 91.0);
             AnchorPane.setBottomAnchor(textField, 543 - (i - 1) * 55.0);
             textField.setId("transmitMsg" + i);
@@ -147,7 +150,7 @@ public class ASCiiMsgController {
             sendButton.setPrefHeight(45.0);
             sendButton.setPrefWidth(61.0);
             AnchorPane.setLeftAnchor(sendButton, 620.0);
-            AnchorPane.setTopAnchor(sendButton, 15.0 + (i - 1) * 55.0);
+            AnchorPane.setTopAnchor(sendButton, 22.0 + (i - 1) * 55.0);
             AnchorPane.setBottomAnchor(sendButton, 543 - (i - 1) * 55.0);
             AnchorPane.setRightAnchor(sendButton, 8.0);
             sendButton.setId("msgSendBtn" + i);

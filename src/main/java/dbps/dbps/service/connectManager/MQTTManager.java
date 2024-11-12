@@ -2,12 +2,13 @@ package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.LogService;
 import javafx.concurrent.Task;
-import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.nio.charset.Charset;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class MQTTManager {
 
@@ -26,85 +27,19 @@ public class MQTTManager {
     }
 
     public String MQTT_BROKER = "";
-    public String MQTT_TOPIC = "";
+    public String MQTT_TOPIC_SEND = "";
+    public String MQTT_TOPIC_RECEIVED = "";
     public String MQTT_ID = "";
     public String MQTT_PWD = "";
 
 
-    public void setMQTTInfo(String broker,  String topic, String id, String pwd){
+
+    public void setMQTTInfo(String broker, String topic,String topic_r, String id, String pwd){
         MQTT_BROKER = broker;
-        MQTT_TOPIC = topic;
+        MQTT_TOPIC_SEND = topic;
         MQTT_ID = id;
         MQTT_PWD = pwd;
-    }
-
-
-    public static void main(String[] args) {
-        String broker = "tcp://broker.hivemq.com:1883"; // MQTT 브로커 주소
-        String clientId = "JavaSampleClient";           // 클라이언트 ID
-        String topic = "test/topic";                    // 테스트용 토픽
-        String content = "Hello from Java!";            // 전송할 메시지
-        int qos = 2;                                    // QoS: 0, 1, 2 중 하나 선택
-        //변경가능한 부분, qos, 토픽, 브로커주소, 클라이언트 ID, 사용자 인증정보(ID/PWD)
-
-        try {
-            // MQTT 클라이언트 생성
-            MqttClient client = new MqttClient(broker, MqttClient.generateClientId());
-
-            // 연결 옵션 설정
-            MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setCleanSession(true); // 클린 세션 사용
-
-            // 콜백 설정 (메시지 수신, 전달 완료, 연결 중단 처리)
-            client.setCallback(new MqttCallback() {
-                @Override
-                public void connectionLost(Throwable cause) {
-                    System.out.println("Connection lost! " + cause.getMessage());
-                }
-
-                @Override
-                public void messageArrived(String topic, MqttMessage message) {
-                    System.out.println("Message arrived on topic: " + topic + " -> " + new String(message.getPayload()));
-                }
-
-                @Override
-                public void deliveryComplete(IMqttDeliveryToken token) {
-                    System.out.println("Delivery complete: " + token.isComplete());
-                }
-            });
-
-            // 브로커 연결
-            System.out.println("Connecting to broker: " + broker);
-            client.connect(connOpts);
-            System.out.println("Connected");
-
-            // 메시지 발행
-            System.out.println("Publishing message: " + content);
-            MqttMessage message = new MqttMessage(content.getBytes());
-            message.setQos(qos); // QoS 설정
-            client.publish(topic, message);
-            System.out.println("Message published");
-
-            // 토픽 구독 설정
-            client.subscribe(topic);
-            System.out.println("Subscribed to topic: " + topic);
-
-            // 메시지 발행 및 구독 테스트 (10초간 대기 후 종료)
-            Thread.sleep(10000);
-
-            // 연결 종료
-            client.disconnect();
-            System.out.println("Disconnected");
-        } catch (MqttException me) {
-            System.out.println("reason " + me.getReasonCode());
-            System.out.println("msg " + me.getMessage());
-            System.out.println("loc " + me.getLocalizedMessage());
-            System.out.println("cause " + me.getCause());
-            System.out.println("excep " + me);
-            me.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        MQTT_TOPIC_RECEIVED = topic_r;
     }
 
     public Task<String> sendMsgAndGetMsgByte(byte[] msg) {
@@ -118,43 +53,29 @@ public class MQTTManager {
                 connOpts.setUserName(MQTT_ID);
                 connOpts.setPassword(MQTT_PWD.toCharArray());
 
-                CompletableFuture<String> futureResponse = new CompletableFuture<>();
-
-                client.setCallback(new MqttCallback() {
-                    @Override
-                    public void connectionLost(Throwable cause) {
-                        System.out.println("Connection lost! " + cause.getMessage());
-                    }
-
-                    @Override
-                    public void messageArrived(String topic, MqttMessage message) {
-                        System.out.println("Message arrived on topic: " + topic + " -> " + new String(message.getPayload()));
-
-                        // 여기에 응답을 처리하는 로직 추가
-                        futureResponse.complete(new String(message.getPayload()));
-                    }
-
-                    @Override
-                    public void deliveryComplete(IMqttDeliveryToken token) {
-                        System.out.println("Delivery complete: " + token.isComplete());
-                    }
-                });
-
                 client.connect(connOpts);
                 MqttMessage message = new MqttMessage(msg);
                 message.setQos(0);
-                client.publish(MQTT_TOPIC, message);
+                client.publish(MQTT_TOPIC_SEND, message);
 
-                client.subscribe("MQTT_TOPIC_RESPONSE");
+                CountDownLatch latch = new CountDownLatch(1);
+                final StringBuilder response = new StringBuilder();
 
-                try {
-                    // 5초 동안 응답 대기 후 반환, 타임아웃 시 TimeoutException 발생
-                    return futureResponse.get(5, TimeUnit.SECONDS);
-                } catch (TimeoutException e) {
-                    client.disconnect();
-                    return "Timeout: No response received";
-                } finally {
-                    client.disconnect(); // 연결 종료
+                // 응답 토픽 구독
+                client.subscribe(MQTT_TOPIC_RECEIVED, (topic, responseMessage) -> {
+                    // 메시지 수신 시 처리
+                    response.append(new String(responseMessage.getPayload(), Charset.forName("EUC-KR")));
+                    latch.countDown(); // 메시지 수신 시 카운트다운
+                });
+
+                // 타임아웃 시간 설정 (예: 5초)
+                boolean receivedInTime = latch.await(5, TimeUnit.SECONDS);
+                client.disconnect(); // 연결 종료
+
+                if (receivedInTime) {
+                    return response.toString(); // 응답을 받은 경우 반환
+                } else {
+                    throw new Exception("Timeout: No response received within the specified time.");
                 }
             }
         };
@@ -171,45 +92,74 @@ public class MQTTManager {
                 connOpts.setUserName(MQTT_ID);
                 connOpts.setPassword(MQTT_PWD.toCharArray());
 
-                CompletableFuture<String> futureResponse = new CompletableFuture<>();
-
-                client.setCallback(new MqttCallback() {
-                    @Override
-                    public void connectionLost(Throwable cause) {
-                        System.out.println("Connection lost! " + cause.getMessage());
-                    }
-
-                    @Override
-                    public void messageArrived(String topic, MqttMessage message) {
-                        System.out.println("Message arrived on topic: " + topic + " -> " + new String(message.getPayload()));
-
-                        // 여기에 응답을 처리하는 로직 추가
-                        futureResponse.complete(new String(message.getPayload()));
-                    }
-
-                    @Override
-                    public void deliveryComplete(IMqttDeliveryToken token) {
-                        System.out.println("Delivery complete: " + token.isComplete());
-                    }
-                });
-
                 client.connect(connOpts);
                 MqttMessage message = new MqttMessage(msg.getBytes(Charset.forName("EUC-KR")));
                 message.setQos(0);
-                client.publish(MQTT_TOPIC, message);
+                client.publish(MQTT_TOPIC_SEND, message);
 
-                client.subscribe("MQTT_TOPIC_RESPONSE");
+                CountDownLatch latch = new CountDownLatch(1);
+                final StringBuilder response = new StringBuilder();
 
-                try {
-                    // 5초 동안 응답 대기 후 반환, 타임아웃 시 TimeoutException 발생
-                    return futureResponse.get(5, TimeUnit.SECONDS);
-                } catch (TimeoutException e) {
-                    client.disconnect();
-                    return "Timeout: No response received";
-                } finally {
-                    client.disconnect(); // 연결 종료
+                // 응답 토픽 구독
+                client.subscribe(MQTT_TOPIC_RECEIVED, (topic, responseMessage) -> {
+                    // 메시지 수신 시 처리
+                    response.append(new String(responseMessage.getPayload(), Charset.forName("EUC-KR")));
+                    latch.countDown(); // 메시지 수신 시 카운트다운
+                });
+
+                // 타임아웃 시간 설정 (예: 5초)
+                boolean receivedInTime = latch.await(5, TimeUnit.SECONDS);
+                client.disconnect(); // 연결 종료
+
+                if (receivedInTime) {
+                    return response.toString(); // 응답을 받은 경우 반환
+                } else {
+                    throw new Exception("Timeout: No response received within the specified time.");
                 }
             }
         };
     }
+
+    public Task<String> sendJSONMsg(String msg) {
+        return new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                MqttClient client = new MqttClient(MQTT_BROKER, MqttClient.generateClientId());
+
+                MqttConnectOptions connOpts = new MqttConnectOptions();
+                connOpts.setCleanSession(true); // 클린 세션 사용
+                connOpts.setUserName(MQTT_ID);
+                connOpts.setPassword(MQTT_PWD.toCharArray());
+
+                //제이슨 메세지 만들기.
+
+                client.connect(connOpts);
+                MqttMessage message = new MqttMessage(msg.getBytes(Charset.forName("EUC-KR")));
+                message.setQos(0);
+                client.publish(MQTT_TOPIC_SEND, message);
+
+                CountDownLatch latch = new CountDownLatch(1);
+                final StringBuilder response = new StringBuilder();
+
+                // 응답 토픽 구독
+                client.subscribe(MQTT_TOPIC_RECEIVED, (topic, responseMessage) -> {
+                    // 메시지 수신 시 처리
+                    response.append(new String(responseMessage.getPayload(), Charset.forName("EUC-KR")));
+                    latch.countDown(); // 메시지 수신 시 카운트다운
+                });
+
+                // 타임아웃 시간 설정 (예: 5초)
+                boolean receivedInTime = latch.await(5, TimeUnit.SECONDS);
+                client.disconnect(); // 연결 종료
+
+                if (receivedInTime) {
+                    return response.toString(); // 응답을 받은 경우 반환
+                } else {
+                    throw new Exception("Timeout: No response received within the specified time.");
+                }
+            }
+        };
+    }
+
+
 }

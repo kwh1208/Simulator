@@ -56,7 +56,7 @@ public class UnderTheLineRightController {
         msg+=makeRelayMsg(relayBox2.getValue());
         msg+="!]";
 
-        asciiMsgTransceiver.sendMessages(msg);
+        asciiMsgTransceiver.sendMessages(msg,false);
     }
 
     private String makeRelayMsg(String value) {
@@ -85,7 +85,7 @@ public class UnderTheLineRightController {
                 if (isRS){
                     msg = "!["+convertRS485AddrASCii()+"020"+result+"!]";
                 }
-                asciiMsgTransceiver.sendMessages(msg);
+                asciiMsgTransceiver.sendMessages(msg,false);
             }
         }
         else {
@@ -124,7 +124,7 @@ public class UnderTheLineRightController {
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"070"+result+"!]";
             }
-            asciiMsgTransceiver.sendMessages(msg);
+            asciiMsgTransceiver.sendMessages(msg, false);
         }
         else {
             String msg = "10 02 00 00 02 45 00 10 03";

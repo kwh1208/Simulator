@@ -28,3 +28,7 @@
 .button:pressed {
     -fx-background-color: darkorange; /* 버튼 눌렀을 때 배경색 */
 }
+
+.check-box{
+    -fx-text-fill: white;
+}
