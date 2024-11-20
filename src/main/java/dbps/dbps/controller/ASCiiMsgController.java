@@ -6,33 +6,40 @@ import dbps.dbps.service.ASCiiMsgService;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.PreviewService;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static dbps.dbps.Constants.ascUTF16;
 
 
 public class ASCiiMsgController {
 
     @FXML
     public Button msgSaveBtn;
+
     @FXML
     private AnchorPane ASCiiMsgAnchorPane;
+
+    @FXML
+    private CheckBox utf_8;
+    @FXML
+    public CheckBox utf_16;
 
     ASCiiMsgService msgService;
     AsciiMsgTransceiver asciiMsgTransceiver;
     PreviewService previewService;
     ConfigService configService;
 
-    public static List<TextField> transmitMsgs = new ArrayList<>();
-    private List<Button> msgSendBtns = new ArrayList<>();
+    private List<TextField> transmitMsgs;
     private List<String> transmitMsgContents;
-    @FXML
-    private CheckBox utf_8;
+
 
     @FXML
     public void initialize() {
@@ -42,9 +49,23 @@ public class ASCiiMsgController {
         previewService = PreviewService.getInstance();
         configService = ConfigService.getInstance();
 
+        transmitMsgs = new ArrayList<>();
+
         makeMsgContainer();
 
         ASCiiMsgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/ASCiiMsg.css").toExternalForm());
+
+        utf_8.selectedProperty().addListener((observable, oldValue, newValue) -> handleEncodingSelection(newValue, false));
+        utf_16.selectedProperty().addListener((observable, oldValue, newValue) -> handleEncodingSelection(newValue, true));
+    }
+
+    //utf8, 16 버튼 선택
+    private void handleEncodingSelection(boolean selected, boolean isUtf16) {
+        if (selected) {
+            utf_8.setSelected(!isUtf16);
+            utf_16.setSelected(isUtf16);
+            ascUTF16 = isUtf16;
+        }
     }
 
     //text파일에 저장
@@ -59,7 +80,7 @@ public class ASCiiMsgController {
     }
 
     //기기에 메세지 전송
-    public void sendMsg(Event event) {
+    public void sendMsg(MouseEvent event) {
         Button clickedBtn = (Button) event.getSource();
         int num = Integer.parseInt(clickedBtn.getId().substring(10));
         TextField targetTextField = transmitMsgs.get(num - 1);
@@ -130,7 +151,6 @@ public class ASCiiMsgController {
 
 
     /**
-     * 리팩토링용
      * 시작시 textField와 버튼을 만들어주는 메소드
      */
     private void makeMsgContainer() {
@@ -139,9 +159,9 @@ public class ASCiiMsgController {
             textField.setMaxHeight(45.0);
             textField.setMaxWidth(565.0);
             AnchorPane.setLeftAnchor(textField, 11.0);
-            AnchorPane.setTopAnchor(textField, 22.0 + (i - 1) * 55.0);
+            AnchorPane.setTopAnchor(textField, 27.0 + (i - 1) * 55.0);
             AnchorPane.setRightAnchor(textField, 91.0);
-            AnchorPane.setBottomAnchor(textField, 543 - (i - 1) * 55.0);
+            AnchorPane.setBottomAnchor(textField, 538 - (i - 1) * 55.0);
             textField.setId("transmitMsg" + i);
             textField.setText(transmitMsgContents.get(i - 1));
             transmitMsgs.add(textField);
@@ -150,12 +170,11 @@ public class ASCiiMsgController {
             sendButton.setPrefHeight(45.0);
             sendButton.setPrefWidth(61.0);
             AnchorPane.setLeftAnchor(sendButton, 620.0);
-            AnchorPane.setTopAnchor(sendButton, 22.0 + (i - 1) * 55.0);
-            AnchorPane.setBottomAnchor(sendButton, 543 - (i - 1) * 55.0);
+            AnchorPane.setTopAnchor(sendButton, 27.0 + (i - 1) * 55.0);
+            AnchorPane.setBottomAnchor(sendButton, 538 - (i - 1) * 55.0);
             AnchorPane.setRightAnchor(sendButton, 8.0);
             sendButton.setId("msgSendBtn" + i);
             sendButton.setOnMouseClicked(this::sendMsg);
-            msgSendBtns.add(sendButton);
 
             ASCiiMsgAnchorPane.getChildren().addAll(textField,  sendButton);
         }

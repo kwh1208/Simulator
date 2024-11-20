@@ -5,9 +5,7 @@ import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.LogService;
 import javafx.concurrent.Task;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -97,21 +95,21 @@ public class SerialPortManager {
             protected String call() throws Exception {
                 String portName = OPEN_PORT_NAME;
                 SerialPort port = serialPortMap.get(portName);
-
                 if (port == null || !isPortOpen(portName)) {
                     openPort(portName, SERIAL_BAUDRATE);
                     port = serialPortMap.get(portName);
                 }
                 try {
-                    OutputStream outputStream = port.getOutputStream();
-                    InputStream inputStream = port.getInputStream();
-
                     byte[] dataToSend = msg.getBytes(Charset.forName("EUC-KR"));
                     if (utf8) dataToSend = msg.getBytes(StandardCharsets.UTF_8);
+                    else if (ascUTF16) {
+                        dataToSend = msg.getBytes(StandardCharsets.UTF_16BE);
+                    }
+                    OutputStream outputStream = new BufferedOutputStream(port.getOutputStream());
+                    InputStream inputStream = new BufferedInputStream(port.getInputStream());
                     outputStream.write(dataToSend);
                     outputStream.flush();
 
-                    Thread.sleep(300);
                     byte[] buffer = new byte[1024];
                     int totalBytesRead = 0;
                     long timeout = RESPONSE_LATENCY * 1000;

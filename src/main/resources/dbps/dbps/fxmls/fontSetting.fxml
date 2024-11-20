@@ -36,7 +36,7 @@
                  <items>
                      <FXCollections fx:factory="observableArrayList">
                          <String fx:value="사용안함" />
-                         <String fx:value="유니코드 완성형" />
+                         <String fx:value="유니코드 한국어" />
                          <String fx:value="유니코드 일본어" />
                          <String fx:value="유니코드 중국어" />
                          <String fx:value="한글조합형" />
@@ -88,7 +88,7 @@
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="사용안함" />
-                     <String fx:value="유니코드 완성형" />
+                     <String fx:value="유니코드 한국어" />
                      <String fx:value="유니코드 일본어" />
                      <String fx:value="유니코드 중국어" />
                      <String fx:value="한글조합형" />
@@ -141,7 +141,7 @@
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="사용안함" />
-                     <String fx:value="유니코드 완성형" />
+                     <String fx:value="유니코드 한국어" />
                      <String fx:value="유니코드 일본어" />
                      <String fx:value="유니코드 중국어" />
                      <String fx:value="한글조합형" />
@@ -193,7 +193,7 @@
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="사용안함" />
-                     <String fx:value="유니코드 완성형" />
+                     <String fx:value="유니코드 한국어" />
                      <String fx:value="유니코드 일본어" />
                      <String fx:value="유니코드 중국어" />
                      <String fx:value="한글조합형" />

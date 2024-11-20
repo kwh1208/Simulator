@@ -24,7 +24,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -254,28 +253,13 @@ public class CommunicationSettingController {
 
     //사용가능한 포트 가져오기
     private void getSerialPortList() {
-        SerialPort[] ports = SerialPort.getCommPorts();
-        ObservableList<String> items = serialPortComboBox.getItems();
-
-        String currentSelection = serialPortComboBox.getValue(); // 현재 선택된 값 저장
-
-
-        List<String> portNames = Arrays.stream(ports)
+        List<String> portNames = Arrays.stream(SerialPort.getCommPorts())
                 .map(SerialPort::getSystemPortName)
-                .sorted(Comparator.comparingInt(this::extractPortNumber)) // 포트 번호 기준으로 정렬
+                .sorted(Comparator.comparingInt(this::extractPortNumber))
                 .toList();
 
-        items.clear();
-        // 정렬된 포트 이름을 items에 추가
-        items.addAll(portNames);
-
-        // ComboBox에 정렬된 목록 설정
-        serialPortComboBox.setItems(items);
-
-        // 기존에 선택한 값이 여전히 리스트에 있다면, 다시 선택해줍니다.
-        if (currentSelection != null && items.contains(currentSelection)) {
-            serialPortComboBox.setValue(currentSelection);
-        }
+        serialPortComboBox.getItems().setAll(portNames);
+        serialPortComboBox.getSelectionModel().selectFirst();
     }
 
     // COM 포트에서 숫자 부분만 추출하여 정수로 반환
@@ -386,20 +370,23 @@ public class CommunicationSettingController {
     }
 
     //다빛넷 열기
-    public void openDabitNet() throws IOException {
-        String relativePath = "./DabitNet_S.exe";
+    public void openDabitNet(MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/dabitNet.fxml"));
+        Parent root = fxmlLoader.load();
 
-        // 절대 경로로 변환 후 정리
-        String absolutePath = new File(relativePath).getCanonicalPath();
+        Stage modalStage = new Stage();
+        modalStage.setTitle("DabitNet");
 
-        // 실행할 명령어 정의
-        String command = String.format(
-                "powershell -Command \"Start-Process -FilePath '%s' -Verb runAs\"",
-                absolutePath
-        );
+        modalStage.initModality(Modality.APPLICATION_MODAL);
 
-        // Runtime 실행
-        Runtime.getRuntime().exec(command);
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.showAndWait();
     }
 
     //블루투스 열기
@@ -464,51 +451,26 @@ public class CommunicationSettingController {
      * 리팩토링용
      */
 
-    private void UDPRadioToggle(boolean isUDP) {
-        if (isUDP) {
-            UDPIPAddress.setDisable(false);
-            UDPIPPort.setDisable(false);
-        } else {
-            UDPIPAddress.setDisable(true);
-            UDPIPPort.setDisable(true);
-        }
-
-    }
-
-    private void serverTCPRadioToggle(boolean isServer) {
-        if (isServer) {
-            serverIPAddress.setDisable(false);
-            serverIPPort.setDisable(false);
-        } else {
-            serverIPAddress.setDisable(true);
-            serverIPPort.setDisable(true);
-        }
-    }
-
-    private void clientTCPRadioToggle(boolean isClient) {
-        if (isClient) {
-            clientIPAddress.setDisable(false);
-            clientIPPort.setDisable(false);
-        } else {
-            clientIPAddress.setDisable(true);
-            clientIPPort.setDisable(true);
+    private void toggleComponents(boolean enable, Control... controls) {
+        for (Control control : controls) {
+            control.setDisable(!enable);
         }
     }
 
     private void serialRadioToggle(boolean isSerial) {
-        if (isSerial) {
-            serialPortComboBox.setDisable(false);
-            serialSpeedChoiceBox.setDisable(false);
-            RS485ChkBox.setDisable(false);
-            findSpeedBtn.setDisable(false);
-            openDeviceManagerBtn.setDisable(false);
-        } else {
-            serialPortComboBox.setDisable(true);
-            serialSpeedChoiceBox.setDisable(true);
-            RS485ChkBox.setDisable(true);
-            findSpeedBtn.setDisable(true);
-            openDeviceManagerBtn.setDisable(true);
-        }
+        toggleComponents(isSerial, serialPortComboBox, serialSpeedChoiceBox, RS485ChkBox, findSpeedBtn, openDeviceManagerBtn);
+    }
+
+    private void clientTCPRadioToggle(boolean isClient) {
+        toggleComponents(isClient, clientIPAddress, clientIPPort);
+    }
+
+    private void serverTCPRadioToggle(boolean isServer) {
+        toggleComponents(isServer, serverIPAddress, serverIPPort);
+    }
+
+    private void UDPRadioToggle(boolean isUDP) {
+        toggleComponents(isUDP, UDPIPAddress, UDPIPPort);
     }
 
     private void getServerIP() {

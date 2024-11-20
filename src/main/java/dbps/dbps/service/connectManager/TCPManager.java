@@ -62,6 +62,9 @@ public class TCPManager {
                     OutputStream output = socket.getOutputStream();
                     byte[] sendBytes = msg.getBytes(Charset.forName("EUC-KR"));
                     if (utf8) sendBytes = msg.getBytes(StandardCharsets.UTF_8);
+                    else if (ascUTF16) {
+                        sendBytes = msg.getBytes(StandardCharsets.UTF_16BE);
+                    }
 
                     output.write(sendBytes);
                     output.flush();

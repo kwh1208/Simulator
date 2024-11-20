@@ -79,10 +79,10 @@
         </ChoiceBox>
 
         <Label layoutX="34.0" layoutY="140.0" text="5. 문자코드" />
-        <ChoiceBox fx:id="charCodes" layoutX="197.0" layoutY="136.0" prefHeight="21.0" prefWidth="139.0" value="KS완성형 한글코드">
+        <ChoiceBox fx:id="charCodes" layoutX="197.0" layoutY="136.0" prefHeight="21.0" prefWidth="139.0" value="한글 조합형">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="KS완성형 한글코드" />
+                    <String fx:value="한글 조합형" />
                     <String fx:value="UTF16유니코드" />
                 </FXCollections>
             </items>

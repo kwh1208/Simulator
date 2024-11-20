@@ -117,7 +117,7 @@ public class MakeOwnMsgController {
         // 모든 항목의 value 값 초기화
         displayControl.setValue("On");
         displayMethod.setValue("Clear");
-        charCodes.setValue("KS완성형 한글코드");
+        charCodes.setValue("한글 조합형");
         fontSize.setValue("16(Standard)");
         fontGroup.setValue("fontGroup0");
         effectIn.setValue("정지효과");
@@ -236,7 +236,7 @@ public class MakeOwnMsgController {
 
     private String setFText(String value1, String value2) {
         String result = "";
-        if (value1.equals("KS완성형 한글코드")) {
+        if (value1.equals("한글 조합형")) {
             result += "00";
         } else {
             result += "01";

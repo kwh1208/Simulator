@@ -111,6 +111,9 @@ public class ServerTCPManager {
                     OutputStream output = socket.getOutputStream();
                     byte[] sendData = msg.getBytes(Charset.forName("EUC-KR"));
                     if (utf8) sendData = msg.getBytes(StandardCharsets.UTF_8);
+                    else if (ascUTF16) {
+                        sendData = msg.getBytes(StandardCharsets.UTF_16BE);
+                    }
 
                     output.write(sendData);
                     output.flush();

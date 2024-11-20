@@ -153,7 +153,7 @@ public class FontService {
                                         else {
                                             tmp.putShort((short)fontKindAddr[0][1]);
                                         }
-                                    } else if (fontType[3*i+j].equals("유니코드 완성형")) {
+                                    } else if (fontType[3*i+j].equals("유니코드 한국어")) {
                                         tmp.putShort((short)fontKindAddr[0][2]);
                                     } else if (fontType[3*i+j].equals("유니코드 일본어")) {
                                         tmp.putShort((short)fontKindAddr[0][3]);
@@ -181,7 +181,7 @@ public class FontService {
                                     tmp.clear();
                                     if (fontType[3*i+j].equals("영어(ASCII)")){
                                         tmp.putShort((short)fontKindAddr[1][1]);
-                                    } else if (fontType[3*i+j].equals("유니코드 완성형")) {
+                                    } else if (fontType[3*i+j].equals("유니코드 한국어")) {
                                         tmp.putShort((short)fontKindAddr[1][2]);
                                     } else if (fontType[3*i+j].equals("유니코드 일본어")) {
                                         tmp.putShort((short)fontKindAddr[1][3]);

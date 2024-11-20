@@ -64,6 +64,9 @@ public class UDPManager {
                     InetAddress serverAddr = InetAddress.getByName(IP);
                     DatagramPacket sendPacket = new DatagramPacket(msg.getBytes(Charset.forName("EUC-KR")), msg.getBytes().length, serverAddr, PORT);
                     if (utf8) sendPacket = new DatagramPacket(msg.getBytes(StandardCharsets.UTF_8), msg.getBytes(StandardCharsets.UTF_8).length, serverAddr, PORT);
+                    else if (ascUTF16) {
+                        sendPacket = new DatagramPacket(msg.getBytes(StandardCharsets.UTF_16BE), msg.getBytes(StandardCharsets.UTF_16BE).length, serverAddr, PORT);
+                    }
                     socket.send(sendPacket);
 
                     long startTime = System.currentTimeMillis();

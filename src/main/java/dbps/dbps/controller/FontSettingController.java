@@ -469,7 +469,7 @@ public class FontSettingController {
 //            System.out.println("size = " + size);
 //            long size_int = Long.parseLong(size.substring(0, 2)) * Long.parseLong(size.substring(3, 5)) / 16;
 //            switch (fontGroup1fontSelected2.getSelectionModel().getSelectedItem()){
-//                case "유니코드 완성형": totalFileSize+=size_int* 11172L;
+//                case "유니코드 한국어": totalFileSize+=size_int* 11172L;
 //                case "유니코드 일본어": totalFileSize+=size_int* 192L;
 //                case "유니코드 중국어": totalFileSize+=size_int* 20992L;
 //                case "한글 조합형": totalFileSize+=size_int* 360L;
@@ -487,7 +487,7 @@ public class FontSettingController {
 //            String size = extractTwoCharsAroundX(fontGroup2fontPath2.getText(), 'x');
 //            long size_int = Long.parseLong(size.substring(0, 2)) * Long.parseLong(size.substring(3, 5)) / 16;
 //            switch (fontGroup2fontSelected2.getSelectionModel().getSelectedItem()){
-//                case "유니코드 완성형": totalFileSize+=size_int* 11172L;
+//                case "유니코드 한국어": totalFileSize+=size_int* 11172L;
 //                case "유니코드 일본어": totalFileSize+=size_int* 192L;
 //                case "유니코드 중국어": totalFileSize+=size_int* 20992L;
 //                case "한글 조합형": totalFileSize+=size_int* 360L;
@@ -505,7 +505,7 @@ public class FontSettingController {
 //            String size = extractTwoCharsAroundX(fontGroup3fontPath2.getText(), 'x');
 //            long size_int = Long.parseLong(size.substring(0, 2)) * Long.parseLong(size.substring(3, 5)) / 16;
 //            switch (fontGroup3fontSelected2.getSelectionModel().getSelectedItem()){
-//                case "유니코드 완성형": totalFileSize+=size_int* 11172L;
+//                case "유니코드 한국어": totalFileSize+=size_int* 11172L;
 //                case "유니코드 일본어": totalFileSize+=size_int* 192L;
 //                case "유니코드 중국어": totalFileSize+=size_int* 20992L;
 //                case "한글 조합형": totalFileSize+=size_int* 360L;
@@ -523,7 +523,7 @@ public class FontSettingController {
 //            String size = extractTwoCharsAroundX(fontGroup4fontPath2.getText(), 'x');
 //            long size_int = Long.parseLong(size.substring(0, 2)) * Long.parseLong(size.substring(3, 5)) / 16;
 //            switch (fontGroup4fontSelected2.getSelectionModel().getSelectedItem()){
-//                case "유니코드 완성형": totalFileSize+=size_int* 11172L;
+//                case "유니코드 한국어": totalFileSize+=size_int* 11172L;
 //                case "유니코드 일본어": totalFileSize+=size_int* 192L;
 //                case "유니코드 중국어": totalFileSize+=size_int* 20992L;
 //                case "한글 조합형": totalFileSize+=size_int* 360L;

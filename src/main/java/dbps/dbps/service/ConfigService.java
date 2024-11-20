@@ -96,7 +96,7 @@ public class ConfigService {
                 for (int j =0; j < 3; j++) {//섹션 개수
                     defaultProperties.setProperty("displayControl"+i+j, "ON");
                     defaultProperties.setProperty("displayMethod"+i+j, "Normal");
-                    defaultProperties.setProperty("charCode"+i+j, "KS완성형 한글코드");
+                    defaultProperties.setProperty("charCode"+i+j, "한글 조합형");
                     defaultProperties.setProperty("fontSize"+i+j, "16(Standard)");
                     defaultProperties.setProperty("fontGroup"+i+j, "FontGroup0");
                     defaultProperties.setProperty("effectIn"+i+j, "정지효과");
@@ -123,7 +123,7 @@ public class ConfigService {
 
             defaultProperties.setProperty("displayControlDefault", "ON");
             defaultProperties.setProperty("displayMethodDefault", "Normal");
-            defaultProperties.setProperty("charCodeDefault", "KS완성형 한글코드");
+            defaultProperties.setProperty("charCodeDefault", "한글 조합형");
             defaultProperties.setProperty("fontSizeDefault", "16(Standard)");
             defaultProperties.setProperty("fontGroupDefault", "FontGroup0");
             defaultProperties.setProperty("effectInDefault", "정지효과");

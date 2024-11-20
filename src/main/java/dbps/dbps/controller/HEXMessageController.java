@@ -333,7 +333,7 @@ public class HEXMessageController {
         //msg 길이
         byte[] textBytes;
         try {
-            if (charCodesValue.equals("KS완성형 한글코드"))
+            if (charCodesValue.equals("한글 조합형"))
                 textBytes = text.getBytes("KSC5601");
             else textBytes = text.getBytes(StandardCharsets.UTF_16BE);
         } catch (UnsupportedEncodingException e) {
@@ -366,7 +366,7 @@ public class HEXMessageController {
         msg+= displayMethodValue.equals("Normal") ? "00 ":"01 ";
 
         //문자코드
-        msg+= charCodesValue.equals("KS완성형 한글코드") ? "00 ":"01 ";
+        msg+= charCodesValue.equals("한글 조합형") ? "00 ":"01 ";
 
         //폰트크기
         fontSizeValue = fontSizeValue.replaceAll("[^0-9]", "");
@@ -629,7 +629,7 @@ public class HEXMessageController {
         String msgNum = getMsgNum();
         configService.setProperty("displayControl"+msgNum, "ON");
         configService.setProperty("displayMethod"+msgNum, "Normal");
-        configService.setProperty("charCode"+msgNum, "KS완성형 한글코드");
+        configService.setProperty("charCode"+msgNum, "한글 조합형");
         configService.setProperty("fontSize"+msgNum, "16(Standard)");
         configService.setProperty("fontGroup"+msgNum, "FontGroup0");
         configService.setProperty("effectIn"+msgNum, "정지효과");

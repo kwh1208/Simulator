@@ -29,74 +29,40 @@ public class AdvancedSettingController {
     // 폰트 설정 모달창
     @FXML
     public void fontSetting(MouseEvent mouseEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/fontSetting.fxml"));
-        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
-        Parent root = fxmlLoader.load();
-
-        Stage modalStage = new Stage();
-        modalStage.setTitle("폰트 설정");
-
-        modalStage.initModality(Modality.APPLICATION_MODAL);
-
-        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-        modalStage.initOwner(parentStage);
-
-        Scene scene = new Scene(root);
-        modalStage.setScene(scene);
-        modalStage.setResizable(false);
-
-        modalStage.showAndWait();
+        openModal("/dbps/dbps/fxmls/fontSetting.fxml", "폰트 설정", mouseEvent);
     }
-    //표출신호 창
+
+    //표출신호 창 열기
+    @FXML
     public void transferSignalSetting(MouseEvent mouseEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/displaySignalSetting.fxml"));
-        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
-        Parent root = fxmlLoader.load();
-
-        Stage modalStage = new Stage();
-        modalStage.setTitle("표출 신호 설정");
-
-        modalStage.initModality(Modality.APPLICATION_MODAL);
-
-        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-        modalStage.initOwner(parentStage);
-
-        Scene scene = new Scene(root);
-        modalStage.setScene(scene);
-        modalStage.setResizable(false);
-
-        modalStage.showAndWait();
+        openModal("/dbps/dbps/fxmls/displaySignalSetting.fxml", "표출 신호 설정", mouseEvent);
     }
-    //보드기능 설정 창
+    //보드기능 설정 창 열기
+    @FXML
     public void boardSetting(MouseEvent mouseEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/boardSettings.fxml"));
-        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
-        Parent root = fxmlLoader.load();
-
-        Stage modalStage = new Stage();
-        modalStage.setTitle("폰트 설정");
-
-        modalStage.initModality(Modality.APPLICATION_MODAL);
-
-        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-        modalStage.initOwner(parentStage);
-
-        Scene scene = new Scene(root);
-        modalStage.setScene(scene);
-        modalStage.setResizable(false);
-
-        modalStage.showAndWait();
+        openModal("/dbps/dbps/fxmls/boardSettings.fxml", "보드 기능 설정", mouseEvent);
     }
 
-    //펌웨어 모달창
+    //펌웨어 모달창 열기
+    @FXML
     public void firmwareInfo(MouseEvent mouseEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/firmwareUpgrade.fxml"));
+        openModal("/dbps/dbps/fxmls/firmwareUpgrade.fxml", "펌웨어 정보", mouseEvent);
+    }
+
+
+
+    /**
+     * @param fxmlPath open 모달창 fxml 경로
+     * @param title 모달창 이름
+     * 모달창 open
+     */
+    private void openModal(String fxmlPath, String title, MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource(fxmlPath));
         fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
         Parent root = fxmlLoader.load();
 
         Stage modalStage = new Stage();
-        modalStage.setTitle("펌웨어 정보");
-
+        modalStage.setTitle(title);
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
         Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
@@ -108,4 +74,5 @@ public class AdvancedSettingController {
 
         modalStage.showAndWait();
     }
+
 }

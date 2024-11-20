@@ -32,8 +32,6 @@ public class MQTTManager {
     public String MQTT_ID = "";
     public String MQTT_PWD = "";
 
-
-
     public void setMQTTInfo(String broker, String topic,String topic_r, String id, String pwd){
         MQTT_BROKER = broker;
         MQTT_TOPIC_SEND = topic;
