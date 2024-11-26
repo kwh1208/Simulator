@@ -17,14 +17,14 @@
 .button:pressed {
     -fx-background-color: darkorange; /* 버튼 눌렀을 때 배경색 */
 }
-.list-cell{
-    -fx-pref-height: 25px;
-}
+
 .label{
     -fx-text-fill: #E0E0E0;
     -fx-font-size: 15px;
 }
-
+.list-cell{
+    -fx-pref-height: 25px;
+}
 .list-view {
     -fx-background-color: #1C1F26; /* 전체 ListView 배경색 */
 }

@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/jre/lib/security/public_suffix_list.dat" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/dbps/dbps/DabitNet_S.ini" charset="x-windows-949" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/dbps/dbps/log.txt" charset="x-windows-949" />
   </component>
 </project>

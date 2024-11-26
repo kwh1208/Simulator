@@ -115,9 +115,6 @@ public class AsciiMsgTransceiver {
 //
 
     private String msgReceive(String receiveMsg, String msg) {
-        if (receiveMsg.startsWith("DIBD")){
-            return receiveMsg;
-        }
         //실시간 메세지, 페이지 메세지
         if (receiveMsg.charAt(4) == '0' || receiveMsg.charAt(4) == '1') {
             if (receiveMsg.charAt(5) == '0') {//정상 처리

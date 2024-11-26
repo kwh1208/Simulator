@@ -31,13 +31,13 @@ public class SerialPortManager {
         return instance;
     }
 
-    public void openPort(String portName, int baudRate){
-        if (serialPortMap.containsKey(portName)&&isPortOpen(portName)){
+    public void openPort(String portName, int baudRate) {
+        if (serialPortMap.containsKey(portName) && isPortOpen(portName)) {
             return;
         }
         SerialPort port = SerialPort.getCommPort(portName);
         port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY*1000, RESPONSE_LATENCY*1000);
+        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY * 1000, RESPONSE_LATENCY * 1000);
         port.openPort();
         serialPortMap.put(portName, port);
         configService.setProperty("openPortNum", portName);
@@ -45,8 +45,8 @@ public class SerialPortManager {
         logService.updateInfoLog(portName + " 포트가 열렸습니다.");
     }
 
-    public void openPortNoLog(String portName, int baudRate){
-        if (serialPortMap.containsKey(portName)&&isPortOpen(portName)){
+    public void openPortNoLog(String portName, int baudRate) {
+        if (serialPortMap.containsKey(portName) && isPortOpen(portName)) {
             return;
         }
 
@@ -58,11 +58,10 @@ public class SerialPortManager {
     }
 
 
-
-    public void closePort(String portName){
-        if (serialPortMap.containsKey(portName)){
+    public void closePort(String portName) {
+        if (serialPortMap.containsKey(portName)) {
             SerialPort serialPort = serialPortMap.get(portName);
-            if (serialPort.isOpen()){
+            if (serialPort.isOpen()) {
                 serialPort.closePort();
 
                 logService.updateInfoLog("포트가 닫혔습니다.");
@@ -71,15 +70,15 @@ public class SerialPortManager {
                 logService.updateInfoLog(portName + " 포트가 이미 닫혀 있습니다.");
             }
         } else {
-            logService.updateInfoLog(portName+" 포트가 존재하지 않습니다.");
+            logService.updateInfoLog(portName + " 포트가 존재하지 않습니다.");
         }
     }
     //
 
-    public void closePortNoLog(String portName){
-        if (serialPortMap.containsKey(portName)){
+    public void closePortNoLog(String portName) {
+        if (serialPortMap.containsKey(portName)) {
             SerialPort serialPort = serialPortMap.get(portName);
-            if (serialPort.isOpen()){
+            if (serialPort.isOpen()) {
                 serialPort.closePort();
             }
         }
@@ -89,7 +88,8 @@ public class SerialPortManager {
         SerialPort port = serialPortMap.get(portName);
         return port != null && port.isOpen();
     }
-    public Task<String> sendMsgAndGetMsg(String msg, boolean utf8){
+
+    public Task<String> sendMsgAndGetMsg(String msg, boolean utf8) {
         return new Task<>() {
             @Override
             protected String call() throws Exception {
@@ -144,8 +144,9 @@ public class SerialPortManager {
     }
 
     private boolean dataReceivedIsComplete(byte[] buffer, int length) {
-        return length > 0 && buffer[length - 1]==(byte) ']' && buffer[length - 2]==(byte) '!';
+        return length > 0 && buffer[length - 1] == (byte) ']' && buffer[length - 2] == (byte) '!';
     }
+
     public Task<String> sendMsgAndGetMsgByte(byte[] msg) {
         return new Task<>() {
             @Override
@@ -202,9 +203,11 @@ public class SerialPortManager {
                 }
             }
         };
-    };
+    }
 
-    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg){
+    ;
+
+    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg) {
         return new Task<>() {
             @Override
             protected String call() throws Exception {
@@ -290,14 +293,14 @@ public class SerialPortManager {
                     logService.updateInfoLog("현재 속도 " + baudRate + "에서 응답을 대기 중...");
 
                     String msg = "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
-                    if (isRS){
-                        msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                    if (isRS) {
+                        msg = "10 02 " + String.format("02X ", RS485_ADDR_NUM) + "00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
                     }
                     outputStream.write(hexStringToByteArray(msg));
                     outputStream.flush();
 
                     byte[] buffer = new byte[1024];
-                    int numRead =  0;
+                    int numRead = 0;
                     long timeout = RESPONSE_LATENCY * 1000;
                     long startTime = System.currentTimeMillis();
 
@@ -337,4 +340,73 @@ public class SerialPortManager {
             return 0;
         }
     };
+
+    public Task<String> send300MsgAndGetMsg(String msg, String portNum, int baudRate) {
+        return new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                SerialPort port = SerialPort.getCommPort(portNum);
+                port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+                port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY * 1000, RESPONSE_LATENCY * 1000);
+                port.openPort();
+                try {
+                    byte[] dataToSend = msg.getBytes(Charset.forName("EUC-KR"));
+                    OutputStream outputStream = new BufferedOutputStream(port.getOutputStream());
+                    outputStream.write(dataToSend);
+                    outputStream.flush();
+
+                    InputStream inputStream = new BufferedInputStream(port.getInputStream());
+                    byte[] buffer = new byte[1024];
+                    int totalBytesRead = 0;
+                    long timeout = RESPONSE_LATENCY * 1000;
+                    long startTime = System.currentTimeMillis();
+
+                    while (System.currentTimeMillis() - startTime < timeout) {
+                        if (inputStream.available() > 0) {
+                            int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
+                                // 타임아웃 시간 갱신 (데이터 수신이 있으면 타이머 리셋)
+                                startTime = System.currentTimeMillis();
+                            }
+                        } else {
+                            // 짧은 대기 시간 후 다시 읽기 시도 (바쁜 대기 방지)
+                            Thread.sleep(50);
+                        }
+                    }
+                    String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                    return result;
+                } catch (Exception e) {
+                    logService.errorLog("에러가 발생했습니다: " + e.getMessage());
+                    return null;
+                } finally {
+                    port.closePort();
+                }
+            }
+        };
+    }
+
+    private boolean dataReceivedIsComplete300(byte[] buffer, int length) {
+        return length > 0 && buffer[length - 1] == (byte) ']' && buffer[length - 2] == (byte) '!';
+    }
+
+    public Task<Void> send300ByteMsg(byte[] sendByte, String portNum, int baudRate) {
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                SerialPort port = SerialPort.getCommPort(portNum);
+                port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+                port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY * 1000, RESPONSE_LATENCY * 1000);
+                port.openPort();
+
+                BufferedOutputStream output = new BufferedOutputStream(port.getOutputStream());
+                output.write(sendByte);
+                output.flush();
+
+                port.closePort();
+
+                return null;
+            }
+        };
+    }
 }

@@ -374,6 +374,9 @@ public class CommunicationSettingController {
         FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/dabitNet.fxml"));
         Parent root = fxmlLoader.load();
 
+        DabitNetController dabitNetController = fxmlLoader.getController();
+        dabitNetController.setMainController(this);
+
         Stage modalStage = new Stage();
         modalStage.setTitle("DabitNet");
 
@@ -387,6 +390,13 @@ public class CommunicationSettingController {
         modalStage.setResizable(false);
 
         modalStage.showAndWait();
+    }
+
+    public void addIPAndPort(String ip, String port){
+        clientIPAddress.setText(ip);
+        clientIPPort.setText(port);
+
+        UDPIPAddress.setText(ip);
     }
 
     //블루투스 열기

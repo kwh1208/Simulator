@@ -5,7 +5,6 @@ import dbps.dbps.Simulator;
 import dbps.dbps.service.ASCiiMsgService;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.ConfigService;
-import dbps.dbps.service.PreviewService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -34,7 +33,6 @@ public class ASCiiMsgController {
 
     ASCiiMsgService msgService;
     AsciiMsgTransceiver asciiMsgTransceiver;
-    PreviewService previewService;
     ConfigService configService;
 
     private List<TextField> transmitMsgs;
@@ -46,7 +44,6 @@ public class ASCiiMsgController {
         msgService = ASCiiMsgService.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         transmitMsgContents = msgService.loadMessages();
-        previewService = PreviewService.getInstance();
         configService = ConfigService.getInstance();
 
         transmitMsgs = new ArrayList<>();
