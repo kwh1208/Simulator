@@ -1,6 +1,7 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
+import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.FontService;
 import dbps.dbps.service.ResourceManager;
@@ -26,6 +27,8 @@ public class FontSettingController {
     public Label fontProgressLabel;
     public ProgressBar fontProgressBar;
     public Label fontCapacity;
+    public ChoiceBox<Double> fontWidth;
+    public ChoiceBox<Double> fontHeight;
     ConfigService configService;
     FontService fontService = FontService.getInstance();
     @FXML
@@ -65,12 +68,6 @@ public class FontSettingController {
     @FXML
     public ChoiceBox<String> fontGroup4fontSelected3;
     @FXML
-    public ChoiceBox<String> fontGroup2fontsize;
-    @FXML
-    public ChoiceBox<String> fontGroup3fontsize;
-    @FXML
-    public ChoiceBox<String> fontGroup4fontsize;
-    @FXML
     ChoiceBox<String> fontGroup1fontSelected3;
     @FXML
     TextArea fontGroup1fontPath3;
@@ -96,10 +93,12 @@ public class FontSettingController {
     @FXML
     AnchorPane fontSettingAnchorPane;
 
+    AsciiMsgTransceiver asciiMsgTransceiver;
     //초기화(하위 폰트그룹이랑 그룹화)
     @FXML
     public void initialize() {
         configService = ConfigService.getInstance();
+        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
 
         fontGroup2ChkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -239,6 +238,13 @@ public class FontSettingController {
             configService.setProperty("fontGroup4FontType3", newValue);
             updateFontSize();
         });
+
+        for (double i = 1.0; i <= 3.1; i += 0.1) {
+            fontWidth.getItems().add(Double.parseDouble(String.format("%.1f", i)));
+            fontHeight.getItems().add(Double.parseDouble(String.format("%.1f", i)));
+        }
+        fontWidth.setValue(1.0);
+        fontHeight.setValue(1.0);
     }
 
     private void moveCursorRight(TextArea textArea) {
@@ -336,7 +342,6 @@ public class FontSettingController {
         String[] fontGroup2Path = null;
         String[] fontGroup3Path = null;
         String[] fontGroup4Path = null;
-        String[] fontSize = new String[4];
         //첫번째 그룹
         fontGroup1Path[0] = fontGroup1fontPath1.getText();
         fontType[0] = "영어";
@@ -348,7 +353,6 @@ public class FontSettingController {
             fontGroup1Path[2] = fontGroup1fontPath3.getText();
             fontType[2] = fontGroup1fontSelected3.getValue();
         }
-        fontSize[0] = "8x16/16x16";
 
 
         //두번째 그룹
@@ -366,7 +370,7 @@ public class FontSettingController {
                 fontGroup2Path[2] = fontGroup2fontPath3.getText();
                 fontType[5] = fontGroup2fontSelected3.getValue();
             }
-            fontSize[1] = fontGroup2fontsize.getValue();
+
         }
 
         //세번째 그룹
@@ -384,7 +388,7 @@ public class FontSettingController {
                 fontGroup3Path[2] = fontGroup3fontPath3.getText();
                 fontType[8] = fontGroup3fontSelected3.getValue();
             }
-            fontSize[2] = fontGroup3fontsize.getValue();
+
         }
 
         //네번째 그룹
@@ -402,7 +406,6 @@ public class FontSettingController {
                 fontGroup4Path[2] = fontGroup4fontPath3.getText();
                 fontType[11] = fontGroup4fontSelected3.getValue();
             }
-            fontSize[3] = fontGroup4fontsize.getValue();
         }
 
         Task<Void> fontSend = fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path, fontGroup4Path, fontType, fontProgressBar, fontProgressLabel);
@@ -555,4 +558,11 @@ public class FontSettingController {
         return input.substring(index - 2, index + 3);
     }
 
+    public void sendFontWeight() {
+        String sendMsg = "![0056 ";
+        sendMsg+= (int) (fontWidth.getValue() * 10) +" ";
+        sendMsg+= (int) (fontHeight.getValue() * 10) +"!]";
+        System.out.println(sendMsg);
+        asciiMsgTransceiver.sendMessages(sendMsg, false);
+    }
 }
