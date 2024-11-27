@@ -157,7 +157,7 @@ public class UDPManager {
             @Override
             protected String call() throws Exception {
                 if (socket == null) {
-                    connect(IP, PORT); // 소켓 연결
+                    connect300(); // 소켓 연결
                 }
 
                 DatagramPacket receivePacket;

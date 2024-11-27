@@ -9,179 +9,40 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="dbps.dbps.controller.UnderTheLineRightController"
       layoutX="350.0" layoutY="396.0">
-<Pane prefHeight="142.0" prefWidth="327.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
-    <children>
-        <Label alignment="CENTER" layoutX="88.5" layoutY="-12.0" prefHeight="25.0" prefWidth="150.0"
-               style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white;-fx-font-size: 17; -fx-font-weight: bolder" text="릴레이 신호 출력" textFill="WHITE"/>
-        <ComboBox fx:id="relayBox1" layoutX="18.0" layoutY="20.0" prefHeight="27.0" prefWidth="109.0" value="None">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="None" />
-                    <String fx:value="On" />
-                    <String fx:value="Off" />
-                    <String fx:value="1" />
-                    <String fx:value="2" />
-                    <String fx:value="3" />
-                    <String fx:value="4" />
-                    <String fx:value="5" />
-                    <String fx:value="6" />
-                    <String fx:value="7" />
-                    <String fx:value="8" />
-                    <String fx:value="9" />
-                    <String fx:value="10" />
-                    <String fx:value="12" />
-                    <String fx:value="14" />
-                    <String fx:value="16" />
-                    <String fx:value="18" />
-                    <String fx:value="20" />
-                    <String fx:value="25" />
-                    <String fx:value="30" />
-                    <String fx:value="40" />
-                    <String fx:value="50" />
-                    <String fx:value="75" />
-                    <String fx:value="100" />
-                    <String fx:value="120" />
-                    <String fx:value="140" />
-                    <String fx:value="160" />
-                    <String fx:value="180" />
-                    <String fx:value="200" />
-                    <String fx:value="220" />
-                    <String fx:value="230" />
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <Label layoutX="143.0" layoutY="23.0" text="x 100ms" />
-        <ComboBox fx:id="relayBox2" layoutX="18.0" layoutY="50.0" prefHeight="27.0" prefWidth="109.0" value="None">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="None" />
-                    <String fx:value="On" />
-                    <String fx:value="Off" />
-                    <String fx:value="1" />
-                    <String fx:value="2" />
-                    <String fx:value="3" />
-                    <String fx:value="4" />
-                    <String fx:value="5" />
-                    <String fx:value="6" />
-                    <String fx:value="7" />
-                    <String fx:value="8" />
-                    <String fx:value="9" />
-                    <String fx:value="10" />
-                    <String fx:value="12" />
-                    <String fx:value="14" />
-                    <String fx:value="16" />
-                    <String fx:value="18" />
-                    <String fx:value="20" />
-                    <String fx:value="25" />
-                    <String fx:value="30" />
-                    <String fx:value="40" />
-                    <String fx:value="50" />
-                    <String fx:value="75" />
-                    <String fx:value="100" />
-                    <String fx:value="120" />
-                    <String fx:value="140" />
-                    <String fx:value="160" />
-                    <String fx:value="180" />
-                    <String fx:value="200" />
-                    <String fx:value="220" />
-                    <String fx:value="230" />
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <Label layoutX="143.0" layoutY="55.0" text="x 100ms" />
-        <ComboBox disable="true" layoutX="18.0" layoutY="80.0" prefHeight="27.0" prefWidth="109.0" value="None">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="None" />
-                    <String fx:value="On" />
-                    <String fx:value="Off" />
-                    <String fx:value="1" />
-                    <String fx:value="2" />
-                    <String fx:value="3" />
-                    <String fx:value="4" />
-                    <String fx:value="5" />
-                    <String fx:value="6" />
-                    <String fx:value="7" />
-                    <String fx:value="8" />
-                    <String fx:value="9" />
-                    <String fx:value="10" />
-                    <String fx:value="12" />
-                    <String fx:value="14" />
-                    <String fx:value="16" />
-                    <String fx:value="18" />
-                    <String fx:value="20" />
-                    <String fx:value="25" />
-                    <String fx:value="30" />
-                    <String fx:value="40" />
-                    <String fx:value="50" />
-                    <String fx:value="75" />
-                    <String fx:value="100" />
-                    <String fx:value="120" />
-                    <String fx:value="140" />
-                    <String fx:value="160" />
-                    <String fx:value="180" />
-                    <String fx:value="200" />
-                    <String fx:value="220" />
-                    <String fx:value="230" />
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <Label disable="true" layoutX="143.0" layoutY="86.0" text="x 100ms" />
-        <ComboBox disable="true" layoutX="18.0" layoutY="110.0" prefHeight="27.0" prefWidth="109.0" value="None">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="None" />
-                    <String fx:value="On" />
-                    <String fx:value="Off" />
-                    <String fx:value="1" />
-                    <String fx:value="2" />
-                    <String fx:value="3" />
-                    <String fx:value="4" />
-                    <String fx:value="5" />
-                    <String fx:value="6" />
-                    <String fx:value="7" />
-                    <String fx:value="8" />
-                    <String fx:value="9" />
-                    <String fx:value="10" />
-                    <String fx:value="12" />
-                    <String fx:value="14" />
-                    <String fx:value="16" />
-                    <String fx:value="18" />
-                    <String fx:value="20" />
-                    <String fx:value="25" />
-                    <String fx:value="30" />
-                    <String fx:value="40" />
-                    <String fx:value="50" />
-                    <String fx:value="75" />
-                    <String fx:value="100" />
-                    <String fx:value="120" />
-                    <String fx:value="140" />
-                    <String fx:value="160" />
-                    <String fx:value="180" />
-                    <String fx:value="200" />
-                    <String fx:value="220" />
-                    <String fx:value="230" />
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <Label disable="true" layoutX="143.0" layoutY="118.0" text="x 100ms" />
-        <Button layoutX="255.0" layoutY="107.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendRelaySignal"/>
-    </children>
-</Pane>
-
 <Pane layoutX="284.0" layoutY="539.0" prefHeight="67.0" prefWidth="288.0">
     <children>
-        <Label layoutX="18.0" layoutY="11.0" text="배경 이미지 선택" />
-        <ComboBox fx:id="BGImgSelection" layoutX="140.0" layoutY="6.0" prefHeight="28.0" prefWidth="113.0" value="사용안함">
+        <Label layoutX="18.0" layoutY="5.0" text="배경 이미지 선택" />
+        <ComboBox fx:id="BGImgSelection" layoutX="145.0"  prefHeight="28.0" prefWidth="113.0" value="사용안함">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
             </items>
         </ComboBox>
-        <Button layoutX="255.0" layoutY="6.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendBGImgSelection"/>
+        <Button layoutX="261.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendBGImgSelection"/>
 
-        <Label layoutX="18.0" layoutY="42.0" text="화면 채우기" />
-        <ChoiceBox fx:id="fillColor" layoutX="140.0" layoutY="37.0" prefHeight="28.0" prefWidth="113.0" value="검은색">
+
+        <Label text="표출속도 설정" layoutX="18.0" layoutY="40"/>
+        <ComboBox fx:id="displaySpeed" layoutX="145.0" layoutY="35.0" prefHeight="28.0" prefWidth="113.0" value="사용안함">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <Button layoutX="261.0" layoutY="35.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendDisplaySpeed"/>
+
+
+        <Label text="점멸횟수" layoutX="18.0" layoutY="75"/>
+        <ComboBox fx:id="blinkCnt" layoutX="145.0" layoutY="70.0" prefHeight="28.0" prefWidth="113.0" value="사용안함">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <Button layoutX="261.0" layoutY="70.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendBlinkCnt"/>
+
+
+        <Label layoutX="18.0" layoutY="110.0" text="화면 채우기" />
+        <ChoiceBox fx:id="fillColor" layoutX="145.0" layoutY="105.0" prefHeight="28.0" prefWidth="113.0" value="검은색">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="검은색" />
@@ -195,7 +56,10 @@
                 </FXCollections>
             </items>
         </ChoiceBox>
-        <Button layoutX="255.0" layoutY="37.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendFillColor"/>
+        <Button layoutX="261.0" layoutY="105.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendFillColor"/>
+
+        <Button text="배경이미지 스케쥴" layoutX="18.0" layoutY="140" prefWidth="150" prefHeight="30" onMouseClicked="#openBGSchedule"/>
+        <Button text="릴레이 신호 출력" layoutX="175.0" layoutY="140" prefWidth="150" prefHeight="30" onMouseClicked="#openRelay"/>
     </children>
 </Pane>
 </VBox>

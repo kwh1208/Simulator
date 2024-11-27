@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import static dbps.dbps.Constants.*;
 
 public class HEXMessageController {
+
     HexMsgTransceiver hexMsgTransceiver;
 
     @FXML
@@ -63,11 +64,13 @@ public class HEXMessageController {
     @FXML
     private ChoiceBox<String> inDirection;
 
+
     @FXML
     private ChoiceBox<String> effectOut;
 
     @FXML
     private ChoiceBox<String> outDirection;
+
 
     @FXML
     private ChoiceBox<String> effectSpeed;
@@ -569,7 +572,7 @@ public class HEXMessageController {
                 } else {
                     return "2B ";
                 }
-            } case "배경깜박이기"->{
+            } case "배경깜빡이기"->{
                 if (direction.equals("빨강")){
                     return "31 ";
                 } else if (direction.equals("초록")){
@@ -606,13 +609,14 @@ public class HEXMessageController {
             directionBox.setItems(FXCollections.observableArrayList("시계반대1", "시계방향1", "시계반대2", "시계방향2"));
         } else if (effect.equals("배경깜빡이기")) {
             directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "파란색", "흰색", "전체(순차적)"));
-        } else if (effect.equals("색상깜박이기")) {
+        } else if (effect.equals("색상깜빡이기")) {
             directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "파란색", "흰색", "전체(순차적)", "전체(동시에)"));
         } else if (effect.equals("3D 효과")) {
             directionBox.setItems(FXCollections.observableArrayList("왼쪽"));
         } else if (effect.equals("효과없음")){
             directionBox.setDisable(true);
         }
+
 
         directionBox.getSelectionModel().selectFirst(); // 첫 번째 항목 선택
     }

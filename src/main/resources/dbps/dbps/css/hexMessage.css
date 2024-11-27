@@ -3,7 +3,7 @@
     -fx-text-fill: white;
 }
 
-.anchor-pane {
+.grid-pane {
     -fx-border-color: black;
     -fx-border-width: 1px;
     -fx-border-style: solid none none none;
@@ -27,4 +27,8 @@
 
 .radio-button:selected .dot {
     -fx-background-color: orange; /* 선택된 네모 내부 점 색상 */
+}
+
+.label{
+    -fx-min-width: 160px;
 }

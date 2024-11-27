@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import java.lang.*?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="dbps.dbps.controller.RelayController"
+            fx:id="relayAP"
+            style="-fx-background-color: #333333;"
+            prefHeight="170.0" prefWidth="350.0">
+    <Pane  layoutX="10" layoutY="15" prefHeight="142.0" prefWidth="327.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10;">
+        <children>
+            <Label alignment="CENTER" layoutX="88.5" layoutY="-12.0" prefHeight="25.0" prefWidth="150.0"
+                   style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white;-fx-font-size: 17; -fx-font-weight: bolder" text="릴레이 신호 출력" textFill="WHITE"/>
+            <ComboBox fx:id="relayBox1" layoutX="18.0" layoutY="20.0" prefHeight="27.0" prefWidth="109.0" value="None">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="None" />
+                        <String fx:value="On" />
+                        <String fx:value="Off" />
+                        <String fx:value="1" />
+                        <String fx:value="2" />
+                        <String fx:value="3" />
+                        <String fx:value="4" />
+                        <String fx:value="5" />
+                        <String fx:value="6" />
+                        <String fx:value="7" />
+                        <String fx:value="8" />
+                        <String fx:value="9" />
+                        <String fx:value="10" />
+                        <String fx:value="12" />
+                        <String fx:value="14" />
+                        <String fx:value="16" />
+                        <String fx:value="18" />
+                        <String fx:value="20" />
+                        <String fx:value="25" />
+                        <String fx:value="30" />
+                        <String fx:value="40" />
+                        <String fx:value="50" />
+                        <String fx:value="75" />
+                        <String fx:value="100" />
+                        <String fx:value="120" />
+                        <String fx:value="140" />
+                        <String fx:value="160" />
+                        <String fx:value="180" />
+                        <String fx:value="200" />
+                        <String fx:value="220" />
+                        <String fx:value="230" />
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <Label layoutX="143.0" layoutY="23.0" text="x 100ms" />
+            <ComboBox fx:id="relayBox2" layoutX="18.0" layoutY="50.0" prefHeight="27.0" prefWidth="109.0" value="None">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="None" />
+                        <String fx:value="On" />
+                        <String fx:value="Off" />
+                        <String fx:value="1" />
+                        <String fx:value="2" />
+                        <String fx:value="3" />
+                        <String fx:value="4" />
+                        <String fx:value="5" />
+                        <String fx:value="6" />
+                        <String fx:value="7" />
+                        <String fx:value="8" />
+                        <String fx:value="9" />
+                        <String fx:value="10" />
+                        <String fx:value="12" />
+                        <String fx:value="14" />
+                        <String fx:value="16" />
+                        <String fx:value="18" />
+                        <String fx:value="20" />
+                        <String fx:value="25" />
+                        <String fx:value="30" />
+                        <String fx:value="40" />
+                        <String fx:value="50" />
+                        <String fx:value="75" />
+                        <String fx:value="100" />
+                        <String fx:value="120" />
+                        <String fx:value="140" />
+                        <String fx:value="160" />
+                        <String fx:value="180" />
+                        <String fx:value="200" />
+                        <String fx:value="220" />
+                        <String fx:value="230" />
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <Label layoutX="143.0" layoutY="55.0" text="x 100ms" />
+            <ComboBox disable="true" layoutX="18.0" layoutY="80.0" prefHeight="27.0" prefWidth="109.0" value="None">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="None" />
+                        <String fx:value="On" />
+                        <String fx:value="Off" />
+                        <String fx:value="1" />
+                        <String fx:value="2" />
+                        <String fx:value="3" />
+                        <String fx:value="4" />
+                        <String fx:value="5" />
+                        <String fx:value="6" />
+                        <String fx:value="7" />
+                        <String fx:value="8" />
+                        <String fx:value="9" />
+                        <String fx:value="10" />
+                        <String fx:value="12" />
+                        <String fx:value="14" />
+                        <String fx:value="16" />
+                        <String fx:value="18" />
+                        <String fx:value="20" />
+                        <String fx:value="25" />
+                        <String fx:value="30" />
+                        <String fx:value="40" />
+                        <String fx:value="50" />
+                        <String fx:value="75" />
+                        <String fx:value="100" />
+                        <String fx:value="120" />
+                        <String fx:value="140" />
+                        <String fx:value="160" />
+                        <String fx:value="180" />
+                        <String fx:value="200" />
+                        <String fx:value="220" />
+                        <String fx:value="230" />
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <Label disable="true" layoutX="143.0" layoutY="86.0" text="x 100ms" />
+            <ComboBox disable="true" layoutX="18.0" layoutY="110.0" prefHeight="27.0" prefWidth="109.0" value="None">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="None" />
+                        <String fx:value="On" />
+                        <String fx:value="Off" />
+                        <String fx:value="1" />
+                        <String fx:value="2" />
+                        <String fx:value="3" />
+                        <String fx:value="4" />
+                        <String fx:value="5" />
+                        <String fx:value="6" />
+                        <String fx:value="7" />
+                        <String fx:value="8" />
+                        <String fx:value="9" />
+                        <String fx:value="10" />
+                        <String fx:value="12" />
+                        <String fx:value="14" />
+                        <String fx:value="16" />
+                        <String fx:value="18" />
+                        <String fx:value="20" />
+                        <String fx:value="25" />
+                        <String fx:value="30" />
+                        <String fx:value="40" />
+                        <String fx:value="50" />
+                        <String fx:value="75" />
+                        <String fx:value="100" />
+                        <String fx:value="120" />
+                        <String fx:value="140" />
+                        <String fx:value="160" />
+                        <String fx:value="180" />
+                        <String fx:value="200" />
+                        <String fx:value="220" />
+                        <String fx:value="230" />
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <Label disable="true" layoutX="143.0" layoutY="118.0" text="x 100ms" />
+            <Button layoutX="255.0" layoutY="107.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendRelaySignal"/>
+        </children>
+    </Pane>
+</AnchorPane>

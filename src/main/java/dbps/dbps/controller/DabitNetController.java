@@ -55,6 +55,7 @@ public class DabitNetController {
     public TextField DBCommunication;
 
     public AnchorPane dabitNetAP;
+    public TextField keepAlive;
 
 
     SerialPortManager serialPortManager;
@@ -130,6 +131,7 @@ public class DabitNetController {
         newDB300.setName(boardNameTF.getText());
         newDB300.setWifiSSID(wifiSSID.getText());
         newDB300.setWifiPW(wifiPW.getText());
+        newDB300.setHeartbeat(keepAlive.getText());
         newDB300.setStation(wifiStation.isSelected());
         byte[] sendByte;
 
@@ -199,7 +201,7 @@ public class DabitNetController {
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 22;
 
-        tmp = "000".getBytes();
+        tmp = keepAlive.getText().getBytes();
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 37;
 
@@ -207,7 +209,8 @@ public class DabitNetController {
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 22;
 
-        tmp = newDB300.getWifiPW().getBytes();
+        if (newDB300.getWifiPW()!=null) tmp = newDB300.getWifiPW().getBytes();
+        else tmp = new byte[]{0x20};
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 22;
 
@@ -268,7 +271,7 @@ public class DabitNetController {
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 22;
 
-        tmp = "000".getBytes();
+        tmp = String.format("%3d", newDB300.heartbeat).getBytes();
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 37;
 
@@ -487,6 +490,8 @@ public class DabitNetController {
                 case 10:
                     readDB300IPPort.setName(line);
                     break;
+                case 11:
+                    readDB300IPPort.setHeartbeat(line);
                 case 13:
                     readDB300IPPort.setWifiSSID(line);
                     break;
@@ -551,6 +556,7 @@ public class DabitNetController {
         staticRadio.setSelected(db300IPPort.isIpStatic());
         isClient.setSelected(!db300IPPort.isServerMode());
         wifiStation.setSelected(db300IPPort.isStation());
+        keepAlive.setText(db300IPPort.heartbeat);
     }
 
 
@@ -570,6 +576,7 @@ public class DabitNetController {
         String name;
         String wifiSSID;
         String wifiPW;
+        String heartbeat;
         boolean isStation; //true = sta(30), false = ap(31)
 
         private String formatInetAddress(InetAddress address) {

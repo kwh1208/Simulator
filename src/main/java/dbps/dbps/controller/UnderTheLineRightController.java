@@ -1,12 +1,22 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 import static dbps.dbps.Constants.*;
 
@@ -19,12 +29,9 @@ public class UnderTheLineRightController {
 
     @FXML
     public VBox rightVbox;
+    public ComboBox<String> displaySpeed;
+    public ComboBox<String> blinkCnt;
 
-    @FXML
-    public ComboBox<String> relayBox1;
-
-    @FXML
-    public ComboBox<String> relayBox2;
 
     AsciiMsgTransceiver asciiMsgTransceiver;
 
@@ -38,6 +45,21 @@ public class UnderTheLineRightController {
             BGImgSelection.getItems().add(String.valueOf(i));
         }
 
+        displaySpeed.getItems().add("사용안함");
+        for (int i = 1; i < 100; i++) {
+            if (i==1){
+                displaySpeed.getItems().add("1(빠름)");
+            } else if (i==99) {
+                displaySpeed.getItems().add("99(빠름)");
+            }
+            else displaySpeed.getItems().add(String.valueOf(i));
+        }
+
+        for (int i = 1; i < 21; i++) {
+            if (i==8) blinkCnt.getItems().add("8회(기본값)");
+            else blinkCnt.getItems().add(i + "회");
+        }
+
         BGImgSelection.setVisibleRowCount(10);
 
         rightVbox.getStylesheets().add(getClass().getResource("/dbps/dbps/css/underTheLineRight.css").toExternalForm());
@@ -47,28 +69,12 @@ public class UnderTheLineRightController {
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
     }
 
-    public void sendRelaySignal() {
-        String msg = "![0022";
-        if (isRS){
-            msg = "!["+convertRS485AddrASCii()+"022";
-        }
-        msg+=makeRelayMsg(relayBox1.getValue());
-        msg+=makeRelayMsg(relayBox2.getValue());
-        msg+="!]";
-
-        asciiMsgTransceiver.sendMessages(msg,false);
+    public void openRelay(MouseEvent mouseEvent) throws IOException {
+        openModal("/dbps/dbps/fxmls/Relay.fxml", "릴레이 신호 출력", mouseEvent);
     }
 
-    private String makeRelayMsg(String value) {
-
-        if (value.equals("None")) {
-            return "61696";
-        } else if (value.equals("On")) {
-            return "61440";
-        } else if (value.equals("Off")) {
-            return "00000";
-        } else
-            return String.format("%05d", Integer.parseInt(value));
+    public void openBGSchedule(MouseEvent mouseEvent) throws IOException {
+        openModal("/dbps/dbps/fxmls/BGSchedule.fxml", "배경화면 스케쥴", mouseEvent);
     }
 
     public void sendBGImgSelection(MouseEvent mouseEvent) {
@@ -157,5 +163,43 @@ public class UnderTheLineRightController {
             }
             hexMsgTransceiver.sendMessages(msg);
         }
+    }
+
+    private void openModal(String fxmlPath, String title, MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource(fxmlPath));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
+        Parent root = fxmlLoader.load();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle(title);
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.showAndWait();
+    }
+
+    public void sendDisplaySpeed() {
+        int speed;
+        if (displaySpeed.getValue().equals("사용안함")){
+            speed = 0;
+        }
+        else{
+            speed = Integer.parseInt(displaySpeed.getValue().replaceAll("[^0-9]", ""));
+        }
+
+        asciiMsgTransceiver.sendMessages("![0054 "+String.format("%2d", speed)+"!]", false);
+    }
+
+
+    public void sendBlinkCnt() {
+        int cnt = Integer.parseInt(blinkCnt.getValue().replaceAll("[^0-9]", ""));
+
+        asciiMsgTransceiver.sendMessages("![0055 "+String.format("%2d", cnt)+"!]", false);
     }
 }
