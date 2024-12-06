@@ -52,8 +52,9 @@ public class DisplaySignal {
         SignalMap_ASC.put("04D-P32D4S11", "0524211");
         SignalMap_ASC.put("04D-P32D2S71", "0524271");
         SignalMap_ASC.put("04D-P32D2S61", "0524261");
+        SignalMap_ASC.put("04D-P64D1S11", "0524111");
         SignalMap_ASC.put("04D-P32D2S51", "0524251");
-        SignalMap_ASC.put("04D-P32D2S41", "0524411");
+        SignalMap_ASC.put("04D-P32D2S41", "0524241");
         SignalMap_ASC.put("04D-P32D2S11", "0524211");
         SignalMap_ASC.put("04D-P32D2S21", "0524221");
         SignalMap_ASC.put("04D-P32D2S31 - 2 < 1 ^ 4 < 3", "0524231");

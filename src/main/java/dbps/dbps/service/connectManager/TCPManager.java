@@ -2,6 +2,8 @@ package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.LogService;
 import javafx.concurrent.Task;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,25 +16,13 @@ import static dbps.dbps.Constants.*;
 
 public class TCPManager {
 
+    @Setter
+    @Getter
     private String IP;
 
+    @Setter
+    @Getter
     private int PORT;
-
-    public String getIP() {
-        return IP;
-    }
-
-    public int getPORT() {
-        return PORT;
-    }
-
-    public void setIP(String IP) {
-        this.IP = IP;
-    }
-
-    public void setPORT(int PORT) {
-        this.PORT = PORT;
-    }
 
     Socket socket = null;
 
@@ -124,7 +114,7 @@ public class TCPManager {
         try {
             socket = new Socket(IP, PORT);
 
-            socket.setSoTimeout(RESPONSE_LATENCY *1000);
+            socket.setSoTimeout(0);
 
         }catch (IOException e){
             logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);

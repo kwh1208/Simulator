@@ -6,6 +6,7 @@ import javafx.concurrent.Task;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
@@ -17,8 +18,10 @@ public class ServerTCPManager {
     Socket socket;
     LogService logService;
     static ServerTCPManager instance;
+    String serverIp;
 
     private ServerTCPManager() {
+        logService = LogService.getLogService();
     }
 
     public static ServerTCPManager getInstance() {
@@ -28,14 +31,14 @@ public class ServerTCPManager {
         return instance;
     }
 
-    public void connect(int Port) {
-        try (ServerSocket serverSocket = new ServerSocket(Port)) {
-            System.out.println("Server is listening on port " + Port);
-
+    public void connect(int port, String ip) {
+        serverIp = ip;
+        try (ServerSocket serverSocket = new ServerSocket(port, 50, InetAddress.getByName(ip))) {
+            System.out.println("Server is listening on 127.0.0.1:12345");
             socket = serverSocket.accept();
-
+            System.out.println("Client connected: " + socket.getInetAddress());
         } catch (IOException e) {
-            System.err.println("Error in the server: " + e.getMessage());
+            logService.errorLog(e.getMessage());
         }
     }
 
@@ -54,7 +57,7 @@ public class ServerTCPManager {
             @Override
             protected String call() throws Exception {
                 if (socket == null) {
-                    connect(serverTCPPort);
+                    connect(serverTCPPort, serverIp);
                 }
                 try {
                     InputStream input = socket.getInputStream();
@@ -66,7 +69,6 @@ public class ServerTCPManager {
                     long startTime = System.currentTimeMillis();
                     byte[] buffer = new byte[1024];
                     int totalBytesRead = 0;
-
                     while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000L) {
                         if (input.available() > 0) {
                             int bytesRead = input.read(buffer);
@@ -104,7 +106,7 @@ public class ServerTCPManager {
             @Override
             protected String call() throws Exception {
                 if (socket == null) {
-                    connect(serverTCPPort);
+                    connect(serverTCPPort, serverIp);
                 }
                 try {
                     InputStream input = socket.getInputStream();

@@ -56,7 +56,6 @@ public class HexMsgTransceiver {
             if (receivedMsg.isEmpty()){
                 logService.errorLog("통신에 실패했습니다.");
             }
-            else logService.updateInfoLog("수신 메세지: " + receivedMsg);
 
             // msgReceive 호출 결과를 CompletableFuture에 설정
             resultFuture.complete(msgReceive(receivedMsg, msg));

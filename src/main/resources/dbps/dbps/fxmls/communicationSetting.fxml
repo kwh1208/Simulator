@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="communicationSettingAP" prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dbps.dbps.controller.CommunicationSettingController">
+<AnchorPane fx:id="communicationSettingAP" prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.CommunicationSettingController">
    <children>
       <Pane layoutX="15.0" layoutY="14.0" prefHeight="161.0" prefWidth="373.0" style="-fx-border-color: black;">
          <children>
@@ -72,8 +72,8 @@
                   </FXCollections>
                </items>
             </ChoiceBox>
-            <Button fx:id="findSpeedBtn" layoutX="132.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#findCommunicationSpeed" prefHeight="27.0" prefWidth="115.0" text="%findBaudrate" />
-            <Button fx:id="openDeviceManagerBtn" layoutX="256.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#openDeviceManager" prefHeight="27.0" prefWidth="99.0" text="%deviceManager" />
+            <Button fx:id="findSpeedBtn" layoutX="132.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#findCommunicationSpeed" prefHeight="27.0" prefWidth="130.0" text="%findBaudrate" />
+            <Button fx:id="openDeviceManagerBtn" layoutX="270.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#openDeviceManager" prefHeight="27.0" prefWidth="99.0" text="%deviceManager" />
 
          </children>
       </Pane>
@@ -81,9 +81,9 @@
          <children>
             <RadioButton fx:id="clientTCPRadioBtn" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="134.0" style="-fx-background-color: #333333;" text="Client TCP/IP" />
             <Label layoutX="13.0" layoutY="16.0" text="IP Address" />
-            <TextField fx:id="clientIPAddress" layoutX="210.0" layoutY="16.0" prefWidth="145.0" text="192.168.0.201"/>
+            <TextField fx:id="clientIPAddress" layoutX="210.0" layoutY="16.0" prefWidth="145.0" text="192.168.0.201" />
             <Label layoutX="13.0" layoutY="44.0" text="IP Port" />
-            <TextField fx:id="clientIPPort" layoutX="210.0" layoutY="48.0" prefWidth="145.0" text="5000"/>
+            <TextField fx:id="clientIPPort" layoutX="210.0" layoutY="48.0" prefWidth="145.0" text="5000" />
          </children>
       </Pane>
       <Pane layoutX="15.0" layoutY="294.0" prefHeight="95.0" prefWidth="373.0" style="-fx-border-color: black;">
@@ -104,9 +104,9 @@
          <children>
             <RadioButton fx:id="UDPRadioBtn" layoutX="18.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="61.0" style="-fx-background-color: #333333;" text="UDP" />
             <Label layoutX="16.0" layoutY="21.0" text="IP Address" />
-            <TextField fx:id="UDPIPAddress" layoutX="210.0" layoutY="17.0" prefWidth="145.0" text="192.168.0.202"/>
+            <TextField fx:id="UDPIPAddress" layoutX="210.0" layoutY="17.0" prefWidth="145.0" text="192.168.0.202" />
             <Label layoutX="16.0" layoutY="47.0" text="IP Port" />
-            <TextField fx:id="UDPIPPort" layoutX="210.0" layoutY="50.0" prefWidth="145.0" text="5108"/>
+            <TextField fx:id="UDPIPPort" layoutX="210.0" layoutY="50.0" prefWidth="145.0" text="5108" />
          </children>
       </Pane>
       <Button fx:id="connect" layoutX="17.0" layoutY="497.0" mnemonicParsing="false" onMouseClicked="#openSerialPort" prefHeight="27.0" prefWidth="100.0" text="%openPort" />
@@ -114,7 +114,7 @@
       <Button fx:id="shutConnect" layoutX="284.0" layoutY="497.0" mnemonicParsing="false" onMouseClicked="#closeSerialPort" prefHeight="27.0" prefWidth="100.0" text="%closePort" />
       <Button layoutX="17.0" layoutY="529.0" mnemonicParsing="false" onMouseClicked="#openDabitNet" prefHeight="27.0" prefWidth="115.0" text="DABITNET" />
       <Button layoutX="142.0" layoutY="529.0" mnemonicParsing="false" onMouseClicked="#openBluetooth" prefHeight="27.0" prefWidth="115.0" text="%bluetooth" />
-      <Button layoutX="269.0" layoutY="529.0" mnemonicParsing="false" onMouseClicked="#controllerConnect" prefHeight="27.0" minWidth="115.0" text="%connect" />
+      <Button layoutX="269.0" layoutY="529.0" minWidth="115.0" mnemonicParsing="false" onMouseClicked="#controllerConnect" prefHeight="27.0" text="%connect" />
       <Label layoutX="19.0" layoutY="569.0" text="%responseTime" />
       <ChoiceBox fx:id="delayTime" layoutX="156.0" layoutY="562.0" prefHeight="27.0" prefWidth="54.0" value="3">
          <items>
@@ -126,5 +126,6 @@
          </items>
       </ChoiceBox>
       <Button layoutX="329.0" layoutY="562.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClose" prefHeight="27.0" prefWidth="54.0" text="%close" />
+      <ProgressIndicator fx:id="progressIndicator" layoutX="170.0" layoutY="240.0" visible="false" />
    </children>
 </AnchorPane>

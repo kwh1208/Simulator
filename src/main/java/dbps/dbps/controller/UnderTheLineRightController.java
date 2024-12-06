@@ -31,6 +31,7 @@ public class UnderTheLineRightController {
     public VBox rightVbox;
     public ComboBox<String> displaySpeed;
     public ComboBox<String> blinkCnt;
+    public ChoiceBox<String> offset;
 
 
     AsciiMsgTransceiver asciiMsgTransceiver;
@@ -201,5 +202,10 @@ public class UnderTheLineRightController {
         int cnt = Integer.parseInt(blinkCnt.getValue().replaceAll("[^0-9]", ""));
 
         asciiMsgTransceiver.sendMessages("![0055 "+String.format("%2d", cnt)+"!]", false);
+    }
+
+    public void sendoffSet() {
+        String value = offset.getValue().replaceAll("[^0-9]", "");
+        asciiMsgTransceiver.sendMessages("![0058 "+value+"!]", false);
     }
 }

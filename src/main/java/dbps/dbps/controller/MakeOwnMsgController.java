@@ -135,8 +135,8 @@ public class MakeOwnMsgController {
         fontColor.setValue("노란색");
         fontBgColor.setValue("검정색");
         String msg = "![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]";
-        if (isRS){
-            msg = "!["+convertRS485AddrASCii()+"032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]";
+        if (isRS) {
+            msg = "![" + convertRS485AddrASCii() + "032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]";
         }
         defaultSetting.setText(msg);
     }
@@ -179,7 +179,7 @@ public class MakeOwnMsgController {
             directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "파란색", "흰색", "전체(순차적)", "전체(동시에)"));
         } else if (effect.equals("3D 효과")) {
             directionBox.setItems(FXCollections.observableArrayList("왼쪽"));
-        } else if (effect.equals("효과없음")){
+        } else if (effect.equals("효과없음")) {
             directionBox.setDisable(true);
         }
 
@@ -188,25 +188,24 @@ public class MakeOwnMsgController {
 
     private String getSettings() {
         String text = "![0032";
-        if (isRS){
-            text = "!["+convertRS485AddrASCii()+"032";
+        if (isRS) {
+            text = "![" + convertRS485AddrASCii() + "032";
         }
         text += "/P0000";
-        text += "/D"+setDText(displayControl.getValue(), displayMethod.getValue());
-        text += "/F"+setFText(charCodes.getValue(), fontSize.getValue());
-        text += "/E"+setEText(effectIn.getValue(),inDirection.getValue());
+        text += "/D" + setDText(displayControl.getValue(), displayMethod.getValue());
+        text += "/F" + setFText(charCodes.getValue(), fontSize.getValue());
+        text += "/E" + setEText(effectIn.getValue(), inDirection.getValue());
         text += setEText(effectOut.getValue(), outDirection.getValue());
-        text += "/S"+setSText(effectSpeed.getValue(), effectTime.getValue());
-        text += "/X"+String.format("%02d", parseInt(xStart.getValue())/4)+String.format("%02d", parseInt(xEnd.getValue())/4);
-        text += "/Y"+String.format("%02d", parseInt(yStart.getValue())/4)+String.format("%02d", parseInt(yEnd.getValue())/4);
-        text += "/B"+(bgImg.getValue().equals("사용안함") ? "000" : String.format("%03d", parseInt(bgImg.getValue())));
-        text += "/C"+ setColorText(fontColor.getValue());
-        text += "/G"+ setColorText(fontBgColor.getValue());
-        text += "/T"+fontGroup.getValue().replaceAll("[^\\d]", "")+"!]";
+        text += "/S" + setSText(effectSpeed.getValue(), effectTime.getValue());
+        text += "/X" + String.format("%02d", parseInt(xStart.getValue()) / 4) + String.format("%02d", parseInt(xEnd.getValue()) / 4);
+        text += "/Y" + String.format("%02d", parseInt(yStart.getValue()) / 4) + String.format("%02d", parseInt(yEnd.getValue()) / 4);
+        text += "/B" + (bgImg.getValue().equals("사용안함") ? "000" : String.format("%03d", parseInt(bgImg.getValue())));
+        text += "/C" + setColorText(fontColor.getValue());
+        text += "/G" + setColorText(fontBgColor.getValue());
+        text += "/T" + fontGroup.getValue().replaceAll("[^\\d]", "") + "!]";
 
         return text;
     }
-
 
 
     private String setDText(String value1, String value2) {
@@ -227,10 +226,9 @@ public class MakeOwnMsgController {
                 }
                 break;
         }
-        if (value2.equals("Normal")){
-            result+="00";
-        }
-        else result+="01";
+        if (value2.equals("Normal")) {
+            result += "00";
+        } else result += "01";
         return result;
     }
 
@@ -244,6 +242,8 @@ public class MakeOwnMsgController {
 
         if (value2.equals("16(Standard)")) {
             result += "03";
+        } else if (value2.equals("14")) {
+            result += "01";
         } else {
             result += String.format("%02d", (Integer.parseInt(value2) - 12) / 4);
         }
@@ -251,11 +251,11 @@ public class MakeOwnMsgController {
         return result;
     }
 
-    private String setEText(String value1,String value2) {
-        if (value1.equals("효과없음")){
+    private String setEText(String value1, String value2) {
+        if (value1.equals("효과없음")) {
             return "00";
         } else if (value1.equals("정지효과")) {
-            switch (value2){
+            switch (value2) {
                 case "방향없음":
                     return "01";
                 case "밝아지기":
@@ -268,7 +268,7 @@ public class MakeOwnMsgController {
                     return "05";
             }
         } else if (value1.equals("이동하기")) {
-            switch (value2){
+            switch (value2) {
                 case "왼쪽":
                     return "06";
                 case "오른쪽":
@@ -279,7 +279,7 @@ public class MakeOwnMsgController {
                     return "09";
             }
         } else if (value1.equals("닦아내기")) {
-            switch (value2){
+            switch (value2) {
                 case "왼쪽":
                     return "12";
                 case "오른쪽":
@@ -290,7 +290,7 @@ public class MakeOwnMsgController {
                     return "15";
             }
         } else if (value1.equals("블라인드")) {
-            switch (value2){
+            switch (value2) {
                 case "왼쪽":
                     return "18";
                 case "오른쪽":
@@ -301,7 +301,7 @@ public class MakeOwnMsgController {
                     return "21";
             }
         } else if (value1.equals("커튼효과")) {
-            switch (value2){
+            switch (value2) {
                 case "수평밖으로":
                     return "24";
                 case "수평안으로":
@@ -312,7 +312,7 @@ public class MakeOwnMsgController {
                     return "27";
             }
         } else if (value1.equals("확대효과")) {
-            switch (value2){
+            switch (value2) {
                 case "왼쪽":
                     return "35";
                 case "오른쪽":
@@ -325,7 +325,7 @@ public class MakeOwnMsgController {
                     return "39";
             }
         } else if (value1.equals("회전효과")) {
-            switch (value2){
+            switch (value2) {
                 case "시계반대1":
                     return "40";
                 case "시계방향1":
@@ -336,7 +336,7 @@ public class MakeOwnMsgController {
                     return "43";
             }
         } else if (value1.equals("배경깜빡이기")) {
-            switch (value2){
+            switch (value2) {
                 case "빨간색":
                     return "44";
                 case "초록색":
@@ -349,7 +349,7 @@ public class MakeOwnMsgController {
                     return "48";
             }
         } else if (value1.equals("색상깜박이기")) {
-            switch (value2){
+            switch (value2) {
                 case "빨간색":
                     return "49";
                 case "초록색":
@@ -363,37 +363,37 @@ public class MakeOwnMsgController {
                 case "전체(동시에)":
                     return "55";
             }
-        }
-        else if (value1.equals("전체 효과")) return "122";
+        } else if (value1.equals("전체 효과")) return "122";
         return "54";//3D 효과, 왼쪽
 
     }
+
     private String setSText(String value1, String value2) {
         String result = "";
         result += value1.replaceAll("[^\\d]", "");
 
 
         if (value2.contains("초")) {
-            result += String.format("%02d", (int)(Double.parseDouble(value2.replaceAll("[^\\d.]", ""))*2));
+            result += String.format("%02d", (int) (Double.parseDouble(value2.replaceAll("[^\\d.]", "")) * 2));
         } else {
-            if (value2.equals("2분")){
-                result+="90";
+            if (value2.equals("2분")) {
+                result += "90";
             } else if (value2.equals("3분")) {
-                result+="91";
+                result += "91";
             } else if (value2.equals("5분")) {
-                result+="92";
+                result += "92";
             } else if (value2.equals("10분")) {
-                result+="93";
+                result += "93";
             } else if (value2.equals("30분")) {
-                result+="94";
+                result += "94";
             } else if (value2.equals("1시간")) {
-                result+="95";
+                result += "95";
             } else if (value2.equals("3시간")) {
-                result+="96";
+                result += "96";
             } else if (value2.equals("5시간")) {
-                result+="97";
+                result += "97";
             } else if (value2.equals("9시간")) {
-                result+="98";
+                result += "98";
             }
         }
         return result;
@@ -423,8 +423,8 @@ public class MakeOwnMsgController {
 
     public void read(MouseEvent mouseEvent) {
         String msg = "![00330!]";
-        if (isRS){
-            msg = "!["+convertRS485AddrASCii()+"0330!]";
+        if (isRS) {
+            msg = "![" + convertRS485AddrASCii() + "0330!]";
         }
         String result = asciiMsgTransceiver.sendMessages(msg, false);
         defaultSetting.setText(result);

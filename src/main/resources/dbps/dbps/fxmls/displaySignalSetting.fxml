@@ -38,7 +38,6 @@
                     <String fx:value="08D-P128D1S51" />
                     <String fx:value="08D-P128D1S42" />
                     <String fx:value="04D-P64D1S11" />
-                    <String fx:value="04D-P32D4S21" />
                     <String fx:value="04D-P32D4S11" />
                     <String fx:value="04D-P32D2S71" />
                     <String fx:value="04D-P32D2S61" />
@@ -52,7 +51,7 @@
                     <String fx:value="02D-P64D2S41" />
                     <String fx:value="02D-P64D2S31" />
                     <String fx:value="02D-P64D2S21" />
-                    <String fx:value="02D-P256D2S21" />
+                    <String fx:value="02D-P256D2S41" />
                     <String fx:value="02D-P128D2S21" />
                     <String fx:value="01D-P64D4S21-4^8^12^16" />
                     <String fx:value="01D-P128D2S31" />

@@ -92,6 +92,8 @@
         <ChoiceBox fx:id="fontSize" layoutX="197.0" layoutY="166.0" prefHeight="21.0" prefWidth="139.0" value="16(Standard)">
             <items>
                 <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="12" />
+                    <String fx:value="14" />
                     <String fx:value="16(Standard)" />
                     <String fx:value="20" />
                     <String fx:value="24" />
@@ -253,7 +255,7 @@
             </items>
         </ChoiceBox>
 
-        <Label layoutX="34.0" layoutY="350.0" text="12. X축시작" />
+        <Label layoutX="34.0" layoutY="350.0" text="12. X축시작(x offSet)" />
         <ChoiceBox layoutX="197.0" layoutY="346.0" prefHeight="21.0" prefWidth="139.0" value="0" fx:id="xStart">
             <items>
                 <FXCollections fx:factory="observableArrayList">
@@ -286,8 +288,8 @@
             </items>
         </ChoiceBox>
 
-        <Label layoutX="415.0" layoutY="350.0" text="13. Y축시작" />
-        <ChoiceBox fx:id="yStart" layoutX="519.0" layoutY="346.0" prefHeight="21.0" prefWidth="139.0" value="0">
+        <Label layoutX="385.0" layoutY="350.0" text="Y축시작(x offSet)" />
+        <ChoiceBox fx:id="yStart" layoutX="518.0" layoutY="346.0" prefHeight="21.0" style="-fx-pref-width: 10;" value="0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="0" />
@@ -303,7 +305,7 @@
             </items>
         </ChoiceBox>
 
-        <Label layoutX="34.0" layoutY="380.0" text="14. X축종료" />
+        <Label layoutX="34.0" layoutY="380.0" text="13. X축종료(x offSet)" />
         <ChoiceBox layoutX="197.0" layoutY="376.0" prefHeight="21.0" prefWidth="139.0" value="0" fx:id="xEnd">
             <items>
                 <FXCollections fx:factory="observableArrayList">
@@ -336,8 +338,8 @@
             </items>
         </ChoiceBox>
 
-        <Label layoutX="415.0" layoutY="380.0" text="15. Y축종료" />
-        <ChoiceBox fx:id="yEnd" layoutX="519.0" layoutY="376.0" prefHeight="21.0" prefWidth="139.0" value="0">
+        <Label layoutX="385.0" layoutY="380.0" text="Y축종료(x offSet)" />
+        <ChoiceBox fx:id="yEnd" layoutX="518.0" layoutY="376.0" prefHeight="21.0" prefWidth="1" style="-fx-max-width: 1;" value="0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="0" />
@@ -353,7 +355,7 @@
             </items>
         </ChoiceBox>
 
-        <Label layoutX="34.0" layoutY="410.0" text="16. 배경이미지 선택" />
+        <Label layoutX="34.0" layoutY="410.0" text="14. 배경이미지 선택" />
         <ChoiceBox fx:id="bgImg" layoutX="197.0" layoutY="406.0" prefHeight="21.0" prefWidth="139.0" value="사용안함">
             <items>
                 <FXCollections fx:factory="observableArrayList">
@@ -362,14 +364,14 @@
             </items>
         </ChoiceBox>
 
-        <Label layoutX="36.0" layoutY="440.0" text="17-1. 문자색상" />
-        <TextField fx:id="textColor" layoutX="197.0" layoutY="436.0" prefHeight="35.0" prefWidth="468.0" style="-fx-background-color: black; -fx-text-fill: white" text="" />
-        <Label layoutX="34.0" layoutY="480.0" text="17-2. 문자배경색상" />
-        <TextField fx:id="bgColor" layoutX="197.0" layoutY="476.0" prefHeight="35.0" prefWidth="468.0" style="-fx-background-color: black; -fx-text-fill: white" text="" />
-        <Label layoutX="34.0" layoutY="520.0" text="18. 문구" />
-        <TextField fx:id="msgPreview" layoutX="197.0" layoutY="516.0" prefHeight="35.0" prefWidth="468.0" style="-fx-background-color: black; -fx-text-fill: white" text="" />
-        <Button layoutX="380.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="30.0" prefWidth="81.0" text="%sendButton" />
-        <Button layoutX="480.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="%initButton" />
-        <Button layoutX="580.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="81.0" text="%saveButton" />
+        <Label layoutX="34.0" layoutY="444.0" text="15-1. 문자색상" />
+        <TextField fx:id="textColor" layoutX="197.0" layoutY="436.0" prefHeight="35.0" prefWidth="500.0" style="-fx-background-color: black; -fx-text-fill: white" text="" />
+        <Label layoutX="34.0" layoutY="484.0" text="15-2. 문자배경색상" />
+        <TextField fx:id="bgColor" layoutX="197.0" layoutY="476.0" prefHeight="35.0" prefWidth="500.0" style="-fx-background-color: black; -fx-text-fill: white" text="" />
+        <Label layoutX="34.0" layoutY="524.0" text="16. 문구" />
+        <TextField fx:id="msgPreview" layoutX="197.0" layoutY="516.0" prefHeight="35.0" prefWidth="500.0" style="-fx-background-color: black; -fx-text-fill: white" text="" />
+        <Button layoutX="400.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="30.0" prefWidth="81.0" text="%saveButton" />
+        <Button layoutX="500.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="%initButton" />
+        <Button layoutX="600.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="81.0" text="%sendButton" />
     </children>
 </AnchorPane>

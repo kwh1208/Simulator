@@ -18,8 +18,8 @@ public class ConfigService {
         properties = new Properties();
         displayProperties = new Properties();
         DisplaySignal.getInstance().initialize_ASCii();
-        createFileIfNotExists(configFilePath, "config");
-        createFileIfNotExists(displayFilePath, "display");
+        createFileIfNotExists(configFilePath);
+        createFileIfNotExists(displayFilePath);
         loadProperties();
 
         IS_ASCII = Boolean.parseBoolean(getProperty("IS_ASCII"));
@@ -40,7 +40,7 @@ public class ConfigService {
         serverTCPPort = Integer.parseInt(getProperty("serverTCPPort"));
     }
 
-    private void createFileIfNotExists(String filePath, String fileName) {
+    private void createFileIfNotExists(String filePath) {
         Properties defaultProperties = new Properties();
             for (int i = 1; i < 10; i++) {
                 if (i==1){
@@ -58,9 +58,10 @@ public class ConfigService {
             defaultProperties.setProperty("serialSpeed", "115200");
             defaultProperties.setProperty("RS485_ADDR_NUM", "0");
             defaultProperties.setProperty("serverTCPPort", "5000");
-            defaultProperties.setProperty("openPortNum", "1");
+            defaultProperties.setProperty("openPortNum", "COM1");
             defaultProperties.setProperty("isRS", "false");
             defaultProperties.setProperty("clientTCPAddr", "192.168.0.10");
+            defaultProperties.setProperty("openPortName", "1");
             defaultProperties.setProperty("clientTCPPort", "5100");
             defaultProperties.setProperty("serverTCPAddr", "192.168.0.10");
             defaultProperties.setProperty("serverTCPPort", "5000");
@@ -91,6 +92,8 @@ public class ConfigService {
             defaultProperties.setProperty("fontGroup2selected", "True");
             defaultProperties.setProperty("fontGroup3selected", "False");
             defaultProperties.setProperty("fontGroup4selected", "False");
+
+            defaultProperties.setProperty("isHexRealTime", "0");
 
             for (int i = 0; i <= 10; i++) {//페이지 개수(0은 실시간)
                 for (int j =0; j < 3; j++) {//섹션 개수
@@ -158,9 +161,7 @@ public class ConfigService {
         File configFile = new File(filePath);
         // 디렉토리 생성
         File parentDir = configFile.getParentFile();
-        if (!parentDir.exists()) {
-            parentDir.mkdirs();  // 디렉토리가 없을 경우 생성
-        }
+        if (!parentDir.exists()) parentDir.mkdirs();  // 디렉토리가 없을 경우 생성
 
         if (!configFile.exists()) {
             try {

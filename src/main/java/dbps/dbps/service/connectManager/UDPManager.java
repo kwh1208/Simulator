@@ -248,6 +248,5 @@ public class UDPManager {
     public void disconnect() {
         socket.close();
         socket = null;
-        logService.updateInfoLog("UDP 서버 연결이 종료되었습니다. IP: " + IP + ", PORT: " + PORT);
     }
 }

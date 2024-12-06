@@ -58,8 +58,21 @@
         </ChoiceBox>
         <Button layoutX="261.0" layoutY="105.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendFillColor"/>
 
-        <Button text="배경이미지 스케쥴" layoutX="18.0" layoutY="140" prefWidth="150" prefHeight="30" onMouseClicked="#openBGSchedule"/>
-        <Button text="릴레이 신호 출력" layoutX="175.0" layoutY="140" prefWidth="150" prefHeight="30" onMouseClicked="#openRelay"/>
+        <Label layoutX="18.0" layoutY="145.0" text="offset 변경" />
+        <ChoiceBox fx:id="offset" layoutX="145.0" layoutY="140.0" prefHeight="28.0" prefWidth="113.0" value="4">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="1" />
+                    <String fx:value="2" />
+                    <String fx:value="3" />
+                    <String fx:value="4(default)" />
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+        <Button layoutX="261.0" layoutY="140.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendoffSet"/>
+
+        <Button text="배경이미지 스케쥴" layoutX="18.0" layoutY="175" prefWidth="150" prefHeight="30" onMouseClicked="#openBGSchedule"/>
+        <Button text="릴레이 신호 출력" layoutX="175.0" layoutY="175" prefWidth="150" prefHeight="30" onMouseClicked="#openRelay"/>
     </children>
 </Pane>
 </VBox>

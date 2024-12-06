@@ -12,6 +12,7 @@ import javafx.scene.layout.AnchorPane;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import static dbps.dbps.Constants.*;
 
@@ -111,7 +112,9 @@ public class HEXMessageController {
     @FXML
     private void initialize() {
         configService = ConfigService.getInstance();
-        HEXMsgAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/hexMessage.css").toExternalForm());
+        HEXMsgAP.getStylesheets().add(Objects.requireNonNull(Simulator.class.getResource("/dbps/dbps/css/hexMessage.css")).toExternalForm());
+
+
 
         realTimeMsg.setToggleGroup(msgTypeGroup);
         pageMsg.setToggleGroup(msgTypeGroup);
@@ -121,6 +124,13 @@ public class HEXMessageController {
         section2.setToggleGroup(sectionGroup);
 
         realTimeMsg.setSelected(true);
+        if (configService.getProperty("isHexRealTime").equals("0")){
+            realTimeMsg.setSelected(true);
+        }
+        else{
+            pageMsg.setSelected(true);
+            pageMsgCnt.setValue(configService.getProperty("isHexRealTime"));
+        }
         section0.setSelected(true);
 
         msgTypeGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
@@ -137,13 +147,9 @@ public class HEXMessageController {
             }
         });
 
-        pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)->{
-            doMsgSettings();
-        });
+        pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)-> doMsgSettings());
 
-        sectionGroup.selectedToggleProperty().addListener((observable, oldValue, newValue)->{
-            doMsgSettings();
-        });
+        sectionGroup.selectedToggleProperty().addListener((observable, oldValue, newValue)-> doMsgSettings());
 
         effectOut.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateOutDirections(newValue));
         effectIn.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateInDirections(newValue));
@@ -151,89 +157,43 @@ public class HEXMessageController {
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         doMsgSettings();
 
-        displayControl.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("displayControl"+getMsgNum(), newValue);
-                });
+        saveConfig();
 
-        displayMethod.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("displayMethod"+getMsgNum(), newValue);
-                }
-        );
-        charCodes.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("charCodes"+getMsgNum(), newValue);
-                }
-        );
-        fontSize.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("fontSize"+getMsgNum(), newValue);
-                }
-        );
-        fontGroup.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("fontGroup"+getMsgNum(), newValue);
-                }
-        );
-        effectIn.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("effectIn"+getMsgNum(), newValue);
-                }
-        );
-        effectOut.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("effectOut"+getMsgNum(), newValue);
-                }
-        );
-        outDirection.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("outDirection"+getMsgNum(), newValue);
-                }
-        );
-        effectSpeed.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("effectSpeed"+getMsgNum(), newValue);
-                }
-        );
-        effectTime.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("effectTime"+getMsgNum(), newValue);
-                }
-        );
-        xStart.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("xStart"+getMsgNum(), newValue);
-                }
-        );
-        yStart.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("yStart"+getMsgNum(), newValue);
-                }
-        );
-        xEnd.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("xEnd"+getMsgNum(), newValue);
-                }
-        );
-        yEnd.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("yEnd"+getMsgNum(), newValue);
-                }
-        );
-        bgImg.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    configService.setProperty("bgImg"+getMsgNum(), newValue);
-                }
-        );
+        setXY();
     }
+
+    private void setXY() {
+        xStart.getItems().clear();
+        xEnd.getItems().clear();
+        yStart.getItems().clear();
+        yEnd.getItems().clear();
+
+        int xLimit = Integer.parseInt(configService.getProperty("displayColumnSize"));
+        int yLimit = Integer.parseInt(configService.getProperty("displayRowSize"));
+
+
+        for (int i = 0; i <= 4*xLimit; i++) {
+            xStart.getItems().add(String.valueOf(i));
+            xEnd.getItems().add(String.valueOf(i));
+        }
+        for (int i = 0; i <= 4*yLimit; i++) {
+            yStart.getItems().add(String.valueOf(i));
+            yEnd.getItems().add(String.valueOf(i));
+        }
+
+        xStart.setValue("0");
+        yStart.setValue("0");
+        xEnd.setValue("0");
+        yEnd.setValue("0");
+    }
+
 
     private String getMsgNum() {
         String i = "0";
         if (!realTimeMsg.isSelected()) {
             i= pageMsgCnt.getValue();
         }
-        String j = "0";
+        String j;
         if (section0.isSelected()){
             j="0";
         } else if (section1.isSelected()) {
@@ -246,7 +206,8 @@ public class HEXMessageController {
 
     private void doMsgSettings() {
         String msgNum = getMsgNum();
-        
+
+
         displayControl.setValue(configService.getProperty("displayControl"+msgNum));
         displayMethod.setValue(configService.getProperty("displayMethod"+msgNum));
         charCodes.setValue(configService.getProperty("charCode"+msgNum));
@@ -271,6 +232,8 @@ public class HEXMessageController {
     public void save() {
         String msgNum = getMsgNum();
 
+        configService.setProperty("isHexRealTime", "0");
+        configService.setProperty("isHexRealTime", pageMsgCnt.getValue());
         configService.setProperty("displayControl"+msgNum, displayControl.getValue());
         configService.setProperty("displayMethod"+msgNum, displayMethod.getValue());
         configService.setProperty("charCode"+msgNum, charCodes.getValue());
@@ -296,6 +259,7 @@ public class HEXMessageController {
         String msg = makeHexMsg();
 
         hexMsgTransceiver.sendMessages(msg);
+        save();
     }
 
     private String makeHexMsg(){
@@ -323,14 +287,15 @@ public class HEXMessageController {
         String text = msgPreview.getText();
 
 
-        String msg = "10 02 ";
+        StringBuilder msg = new StringBuilder("10 02 ");
+
 
         //rs485인 경우 변경
         if (!isRS) {
-            msg += "00 ";
+            msg.append("00 ");
         } else {
             //rs485면 주소
-            msg += String.format("02X ", RS485_ADDR_NUM);
+            msg.append(String.format("%02X ", RS485_ADDR_NUM));
         }
 
         //msg 길이
@@ -342,68 +307,71 @@ public class HEXMessageController {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        msg+="00 "+String.format("%02x", (textBytes.length*2)+17);
-        msg+=" 94 ";
+        msg.append("00 ").append(String.format("%02x", (textBytes.length * 2) + 17));
+        msg.append(" 94 ");
 
         //실시간메세지
         if (msgType.equals("실시간 메세지")) {
-            msg += "00 ";
+            msg.append("00 ");
         } else {
-            msg+=Integer.toHexString(Integer.parseInt(pageMsgCntValue))+" ";
+            msg.append(Integer.toHexString(Integer.parseInt(pageMsgCntValue))).append(" ");
         }
 
         //섹션번호
-        msg+= "0"+Integer.parseInt(section)+" ";
+        msg.append("0").append(Integer.parseInt(section)).append(" ");
 
         //표시제어
         switch (displayControlValue) {
             case "Off":
-                msg += "00 ";
+                msg.append("00 ");
                 break;
             case "ON":
-                msg += "63 ";
+                msg.append("63 ");
                 break;
         }
 
         //표시방법
-        msg+= displayMethodValue.equals("Normal") ? "00 ":"01 ";
+        msg.append(displayMethodValue.equals("Normal") ? "00 " : "01 ");
 
         //문자코드
-        msg+= charCodesValue.equals("한글 조합형") ? "00 ":"01 ";
+        msg.append(charCodesValue.equals("한글 조합형") ? "00 " : "01 ");
 
         //폰트크기
         fontSizeValue = fontSizeValue.replaceAll("[^0-9]", "");
-        msg+="0"+((Integer.parseInt(fontSizeValue)/4)-1)+" ";
+        if (fontSizeValue.equals("14")){
+            msg.append("01 ");
+        }
+        else msg.append("0").append((Integer.parseInt(fontSizeValue) / 4) - 1).append(" ");
 
         //입장효과
-        msg+=makeEffect(effectInValue, inDirectionValue);
+        msg.append(makeEffect(effectInValue, inDirectionValue));
 
         //퇴장효과
-        msg+=makeEffect(effectOutValue, outDirectionValue);
+        msg.append(makeEffect(effectOutValue, outDirectionValue));
 
         //예비
-        msg+="00 ";
+        msg.append("00 ");
 
         //효과속도**
-        msg+=String.format("%02x", Integer.parseInt(effectSpeedValue.replaceAll("[^0-9]", "")))+" ";
+        msg.append(String.format("%02x", Integer.parseInt(effectSpeedValue.replaceAll("[^0-9]", "")))).append(" ");
 
         //유지시간
-        msg+=makeEffectTime(effectTimeValue);
+        msg.append(makeEffectTime(effectTimeValue));
 
         //x축 시작**
-        msg+=String.format("%02d", (Integer.parseInt(xStartValue)/4))+" ";
+        msg.append(String.format("%02d", (Integer.parseInt(xStartValue) / 4))).append(" ");
 
         //y축 시작
-        msg+=String.format("%02d", (Integer.parseInt(yStartValue)/4))+" ";
+        msg.append(String.format("%02d", (Integer.parseInt(yStartValue) / 4))).append(" ");
 
         //x축 끝
-        msg+=String.format("%02d", (Integer.parseInt(xEndValue)/4))+" ";
+        msg.append(String.format("%02d", (Integer.parseInt(xEndValue) / 4))).append(" ");
 
         //y축 끝
-        msg+=String.format("%02d", (Integer.parseInt(yEndValue)/4))+" ";
+        msg.append(String.format("%02d", (Integer.parseInt(yEndValue) / 4))).append(" ");
 
         //배경이미지
-        msg+=bgImgValue.equals("사용안함") ? "00 ": String.format("%02d ", Integer.parseInt(bgImgValue));
+        msg.append(bgImgValue.equals("사용안함") ? "00 " : String.format("%02d ", Integer.parseInt(bgImgValue)));
 
         //글자
         for (int i = 0; i < text.length(); i++) {
@@ -420,43 +388,35 @@ public class HEXMessageController {
                 tmp += String.valueOf(textColorValue.charAt(textColorValue.length()-1));
             }
 
-            int add = 0;
+            int add;
             switch (fontGroupValue){
-                case "FontGroup1"->{
-                    add = 8;
-                }
-                case "FontGroup2"->{
-                    add = 128;
-                }
-                case "FontGroup3"->{
-                    add = 136;
-                }
-                default -> {
-                    add = 0;
-                }
+                case "FontGroup1"-> add = 8;
+                case "FontGroup2"-> add = 128;
+                case "FontGroup3"-> add = 136;
+                default -> add = 0;
             }
 
             int tmpValue = Integer.parseInt(tmp, 16);
-            String resultHex = "";
+            String resultHex;
 
             resultHex = String.format("%02X ", tmpValue + add);
             if (String.valueOf(text.charAt(i)).getBytes(Charset.forName("EUC-KR")).length!=1){
                 resultHex += String.format("%02X ", 0);
             }
 
-            msg+=resultHex;
+            msg.append(resultHex);
             if (charCodes.getValue().equals("UTF16유니코드")&&String.valueOf(text.charAt(i)).getBytes(Charset.forName("EUC-KR")).length==1){
-                msg+=String.format("%02X ", 0);
+                msg.append(String.format("%02X ", 0));
             }
         }
 
 
 
-        msg+=bytesToHex(textBytes, textBytes.length);
+        msg.append(bytesToHex(textBytes, textBytes.length));
 
-        msg += "10 03";
+        msg.append("10 03");
 
-        return msg;
+        return msg.toString();
     }
 
     private String makeEffectTime(String effectTimeValue) {
@@ -499,93 +459,65 @@ public class HEXMessageController {
 
     private String makeEffect(String effect, String direction){
         switch (effect){
-            case "효과없음"->{
-                return "00 ";
-            }
-            case "사용안함"->{
+            case "효과없음", "사용안함" ->{
                 return "00 ";
             }
             case "정지효과"-> {
-                if (direction.equals("방향없음")) {
-                    return "01 ";
-                } else if (direction.equals("밝아지기")){
-                    return "02 ";
-                } else if (direction.equals("어두워지기")){
-                    return "03 ";
-                } else if (direction.equals("수평반사")){
-                    return "04 ";
-                } else {
-                    return "05 ";
-                }
+                return switch (direction) {
+                    case "방향없음" -> "01 ";
+                    case "밝아지기" -> "02 ";
+                    case "어두워지기" -> "03 ";
+                    case "수평반사" -> "04 ";
+                    default -> "05 ";
+                };
             }
             case "이동하기"->{
-                if (direction.equals("왼쪽")){
-                    return "06 ";
-                } else if (direction.equals("오른쪽")){
-                    return "07 ";
-                } else if (direction.equals("위쪽")){
-                    return "08 ";
-                } else {
-                    return "09 ";
-                }
+                return switch (direction) {
+                    case "왼쪽" -> "06 ";
+                    case "오른쪽" -> "07 ";
+                    case "위쪽" -> "08 ";
+                    default -> "09 ";
+                };
             }
             case "닦아내기"->{
-                if (direction.equals("왼쪽")){
-                    return "0C ";
-                } else if (direction.equals("오른쪽")){
-                    return "0D ";
-                } else if (direction.equals("위쪽")){
-                    return "0E ";
-                } else {
-                    return "0F ";
-                }
+                return switch (direction) {
+                    case "왼쪽" -> "0C ";
+                    case "오른쪽" -> "0D ";
+                    case "위쪽" -> "0E ";
+                    default -> "0F ";
+                };
             }
             case "커튼효과"->{
-                if (direction.equals("수평밖으로")){
-                    return "18 ";
-                } else if (direction.equals("수평안으로")){
-                    return "19 ";
-                } else if (direction.equals("수직밖으로")){
-                    return "1A ";
-                } else {
-                    return "1B ";
-                }
+                return switch (direction) {
+                    case "수평밖으로" -> "18 ";
+                    case "수평안으로" -> "19 ";
+                    case "수직밖으로" -> "1A ";
+                    default -> "1B ";
+                };
             } case "확대효과"->{
-                if (direction.equals("왼쪽")){
-                    return "23 ";
-                } else if (direction.equals("오른쪽")){
-                    return "24 ";
-                } else if (direction.equals("위쪽")){
-                    return "25 ";
-                } else if (direction.equals("아래쪽")){
-                    return "26 ";
-                } else {
-                    return "27 ";
-                }
+                return switch (direction) {
+                    case "왼쪽" -> "23 ";
+                    case "오른쪽" -> "24 ";
+                    case "위쪽" -> "25 ";
+                    case "아래쪽" -> "26 ";
+                    default -> "27 ";
+                };
             } case "회전효과"->{
-                if (direction.equals("시계반대1")){
-                    return "28 ";
-                } else if (direction.equals("시계방향1")){
-                    return "29 ";
-                } else if (direction.equals("시계반대2")){
-                    return "2A ";
-                } else {
-                    return "2B ";
-                }
+                return switch (direction) {
+                    case "시계반대1" -> "28 ";
+                    case "시계방향1" -> "29 ";
+                    case "시계반대2" -> "2A ";
+                    default -> "2B ";
+                };
             } case "배경깜빡이기"->{
-                if (direction.equals("빨강")){
-                    return "31 ";
-                } else if (direction.equals("초록")){
-                    return "32 ";
-                } else if (direction.equals("파랑")){
-                    return "33 ";
-                } else if (direction.equals("흰색")){
-                    return "34 ";
-                } else if (direction.equals("모든색상(순차적)")){
-                    return "35 ";
-                } else {
-                    return "36 ";
-                }
+                return switch (direction) {
+                    case "빨강" -> "31 ";
+                    case "초록" -> "32 ";
+                    case "파랑" -> "33 ";
+                    case "흰색" -> "34 ";
+                    case "모든색상(순차적)" -> "35 ";
+                    default -> "36 ";
+                };
             } case "3D 효과"->{
                 return "37 ";
             }default -> {//무작위
@@ -595,26 +527,21 @@ public class HEXMessageController {
     }
 
     private void selectEffect(String effect, ChoiceBox<String> directionBox) {
-        if (effect.equals("정지효과")) {
-            directionBox.setItems(FXCollections.observableArrayList("방향없음", "밝아지기", "어두워지기", "수평 반사", "수직 반사"));
-        } else if (effect.equals("전체효과")) {
-            directionBox.setItems(FXCollections.observableArrayList("무작위효과"));
-        } else if (effect.equals("이동하기") || effect.equals("닦아내기") || effect.equals("블라인드")) {
-            directionBox.setItems(FXCollections.observableArrayList("왼쪽", "오른쪽", "위", "아래"));
-        } else if (effect.equals("커튼효과")) {
-            directionBox.setItems(FXCollections.observableArrayList("수평밖으로", "수평안으로", "수직밖으로", "수직안으로"));
-        } else if (effect.equals("확대효과")) {
-            directionBox.setItems(FXCollections.observableArrayList("왼쪽", "오른쪽", "위쪽", "아래쪽", "오른쪽아래로"));
-        } else if (effect.equals("회전효과")) {
-            directionBox.setItems(FXCollections.observableArrayList("시계반대1", "시계방향1", "시계반대2", "시계방향2"));
-        } else if (effect.equals("배경깜빡이기")) {
-            directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "파란색", "흰색", "전체(순차적)"));
-        } else if (effect.equals("색상깜빡이기")) {
-            directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "파란색", "흰색", "전체(순차적)", "전체(동시에)"));
-        } else if (effect.equals("3D 효과")) {
-            directionBox.setItems(FXCollections.observableArrayList("왼쪽"));
-        } else if (effect.equals("효과없음")){
-            directionBox.setDisable(true);
+        switch (effect) {
+            case "정지효과" ->
+                    directionBox.setItems(FXCollections.observableArrayList("방향없음", "밝아지기", "어두워지기", "수평 반사", "수직 반사"));
+            case "전체효과" -> directionBox.setItems(FXCollections.observableArrayList("무작위효과"));
+            case "이동하기", "닦아내기", "블라인드" ->
+                    directionBox.setItems(FXCollections.observableArrayList("왼쪽", "오른쪽", "위", "아래"));
+            case "커튼효과" -> directionBox.setItems(FXCollections.observableArrayList("수평밖으로", "수평안으로", "수직밖으로", "수직안으로"));
+            case "확대효과" -> directionBox.setItems(FXCollections.observableArrayList("왼쪽", "오른쪽", "위쪽", "아래쪽", "오른쪽아래로"));
+            case "회전효과" -> directionBox.setItems(FXCollections.observableArrayList("시계반대1", "시계방향1", "시계반대2", "시계방향2"));
+            case "배경깜빡이기" ->
+                    directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "파란색", "흰색", "전체(순차적)"));
+            case "색상깜빡이기" ->
+                    directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "파란색", "흰색", "전체(순차적)", "전체(동시에)"));
+            case "3D 효과" -> directionBox.setItems(FXCollections.observableArrayList("왼쪽"));
+            case "효과없음" -> directionBox.setDisable(true);
         }
 
 
@@ -654,5 +581,61 @@ public class HEXMessageController {
     }
 
     public void preview(MouseEvent mouseEvent) {
+    }
+
+    private void saveConfig() {
+        displayControl.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> configService.setProperty("displayControl"+getMsgNum(), newValue));
+
+        displayMethod.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> configService.setProperty("displayMethod"+getMsgNum(), newValue)
+        );
+        charCodes.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> configService.setProperty("charCodes"+getMsgNum(), newValue)
+        );
+        fontSize.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> configService.setProperty("fontSize"+getMsgNum(), newValue)
+        );
+        fontGroup.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> configService.setProperty("fontGroup"+getMsgNum(), newValue)
+        );
+        effectIn.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> configService.setProperty("effectIn"+getMsgNum(), newValue)
+        );
+        effectOut.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> configService.setProperty("effectOut"+getMsgNum(), newValue)
+        );
+        outDirection.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> configService.setProperty("outDirection"+getMsgNum(), newValue)
+        );
+        effectSpeed.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> configService.setProperty("effectSpeed"+getMsgNum(), newValue)
+        );
+        effectTime.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> configService.setProperty("effectTime"+getMsgNum(), newValue)
+        );
+        xStart.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    if (newValue!=null) configService.setProperty("xStart"+getMsgNum(), newValue);
+                }
+        );
+        yStart.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    if (newValue!=null) configService.setProperty("yStart"+getMsgNum(), newValue);
+                }
+        );
+        xEnd.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    if (newValue!=null) configService.setProperty("xEnd"+getMsgNum(), newValue);
+                }
+        );
+        yEnd.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    if (newValue!=null) configService.setProperty("yEnd"+getMsgNum(), newValue);
+                }
+        );
+        bgImg.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> configService.setProperty("bgImg"+getMsgNum(), newValue)
+        );
     }
 }

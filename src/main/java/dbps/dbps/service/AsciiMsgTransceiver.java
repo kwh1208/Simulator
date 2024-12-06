@@ -56,7 +56,6 @@ public class AsciiMsgTransceiver {
 
                     // Task의 완료를 기다리고 결과를 동기적으로 가져오기
                     receivedMsg = sendTask.get(); // get() 메서드는 Task 완료까지 대기함
-                    System.out.println(receivedMsg);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

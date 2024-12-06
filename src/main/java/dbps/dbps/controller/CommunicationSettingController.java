@@ -11,6 +11,7 @@ import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.ServerTCPManager;
 import dbps.dbps.service.connectManager.TCPManager;
 import dbps.dbps.service.connectManager.UDPManager;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -118,6 +119,21 @@ public class CommunicationSettingController {
 
     @FXML
     private Button connect;
+
+    @FXML
+    private ProgressIndicator progressIndicator; // 로딩 애니메이션
+
+    public void showLoading() {
+        Platform.runLater(() -> {
+            progressIndicator.setVisible(true);
+        });
+    }
+
+    public void hideLoading() {
+        Platform.runLater(() -> {
+            progressIndicator.setVisible(false);
+        });
+    }
 
     ToggleGroup communicationGroup;
 
@@ -240,7 +256,7 @@ public class CommunicationSettingController {
         );
 
         //응답시간 변경
-        delayTime.selectionModelProperty().addListener((observableValue, oldValue, newValue) -> RESPONSE_LATENCY = Integer.parseInt(delayTime.getValue()));
+        delayTime.selectionModelProperty().addListener((observableValue, oldValue, newValue) -> {RESPONSE_LATENCY = Integer.parseInt(delayTime.getValue()); configService.setProperty("latency", String.valueOf(RESPONSE_LATENCY));});
 
         communicationSettingAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/communicationSetting.css").toExternalForm());
 
@@ -315,11 +331,16 @@ public class CommunicationSettingController {
     private void connectServerTCP() {
         int port = Integer.parseInt(serverIPPort.getText());
 
-        serverTCPManager.connect(port);
+        // 별도의 스레드에서 서버 연결 실행
+        new Thread(() -> {
+            serverTCPManager.connect(port, serverIPAddress.getValue());
+            serverTCPManager.disconnect();
+        }).start();
+
         serverTCPPort = port;
         configService.setProperty("serverTCPPort", String.valueOf(port));
 
-        logService.updateInfoLog("Port :"+port+"가 열렸습니다.");
+        logService.updateInfoLog("Port :" + port + "가 열렸습니다.");
     }
 
     private void connectClientTCP() {
@@ -422,34 +443,56 @@ public class CommunicationSettingController {
 
     //컨트롤러 연결하고 확인신호 보내기
     @FXML
-    public void controllerConnect() throws IOException {
-        //시리얼 일때
-        if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)){
-            if (RS485ChkBox.isSelected()){
-                CONNECT_TYPE = "rs485";
-                serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
-                RS485_ADDR_NUM = Integer.parseInt(RS485ChoiceBox.getValue().replaceAll("[^0-9]", ""));
-                String msg = "10 02 "+convertRS485AddrASCii()+" 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
-                hexMsgTransceiver.sendMessages(msg);
-            } else {
-                CONNECT_TYPE = "serial";
-                serialPortManager.openPort(serialPortComboBox.getValue(), Integer.parseInt(serialSpeedChoiceBox.getValue()));
-                hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
+    public void controllerConnect() {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws IOException {
+                Platform.runLater(() -> showLoading()); // 로딩 애니메이션 시작
+
+                try {
+                    // 시리얼일 때
+                    if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
+                        if (RS485ChkBox.isSelected()) {
+                            CONNECT_TYPE = "rs485";
+                            serialPortManager.openPort(serialPortComboBox.getValue(),
+                                    Integer.parseInt(serialSpeedChoiceBox.getValue()));
+                            RS485_ADDR_NUM = Integer.parseInt(RS485ChoiceBox.getValue().replaceAll("[^0-9]", ""));
+                            String msg = "10 02 " + convertRS485AddrASCii() + " 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                            hexMsgTransceiver.sendMessages(msg);
+                        } else {
+                            CONNECT_TYPE = "serial";
+                            serialPortManager.openPort(serialPortComboBox.getValue(),
+                                    Integer.parseInt(serialSpeedChoiceBox.getValue()));
+                            hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
+                        }
+                        OPEN_PORT_NAME = serialPortComboBox.getValue();
+                        configService.setProperty("openPortName", OPEN_PORT_NAME);
+                    } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn)) {
+                        CONNECT_TYPE = "clientTCP";
+                        connectClientTCP();
+                        tcpManager.connect(tcpManager.getIP(), tcpManager.getPORT());
+                    } else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)) {
+                        CONNECT_TYPE = "serverTCP";
+                        connectServerTCP();
+                        serverTCPManager.sendMsgAndGetMsgByte(CONNECT_START);
+                    } else {
+                        CONNECT_TYPE = "UDP";
+                        connectUDP();
+                        udpManager.connect(udpManager.getIP(), udpManager.getPORT());
+                    }
+                    configService.setProperty("connectType", CONNECT_TYPE);
+
+                } finally {
+                    Platform.runLater(() -> hideLoading()); // 작업 완료 후 로딩 애니메이션 종료
+                }
+                return null;
             }
-        } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn)) {
-            CONNECT_TYPE = "clientTCP";
-            connectClientTCP();
-            tcpManager.connect(tcpManager.getIP(), tcpManager.getPORT());
-        } else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)) {
-            CONNECT_TYPE = "serverTCP";
-            connectServerTCP();
-            serverTCPManager.sendMsgAndGetMsgByte(CONNECT_START);
-        } else {
-            CONNECT_TYPE = "UDP";
-            connectUDP();
-            udpManager.connect(udpManager.getIP(), udpManager.getPORT());
-        }
+        };
+
+        // 비동기 실행
+        new Thread(task).start();
     }
+
 
     public void communicationSettingClose(MouseEvent mouseEvent) {
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();

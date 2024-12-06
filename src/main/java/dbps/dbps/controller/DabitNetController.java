@@ -78,6 +78,8 @@ public class DabitNetController {
             serialPortChoiceBox.setValue(serialPortChoiceBox.getItems().get(0));
         }
 
+        getSerialPortList();
+
         serialPortChoiceBox.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
 
         dbList.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
@@ -563,7 +565,7 @@ public class DabitNetController {
     @Getter
     @Setter
     @ToString
-    private class DB300IPPort {
+    public class DB300IPPort {
         String macAddress;
         String clientIP;
         String clientPort;
@@ -600,7 +602,7 @@ public class DabitNetController {
     @Getter
     @Setter
     @ToString
-    private class DB300Info {
+    public class DB300Info {
         String communication;
         String macAddress;
         boolean debugging;

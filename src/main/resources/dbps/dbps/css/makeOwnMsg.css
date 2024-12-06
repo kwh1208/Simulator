@@ -1,6 +1,6 @@
 .choice-box .context-menu {
     -fx-background-color: black;
-    -fx-pref-width: 139;
+    -fx-pref-width: 120;
 }
 .choice-box .menu-item:focused {
     -fx-background-color: orange;
