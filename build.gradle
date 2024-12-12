@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'com.github.johnrengelman.shadow' version '8.1.1' // Shadow 플러그인 추가
+}
+
+group = 'DBPS'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    modularity.inferModulePath = true // 모듈 시스템 유지
+}
+
+application {
+    mainClass = 'dbps.dbps.Simulator'
+    applicationDefaultJvmArgs = [
+            "--module-path", "build/libs", // 모듈로 처리할 라이브러리 경로
+            "--class-path", "libs/mqttv3.jar", // mqttv3를 클래스패스에서 실행
+            "--add-modules", "javafx.controls,javafx.fxml",
+            "--add-reads", "dbps.dbps=ALL-UNNAMED"
+    ]
+}
+
+javafx {
+    version = '17.0.6'
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
+dependencies {
+    implementation 'org.openjfx:javafx-controls:17.0.6'
+    implementation 'org.openjfx:javafx-fxml:17.0.6'
+    implementation 'org.fxmisc.richtext:richtextfx:0.11.3'
+    implementation 'com.fazecast:jSerialComm:2.11.0'
+    implementation 'org.slf4j:slf4j-api:2.0.16'
+    implementation 'org.slf4j:slf4j-simple:2.0.16'
+    implementation files('libs/mqttv3.jar')
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+}
+
+shadowJar {
+    archiveClassifier.set('') // 쉐도우 JAR 이름 설정
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(
+                'Main-Class': 'dbps.dbps.Simulator' // 메인 클래스 지정
+        )
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
