@@ -15,17 +15,13 @@ import java.util.List;
 
 
 public class ASCiiMsgService {
-
-    private static final String FILE_NAME = "messages.txt";
     public static Stage makeMsgWindow;
 
     private static ASCiiMsgService instance = null;
 
-    private final LogService logService;
     ConfigService configService;
 
     private ASCiiMsgService() {
-        logService = LogService.getLogService();
         configService = ConfigService.getInstance();
     }
 

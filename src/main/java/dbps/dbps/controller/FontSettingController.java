@@ -1,34 +1,26 @@
 package dbps.dbps.controller;
 
-import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.FontService;
-import dbps.dbps.service.ResourceManager;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.IOException;
 
 public class FontSettingController {
     public Label fontProgressLabel;
     public ProgressBar fontProgressBar;
     public Label fontCapacity;
-    public ChoiceBox<Double> fontWidth;
-    public ChoiceBox<Double> fontHeight;
+
     ConfigService configService;
     FontService fontService = FontService.getInstance();
     @FXML
@@ -239,12 +231,7 @@ public class FontSettingController {
             updateFontSize();
         });
 
-        for (double i = 1.0; i <= 3.1; i += 0.1) {
-            fontWidth.getItems().add(Double.parseDouble(String.format("%.1f", i)));
-            fontHeight.getItems().add(Double.parseDouble(String.format("%.1f", i)));
-        }
-        fontWidth.setValue(1.0);
-        fontHeight.setValue(1.0);
+
     }
 
     private void moveCursorRight(TextArea textArea) {
@@ -443,25 +430,7 @@ public class FontSettingController {
         stage.close();
     }
 
-    public void fontName(MouseEvent mouseEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/fontName.fxml"));
-        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
-        Parent root = fxmlLoader.load();
 
-        Stage modalStage = new Stage();
-        modalStage.setTitle("폰트 이름 설정");
-
-        modalStage.initModality(Modality.APPLICATION_MODAL);
-
-        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-        modalStage.initOwner(parentStage);
-
-        Scene scene = new Scene(root);
-        modalStage.setScene(scene);
-        modalStage.setResizable(false);
-
-        modalStage.showAndWait();
-    }
 
     private void updateFontSize(){
 //        long totalFileSize = 0;
@@ -558,11 +527,5 @@ public class FontSettingController {
         return input.substring(index - 2, index + 3);
     }
 
-    public void sendFontWeight() {
-        String sendMsg = "![0056 ";
-        sendMsg+= (int) (fontWidth.getValue() * 10) +" ";
-        sendMsg+= (int) (fontHeight.getValue() * 10) +"!]";
-        System.out.println(sendMsg);
-        asciiMsgTransceiver.sendMessages(sendMsg, false);
-    }
+
 }

@@ -59,6 +59,8 @@
        <ChoiceBox fx:id="fontSize" layoutX="177.0" layoutY="106.0" prefHeight="21.0" prefWidth="139.0" value="16(Standard)">
            <items>
                <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="12" />
+                   <String fx:value="14" />
                    <String fx:value="16(Standard)" />
                    <String fx:value="20" />
                    <String fx:value="24" />
@@ -318,13 +320,13 @@
        </ChoiceBox>
 
        <Label layoutX="34.0" layoutY="350.0" text="14. 배경이미지 선택" />
-       <ChoiceBox fx:id="bgImg" layoutX="177.0" layoutY="346.0" prefHeight="21.0" prefWidth="139.0" value="사용안함">
+       <ComboBox fx:id="bgImg" layoutX="177.0" layoutY="346.0" prefHeight="21.0" prefWidth="139.0" value="사용안함">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="사용안함" />
                </FXCollections>
            </items>
-       </ChoiceBox>
+       </ComboBox>
 
        <Label layoutX="34.0" layoutY="380.0" text="15-1. 문자색상" />
        <ChoiceBox fx:id="fontColor" layoutX="177.0" layoutY="376.0" prefHeight="21.0" prefWidth="139.0" value="노란색">
@@ -365,5 +367,6 @@
        <Button layoutX="235.0" layoutY="508.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="90.0" text="초기화" />
        <Button layoutX="335.0" layoutY="508.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="30.0" prefWidth="90.0" text="읽기"/>
        <Button layoutX="435.0" layoutY="508.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="30.0" prefWidth="90.0" text="닫기"/>
+       <ProgressIndicator fx:id="progressIndicator" layoutX="230.0" layoutY="200.0" visible="false"/>
    </children>
 </AnchorPane>

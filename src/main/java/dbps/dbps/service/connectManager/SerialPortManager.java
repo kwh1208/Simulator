@@ -1,6 +1,8 @@
 package dbps.dbps.service.connectManager;
 
 import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortIOException;
+import com.fazecast.jSerialComm.SerialPortTimeoutException;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.LogService;
 import javafx.concurrent.Task;
@@ -10,6 +12,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static dbps.dbps.Constants.*;
 
@@ -18,6 +24,8 @@ public class SerialPortManager {
     private static SerialPortManager instance = null;
     private final LogService logService;
     ConfigService configService;
+    private static final Object portLock = new Object();
+    private final BlockingQueue<Task<?>> taskQueue = new LinkedBlockingQueue<>();
 
     private SerialPortManager() {
         logService = LogService.getLogService();
@@ -32,55 +40,59 @@ public class SerialPortManager {
     }
 
     public void openPort(String portName, int baudRate) {
-        if (serialPortMap.containsKey(portName) && isPortOpen(portName)) {
-            return;
-        }
-        SerialPort port = SerialPort.getCommPort(portName);
-        port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY * 1000, RESPONSE_LATENCY * 1000);
-        port.openPort();
-        serialPortMap.put(portName, port);
-        configService.setProperty("openPortNum", portName);
+        synchronized (portLock) {
+            if (serialPortMap.containsKey(portName) && isPortOpen(portName)) {
+                return;
+            }
+            SerialPort port = SerialPort.getCommPort(portName);
+            port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000, RESPONSE_LATENCY * 1000);
 
-        logService.updateInfoLog(portName + " 포트가 열렸습니다.");
+            if (!port.openPort()) {
+                logService.errorLog(portName + " 포트를 열 수 없습니다.");
+            }
+
+            serialPortMap.put(portName, port);
+            logService.updateInfoLog(portName + " 포트가 열렸습니다.");
+        }
     }
 
     public void openPortNoLog(String portName, int baudRate) {
-        if (serialPortMap.containsKey(portName) && isPortOpen(portName)) {
-            return;
-        }
+        synchronized (portLock) {
+            if (serialPortMap.containsKey(portName) && isPortOpen(portName)) {
+                return;
+            }
+            SerialPort port = SerialPort.getCommPort(portName);
+            port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000, RESPONSE_LATENCY * 1000);
 
-        SerialPort port = SerialPort.getCommPort(portName);
-        port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
-        port.openPort();
-        serialPortMap.put(portName, port);
+            if (!port.openPort()) {
+                throw new IllegalStateException(portName + " 포트를 열 수 없습니다.");
+            }
+
+            serialPortMap.put(portName, port);
+        }
     }
 
 
     public void closePort(String portName) {
-        if (serialPortMap.containsKey(portName)) {
-            SerialPort serialPort = serialPortMap.get(portName);
-            if (serialPort.isOpen()) {
-                serialPort.closePort();
-
-                logService.updateInfoLog("포트가 닫혔습니다.");
-
-            } else {
-                logService.updateInfoLog(portName + " 포트가 이미 닫혀 있습니다.");
+        synchronized (portLock) {
+            SerialPort port = serialPortMap.get(portName);
+            if (port != null && port.isOpen()) {
+                port.closePort();
+                logService.updateInfoLog(portName + " 포트가 닫혔습니다.");
             }
-        } else {
-            logService.updateInfoLog(portName + " 포트가 존재하지 않습니다.");
+            serialPortMap.remove(portName);
         }
     }
-    //
 
     public void closePortNoLog(String portName) {
-        if (serialPortMap.containsKey(portName)) {
-            SerialPort serialPort = serialPortMap.get(portName);
-            if (serialPort.isOpen()) {
-                serialPort.closePort();
+        synchronized (portLock) {
+            SerialPort port = serialPortMap.get(portName);
+            if (port != null && port.isOpen()) {
+                port.closePort();
             }
+            serialPortMap.remove(portName);
         }
     }
 
@@ -90,122 +102,201 @@ public class SerialPortManager {
     }
 
     public Task<String> sendMsgAndGetMsg(String msg, boolean utf8) {
-        return new Task<>() {
+        Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
                 String portName = OPEN_PORT_NAME;
-                SerialPort port = serialPortMap.get(portName);
-                if (port == null || !isPortOpen(portName)) {
-                    openPort(portName, SERIAL_BAUDRATE);
-                    port = serialPortMap.get(portName);
-                }
-                try {
-                    byte[] dataToSend = msg.getBytes(Charset.forName("EUC-KR"));
-                    if (utf8) dataToSend = msg.getBytes(StandardCharsets.UTF_8);
-                    else if (ascUTF16) {
-                        dataToSend = msg.getBytes(StandardCharsets.UTF_16BE);
+                synchronized (portLock) {
+                    if (!isPortOpen(portName)) {
+                        openPort(portName, SERIAL_BAUDRATE);
                     }
-                    OutputStream outputStream = new BufferedOutputStream(port.getOutputStream());
-                    InputStream inputStream = new BufferedInputStream(port.getInputStream());
-                    outputStream.write(dataToSend);
-                    outputStream.flush();
+                    SerialPort port = serialPortMap.get(portName);
+                    if (port == null) {
+                        throw new IllegalStateException("포트를 열 수 없습니다: " + portName);
+                    }
 
-                    byte[] buffer = new byte[1024];
-                    int totalBytesRead = 0;
-                    long timeout = RESPONSE_LATENCY * 1000;
-                    long startTime = System.currentTimeMillis();
+                    logService.updateInfoLog("전송 메세지: " + msg);
 
-                    while (System.currentTimeMillis() - startTime < timeout) {
-                        if (inputStream.available() > 0) {
+                    try (InputStream inputStream = new BufferedInputStream(port.getInputStream());
+                         OutputStream outputStream = new BufferedOutputStream(port.getOutputStream())) {
+                        inputStream.skip(inputStream.available());
+                        byte[] dataToSend = msg.getBytes(utf8 ? StandardCharsets.UTF_8 : Charset.forName("EUC-KR"));
+                        outputStream.write(dataToSend);
+                        outputStream.flush();
+
+                        byte[] buffer = new byte[1024];
+                        int totalBytesRead = 0;
+                        while (true) {
                             int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
                             if (bytesRead > 0) {
                                 totalBytesRead += bytesRead;
-                                // 타임아웃 시간 갱신 (데이터 수신이 있으면 타이머 리셋)
-                                startTime = System.currentTimeMillis();
 
                                 if (dataReceivedIsComplete(buffer, totalBytesRead)) {
-                                    break; // 데이터를 다 받았으면 루프 종료
+                                    break;
                                 }
+                            } else {
+                                break; // 타임아웃
                             }
-                        } else {
-                            // 짧은 대기 시간 후 다시 읽기 시도 (바쁜 대기 방지)
-                            Thread.sleep(50);
                         }
+
+                        String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                        if (result.contains("TX") && result.contains("![") && result.contains("!]")) {
+                            int tmp = extractNumberAfterTXBeforeByte(result);
+                            if (tmp > 0 && 14 + String.valueOf(tmp).length() + result.indexOf("TX(") + tmp <= buffer.length) {
+                                result = new String(buffer, 14 + String.valueOf(tmp).length() + result.indexOf("TX("), tmp, Charset.forName("EUC-KR"));
+                            } else {
+                                throw new IllegalArgumentException("유효하지 않은 offset 또는 tmp 값입니다.");
+                            }
+                        }
+                        logService.updateInfoLog("받은 메세지: " + result);
+                        return result;
+
+                    } catch (SerialPortTimeoutException | SerialPortIOException e) {
+                        logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
+                        return null;
+                    } catch (Exception e) {
+                        logService.errorLog("기타 예외 발생: " + e.getMessage());
+                        return null;
+                    } finally {
+                        closePort(portName); // 작업 후 포트 닫기
                     }
-                    return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
-                } catch (Exception e) {
-                    logService.errorLog("에러가 발생했습니다: " + e.getMessage());
-                    return null;
-                } finally {
-                    closePort(portName);
                 }
             }
         };
+        taskQueue.add(task);
+        return task;
     }
 
+
+    private int extractNumberAfterTXBeforeByte(String input) {
+        // "TX" 뒤의 "byte" 앞 숫자를 찾는 정규식
+        Pattern pattern = Pattern.compile("TX.*?(\\d+)\\s*byte");
+        Matcher matcher = pattern.matcher(input);
+
+        if (matcher.find()) {
+            String number = matcher.group(1); // 첫 번째 그룹에서 숫자 추출
+            return Integer.parseInt(number); // 숫자를 Integer로 변환하여 반환
+        }
+
+        return -1;
+    }
+
+    private int extractNumberAfterTXBeforeByteHex(String input) {
+        // "TX" 뒤의 "byte" 앞 숫자를 찾는 정규식
+        Pattern pattern = Pattern.compile("TX.*?(\\d+)\\s*byte");
+        Matcher matcher = pattern.matcher(input);
+
+        if (matcher.find()) {
+            String number = matcher.group(1); // 첫 번째 그룹에서 숫자 추출
+            return Integer.parseInt(number); // 숫자를 Integer로 변환하여 반환
+        }
+
+        return -1;
+    }
+
+
     private boolean dataReceivedIsComplete(byte[] buffer, int length) {
+        String data = new String(buffer, 0, length);
+        // 순서대로 "TX", "![", "!]"이 존재하는지 확인
+        if (data.contains("TX") && data.contains("![") && data.contains("!]")) {
+            if (!data.startsWith("RX(")){
+                return false;
+            }
+            int indexTX = data.indexOf("TX");
+            int indexStart = data.indexOf("![", indexTX); // "TX" 이후 검색
+            int indexEnd = data.indexOf("!]", indexStart); // "![ 이후 검색
+
+            // 순서가 올바른지 확인
+            return indexTX != -1 && indexStart != -1 && indexEnd != -1 && indexTX < indexStart && indexStart < indexEnd;
+        }
+
         return length > 0 && buffer[length - 1] == (byte) ']' && buffer[length - 2] == (byte) '!';
+    }
+    private boolean dataReceivedIsCompleteHex(byte[] buffer, int length) {
+        String data = bytesToHex(buffer, length);
+        if (data.contains("54 58 28") && data.contains("31 30 20 30 32") && data.contains("31 30 20 30 33")) {
+            if (!data.startsWith("52 58 28")) {
+                return false;
+            }
+            int indexTX = data.indexOf("54 58 28");
+            int indexStart = data.indexOf("31 30 20 30 32", indexTX); // "TX" 이후 검색
+            int indexEnd = data.indexOf("31 30 20 30 33", indexStart); // "10 02" 이후 검색
+            // 순서가 올바른지 확인
+            return indexTX != -1 && indexStart != -1 && indexEnd != -1 && indexTX < indexStart && indexStart < indexEnd;
+        }
+
+        return length > 0 && buffer[length - 1] == 0x03 && buffer[length - 2] == (byte) 0x10;
     }
 
     public Task<String> sendMsgAndGetMsgByte(byte[] msg) {
-        return new Task<>() {
+        Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
                 String portName = OPEN_PORT_NAME;
-                SerialPort port = serialPortMap.get(portName);
+                synchronized (portLock) {
+                    if (!isPortOpen(portName)) {
+                        openPort(portName, SERIAL_BAUDRATE);
+                    }
+                    SerialPort port = serialPortMap.get(portName);
+                    if (port == null) {
+                        throw new IllegalStateException("포트를 열 수 없습니다: " + portName);
+                    }
 
-                if (port == null || !isPortOpen(portName)) {
-                    openPort(portName, SERIAL_BAUDRATE);
-                    port = serialPortMap.get(portName);
-                }
+                    logService.updateInfoLog("전송 메세지: " + bytesToHex(msg, msg.length));
 
-                try {
-                    OutputStream outputStream = port.getOutputStream();
-                    InputStream inputStream = port.getInputStream();
-                    outputStream.write(msg);
-                    outputStream.flush();
+                    try (OutputStream outputStream = new BufferedOutputStream(port.getOutputStream());
+                         InputStream inputStream = new BufferedInputStream(port.getInputStream())) {
+                        inputStream.skip(inputStream.available());
+                        outputStream.write(msg);
+                        outputStream.flush();
 
-                    // 읽기용 버퍼 초기화
-                    byte[] buffer = new byte[1024];
-                    int totalBytesRead = 0;
+                        byte[] buffer = new byte[1024];
+                        int totalBytesRead = 0;
 
-                    // 데이터 수신을 기다리는 최대 시간 (예: 1000 밀리초)
-                    long timeout = RESPONSE_LATENCY * 1000;
-                    long startTime = System.currentTimeMillis();
-
-                    // 반복적으로 읽어 남아있는 데이터를 모두 수신
-                    while (System.currentTimeMillis() - startTime < timeout) {
-                        if (inputStream.available() > 0) {
+                        while (true) {
                             int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
                             if (bytesRead > 0) {
                                 totalBytesRead += bytesRead;
-                                // 타임아웃 시간 갱신 (데이터 수신이 있으면 타이머 리셋)
-                                startTime = System.currentTimeMillis();
 
+                                // 데이터가 모두 수신되었는지 확인
                                 if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
-                                    break; // 데이터를 다 받았으면 루프 종료
+                                    break;
                                 }
+                            } else {
+                                break; // 타임아웃
                             }
-                        } else {
-                            // 짧은 대기 시간 후 다시 읽기 시도 (바쁜 대기 방지)
-                            Thread.sleep(50);
                         }
-                    }
-                    inputStream.close();
 
-                    // 수신된 모든 데이터를 Hex로 변환하여 반환
-                    return bytesToHex(buffer, totalBytesRead);
-                } catch (Exception e) {
-                    logService.errorLog("에러가 발생했습니다: " + e.getMessage());
-                    return null;
-                } finally {
-                    closePort(portName);
+                        String result = bytesToHex(buffer, totalBytesRead);
+                        if (result.contains("54 58 28")) {
+                            result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                            int tmp = extractNumberAfterTXBeforeByteHex(result);
+                            if (tmp > 0 && 14 + String.valueOf(tmp).length() + result.indexOf("TX(") + tmp <= buffer.length) {
+                                result = new String(buffer, 15 + String.valueOf(tmp).length() + result.indexOf("54 58 28"), tmp * 3, Charset.forName("EUC-KR"));
+                            } else {
+                                throw new IllegalArgumentException("유효하지 않은 offset 또는 tmp 값입니다.");
+                            }
+                        }
+                        logService.updateInfoLog("받은 메세지: " + result);
+                        return result;
+
+                    } catch (SerialPortTimeoutException | SerialPortIOException e) {
+                        logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
+                        return null;
+                    } catch (Exception e) {
+                        logService.errorLog("기타 예외 발생: " + e.getMessage());
+                        return null;
+                    } finally {
+                        closePort(portName); // 작업 후 포트 닫기
+                    }
                 }
             }
         };
+
+        taskQueue.add(task); // 작업을 큐에 추가
+        return task;
     }
 
-    ;
 
     public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg) {
         return new Task<>() {
@@ -229,29 +320,21 @@ public class SerialPortManager {
                     byte[] buffer = new byte[1024];
                     int totalBytesRead = 0;
 
-                    // 데이터 수신을 기다리는 최대 시간 (예: 1000 밀리초)
-                    long timeout = RESPONSE_LATENCY * 1000;
-                    long startTime = System.currentTimeMillis();
-
                     // 반복적으로 읽어 남아있는 데이터를 모두 수신
-                    while (System.currentTimeMillis() - startTime < timeout) {
-                        if (inputStream.available() > 0) {
-                            int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-                            if (bytesRead > 0) {
-                                totalBytesRead += bytesRead;
-                                // 타임아웃 시간 갱신 (데이터 수신이 있으면 타이머 리셋)
-                                startTime = System.currentTimeMillis();
+                    while (true) {
+                        int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                        if (bytesRead > 0) {
+                            totalBytesRead += bytesRead;
 
-                                if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
-                                    break; // 데이터를 다 받았으면 루프 종료
-                                }
+                            // 데이터가 모두 수신되었는지 확인
+                            if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                                break;
                             }
                         } else {
-                            // 짧은 대기 시간 후 다시 읽기 시도 (바쁜 대기 방지)
-                            Thread.sleep(50);
+                            // 타임아웃 발생 시 루프 종료
+                            break;
                         }
                     }
-                    inputStream.close();
 
                     // 수신된 모든 데이터를 Hex로 변환하여 반환
                     return bytesToHex(buffer, totalBytesRead);
@@ -263,10 +346,6 @@ public class SerialPortManager {
                 }
             }
         };
-    }
-
-    private boolean dataReceivedIsCompleteHex(byte[] buffer, int length) {
-        return length >= 2 && buffer[length - 2] == (byte) 0x10 && buffer[length - 1] == (byte) 0x03;
     }
 
     public Task<Integer> findSpeedTask = new Task<>() {
@@ -300,27 +379,23 @@ public class SerialPortManager {
                     outputStream.flush();
 
                     byte[] buffer = new byte[1024];
-                    int numRead = 0;
-                    long timeout = RESPONSE_LATENCY * 1000;
-                    long startTime = System.currentTimeMillis();
+                    int totalBytesRead = 0;
+                    while (true) {
+                        int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                        if (bytesRead > 0) {
+                            totalBytesRead += bytesRead;
 
-                    // 응답 대기
-                    while (System.currentTimeMillis() - startTime < timeout) {
-                        if (inputStream.available() > 0) {
-                            int bytesRead = inputStream.read(buffer, numRead, buffer.length - numRead);
-                            if (bytesRead > 0) {
-                                numRead += bytesRead;
-                                startTime = System.currentTimeMillis();
-                                if (dataReceivedIsComplete(buffer, numRead)) {
-                                    break;
-                                }
+                            // 데이터가 모두 수신되었는지 확인
+                            if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                                break;
                             }
                         } else {
-                            Thread.sleep(50);  // 짧은 대기 시간
+                            // 타임아웃 발생 시 루프 종료
+                            break;
                         }
                     }
 
-                    String response = bytesToHex(buffer, numRead);
+                    String response = bytesToHex(buffer, totalBytesRead);
 
                     if (!response.isBlank()) {
                         // 통신 속도 찾기 성공 로그 업데이트
@@ -358,20 +433,19 @@ public class SerialPortManager {
                     InputStream inputStream = new BufferedInputStream(port.getInputStream());
                     byte[] buffer = new byte[1024];
                     int totalBytesRead = 0;
-                    long timeout = RESPONSE_LATENCY * 1000;
-                    long startTime = System.currentTimeMillis();
 
-                    while (System.currentTimeMillis() - startTime < timeout) {
-                        if (inputStream.available() > 0) {
-                            int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-                            if (bytesRead > 0) {
-                                totalBytesRead += bytesRead;
-                                // 타임아웃 시간 갱신 (데이터 수신이 있으면 타이머 리셋)
-                                startTime = System.currentTimeMillis();
+                    while (true) {
+                        int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                        if (bytesRead > 0) {
+                            totalBytesRead += bytesRead;
+
+                            // 데이터가 모두 수신되었는지 확인
+                            if (dataReceivedIsComplete(buffer, totalBytesRead)) {
+                                break;
                             }
                         } else {
-                            // 짧은 대기 시간 후 다시 읽기 시도 (바쁜 대기 방지)
-                            Thread.sleep(50);
+                            // 타임아웃 발생 시 루프 종료
+                            break;
                         }
                     }
                     String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
@@ -384,10 +458,6 @@ public class SerialPortManager {
                 }
             }
         };
-    }
-
-    private boolean dataReceivedIsComplete300(byte[] buffer, int length) {
-        return length > 0 && buffer[length - 1] == (byte) ']' && buffer[length - 2] == (byte) '!';
     }
 
     public Task<Void> send300ByteMsg(byte[] sendByte, String portNum, int baudRate) {

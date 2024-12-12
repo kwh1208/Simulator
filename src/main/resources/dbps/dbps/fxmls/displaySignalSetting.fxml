@@ -99,5 +99,6 @@
            </children>
        </Pane>
        <Button layoutX="461.0" layoutY="419.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="28.0" prefWidth="64.0" text="%close" />
+       <ProgressIndicator fx:id="progressIndicator" layoutX="250.0" layoutY="150.0" visible="false"/>
    </children>
 </AnchorPane>

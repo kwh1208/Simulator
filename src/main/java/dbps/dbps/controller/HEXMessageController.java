@@ -18,6 +18,7 @@ import static dbps.dbps.Constants.*;
 
 public class HEXMessageController {
 
+    public ProgressIndicator progressIndicator;
     HexMsgTransceiver hexMsgTransceiver;
 
     @FXML
@@ -129,6 +130,7 @@ public class HEXMessageController {
         }
         else{
             pageMsg.setSelected(true);
+            pageMsgCnt.setVisible(true);
             pageMsgCnt.setValue(configService.getProperty("isHexRealTime"));
         }
         section0.setSelected(true);
@@ -231,9 +233,10 @@ public class HEXMessageController {
 
     public void save() {
         String msgNum = getMsgNum();
-
         configService.setProperty("isHexRealTime", "0");
-        configService.setProperty("isHexRealTime", pageMsgCnt.getValue());
+        if (pageMsg.isSelected()) {
+            configService.setProperty("isHexRealTime", pageMsgCnt.getValue());
+        }
         configService.setProperty("displayControl"+msgNum, displayControl.getValue());
         configService.setProperty("displayMethod"+msgNum, displayMethod.getValue());
         configService.setProperty("charCode"+msgNum, charCodes.getValue());
@@ -258,7 +261,7 @@ public class HEXMessageController {
     public void send() {
         String msg = makeHexMsg();
 
-        hexMsgTransceiver.sendMessages(msg);
+        hexMsgTransceiver.sendMessages(msg, progressIndicator);
         save();
     }
 

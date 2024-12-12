@@ -3,6 +3,7 @@ package dbps.dbps.controller;
 
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.UnderTheLineLeftService;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.TCPManager;
 import javafx.fxml.FXML;
@@ -12,8 +13,10 @@ import javafx.scene.layout.Pane;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CompletableFuture;
 
 import static dbps.dbps.Constants.*;
+import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class UnderTheLineLeftController {
 
@@ -21,6 +24,7 @@ public class UnderTheLineLeftController {
     AsciiMsgTransceiver asciiMsgTransceiver;
     SerialPortManager serialPortManager;
     TCPManager tcpManager;
+    UnderTheLineLeftService underTheLineLeftService;
 
     @FXML
     public Pane leftPane;
@@ -41,6 +45,8 @@ public class UnderTheLineLeftController {
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         tcpManager = TCPManager.getManager();
+        underTheLineLeftService = UnderTheLineLeftService.getInstance();
+        underTheLineLeftService.setTimeBoard(timeBoard);
 
     }
     @FXML
@@ -50,14 +56,14 @@ public class UnderTheLineLeftController {
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"0211!]";
             }
-            asciiMsgTransceiver.sendMessages(msg, false);
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
             return;
         }
         String msg = "10 02 00 00 02 41 01 10 03";
         if (isRS){
-            msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 02 41 01 10 03";
+            msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 02 41 01 10 03";
         }
-        hexMsgTransceiver.sendMessages(msg);
+        hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
     }
     @FXML
     public void sendDisplayOff() {
@@ -66,34 +72,36 @@ public class UnderTheLineLeftController {
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"0210!]";
             }
-            asciiMsgTransceiver.sendMessages(msg, false);
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
             return;
         }
         String msg = "10 02 00 00 02 41 00 10 03";
         if (isRS){
-            msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 02 41 00 10 03";
+            msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 02 41 00 10 03";
         }
-        hexMsgTransceiver.sendMessages(msg);
+        hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
 
 
     }
 
 
-    public void getControllerTime() {
+    public void getControllerTime(){
         if (IS_ASCII){
-            String msg = "![0031!]";
+            String msg;
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"031!]";
+            } else {
+                msg = "![0031!]";
             }
-            String time = asciiMsgTransceiver.sendMessages(msg, false);
-            timeBoard.setText(time);
+            CompletableFuture.supplyAsync(() -> String.valueOf(asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator)));
+
             return;
         }
         String msg = "10 02 00 00 01 66 10 03";
         if (isRS){
-            msg =  "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 01 66 10 03";
+            msg =  "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 01 66 10 03";
         }
-        hexMsgTransceiver.sendMessages(msg);
+        hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
     }
 
     public void synchronizeTime() {
@@ -118,13 +126,13 @@ public class UnderTheLineLeftController {
             msg+=time.replace(day, dayInt);
             msg += "!]";
 
-            asciiMsgTransceiver.sendMessages(msg, false);
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
             
             return;
         }
         String msg = "10 02 00 00 08 47 ";
         if (isRS){
-            msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 08 47 ";
+            msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 08 47 ";
         }
         SimpleDateFormat formatter = new SimpleDateFormat("yy MM dd E HH mm ss ");
         String time = formatter.format(System.currentTimeMillis());
@@ -142,24 +150,25 @@ public class UnderTheLineLeftController {
         msg+=time.replace(day, dayStr);
         msg += "10 03";
 
-        hexMsgTransceiver.sendMessages(msg);
+        hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
 
     }
 
     public void resetController() throws InterruptedException {
+
         if (IS_ASCII){
             String msg = "![0041!]";
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"041!]";
             }
-            asciiMsgTransceiver.sendMessages(msg, false);
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
         }
         else{
             String msg = "10 02 00 00 02 89 00 10 03";
         if (isRS){
-            msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 02 89 00 10 03";
+            msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 02 89 00 10 03";
         }
-        else hexMsgTransceiver.sendMessages(msg);
+        else hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
         }
     }
 
@@ -173,15 +182,15 @@ public class UnderTheLineLeftController {
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"042!]";
             }
-            asciiMsgTransceiver.sendMessages(msg,false);
+            asciiMsgTransceiver.sendMessages(msg,false, commonProgressIndicator);
         }
         //비트수, 세로, 가로크기 가져와서 같이 보내줘야함.
         else {
             String msg = "10 02 00 00 04 4A 0"+BITS_PER_PIXEL+" 0"+SIZE_ROW+" 0"+SIZE_COLUMN+ " 10 03";
             if (isRS){
-                msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 04 4A 0"+BITS_PER_PIXEL+" 0"+SIZE_ROW+" 0"+SIZE_COLUMN+ " 10 03";
+                msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 04 4A 0"+BITS_PER_PIXEL+" 0"+SIZE_ROW+" 0"+SIZE_COLUMN+ " 10 03";
             }
-            hexMsgTransceiver.sendMessages(msg);
+            hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
         }
     }
 }

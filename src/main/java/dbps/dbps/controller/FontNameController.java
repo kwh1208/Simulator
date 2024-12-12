@@ -4,10 +4,7 @@ import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -15,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.*;
 
@@ -41,6 +39,7 @@ public class FontNameController {
     public RadioButton sendRadio;
 
     public AnchorPane fontNameAP;
+    public ProgressIndicator progressIndicator;
 
     ToggleGroup group;
 
@@ -104,7 +103,7 @@ public class FontNameController {
     }
 
 
-    public void send() throws UnsupportedEncodingException {
+    public void send() throws UnsupportedEncodingException, ExecutionException, InterruptedException {
         //읽기
         //00960
         //10 02 00 00 03 48 01 32 10 03
@@ -114,7 +113,7 @@ public class FontNameController {
                 if (isRS){
                     msg = "!["+convertRS485AddrASCii()+"0960!]";
                 }
-                String result = asciiMsgTransceiver.sendMessages(msg, false);
+                String result = asciiMsgTransceiver.sendMessages(msg, false, progressIndicator).get();
 
                 result = result.substring(8, result.length()-2);
                 String[] fontNames = getFontName(result.getBytes(Charset.forName("EUC-KR")));
@@ -172,7 +171,7 @@ public class FontNameController {
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
 
-                asciiMsgTransceiver.sendMessages(new String(sendMsg, "EUC-KR"), false);
+                asciiMsgTransceiver.sendMessages(new String(sendMsg, "EUC-KR"), false, progressIndicator);
             }
         }
         else {
@@ -181,7 +180,7 @@ public class FontNameController {
                 if (isRS){
                     msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 03 48 01 32 10 03";
                 }
-                String[] tmp = hexMsgTransceiver.sendMessages(msg).split(" ");
+                String[] tmp = hexMsgTransceiver.sendMessages(msg, progressIndicator).split(" ");
                 StringBuilder result = new StringBuilder();
                 for (int i = 7; i <= 224; i++) {
                     result.append(tmp[i]).append(" ");
@@ -243,7 +242,7 @@ public class FontNameController {
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
 
-                hexMsgTransceiver.sendByteMessages(sendMsg);
+                hexMsgTransceiver.sendByteMessages(sendMsg, progressIndicator);
             }
         }
 

@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 
@@ -13,6 +14,7 @@ import java.util.*;
 
 public class BGScheduleController {
 
+    public ProgressIndicator progressIndicator;
     @FXML
     private AnchorPane BGScheduleAP;
     @FXML
@@ -134,7 +136,6 @@ public class BGScheduleController {
         }
         sendMsg = sendMsg.trim();
         sendMsg+="!]";
-        System.out.println(sendMsg);
-        asciiMsgTransceiver.sendMessages(sendMsg, false);
+        asciiMsgTransceiver.sendMessages(sendMsg, false, progressIndicator);
     }
 }

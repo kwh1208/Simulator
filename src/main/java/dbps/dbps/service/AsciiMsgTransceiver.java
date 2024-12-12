@@ -1,10 +1,13 @@
 package dbps.dbps.service;
 
 import dbps.dbps.service.connectManager.*;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.ProgressIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
 
@@ -17,6 +20,11 @@ public class AsciiMsgTransceiver {
     private final TCPManager tcpManager;
     private final MQTTManager mqttManager;
     private final ServerTCPManager serverTCPManager;
+    private final UnderTheLineLeftService underTheLineLeftService;
+    private final SizeOfDisplayBoardService sizeOfDisplayBoardService;
+    private final FirmwareService firmwareService;
+    private final BoardSettingService boardSettingService;
+    private final ASCiiDefaultSettingService asciiDefaultSettingService;
 
 
     private AsciiMsgTransceiver() {
@@ -26,6 +34,11 @@ public class AsciiMsgTransceiver {
         tcpManager = TCPManager.getManager();
         mqttManager = MQTTManager.getInstance();
         serverTCPManager = ServerTCPManager.getInstance();
+        underTheLineLeftService = UnderTheLineLeftService.getInstance();
+        sizeOfDisplayBoardService = SizeOfDisplayBoardService.getInstance();
+        firmwareService = FirmwareService.getFirmwareService();
+        boardSettingService = BoardSettingService.getInstance();
+        asciiDefaultSettingService = ASCiiDefaultSettingService.getInstance();
     }
 
     public static AsciiMsgTransceiver getInstance() {
@@ -35,103 +48,84 @@ public class AsciiMsgTransceiver {
         return instance;
     }
 
-    public String sendMessages(String msg, boolean utf8) {
-        //현재 serial, bluetooth, udp, tcp, rs485, WiFi 중에 어떤 것인지 파악.
-        //열려있는 곳으로 메세지 전송
-        String receivedMsg = "";
+    public CompletableFuture<String> sendMessages(String msg, boolean utf8, ProgressIndicator progressIndicator) {
+        CompletableFuture<String> resultFuture = new CompletableFuture<>();
 
-        switch (CONNECT_TYPE) {
-            case "none" -> {
-                logService.errorLog("연결된 장치가 없습니다.");
-                return null;
+        Platform.runLater(() -> {
+            if (progressIndicator != null) {
+                progressIndicator.setVisible(true);
             }
-            case "serial", "bluetooth", "rs485" -> {
-                try {
-                    // Task 객체를 생성하여 비동기 작업 실행
-                    Task<String> sendTask = serialPortManager.sendMsgAndGetMsg(msg, utf8);
+        });
 
-                    // 새로운 스레드에서 Task를 실행
-                    Thread taskThread = new Thread(sendTask);
-                    taskThread.start();
-
-                    // Task의 완료를 기다리고 결과를 동기적으로 가져오기
-                    receivedMsg = sendTask.get(); // get() 메서드는 Task 완료까지 대기함
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        Task<String> sendTask = switch (CONNECT_TYPE) {
+            case "serial", "bluetooth", "rs485" -> serialPortManager.sendMsgAndGetMsg(msg, utf8);
+            case "UDP" -> udpManager.sendASCMsg(msg, utf8);
+            case "clientTCP" -> tcpManager.sendASCMsg(msg, utf8);
+            case "mqtt" -> mqttManager.sendASCMsg(msg);
+            case "serverTCP" -> serverTCPManager.sendASCMsg(msg, utf8);
+            default -> {
+                resultFuture.completeExceptionally(new IllegalStateException("Unexpected value: " + CONNECT_TYPE));
+                yield null;
             }
-            case "UDP" -> //udp로 메세지 전송
-            {
-                try {
-                    Task<String> sendTask = udpManager.sendASCMsg(msg, utf8);
-                    Thread taskThread = new Thread(sendTask);
-                    taskThread.start();
+        };
 
-                    receivedMsg = sendTask.get();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            case "clientTCP" -> //tcp로 메세지 전송
-            {
-                try {
-                    Task<String> sendTask = tcpManager.sendASCMsg(msg, utf8);
-                    Thread taskThread = new Thread(sendTask);
-                    taskThread.start();
+        if (sendTask != null) {
+            sendTask.setOnSucceeded(event -> {
+                String receivedMsg = sendTask.getValue();
+                msgReceive(receivedMsg, msg); // msgReceive를 통해 결과 처리
+                resultFuture.complete(receivedMsg);
 
-                    receivedMsg = sendTask.get();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            case "mqtt" -> {
-                try {
-                    Task<String> sendTask = mqttManager.sendASCMsg(msg);
-                    Thread taskThread = new Thread(sendTask);
-                    taskThread.start();
+                Platform.runLater(() -> {
+                    if (progressIndicator != null) {
+                        progressIndicator.setVisible(false);
+                    }
+                });
+            });
 
-                    receivedMsg = sendTask.get();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            case "serverTCP" ->{
-                try {
-                    Task<String> sendTask = serverTCPManager.sendASCMsg(msg, utf8);
-                    Thread taskThread = new Thread(sendTask);
-                    taskThread.start();
+            sendTask.setOnFailed(event -> {
+                Throwable exception = sendTask.getException();
+                resultFuture.completeExceptionally(exception);
 
-                    receivedMsg = sendTask.get();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
+                Platform.runLater(() -> {
+                    if (progressIndicator != null) {
+                        progressIndicator.setVisible(false);
+                    }
+                });
+            });
+
+            new Thread(sendTask).start(); // 비동기로 실행
+        } else {
+            resultFuture.completeExceptionally(new IllegalStateException("Task is null."));
         }
-        logService.updateInfoLog("전송 메세지: " + msg);
 
-        //시간 바꾸거나, 펌웨어 같은 일부 특수한 경우에 반환값 사용.
-        return msgReceive(receivedMsg, msg);
+
+        return resultFuture;
     }
+
+
+
 //
 
-    private String msgReceive(String receiveMsg, String msg) {
+    private void msgReceive(String receiveMsg, String msg) {
         //실시간 메세지, 페이지 메세지
+        if (receiveMsg.equals(msg)) {
+            return;
+        }
         if (receiveMsg.charAt(4) == '0' || receiveMsg.charAt(4) == '1') {
             if (receiveMsg.charAt(5) == '0') {//정상 처리
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
-                return receiveMsg;
+                return;
             }
             if (receiveMsg.charAt(5) == 'F') {//오류 발생
                 logService.warningLog("오류가 발생했습니다.");
                 logService.warningLog("받은 메세지 : " + receiveMsg);
-                return receiveMsg;
+                return;
             }
 
         }
-        return chkSpecificCmdCode(msg, receiveMsg);
+        chkSpecificCmdCode(msg, receiveMsg);
     }
 
-    private String chkSpecificCmdCode(String msg, String receiveMsg) {
+    private void chkSpecificCmdCode(String msg, String receiveMsg) {
         String cmd = receiveMsg.substring(4, 6);
         char status = receiveMsg.charAt(6);
         if (cmd.equals("31")) {
@@ -157,9 +151,9 @@ public class AsciiMsgTransceiver {
                 // 원하는 출력 형식으로 변환
                 String FormatedTime = outputFormat.format(date);
 
-                logService.updateInfoLog("컨트롤러 시간은 " + FormatedTime+"입니다.");
+                logService.updateInfoLog("컨트롤러 시간은 " + FormatedTime + "입니다.");
 
-            } catch (Exception e){
+            } catch (Exception e) {
 
             }
 
@@ -167,40 +161,36 @@ public class AsciiMsgTransceiver {
             try {
                 Date date = inputFormat.parse(formattedTime);
                 time = finalOutputFormat.format(date);
+                underTheLineLeftService.setTime(time);
             } catch (Exception e) {
 
             }
 
-            return time;
+            return;
         }
-        if (cmd.equals("B3")){
-            //보드기능 읽기
-            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
-            return receiveMsg;
+        if (cmd.equals("B3")) {
+            boardSettingService.setUI(receiveMsg.substring(7,18));
+            return;
         }
-        if (cmd.equals("B2")){
-            //보드기능 설정
-            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
-            return receiveMsg;
+        if (cmd.equals("B2")) {
+            return;
         }
-        if (cmd.equals("33")){
-            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
-            return receiveMsg;
+        if (cmd.equals("33")) {
+            asciiDefaultSettingService.setProperties(receiveMsg);
+            return;
         }
-        if (cmd.equals("81")){
-            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+        if (cmd.equals("81")) {
+            firmwareService.setFirmware(receiveMsg.substring(6));
             logService.updateInfoLog("펌웨어 정보 읽기에 성공했습니다.");
-            return receiveMsg;
+            return;
         }
-        if (cmd.equals("96")){
-            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+        if (cmd.equals("96")) {
             logService.updateInfoLog("폰트 이름 설정에 성공했습니다.");
-            return receiveMsg;
+            return;
         }
-        if (cmd.equals("95")){
-            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+        if (cmd.equals("95")) {
             logService.updateInfoLog("폰트 이름 설정에 성공했습니다.");
-            return receiveMsg;
+            return;
         }
 
         if (status == '0') { // 정상 처리
@@ -208,92 +198,73 @@ public class AsciiMsgTransceiver {
                 logService.updateInfoLog("맥주소 : " + receiveMsg.substring(8, 20));
                 logService.updateInfoLog("받은 메세지 : " + receiveMsg);
             }
-            if (cmd.equals("40")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("40")) {
                 int row = Integer.parseInt(receiveMsg.substring(6, 8));
                 int column = Integer.parseInt(receiveMsg.substring(8, 10));
 
-                if (row!=Integer.parseInt(msg.substring(6,8))||column!=Integer.parseInt(msg.substring(8,10))){
+                sizeOfDisplayBoardService.setDisplaySize(row, column);
+
+                if (row != Integer.parseInt(msg.substring(6, 8)) || column != Integer.parseInt(msg.substring(8, 10))) {
                     logService.warningLog("화면 크기 설정에 실패했습니다.");
-                    logService.warningLog(row+"단, "+column+"열까지만 가능합니다.");
+                    logService.warningLog(row + "단, " + column + "열까지만 가능합니다.");
                 }
             }
-            if (cmd.equals("20")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("20")) {
                 logService.updateInfoLog("배경이미지 표출에 성공했습니다.");
             }
-            if (cmd.equals("21")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("21")) {
                 logService.updateInfoLog("화면 끄기/켜기에 성공했습니다.");
             }
-            if (cmd.equals("22")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("22")) {
                 logService.updateInfoLog("외부 신호 출력에 성공했습니다.");
             }
-            if (cmd.equals("30")){
-
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("30")) {
                 logService.updateInfoLog("시간 동기화에 성공했습니다.");
-
             }
-            if (cmd.equals("41")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("41")) {
                 logService.updateInfoLog("컨트롤러 리셋에 성공했습니다.");
             }
-            if (cmd.equals("42")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("42")) {
                 logService.updateInfoLog("공장초기화에 성공했습니다.");
             }
-            if (cmd.equals("50")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("50")) {
                 logService.updateInfoLog("밝기 조절에 성공했습니다.");
             }
-            if (cmd.equals("52")){
+            if (cmd.equals("52")) {
                 logService.updateInfoLog("받은 메세지 : " + receiveMsg);
             }
-            if (cmd.equals("54")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("54")) {
                 logService.updateInfoLog("표출 속도 변경에 성공했습니다.");
             }
-            if (cmd.equals("56")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("56")) {
                 logService.updateInfoLog("배경이미지 표출 목록 선택에 성공했습니다.");
             }
-            if (cmd.equals("60")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("60")) {
                 logService.updateInfoLog("페이지 메세지 개수 설정에 성공했습니다.");
             }
-            if (cmd.equals("61")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("61")) {
                 logService.updateInfoLog("페이지 메세지 삭제에 성공했습니다.");
             }
-            if (cmd.equals("62")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("62")) {
                 logService.updateInfoLog("실시간 문구 설정에 성공했습니다.");
             }
-            if (cmd.equals("70")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("70")) {
                 logService.updateInfoLog("화면 단색 채우기에 성공했습니다.");
             }
-            if (cmd.equals("32")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("32")) {
                 logService.updateInfoLog("default 설정에 성공했습니다.");
             }
-            if (cmd.equals("82")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("82")) {
                 logService.updateInfoLog("맥주소 설정에 성공했습니다.");
             }
-            if (cmd.equals("85")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("85")) {
                 logService.updateInfoLog("하트비트 세팅에 성공했습니다.");
             }
-            if (cmd.equals("B4")){
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+            if (cmd.equals("B4")) {
                 logService.updateInfoLog("잔상지연 설정에 성공했습니다.");
             }
 
 
-            return receiveMsg;
         } else if (status == 'F') { // 오류 발생
             errorLog(cmd, receiveMsg);
         } else {
@@ -301,7 +272,6 @@ public class AsciiMsgTransceiver {
             logService.warningLog("받은 메세지 : " + receiveMsg);
         }
 
-        return null;
     }
 
     private void errorLog(String command, String msg) {

@@ -24,5 +24,6 @@
         <Button layoutX="221.0" layoutY="318.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="21.0" prefWidth="64.0" text="읽기" />
         <Button layoutX="301.0" layoutY="318.0" mnemonicParsing="false" onMouseClicked="#set" prefHeight="21.0" prefWidth="64.0" text="설정" />
         <Button layoutX="302.0" layoutY="348.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="21.0" prefWidth="64.0" text="닫기" />
+        <ProgressIndicator fx:id="progressIndicator" layoutX="180.0" layoutY="160.0" visible="false"/>
     </children>
 </AnchorPane>

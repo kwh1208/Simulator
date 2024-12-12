@@ -7,6 +7,7 @@
             style="-fx-border-color: black; -fx-border-width: 1 0 0 0" xmlns="http://javafx.com/javafx/17.0.2-ea"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.ASCiiMsgController">
     <children>
+        <ProgressIndicator fx:id="progressIndicator" layoutX="320.0" layoutY="240.0" visible="false"/>
         <CheckBox fx:id="utf_8" layoutX="14.0" layoutY="5.0" mnemonicParsing="false" text="UTF-8"/>
         <CheckBox fx:id="utf_16" layoutX="100.0" layoutY="5.0" mnemonicParsing="false" text="UTF-16"/>
         <Label layoutX="20.0" layoutY="520.0" prefHeight="13.0" prefWidth="600.0"

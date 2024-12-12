@@ -24,5 +24,6 @@
             </content>
         </ScrollPane>
         <Button layoutX="340.0" layoutY="520.0" mnemonicParsing="false" text="전송" onMouseClicked="#send"/>
+        <ProgressIndicator fx:id="progressIndicator" layoutX="180.0" layoutY="150.0" visible="false"/>
     </children>
 </AnchorPane>

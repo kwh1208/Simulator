@@ -113,7 +113,6 @@ public class UDPManager {
                 if (socket == null) {
                     connect(IP, PORT);
                 }
-
                 DatagramPacket receivePacket;
                 try {
                     InetAddress serverAddr = InetAddress.getByName(IP);
@@ -128,7 +127,6 @@ public class UDPManager {
                     while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000) {
                         socket.receive(receivePacket);
                         int bytesRead = receivePacket.getLength();// 수신된 바이트 수
-                        System.out.println("bytesRead = " + bytesRead);
                         if (bytesRead > 0) {
                             totalBytesRead += bytesRead;
                             startTime = System.currentTimeMillis();  // 수신 시간 갱신
@@ -140,7 +138,6 @@ public class UDPManager {
                         Thread.sleep(50);
                     }
                     String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
-                    System.out.println("result = " + result);
                     return bytesToHex(receivePacket.getData(), receivePacket.getLength());
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();

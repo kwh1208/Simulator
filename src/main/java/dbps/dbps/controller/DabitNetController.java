@@ -12,9 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,7 +47,7 @@ public class DabitNetController {
     public TextField hexFirst;
     public TextField hexSecond;
     public TextField timeOut;
-    public ChoiceBox<Integer> baudRateChoiceBox;
+    public ChoiceBox<String> baudRateChoiceBox;
     public TextField versionInfo;
     public TextField DBCommunication;
 
@@ -96,7 +93,7 @@ public class DabitNetController {
         dbList.getItems().clear();
         db300InfoList.clear();
         if (isSerial.isSelected()) {//시리얼
-            Task<String> search = serialPortManager.send300MsgAndGetMsg("++SET++![SEARCHING DIBD  B\r\n!]", serialPortChoiceBox.getValue(), baudRateChoiceBox.getValue());
+            Task<String> search = serialPortManager.send300MsgAndGetMsg("++SET++![SEARCHING DIBD  B\r\n!]", serialPortChoiceBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
 
             Thread searchTask = new Thread(search);
             searchTask.start();
@@ -109,7 +106,7 @@ public class DabitNetController {
             Thread searchTask = new Thread(search);
             searchTask.start();
             String result = search.get();
-            System.out.println(result);
+
             get300IPPort(result);
         }
         for (Map.Entry<String, DB300IPPort> db300Infos : db300InfoList.entrySet()) {
@@ -141,7 +138,7 @@ public class DabitNetController {
 
             sendByte = getBytesSerial(newDB300);
 
-            Task<Void> set = serialPortManager.send300ByteMsg(sendByte, serialPortChoiceBox.getValue(), baudRateChoiceBox.getValue());
+            Task<Void> set = serialPortManager.send300ByteMsg(sendByte, serialPortChoiceBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
 
             new Thread(set).start();
         } else {
@@ -305,7 +302,7 @@ public class DabitNetController {
     @FXML
     public void reboot(MouseEvent mouseEvent) {
         if (isSerial.isSelected()) {
-            Task<String> reboot = serialPortManager.send300MsgAndGetMsg("++SET++![RESET  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortChoiceBox.getValue(), baudRateChoiceBox.getValue());
+            Task<String> reboot = serialPortManager.send300MsgAndGetMsg("++SET++![RESET  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortChoiceBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
 
             new Thread(reboot).start();
         }
@@ -334,7 +331,7 @@ public class DabitNetController {
     @FXML
     public void read(MouseEvent mouseEvent) throws ExecutionException, InterruptedException, IOException {
         if (isSerial.isSelected()) {
-            Task<String> read = serialPortManager.send300MsgAndGetMsg("++SET++![INFO_R  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortChoiceBox.getValue(), baudRateChoiceBox.getValue());
+            Task<String> read = serialPortManager.send300MsgAndGetMsg("++SET++![INFO_R  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortChoiceBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
 
             Thread readTask = new Thread(read);
             readTask.start();
@@ -376,7 +373,7 @@ public class DabitNetController {
                             + String.format("%03d", Integer.parseInt(timeOut.getText()))
                             + "\r\n!]",
                             serialPortChoiceBox.getValue(),
-                            baudRateChoiceBox.getValue());
+                    Integer.parseInt(baudRateChoiceBox.getValue()));
 
             new Thread(write).start();
         }
@@ -562,9 +559,6 @@ public class DabitNetController {
     }
 
 
-    @Getter
-    @Setter
-    @ToString
     public class DB300IPPort {
         String macAddress;
         String clientIP;
@@ -580,6 +574,132 @@ public class DabitNetController {
         String wifiPW;
         String heartbeat;
         boolean isStation; //true = sta(30), false = ap(31)
+
+        public String getMacAddress() {
+            return macAddress;
+        }
+
+        public void setMacAddress(String macAddress) {
+            this.macAddress = macAddress;
+        }
+
+        // Getter and Setter for clientIP
+        public String getClientIP() {
+            return clientIP;
+        }
+
+        public void setClientIP(String clientIP) {
+            this.clientIP = clientIP;
+        }
+
+        // Getter and Setter for clientPort
+        public String getClientPort() {
+            return clientPort;
+        }
+
+        public void setClientPort(String clientPort) {
+            this.clientPort = clientPort;
+        }
+
+        // Getter and Setter for clientSubnetMask
+        public String getClientSubnetMask() {
+            return clientSubnetMask;
+        }
+
+        public void setClientSubnetMask(String clientSubnetMask) {
+            this.clientSubnetMask = clientSubnetMask;
+        }
+
+        // Getter and Setter for clientGateway
+        public String getClientGateway() {
+            return clientGateway;
+        }
+
+        public void setClientGateway(String clientGateway) {
+            this.clientGateway = clientGateway;
+        }
+
+        // Getter and Setter for serverIP
+        public String getServerIP() {
+            return serverIP;
+        }
+
+        public void setServerIP(String serverIP) {
+            this.serverIP = serverIP;
+        }
+
+        // Getter and Setter for serverPort
+        public String getServerPort() {
+            return serverPort;
+        }
+
+        public void setServerPort(String serverPort) {
+            this.serverPort = serverPort;
+        }
+
+        // Getter and Setter for ipStatic
+        public boolean isIpStatic() {
+            return ipStatic;
+        }
+
+        public void setIpStatic(boolean ipStatic) {
+            this.ipStatic = ipStatic;
+        }
+
+        // Getter and Setter for serverMode
+        public boolean isServerMode() {
+            return serverMode;
+        }
+
+        public void setServerMode(boolean serverMode) {
+            this.serverMode = serverMode;
+        }
+
+        // Getter and Setter for name
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        // Getter and Setter for wifiSSID
+        public String getWifiSSID() {
+            return wifiSSID;
+        }
+
+        public void setWifiSSID(String wifiSSID) {
+            this.wifiSSID = wifiSSID;
+        }
+
+        // Getter and Setter for wifiPW
+        public String getWifiPW() {
+            return wifiPW;
+        }
+
+        public void setWifiPW(String wifiPW) {
+            this.wifiPW = wifiPW;
+        }
+
+        // Getter and Setter for heartbeat
+        public String getHeartbeat() {
+            return heartbeat;
+        }
+
+        public void setHeartbeat(String heartbeat) {
+            this.heartbeat = heartbeat;
+        }
+
+        // Getter and Setter for isStation
+        public boolean isStation() {
+            return isStation;
+        }
+
+        public void setStation(boolean isStation) {
+            this.isStation = isStation;
+        }
+
 
         private String formatInetAddress(InetAddress address) {
 
@@ -599,9 +719,6 @@ public class DabitNetController {
         }
     }
 
-    @Getter
-    @Setter
-    @ToString
     public class DB300Info {
         String communication;
         String macAddress;
@@ -614,5 +731,103 @@ public class DabitNetController {
         String hex_2;
         String timeout;
         String version;
+
+        public String getCommunication() {
+            return communication;
+        }
+
+        public void setCommunication(String communication) {
+            this.communication = communication;
+        }
+
+        // Getter and Setter for macAddress
+        public String getMacAddress() {
+            return macAddress;
+        }
+
+        public void setMacAddress(String macAddress) {
+            this.macAddress = macAddress;
+        }
+
+        // Getter and Setter for debugging
+        public boolean isDebugging() {
+            return debugging;
+        }
+
+        public void setDebugging(boolean debugging) {
+            this.debugging = debugging;
+        }
+
+        // Getter and Setter for connectedTTL
+        public boolean isConnectedTTL() {
+            return connectedTTL;
+        }
+
+        public void setConnectedTTL(boolean connectedTTL) {
+            this.connectedTTL = connectedTTL;
+        }
+
+        // Getter and Setter for baudRate
+        public Integer getBaudRate() {
+            return baudRate;
+        }
+
+        public void setBaudRate(Integer baudRate) {
+            this.baudRate = baudRate;
+        }
+
+        // Getter and Setter for asc_1
+        public String getAsc_1() {
+            return asc_1;
+        }
+
+        public void setAsc_1(String asc_1) {
+            this.asc_1 = asc_1;
+        }
+
+        // Getter and Setter for asc_2
+        public String getAsc_2() {
+            return asc_2;
+        }
+
+        public void setAsc_2(String asc_2) {
+            this.asc_2 = asc_2;
+        }
+
+        // Getter and Setter for hex_1
+        public String getHex_1() {
+            return hex_1;
+        }
+
+        public void setHex_1(String hex_1) {
+            this.hex_1 = hex_1;
+        }
+
+        // Getter and Setter for hex_2
+        public String getHex_2() {
+            return hex_2;
+        }
+
+        public void setHex_2(String hex_2) {
+            this.hex_2 = hex_2;
+        }
+
+        // Getter and Setter for timeout
+        public String getTimeout() {
+            return timeout;
+        }
+
+        public void setTimeout(String timeout) {
+            this.timeout = timeout;
+        }
+
+        // Getter and Setter for version
+        public String getVersion() {
+            return version;
+        }
+
+        public void setVersion(String version) {
+            this.version = version;
+        }
     }
 }

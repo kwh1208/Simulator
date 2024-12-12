@@ -1,14 +1,17 @@
 package dbps.dbps.service;
 
 import dbps.dbps.service.connectManager.*;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.ProgressIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
-import static dbps.dbps.Constants.*;
+import static dbps.dbps.Constants.CONNECT_TYPE;
+import static dbps.dbps.Constants.hexStringToByteArray;
 
 public class HexMsgTransceiver {
 
@@ -20,6 +23,8 @@ public class HexMsgTransceiver {
     private final TCPManager tcpManager;
     private final MQTTManager mqttManager;
     private final ServerTCPManager serverTCPManager;
+    private final UnderTheLineLeftService underTheLineLeftService;
+    private final SizeOfDisplayBoardService sizeOfDisplayBoardService;
 
     private HexMsgTransceiver() {
         serialPortManager = SerialPortManager.getManager();
@@ -28,6 +33,8 @@ public class HexMsgTransceiver {
         tcpManager = TCPManager.getManager();
         mqttManager = MQTTManager.getInstance();
         serverTCPManager = ServerTCPManager.getInstance();
+        underTheLineLeftService = UnderTheLineLeftService.getInstance();
+        sizeOfDisplayBoardService = SizeOfDisplayBoardService.getInstance();
     }
 
     public static HexMsgTransceiver getInstance() {
@@ -37,11 +44,8 @@ public class HexMsgTransceiver {
         return instance;
     }
 
-    public CompletableFuture<String> sendByteMessages(byte[] msg) {
+    public CompletableFuture<String> sendByteMessages(byte[] msg, ProgressIndicator progressIndicator) {
         CompletableFuture<String> resultFuture = new CompletableFuture<>();
-
-        logService.updateInfoLog("전송 메세지: " + bytesToHex(msg, msg.length));
-
         Task<String> sendTask = switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> serialPortManager.sendMsgAndGetMsgByte(msg);
             case "UDP" -> udpManager.sendMsgAndGetMsgByte(msg);
@@ -51,21 +55,39 @@ public class HexMsgTransceiver {
             default -> throw new IllegalStateException("Unexpected value: " + CONNECT_TYPE);
         };
 
-        sendTask.setOnSucceeded(event -> {
-            String receivedMsg = sendTask.getValue();
-            if (receivedMsg.isEmpty()){
-                logService.errorLog("통신에 실패했습니다.");
-            }
 
-            // msgReceive 호출 결과를 CompletableFuture에 설정
-            resultFuture.complete(msgReceive(receivedMsg, msg));
-        });
+        if (sendTask != null) {
+            sendTask.setOnSucceeded(event -> {
+                String receivedMsg = sendTask.getValue();
+                msgReceive(receivedMsg, msg);
+                resultFuture.complete(receivedMsg); // 성공 시 CompletableFuture에 결과 전달
 
-        new Thread(sendTask).start();
+                Platform.runLater(() -> {
+                    if (progressIndicator != null) {
+                        progressIndicator.setVisible(false);
+                    }
+                });
+            });
 
-        // CompletableFuture를 반환해 비동기적으로 결과를 받을 수 있도록 함
+            sendTask.setOnFailed(event -> {
+                Throwable exception = sendTask.getException();
+                resultFuture.completeExceptionally(exception); // 실패 시 예외 전달
+
+                Platform.runLater(() -> {
+                    if (progressIndicator != null) {
+                        progressIndicator.setVisible(false);
+                    }
+                });
+            });
+
+            new Thread(sendTask).start(); // 비동기로 실행
+        } else {
+            resultFuture.completeExceptionally(new IllegalStateException("Task is null."));
+        }
+
         return resultFuture;
     }
+
 
 
     public String sendByteMessagesNoLog(byte[] msg) {
@@ -134,13 +156,13 @@ public class HexMsgTransceiver {
         return null;
     }
 
-    public String sendMessages(String msg) {
-        return String.valueOf(sendByteMessages(hexStringToByteArray(msg)));
+    public String sendMessages(String msg, ProgressIndicator progressIndicator) {
+        return String.valueOf(sendByteMessages(hexStringToByteArray(msg), progressIndicator));
     }
 
-    private String msgReceive(String receiveMsg, byte[] msg) {
+    private void msgReceive(String receiveMsg, byte[] msg) {
         if (receiveMsg.isEmpty()) {
-            return null;
+            return;
         }
         String[] splitMsg = receiveMsg.split(" ");
         if (splitMsg[5].equals("94")) {
@@ -151,18 +173,14 @@ public class HexMsgTransceiver {
             for (int i = 6; i < 16; i++) {
                 if (splitMsg[i].equals("3" + i)) {
                     logService.errorLog("커맨드가 없습니다.");
-                    return null;
+                    return;
                 }
             }
-            logService.updateInfoLog("연결되었습니다.");
-            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
         }
-
-
-        return chkSpecificCmdCode(receiveMsg, msg);
+        chkSpecificCmdCode(receiveMsg, msg);
     }
 
-    public String chkSpecificCmdCode(String receiveMsg, byte[] msg) {
+    public void chkSpecificCmdCode(String receiveMsg, byte[] msg) {
         String[] splitMsg = receiveMsg.split(" ");
         String command = splitMsg[5];
         String status = splitMsg[6];
@@ -170,32 +188,31 @@ public class HexMsgTransceiver {
         switch (command) {
             case "40" -> {
                 handleScreenSizeSetting(splitMsg, msg);
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
             }
             case "66" -> handleTimeRead(receiveMsg, splitMsg);
             case "6F" -> {
-                return receiveMsg;
+                return;
             }
 
             default -> handleDefaultCommands(status, receiveMsg, splitMsg);
         }
-        return receiveMsg;
     }
 
 
     private void handleScreenSizeSetting(String[] splitMsg, byte[] msg) {
         if (!splitMsg[7].equals(String.format("%02X", msg[7])) || !splitMsg[8].equals(String.format("%02X", msg[8]))) {
             logService.warningLog("화면 크기 설정에 실패했습니다.");
-            logService.warningLog(splitMsg[7] + "단, " + splitMsg[8] + "열까지만 가능합니다.");
+            logService.warningLog(Integer.parseInt(splitMsg[7]) + "단, " + Integer.parseInt(splitMsg[8]) + "열까지만 가능합니다.");
         } else {
             logService.updateInfoLog("화면 크기 설정에 성공했습니다.");
         }
+        sizeOfDisplayBoardService.setDisplaySize(Integer.parseInt(splitMsg[7], 16), Integer.parseInt(splitMsg[8], 16));
     }
 
     private void handleTimeRead(String receiveMsg, String[] splitMsg) {
         if (!splitMsg[6].equals("10") && !splitMsg[6].equals("20") && !splitMsg[6].equals("40") && !splitMsg[6].equals("80")) {
             StringBuilder time = new StringBuilder();
-            for (int i = 6; i < 12; i++) { // 수정된 범위
+            for (int i = 6; i < 12; i++) {
                 time.append(splitMsg[i]);
             }
 
@@ -205,7 +222,7 @@ public class HexMsgTransceiver {
             try {
                 Date date = inputFormat.parse(time.toString());
                 String formattedTime = outputFormat.format(date);
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+                underTheLineLeftService.setTime(formattedTime);
                 logService.updateInfoLog("컨트롤러 시간은 " + formattedTime + "입니다.");
             } catch (Exception e) {
                 logService.warningLog("시간 변환에 실패했습니다: " + e.getMessage());
@@ -218,7 +235,7 @@ public class HexMsgTransceiver {
     private void handleDefaultCommands(String status, String receiveMsg, String[] splitMsg) {
         // 단순 상태 코드 확인 및 로그 출력
         if (status.equals("00")) {
-            logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+
         } else {
             chkErrorCode(receiveMsg, splitMsg);
         }

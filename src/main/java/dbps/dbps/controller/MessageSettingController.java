@@ -7,6 +7,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.Pane;
 
 import static dbps.dbps.Constants.*;
+import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class MessageSettingController {
 
@@ -55,7 +56,7 @@ public class MessageSettingController {
             }
             msg += "!]";
 
-            asciiMsgTransceiver.sendMessages(msg, false);
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
 
         } else {
             //10 02 00 00 02 4B 00 10 03
@@ -71,7 +72,7 @@ public class MessageSettingController {
             }
             msg += " 10 03";
 
-            hexMsgTransceiver.sendMessages(msg);
+            hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
         }
     }
 
@@ -84,7 +85,7 @@ public class MessageSettingController {
             }
             msg += String.format("%02d", Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", "")));
             msg += "!]";
-            asciiMsgTransceiver.sendMessages(msg, false);
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
 
         } else {
             String msg = "10 02 00 00 02 4C ";
@@ -94,7 +95,7 @@ public class MessageSettingController {
             msg += Integer.toHexString(Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", ""))).toUpperCase();
             msg += " 10 03";
 
-            hexMsgTransceiver.sendMessages(msg);
+            hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
         }
 
         //헥사프로토콜 , 메세지만들기에 페이지메세지 갯수 줄이기

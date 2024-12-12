@@ -2,10 +2,7 @@ package dbps.dbps.controller;
 
 
 import dbps.dbps.Simulator;
-import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.HexMsgTransceiver;
-import dbps.dbps.service.LogService;
-import dbps.dbps.service.ResourceManager;
+import dbps.dbps.service.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -13,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -25,9 +23,13 @@ import static dbps.dbps.Constants.*;
 
 public class SettingController {
 
+    @FXML
+    public ProgressIndicator commonProgressIndicator;
+
     HexMsgTransceiver hexMsgTransceiver;
     AsciiMsgTransceiver asciiMsgTransceiver;
     LogService logService;
+    SettingService settingService;
     @FXML
     public ChoiceBox<String> displayBright;
 
@@ -36,6 +38,7 @@ public class SettingController {
 
     @FXML
     public void initialize(){
+        settingService = SettingService.getInstance(commonProgressIndicator);
         logService = LogService.getLogService();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
@@ -98,7 +101,7 @@ public class SettingController {
                 case "5%": msg += "05"; break;
             }
             msg += "!]";
-            asciiMsgTransceiver.sendMessages(msg, false);
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
             
 
         } else{
@@ -114,7 +117,7 @@ public class SettingController {
                 case "5%": msg += "05"; break;
             }
             msg += " 10 03";
-            hexMsgTransceiver.sendMessages(msg);
+            hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
         }
     }
 
@@ -131,7 +134,7 @@ public class SettingController {
                 msg += "Y";
             }
             msg += "!]";
-            asciiMsgTransceiver.sendMessages(msg, false);
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
             
 
         } else {
@@ -141,7 +144,7 @@ public class SettingController {
             }else{
                 msg = "21 5B 30 30 36 32 59 21 5D";
             }
-            hexMsgTransceiver.sendMessages(msg);
+            hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
         }
     }
 }

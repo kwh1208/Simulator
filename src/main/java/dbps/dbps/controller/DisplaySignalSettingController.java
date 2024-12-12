@@ -27,6 +27,7 @@ public class DisplaySignalSettingController {
 
     @FXML
     public TextArea memo;
+    public ProgressIndicator progressIndicator;
 
     @FXML
     private AnchorPane displaySignalAP;
@@ -119,12 +120,12 @@ public class DisplaySignalSettingController {
         if (isRS){
             transferProtocol = "!["+convertRS485AddrASCii()+signalProtocol+"!]";
         }else transferProtocol = "![0"+signalProtocol+"!]";
-        asciiMsgTransceiver.sendMessages(transferProtocol, false);
+        asciiMsgTransceiver.sendMessages(transferProtocol, false, progressIndicator);
         }
         else {
             String selectedSignal = signalList.getSelectionModel().getSelectedItem();
             String signalProtocol = makePerfectProtocolHEX(selectedSignal);
-            hexMsgTransceiver.sendMessages(signalProtocol);
+            hexMsgTransceiver.sendMessages(signalProtocol, progressIndicator);
         }
     }
 
@@ -291,7 +292,7 @@ public class DisplaySignalSettingController {
             msg = "!["+convertRS485AddrASCii()+"0B4"+before+" "+after+"!]";
         }
 
-        asciiMsgTransceiver.sendMessages(msg, false);
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     @FXML
@@ -300,7 +301,7 @@ public class DisplaySignalSettingController {
         if (isRS){
             msg = "!["+convertRS485AddrASCii()+"0B50!]";
         }
-        asciiMsgTransceiver.sendMessages(msg, false);
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     public void save() {

@@ -1,29 +1,33 @@
 package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.AsciiMsgTransceiver;
+import javafx.scene.control.ProgressIndicator;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
 public class BTManager {
 
     private static BTManager instance = null;
+    ProgressIndicator progressIndicator;
     AsciiMsgTransceiver asciiMsgTransceiver;
 
-    public static BTManager getInstance() {
+    public static BTManager getInstance(ProgressIndicator progressIndicator) {
         if (instance == null) {
-            instance = new BTManager();
+            instance = new BTManager(progressIndicator);
         }
         return instance;
     }
 
-    private BTManager() {
+    private BTManager(ProgressIndicator progressIndicator) {
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+        this.progressIndicator = progressIndicator;
     }
 
     public void search() {
-        asciiMsgTransceiver.sendMessages("++SET++![BT SEARCHING DIBD!]", false);
+        asciiMsgTransceiver.sendMessages("++SET++![BT SEARCHING DIBD!]", false, progressIndicator);
     }
 
     public void set(String Id, String password) {
@@ -48,12 +52,12 @@ public class BTManager {
 
         msg += new String(realId, Charset.forName("EUC-KR")) + "  " + new String(realPassword, Charset.forName("EUC-KR")) + "!]";
 
-        asciiMsgTransceiver.sendMessages(msg, false);
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
-    public void begin(String password) {
+    public void begin(String password) throws ExecutionException, InterruptedException {
         String msg = "++SET++![BT " + password + " BEGIN!]";
-        String receivedMsg = asciiMsgTransceiver.sendMessages(msg, false);
+        String receivedMsg = asciiMsgTransceiver.sendMessages(msg, false, progressIndicator).get();
         if (receivedMsg.equals("![DIBD BLE OK!]")){
             CONNECT_TYPE = "bluetooth";
         }
@@ -61,11 +65,6 @@ public class BTManager {
 
     public void end(String password) {
         String msg = "++SET++![BT " + password + " END!]";
-        asciiMsgTransceiver.sendMessages(msg, false);
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
-
-
-    //++SET++![BT SETT  31  name  password!]
-    //++SET++![BT password             BEGIN!]
-    //++SET++![BT password             END!]
 }

@@ -115,6 +115,6 @@
       <Button layoutX="14.0" layoutY="290.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="219.0" text="%communicationSetting" onMouseClicked="#openCommunicationSetting"/>
       <Button layoutX="257.0" layoutY="290.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="101.0" text="%sendButton" onMouseClicked="#Transfer"/>
       <Button layoutX="257.0" layoutY="326.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="101.0" text="%close" onMouseClicked="#closeWindow"/>
-
+      <ProgressIndicator fx:id="progressIndicator" layoutX="160.0" layoutY="150.0" visible="false"/>
    </children>
 </AnchorPane>

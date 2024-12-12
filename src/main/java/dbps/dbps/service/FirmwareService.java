@@ -4,6 +4,8 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextArea;
+import lombok.Setter;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -26,8 +28,13 @@ public class FirmwareService {
         }
         return instance;
     }
-    //ProgressIndicator firmwareProgressIndicator;
-    //        Label firmwareProgressLabel;
+
+    @Setter
+    public TextArea firmwareInformation;
+
+    public void setFirmware(String firmware) {
+        firmwareInformation.setText(firmware);
+    }
 
     public Task<Void> firmwareUpload(ProgressBar progressBar, Label progressLabel) {
         return new Task<Void>() {

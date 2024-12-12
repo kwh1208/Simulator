@@ -4,6 +4,7 @@ import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.AnchorPane;
 
 import static dbps.dbps.Constants.convertRS485AddrASCii;
@@ -17,6 +18,7 @@ public class RelayController {
     public ComboBox<String> relayBox2;
 
     public AnchorPane relayAP;
+    public ProgressIndicator progressIndicator;
 
     AsciiMsgTransceiver asciiMsgTransceiver;
 
@@ -41,7 +43,7 @@ public class RelayController {
         msg+=makeRelayMsg(relayBox2.getValue());
         msg+="!]";
 
-        asciiMsgTransceiver.sendMessages(msg,false);
+        asciiMsgTransceiver.sendMessages(msg,false, progressIndicator);
     }
 
     private String makeRelayMsg(String value) {

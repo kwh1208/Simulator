@@ -58,7 +58,7 @@
 
             <!--선아래 오른쪽-->
             <fx:include source="underTheLineRight.fxml"/>
-
+            <ProgressIndicator fx:id="commonProgressIndicator" layoutX="320.0" layoutY="200.0" visible="false"/>
         </children>
     </AnchorPane>
 </content>

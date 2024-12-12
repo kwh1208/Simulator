@@ -101,14 +101,14 @@
                     <ChoiceBox fx:id="baudRateChoiceBox" layoutX="124.0" layoutY="66.0" prefWidth="150.0" value="115200">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
-                                <Integer fx:value="9600" />
-                                <Integer fx:value="19200" />
-                                <Integer fx:value="38400" />
-                                <Integer fx:value="57600" />
-                                <Integer fx:value="115200" />
-                                <Integer fx:value="230400" />
-                                <Integer fx:value="460800" />
-                                <Integer fx:value="921600" />
+                                <String fx:value="9600" />
+                                <String fx:value="19200" />
+                                <String fx:value="38400" />
+                                <String fx:value="57600" />
+                                <String fx:value="115200" />
+                                <String fx:value="230400" />
+                                <String fx:value="460800" />
+                                <String fx:value="921600" />
                             </FXCollections>
                         </items>
                     </ChoiceBox>

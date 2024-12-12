@@ -5,9 +5,11 @@ import dbps.dbps.Simulator;
 import dbps.dbps.service.ASCiiMsgService;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.ConfigService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -25,6 +27,8 @@ public class ASCiiMsgController {
 
     @FXML
     private AnchorPane ASCiiMsgAnchorPane;
+    @FXML
+    ProgressIndicator progressIndicator;
 
     @FXML
     private CheckBox utf_8;
@@ -41,6 +45,8 @@ public class ASCiiMsgController {
 
     @FXML
     public void initialize() {
+        Platform.runLater(() -> progressIndicator.toFront());
+
         msgService = ASCiiMsgService.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         transmitMsgContents = msgService.loadMessages();
@@ -82,7 +88,7 @@ public class ASCiiMsgController {
         int num = Integer.parseInt(clickedBtn.getId().substring(10));
         TextField targetTextField = transmitMsgs.get(num - 1);
 
-        asciiMsgTransceiver.sendMessages(targetTextField.getText(), utf_8.isSelected());
+        asciiMsgTransceiver.sendMessages(targetTextField.getText(), utf_8.isSelected(), progressIndicator);
     }
 
     //메세지 초기화

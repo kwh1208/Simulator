@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.*;
 
@@ -54,24 +55,24 @@ public class FirmwareUpgradeController {
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         logService = LogService.getLogService();
         firmwareService = FirmwareService.getFirmwareService();
+        firmwareService.setFirmwareInformation(firmwareInformation);
     }
 
 
-    public void read() {
+    public void read() throws ExecutionException, InterruptedException {
         if (IS_ASCII){
             String msg = "![0081!]";
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"081!]";
             }
-            String version = asciiMsgTransceiver.sendMessages(msg, false);
-            firmwareInformation.setText(version.substring(6, version.length()-2));
+            asciiMsgTransceiver.sendMessages(msg, false, firmwareProgressIndicator);
         }
         else {
             String msg = "10 02 00 00 02 6F F1 10 03";
             if (isRS){
                 msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+ "00 02 6F F1 10 03";
             }
-            String version = hexMsgTransceiver.sendMessages(msg);
+            String version = hexMsgTransceiver.sendMessages(msg, firmwareProgressIndicator);
             String[] version_split = version.split(" ");
             StringBuilder result = new StringBuilder();
 

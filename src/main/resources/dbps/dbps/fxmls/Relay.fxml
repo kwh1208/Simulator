@@ -168,6 +168,7 @@
             </ComboBox>
             <Label disable="true" layoutX="143.0" layoutY="118.0" text="x 100ms" />
             <Button layoutX="255.0" layoutY="107.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendRelaySignal"/>
+            <ProgressIndicator fx:id="progressIndicator" layoutX="140.0" layoutY="50.0" visible="false"/>
         </children>
     </Pane>
 </AnchorPane>

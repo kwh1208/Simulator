@@ -2,6 +2,7 @@ package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
+import dbps.dbps.service.BoardSettingService;
 import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
@@ -18,6 +20,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.convertRS485AddrASCii;
 import static dbps.dbps.Constants.isRS;
@@ -26,6 +29,7 @@ public class BoardSettingsController {
 
     private static final String BOARD_SETTING_CSS = "/dbps/dbps/css/boardsetting.css";
     private static final String COMM_SETTING_FXML = "/dbps/dbps/fxmls/communicationSetting.fxml";
+
 
     @FXML
     public RadioButton settingRadio;
@@ -47,9 +51,11 @@ public class BoardSettingsController {
     public ComboBox<String> J3_baud;
     @FXML
     public ComboBox<String> BH1_baud;
+    public ProgressIndicator progressIndicator;
 
     private AsciiMsgTransceiver asciiMsgTransceiver;
     private ToggleGroup group = new ToggleGroup();
+    private BoardSettingService boardSettingService;
 
     private static final String[] BAUD_RATES = {"9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600"};
     private static final String[] BH1_OPTIONS = {
@@ -77,6 +83,14 @@ public class BoardSettingsController {
         );
 
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+        boardSettingService = BoardSettingService.getInstance();
+
+        boardSettingService.setDebugMethod(debugMethod);
+        boardSettingService.setBH1_baud(BH1_baud);
+        boardSettingService.setBH1_Func(BH1_Func);
+        boardSettingService.setJ4_func(J4_func);
+        boardSettingService.setJ2_baud(J2_baud);
+        boardSettingService.setJ3_baud(J3_baud);
     }
 
     private void toggleDisableBoard(boolean enable) {
@@ -109,7 +123,7 @@ public class BoardSettingsController {
         stage.close();
     }
 
-    public void Transfer() {
+    public void Transfer() throws ExecutionException, InterruptedException {
         if (group.getSelectedToggle().equals(readRadio)) {
             handleReadCommand();
         } else {
@@ -117,19 +131,8 @@ public class BoardSettingsController {
         }
     }
 
-    private void handleReadCommand() {
-        String result = asciiMsgTransceiver.sendMessages("![00B30!]", false);
-        if (isRS) {
-            result = "![" + convertRS485AddrASCii() + "0B30";
-        }
-        String[] resultSplit = result.substring(7, result.length() - 2).split(",");
-
-        debugMethod.setValue(resultSplit[0].equals("0") ? "disable" : "enable" + resultSplit[0]);
-        setComboBoxValue(BH1_Func, BH1_OPTIONS, resultSplit[1]);
-        setComboBoxValue(J4_func, J4_OPTIONS, resultSplit[2]);
-        setComboBoxValue(J2_baud, BAUD_RATES, resultSplit[3]);
-        setComboBoxValue(J3_baud, BAUD_RATES, resultSplit[4]);
-        setComboBoxValue(BH1_baud, BAUD_RATES, resultSplit[5]);
+    private void handleReadCommand() throws ExecutionException, InterruptedException {
+        asciiMsgTransceiver.sendMessages("![00B30!]", false, progressIndicator);
     }
 
     private void handleSetCommand() {
@@ -142,7 +145,7 @@ public class BoardSettingsController {
         msg.append(getComboBoxIndex(J3_baud, BAUD_RATES)).append(",");
         msg.append(getComboBoxIndex(BH1_baud, BAUD_RATES)).append("!]");
 
-        asciiMsgTransceiver.sendMessages(msg.toString(), false);
+        asciiMsgTransceiver.sendMessages(msg.toString(), false, progressIndicator);
     }
 
     private void setComboBoxValue(ComboBox<String> comboBox, String[] options, String value) {

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="369.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdditionalFunctionsController">
+    <Label layoutX="48.0" layoutY="40.0" text="표출속도 설정"/>
+    <ComboBox fx:id="displaySpeed" layoutX="175.0" layoutY="35.0" prefHeight="28.0" prefWidth="113.0" value="사용안함">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+            </FXCollections>
+        </items>
+    </ComboBox>
+    <Button layoutX="291.0" layoutY="35.0" mnemonicParsing="false" onMouseClicked="#sendDisplaySpeed" prefHeight="28.0"
+            prefWidth="63.0" text="전송"/>
+
+
+    <Label layoutX="48.0" layoutY="75.0" text="점멸횟수"/>
+    <ComboBox fx:id="blinkCnt" layoutX="175.0" layoutY="70.0" prefHeight="28.0" prefWidth="113.0" value="사용안함">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+            </FXCollections>
+        </items>
+    </ComboBox>
+    <Button layoutX="291.0" layoutY="70.0" mnemonicParsing="false" onMouseClicked="#sendBlinkCnt" prefHeight="28.0"
+            prefWidth="63.0" text="전송"/>
+
+
+    <Label layoutX="48.0" layoutY="110.0" text="화면 채우기"/>
+    <ChoiceBox fx:id="fillColor" layoutX="175.0" layoutY="105.0" prefHeight="28.0" prefWidth="113.0" value="검은색">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="검은색"/>
+                <String fx:value="빨간색"/>
+                <String fx:value="초록색"/>
+                <String fx:value="노란색"/>
+                <String fx:value="파란색"/>
+                <String fx:value="분홍색"/>
+                <String fx:value="청록색"/>
+                <String fx:value="흰색"/>
+            </FXCollections>
+        </items>
+    </ChoiceBox>
+    <Button layoutX="291.0" layoutY="105.0" mnemonicParsing="false" onMouseClicked="#sendFillColor" prefHeight="28.0"
+            prefWidth="63.0" text="전송"/>
+
+    <Label layoutX="48.0" layoutY="145.0" text="offset 변경"/>
+    <ChoiceBox fx:id="offset" layoutX="175.0" layoutY="140.0" prefHeight="28.0" prefWidth="113.0" value="4">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="1"/>
+                <String fx:value="2"/>
+                <String fx:value="3"/>
+                <String fx:value="4(default)"/>
+            </FXCollections>
+        </items>
+    </ChoiceBox>
+    <Button layoutX="291.0" layoutY="140.0" mnemonicParsing="false" onMouseClicked="#sendoffSet" prefHeight="28.0"
+            prefWidth="63.0" text="전송"/>
+
+    <Button layoutX="43.0" layoutY="175.0" onMouseClicked="#openBGSchedule" prefHeight="30" prefWidth="150"
+            text="배경이미지 스케쥴"/>
+    <Button layoutX="205.0" layoutY="175.0" onMouseClicked="#openRelay" prefHeight="30" prefWidth="150"
+            text="릴레이 신호 출력"/>
+    <Button layoutX="205.0" layoutY="212.0" mnemonicParsing="false" onMouseClicked="#fontName" prefHeight="30.0"
+            prefWidth="150.0" text="폰트파일명"/>
+    <Pane layoutX="6.0" layoutY="255.0" prefHeight="75.0" prefWidth="391.0" style="-fx-border-color: black;">
+        <Label layoutX="14" layoutY="-8" text="폰트 두께 설정"/>
+        <Label layoutX="14.0" layoutY="17.0" text="가로"/>
+        <ChoiceBox fx:id="fontWidth" layoutX="14.0" layoutY="45.0" prefWidth="150.0"/>
+        <Label layoutX="174.0" layoutY="17.0" text="세로"/>
+        <ChoiceBox fx:id="fontHeight" layoutX="174.0" layoutY="45.0" prefWidth="150.0"/>
+        <Button layoutX="332.0" layoutY="45.0" mnemonicParsing="false" onMouseClicked="#sendFontWeight" text="전송"/>
+    </Pane>
+    <Button layoutX="43.0" layoutY="212.0" mnemonicParsing="false" onMouseClicked="#fontName" prefHeight="30.0"
+            prefWidth="150.0" text="폰트 두께 설정"/>
+    <ProgressIndicator fx:id="progressIndicator" layoutX="180.0" layoutY="150.0" visible="false"/>
+</AnchorPane>

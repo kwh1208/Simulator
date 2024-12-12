@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component jdk="17" jdk_type="JavaSDK">
+	<contentEntry url="file://$MODULE_DIR$/../../src/main"/>
+	<levels>
+		<level name="Gradle: org.openjfx:javafx-graphics:win:17.0.6" value="project"/>
+		<level name="Gradle: org.openjfx:javafx-fxml:win:17.0.6" value="project"/>
+		<level name="Gradle: org.openjfx:javafx-controls:win:17.0.6" value="project"/>
+		<level name="Gradle: org.fxmisc.richtext:richtextfx:0.11.3" value="project"/>
+		<level name="Gradle: org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5" value="project"/>
+	</levels>
+</component>

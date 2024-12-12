@@ -6,9 +6,9 @@ import javafx.concurrent.Task;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -31,15 +31,21 @@ public class ServerTCPManager {
         return instance;
     }
 
-    public void connect(int port, String ip) {
-        serverIp = ip;
-        try (ServerSocket serverSocket = new ServerSocket(port, 50, InetAddress.getByName(ip))) {
-            System.out.println("Server is listening on 127.0.0.1:12345");
-            socket = serverSocket.accept();
-            System.out.println("Client connected: " + socket.getInetAddress());
-        } catch (IOException e) {
-            logService.errorLog(e.getMessage());
-        }
+    public void connect(int port) {
+        Thread connectThread = new Thread(() -> {
+            try (ServerSocket serverSocket = new ServerSocket(port)) {
+                serverSocket.setSoTimeout(RESPONSE_LATENCY * 1000);
+                logService.updateInfoLog("서버 소켓이 열렸습니다. 클라이언트 연결 대기 중...");
+                socket = serverSocket.accept();
+                logService.updateInfoLog("클라이언트 연결 성공: " + socket.getRemoteSocketAddress());
+            } catch (SocketTimeoutException e) {
+                logService.errorLog("클라이언트 연결 시간 초과");
+            } catch (IOException e) {
+                logService.errorLog("서버 소켓 오류: " + e.getMessage());
+            }
+        });
+        connectThread.setDaemon(true); // 데몬 스레드 설정
+        connectThread.start();
     }
 
     public void disconnect() {
@@ -53,52 +59,45 @@ public class ServerTCPManager {
 
     public Task<String> sendMsgAndGetMsgByte(byte[] msg) {
         return new Task<>() {
-
             @Override
             protected String call() throws Exception {
                 if (socket == null) {
-                    connect(serverTCPPort, serverIp);
+                    connect(serverTCPPort);
                 }
+
                 try {
+                    socket.setSoTimeout(RESPONSE_LATENCY * 1000); // 시간 초과 설정
                     InputStream input = socket.getInputStream();
                     OutputStream output = socket.getOutputStream();
 
                     output.write(msg);
                     output.flush();
 
-                    long startTime = System.currentTimeMillis();
                     byte[] buffer = new byte[1024];
-                    int totalBytesRead = 0;
-                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000L) {
-                        if (input.available() > 0) {
-                            int bytesRead = input.read(buffer);
+                    int totalBytesRead = input.read(buffer);
 
-                            if (bytesRead > 0) {
-                                totalBytesRead += bytesRead;
+                    if (totalBytesRead > 0) {
+                        String response = bytesToHex(buffer, totalBytesRead);
 
-                                startTime = System.currentTimeMillis();
-
-                                if (dataReceivedIsComplete(buffer, totalBytesRead)) {
-                                    break;
-                                }
-                            }
-                        } else {
-                            Thread.sleep(50);
+                        if (response.isEmpty()) {
+                            throw new IOException("서버 응답이 비어 있습니다.");
                         }
+
+                        return response;
+                    } else {
+                        throw new IOException("서버에서 응답이 없습니다.");
                     }
-                    return bytesToHex(buffer, totalBytesRead);
-                } catch (IOException | InterruptedException e) {
-                    e.getMessage();
-
-                    logService.errorLog(msg + " 전송에 실패했습니다.");
-
-                    return "에러발생";
-                }finally {
+                } catch (IOException e) {
+                    logService.errorLog(msg + " 전송에 실패했습니다: " + e.getMessage());
+                    throw new IOException("메시지 전송 실패", e);
+                } finally {
                     disconnect();
                 }
             }
         };
     }
+
+
 
     public Task<String> sendASCMsg(String msg, boolean utf8){
         return new Task<>() {
@@ -106,7 +105,7 @@ public class ServerTCPManager {
             @Override
             protected String call() throws Exception {
                 if (socket == null) {
-                    connect(serverTCPPort, serverIp);
+                    connect(serverTCPPort);
                 }
                 try {
                     InputStream input = socket.getInputStream();

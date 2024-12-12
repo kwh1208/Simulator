@@ -22,6 +22,18 @@ public class MQTTManager {
         return instance;
     }
 
+    public void test(){
+        try {
+            System.out.println("Creating MqttClient...");
+            MqttClient client = new MqttClient("tcp://test.mosquitto.org:1883", MqttClient.generateClientId());
+            System.out.println("MqttClient created successfully: " + client.getClientId());
+        } catch (Exception e) {
+            System.err.println("Error while creating MqttClient: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+
     private MQTTManager() {
         logService = LogService.getLogService();
     }
@@ -47,6 +59,7 @@ public class MQTTManager {
                 MqttClient client = new MqttClient(MQTT_BROKER, MqttClient.generateClientId());
 
                 MqttConnectOptions connOpts = new MqttConnectOptions();
+                System.out.println(1111);
                 connOpts.setCleanSession(true); // 클린 세션 사용
                 connOpts.setUserName(MQTT_ID);
                 connOpts.setPassword(MQTT_PWD.toCharArray());

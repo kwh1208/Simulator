@@ -4,20 +4,24 @@ import dbps.dbps.Simulator;
 import dbps.dbps.service.connectManager.BTManager;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-public class blueToothController {
+import java.util.concurrent.ExecutionException;
+
+public class BlueToothController {
 
     public TextField ble_id;
     public TextField ble_password;
     public AnchorPane bluetoothAP;
+    public ProgressIndicator progressIndicator;
     BTManager btManager;
     @FXML
     public void initialize(){
-        btManager = BTManager.getInstance();
+        btManager = BTManager.getInstance(progressIndicator);
 
         bluetoothAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/bluetooth.css").toExternalForm());
     }
@@ -34,7 +38,7 @@ public class blueToothController {
     }
 
     //블루투스 통신 시작
-    public void begin( ) {
+    public void begin( ) throws ExecutionException, InterruptedException {
         //++SET++![BT password             BEGIN!]
         btManager.begin(ble_password.getText());
     }

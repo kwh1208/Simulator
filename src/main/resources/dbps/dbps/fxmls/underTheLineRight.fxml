@@ -19,60 +19,7 @@
             </items>
         </ComboBox>
         <Button layoutX="261.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendBGImgSelection"/>
-
-
-        <Label text="표출속도 설정" layoutX="18.0" layoutY="40"/>
-        <ComboBox fx:id="displaySpeed" layoutX="145.0" layoutY="35.0" prefHeight="28.0" prefWidth="113.0" value="사용안함">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <Button layoutX="261.0" layoutY="35.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendDisplaySpeed"/>
-
-
-        <Label text="점멸횟수" layoutX="18.0" layoutY="75"/>
-        <ComboBox fx:id="blinkCnt" layoutX="145.0" layoutY="70.0" prefHeight="28.0" prefWidth="113.0" value="사용안함">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <Button layoutX="261.0" layoutY="70.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendBlinkCnt"/>
-
-
-        <Label layoutX="18.0" layoutY="110.0" text="화면 채우기" />
-        <ChoiceBox fx:id="fillColor" layoutX="145.0" layoutY="105.0" prefHeight="28.0" prefWidth="113.0" value="검은색">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="검은색" />
-                    <String fx:value="빨간색" />
-                    <String fx:value="초록색" />
-                    <String fx:value="노란색" />
-                    <String fx:value="파란색" />
-                    <String fx:value="분홍색" />
-                    <String fx:value="청록색" />
-                    <String fx:value="흰색" />
-                </FXCollections>
-            </items>
-        </ChoiceBox>
-        <Button layoutX="261.0" layoutY="105.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendFillColor"/>
-
-        <Label layoutX="18.0" layoutY="145.0" text="offset 변경" />
-        <ChoiceBox fx:id="offset" layoutX="145.0" layoutY="140.0" prefHeight="28.0" prefWidth="113.0" value="4">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="1" />
-                    <String fx:value="2" />
-                    <String fx:value="3" />
-                    <String fx:value="4(default)" />
-                </FXCollections>
-            </items>
-        </ChoiceBox>
-        <Button layoutX="261.0" layoutY="140.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendoffSet"/>
-
-        <Button text="배경이미지 스케쥴" layoutX="18.0" layoutY="175" prefWidth="150" prefHeight="30" onMouseClicked="#openBGSchedule"/>
-        <Button text="릴레이 신호 출력" layoutX="175.0" layoutY="175" prefWidth="150" prefHeight="30" onMouseClicked="#openRelay"/>
+        <Button layoutX="20.0" layoutY="40.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="290.0" text="추가 기능" onMouseClicked="#openAdditionalFunction"/>
     </children>
 </Pane>
 </VBox>

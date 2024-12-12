@@ -38,7 +38,7 @@ import static dbps.dbps.Constants.*;
 
 public class CommunicationSettingController {
 
-
+    @FXML
     public Button shutConnect;
     SerialPortManager serialPortManager;
     TCPManager tcpManager;
@@ -148,15 +148,13 @@ public class CommunicationSettingController {
         serverTCPManager = ServerTCPManager.getInstance();
         logService = LogService.getLogService();
 
-
-        //delayTime 변경하면 delayTime 값 변경
-
         //토글버튼 그룹화
         communicationGroup = new ToggleGroup();
         serialRadioBtn.setToggleGroup(communicationGroup);
         clientTCPRadioBtn.setToggleGroup(communicationGroup);
         serverTCPRadioBtn.setToggleGroup(communicationGroup);
         UDPRadioBtn.setToggleGroup(communicationGroup);
+        serverIPPort.setText(configService.getProperty("serverTCPPort"));
 
         switch (CONNECT_TYPE) {
             case "serial":
@@ -256,7 +254,12 @@ public class CommunicationSettingController {
         );
 
         //응답시간 변경
-        delayTime.selectionModelProperty().addListener((observableValue, oldValue, newValue) -> {RESPONSE_LATENCY = Integer.parseInt(delayTime.getValue()); configService.setProperty("latency", String.valueOf(RESPONSE_LATENCY));});
+        delayTime.selectionModelProperty().addListener((observableValue, oldValue, newValue) -> {
+            RESPONSE_LATENCY = Integer.parseInt(delayTime.getValue());
+            configService.setProperty("RESPONSE_LATENCY", String.valueOf(RESPONSE_LATENCY));
+        });
+
+        delayTime.setValue(configService.getProperty("RESPONSE_LATENCY"));
 
         communicationSettingAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/communicationSetting.css").toExternalForm());
 
@@ -265,17 +268,28 @@ public class CommunicationSettingController {
         }
 
         getServerIP();
+
+
+        clientIPAddress.setText(configService.getProperty("clientTCPAddr"));
+        clientIPPort.setText(configService.getProperty("clientTCPPort"));
     }
 
     //사용가능한 포트 가져오기
     private void getSerialPortList() {
+        String selectedValue = serialPortComboBox.getValue();
         List<String> portNames = Arrays.stream(SerialPort.getCommPorts())
                 .map(SerialPort::getSystemPortName)
                 .sorted(Comparator.comparingInt(this::extractPortNumber))
                 .toList();
 
         serialPortComboBox.getItems().setAll(portNames);
-        serialPortComboBox.getSelectionModel().selectFirst();
+        // 기존 선택값 복원
+        if (selectedValue != null && portNames.contains(selectedValue)) {
+            serialPortComboBox.setValue(selectedValue);
+        } else {
+            // 기존 선택값이 없거나 리스트에 없으면 첫 번째 항목 선택
+            serialPortComboBox.getSelectionModel().selectFirst();
+        }
     }
 
     // COM 포트에서 숫자 부분만 추출하여 정수로 반환
@@ -330,23 +344,16 @@ public class CommunicationSettingController {
 
     private void connectServerTCP() {
         int port = Integer.parseInt(serverIPPort.getText());
-
-        // 별도의 스레드에서 서버 연결 실행
-        new Thread(() -> {
-            serverTCPManager.connect(port, serverIPAddress.getValue());
-            serverTCPManager.disconnect();
-        }).start();
-
-        serverTCPPort = port;
         configService.setProperty("serverTCPPort", String.valueOf(port));
-
-        logService.updateInfoLog("Port :" + port + "가 열렸습니다.");
+        // 서버 연결 Task 생성
+        serverTCPManager.connect(port);
     }
+
+
 
     private void connectClientTCP() {
         String IPAddress = clientIPAddress.getText();
         int port = Integer.parseInt(clientIPPort.getText());
-
         tcpManager.setIP(IPAddress);
         tcpManager.setPORT(port);
         configService.setProperty("clientTCPAddr", IPAddress);
@@ -355,8 +362,7 @@ public class CommunicationSettingController {
         TCP_IP = IPAddress;
         TCP_PORT = port;
 
-
-        logService.updateInfoLog("IP :"+IPAddress+" Port :"+port+"가 열렸습니다.");
+        hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
     }
 
     private void connectUDP(){
@@ -387,7 +393,6 @@ public class CommunicationSettingController {
     //포트닫기
     public void closePort(String portName) {
         serialPortManager.closePort(portName);
-        OPEN_PORT_NAME = null;
     }
 
     //다빛넷 열기
@@ -448,7 +453,6 @@ public class CommunicationSettingController {
             @Override
             protected Void call() throws IOException {
                 Platform.runLater(() -> showLoading()); // 로딩 애니메이션 시작
-
                 try {
                     // 시리얼일 때
                     if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
@@ -458,19 +462,18 @@ public class CommunicationSettingController {
                                     Integer.parseInt(serialSpeedChoiceBox.getValue()));
                             RS485_ADDR_NUM = Integer.parseInt(RS485ChoiceBox.getValue().replaceAll("[^0-9]", ""));
                             String msg = "10 02 " + convertRS485AddrASCii() + " 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
-                            hexMsgTransceiver.sendMessages(msg);
+                            hexMsgTransceiver.sendMessages(msg, progressIndicator);
                         } else {
                             CONNECT_TYPE = "serial";
                             serialPortManager.openPort(serialPortComboBox.getValue(),
                                     Integer.parseInt(serialSpeedChoiceBox.getValue()));
-                            hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
+                            hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03", progressIndicator);
                         }
                         OPEN_PORT_NAME = serialPortComboBox.getValue();
                         configService.setProperty("openPortName", OPEN_PORT_NAME);
                     } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn)) {
                         CONNECT_TYPE = "clientTCP";
                         connectClientTCP();
-                        tcpManager.connect(tcpManager.getIP(), tcpManager.getPORT());
                     } else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)) {
                         CONNECT_TYPE = "serverTCP";
                         connectServerTCP();

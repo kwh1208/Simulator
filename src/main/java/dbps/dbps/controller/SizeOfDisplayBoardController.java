@@ -8,13 +8,21 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.Pane;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import static dbps.dbps.Constants.*;
+import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class SizeOfDisplayBoardController {
 
-    AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+    AsciiMsgTransceiver asciiMsgTransceiver;
 
-    HexMsgTransceiver hexMsgTransceiver = HexMsgTransceiver.getInstance();
+    HexMsgTransceiver hexMsgTransceiver;
+
+    SizeOfDisplayBoardService sizeOfDisplayBoardService;
+
+
 
     @FXML
     public ChoiceBox<String> colorNum;
@@ -54,6 +62,13 @@ public class SizeOfDisplayBoardController {
         });
 
         setInitialValues();
+
+        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+        hexMsgTransceiver = HexMsgTransceiver.getInstance();
+        sizeOfDisplayBoardService = SizeOfDisplayBoardService.getInstance();
+        sizeOfDisplayBoardService.setHowToArray(howToArray);
+        sizeOfDisplayBoardService.setSpinnerForRow(spinnerForRow);
+        sizeOfDisplayBoardService.setSpinnerForColumn(spinnerForColumn);
     }
 
     private void setInitialValues() {
@@ -63,7 +78,7 @@ public class SizeOfDisplayBoardController {
     }
 
 
-    public void sendDisplaySize() {
+    public void sendDisplaySize() throws ExecutionException, InterruptedException {
         if (IS_ASCII){
             displaySizeASC();
         }
@@ -73,7 +88,7 @@ public class SizeOfDisplayBoardController {
         setInitialValues();
     }
 
-    private void displaySizeASC() {
+    private void displaySizeASC() throws ExecutionException, InterruptedException {
         String msg = "![0040";
         if (isRS){
             msg = "!["+convertRS485AddrASCii()+"040";
@@ -101,13 +116,16 @@ public class SizeOfDisplayBoardController {
                 break;
         }
         msg+="!]";
-        asciiMsgTransceiver.sendMessages(msg, false);
+        String finalMsg = msg;
+        CompletableFuture.supplyAsync(() -> asciiMsgTransceiver.sendMessages(finalMsg, false, commonProgressIndicator)).join();
+
     }
 
     private void displaySizeHEX() {
         String msg = "10 02 00 00 07 40";
         if (isRS){
-            msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 07 40";
+            msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 07 40";
+
         }
 
         switch (String.valueOf(colorNum.getValue()).charAt(0)){
@@ -121,8 +139,8 @@ public class SizeOfDisplayBoardController {
                 msg+=" 08";
                 break;
         }
-        msg += String.format(" %02d",spinnerForRow.getValue());
-        msg += String.format(" %02d",spinnerForColumn.getValue());
+        msg += " "+Integer.toHexString(spinnerForRow.getValue());
+        msg += " "+Integer.toHexString(spinnerForColumn.getValue());
         switch (howToArray.getValue()){
             case "가로형(default)":
                 msg+=" 00";
@@ -145,7 +163,7 @@ public class SizeOfDisplayBoardController {
         }
         msg+=" 00 F1 10 03";
 
-        hexMsgTransceiver.sendMessages(msg);
+        hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
 
     }
 }

@@ -1,13 +1,17 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
+import dbps.dbps.service.ASCiiDefaultSettingService;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+
+import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.convertRS485AddrASCii;
 import static dbps.dbps.Constants.isRS;
@@ -16,6 +20,7 @@ import static java.lang.Integer.parseInt;
 
 
 public class MakeOwnMsgController {
+    public ProgressIndicator progressIndicator;
     @FXML
     AnchorPane makeOwnMsgAnchorPane;
 
@@ -68,7 +73,7 @@ public class MakeOwnMsgController {
     ChoiceBox<String> yEnd;
 
     @FXML
-    ChoiceBox<String> bgImg;
+    ComboBox<String> bgImg;
 
     @FXML
     ChoiceBox<String> fontColor;
@@ -80,6 +85,7 @@ public class MakeOwnMsgController {
     TextField defaultSetting;
 
     AsciiMsgTransceiver asciiMsgTransceiver;
+    ASCiiDefaultSettingService asCiiDefaultSettingService;
 
     @FXML
     public void initialize() {
@@ -92,7 +98,34 @@ public class MakeOwnMsgController {
         }
 
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+        asCiiDefaultSettingService = ASCiiDefaultSettingService.getInstance();
         makeOwnMsgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/makeOwnMsg.css").toExternalForm());
+        setService();
+    }
+
+    private void setService() {
+        asCiiDefaultSettingService.setDefaultSetting(defaultSetting);
+        asCiiDefaultSettingService.setDisplayControl(displayControl);
+        asCiiDefaultSettingService.setDisplayMethod(displayMethod);
+        asCiiDefaultSettingService.setCharCodes(charCodes);
+        asCiiDefaultSettingService.setFontSize(fontSize);
+        asCiiDefaultSettingService.setFontGroup(fontGroup);
+        asCiiDefaultSettingService.setEffectIn(effectIn);
+        asCiiDefaultSettingService.setInDirection(inDirection);
+        asCiiDefaultSettingService.setEffectOut(effectOut);
+        asCiiDefaultSettingService.setOutDirection(outDirection);
+        asCiiDefaultSettingService.setSub(sub);
+        asCiiDefaultSettingService.setEffectSpeed(effectSpeed);
+        asCiiDefaultSettingService.setEffectTime(effectTime);
+        asCiiDefaultSettingService.setXStart(xStart);
+        asCiiDefaultSettingService.setYStart(yStart);
+        asCiiDefaultSettingService.setXEnd(xEnd);
+        asCiiDefaultSettingService.setYEnd(yEnd);
+        asCiiDefaultSettingService.setBgImg(bgImg);
+        asCiiDefaultSettingService.setFontColor(fontColor);
+        asCiiDefaultSettingService.setFontBgColor(fontBgColor);
+        asCiiDefaultSettingService.setFontColor(fontColor);
+        asCiiDefaultSettingService.setFontBgColor(fontBgColor);
     }
 
     //확인버튼
@@ -108,7 +141,7 @@ public class MakeOwnMsgController {
     @FXML
     public void send() {
         String text = defaultSetting.getText();
-        asciiMsgTransceiver.sendMessages(text, false);
+        asciiMsgTransceiver.sendMessages(text, false, progressIndicator);
     }
 
     //선택지 초기상태로
@@ -365,7 +398,6 @@ public class MakeOwnMsgController {
             }
         } else if (value1.equals("전체 효과")) return "122";
         return "54";//3D 효과, 왼쪽
-
     }
 
     private String setSText(String value1, String value2) {
@@ -421,12 +453,11 @@ public class MakeOwnMsgController {
         return "0";
     }
 
-    public void read(MouseEvent mouseEvent) {
+    public void read() throws ExecutionException, InterruptedException {
         String msg = "![00330!]";
         if (isRS) {
             msg = "![" + convertRS485AddrASCii() + "0330!]";
         }
-        String result = asciiMsgTransceiver.sendMessages(msg, false);
-        defaultSetting.setText(result);
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 }

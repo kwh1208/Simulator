@@ -373,5 +373,6 @@
         <Button layoutX="400.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="30.0" prefWidth="81.0" text="%saveButton" />
         <Button layoutX="500.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="%initButton" />
         <Button layoutX="600.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="81.0" text="%sendButton" />
+        <ProgressIndicator fx:id="progressIndicator" layoutX="320.0" layoutY="200.0" visible="false"/>
     </children>
 </AnchorPane>

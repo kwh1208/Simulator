@@ -13,6 +13,7 @@ import java.nio.ByteOrder;
 import java.util.*;
 
 import static dbps.dbps.Constants.*;
+import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class FontService {
     private static FontService instance = null;
@@ -32,10 +33,10 @@ public class FontService {
     }
     
     public Task<Void> sendFont(String[] fontGroup1, String[] fontGroup2, String[] fontGroup3, String[] fontGroup4, String[] fontType, ProgressBar progressBar, Label progressLabel) {
-        return new Task<>() {
+        return new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                String returnMsg = hexMsgTransceiver.sendMessages("10 02 00 00 02 45 00 10 03");
+                String returnMsg = hexMsgTransceiver.sendMessages("10 02 00 00 02 45 00 10 03", commonProgressIndicator);
 
                 Thread.sleep(200);
 
@@ -221,7 +222,6 @@ public class FontService {
                         }
 
                     }
-                    System.out.println(111);
                     totalPackets+=groupPackets[i];
                     ByteBuffer buffer = ByteBuffer.allocate(4);
                     buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -312,12 +312,12 @@ public class FontService {
                 finalPacket[1] = 0x02;
                 finalPacket[finalPacket.length-2] = 0x10;
                 finalPacket[finalPacket.length-1] = 0x03;
-                returnMsg = String.valueOf(hexMsgTransceiver.sendByteMessages(finalPacket));
+                returnMsg = String.valueOf(hexMsgTransceiver.sendByteMessages(finalPacket, commonProgressIndicator));
                 if (!returnMsg.equals("10 02 00 00 02 4D 00 10 03 ")){
                     wait();
                 }
 
-                hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ");
+                hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
 
                 return null;
             }

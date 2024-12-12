@@ -6,7 +6,6 @@ module dbps.dbps {
     requires static lombok;
     requires java.desktop;
     requires org.fxmisc.richtext;
-    requires org.eclipse.paho.client.mqttv3;
 
     opens dbps.dbps to javafx.fxml;
     opens dbps.dbps.controller to javafx.fxml;

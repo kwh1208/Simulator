@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="bluetoothAP" prefHeight="212.0" prefWidth="451.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.blueToothController">
+<AnchorPane fx:id="bluetoothAP" prefHeight="212.0" prefWidth="451.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BlueToothController">
    <children>
       <Pane layoutX="25.0" layoutY="15.0" prefHeight="183.0" prefWidth="404.0" style="-fx-border-color: black">
          <children>
@@ -16,6 +16,7 @@
             <Button layoutX="204.0" layoutY="103.0" mnemonicParsing="false" onMouseClicked="#begin" prefHeight="27.0" prefWidth="90.0" text="%beginBLE" />
             <Button layoutX="303.0" layoutY="103.0" mnemonicParsing="false" onMouseClicked="#end" prefHeight="27.0" prefWidth="90.0" text="%endBLE" />
             <Button layoutX="339.0" layoutY="141.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="27.0" prefWidth="54.0" text="%close" />
+            <ProgressIndicator fx:id="progressIndicator" layoutX="180.0" layoutY="70.0" visible="false"/>
          </children>
       </Pane>
    </children>

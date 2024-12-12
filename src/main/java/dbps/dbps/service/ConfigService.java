@@ -1,6 +1,7 @@
 package dbps.dbps.service;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import static dbps.dbps.Constants.*;
@@ -219,14 +220,14 @@ public class ConfigService {
     }
 
     private void saveDisplayProperties() {
-        try (FileWriter writer = new FileWriter(displayFilePath)) {
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(displayFilePath), StandardCharsets.UTF_8)) {
             displayProperties.store(writer, null);
         } catch (IOException e) {
         }
     }
 
     private void saveProperties() {
-        try (FileWriter writer = new FileWriter(configFilePath)) {
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(configFilePath), StandardCharsets.UTF_8)) {
             properties.store(writer, null);
         } catch (IOException e) {
         }

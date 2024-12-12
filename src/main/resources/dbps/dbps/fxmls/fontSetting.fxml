@@ -215,8 +215,7 @@
         </Pane>
 
         <Label layoutX="17.0" layoutY="685.0" prefHeight="13.0" prefWidth="161.0" text="Font Size(Total/Limit)"/>
-        <Button layoutX="335.0" layoutY="680.0" mnemonicParsing="false" onMouseClicked="#fontName" prefHeight="21.0"
-                prefWidth="100.0" text="폰트파일명"/>
+
         <Button layoutX="286.0" layoutY="710.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="21.0"
                 prefWidth="69.0" text="전송"/>
         <Button layoutX="366.0" layoutY="710.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="21.0"
@@ -226,13 +225,5 @@
         <ProgressBar fx:id="fontProgressBar" layoutX="50.0" layoutY="170.0" prefWidth="350" visible="false"/>
         <Label fx:id="fontProgressLabel" layoutX="220.0" layoutY="200.0"
                style="-fx-text-fill: orange; -fx-font-size : 17px;" text="1/1" visible="false"/>
-        <Pane layoutX="16.0" layoutY="605.0" prefHeight="75.0" prefWidth="420.0" style="-fx-border-color: black;">
-            <Label layoutX="14" layoutY="-8" text="폰트 두께 설정"/>
-            <Label layoutX="14.0" layoutY="17.0" text="가로"/>
-            <ChoiceBox fx:id="fontWidth" layoutX="14.0" layoutY="45.0" prefWidth="150.0"/>
-            <Label layoutX="174.0" layoutY="17.0" text="세로"/>
-            <ChoiceBox fx:id="fontHeight" layoutX="174.0" layoutY="45.0" prefWidth="150.0"/>
-            <Button layoutX="352.0" layoutY="45.0" mnemonicParsing="false" text="전송" onMouseClicked="#sendFontWeight"/>
-        </Pane>
     </children>
 </AnchorPane>
