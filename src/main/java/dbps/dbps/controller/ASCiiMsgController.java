@@ -87,7 +87,6 @@ public class ASCiiMsgController {
         Button clickedBtn = (Button) event.getSource();
         int num = Integer.parseInt(clickedBtn.getId().substring(10));
         TextField targetTextField = transmitMsgs.get(num - 1);
-
         asciiMsgTransceiver.sendMessages(targetTextField.getText(), utf_8.isSelected(), progressIndicator);
     }
 

@@ -14,8 +14,8 @@
                 <RadioButton fx:id="pageMsg" layoutX="130.0" layoutY="5.0" mnemonicParsing="false" text="페이지 메세지" />
             </children>
         </Pane>
-        <Label fx:id="pageCntLabel" layoutX="468.0" layoutY="19.0" text="페이지" visible="false"/>
-        <ChoiceBox fx:id="pageMsgCnt" layoutX="528.0" layoutY="15.0" prefHeight="21.0" prefWidth="139.0" visible="false" value="1">
+        <Label fx:id="pageCntLabel" layoutX="460.0" layoutY="19.0" text="페이지" visible="false"/>
+        <ChoiceBox fx:id="pageMsgCnt" layoutX="520.0" layoutY="12.0" prefHeight="21.0" prefWidth="139.0" visible="false" value="1">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="1" />

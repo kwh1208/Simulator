@@ -121,7 +121,7 @@ public class CommunicationSettingController {
     private Button connect;
 
     @FXML
-    private ProgressIndicator progressIndicator; // 로딩 애니메이션
+    private ProgressIndicator progressIndicator;
 
     public void showLoading() {
         Platform.runLater(() -> {
@@ -196,6 +196,9 @@ public class CommunicationSettingController {
                 UDPRadioToggle(false);
                 break;
         }
+
+        UDPIPAddress.setText(configService.getProperty("UDPAddr"));
+        UDPIPPort.setText(configService.getProperty("UDPPort"));
 
         communicationGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             RadioButton selectedRadioButton = (RadioButton) newValue;
@@ -338,8 +341,9 @@ public class CommunicationSettingController {
             connectClientTCP();
         else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn))
             connectServerTCP();
-        else
-            connectUDP();
+        else if (communicationGroup.getSelectedToggle().equals(UDPRadioBtn)){
+            udpManager.connect(UDPIPAddress.getText(), Integer.parseInt(UDPIPPort.getText()));
+        }
     }
 
     private void connectServerTCP() {
@@ -376,6 +380,8 @@ public class CommunicationSettingController {
 
         UDP_IP = IPAddress;
         UDP_PORT = port;
+
+        hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
     }
 
     @FXML
@@ -481,7 +487,6 @@ public class CommunicationSettingController {
                     } else {
                         CONNECT_TYPE = "UDP";
                         connectUDP();
-                        udpManager.connect(udpManager.getIP(), udpManager.getPORT());
                     }
                     configService.setProperty("connectType", CONNECT_TYPE);
 

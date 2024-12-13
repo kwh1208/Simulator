@@ -133,4 +133,37 @@ public class Constants {
 
         return arr[RS485_ADDR_NUM];
     }
+
+    public static boolean dataReceivedIsComplete(byte[] buffer, int length) {
+        String data = new String(buffer, 0, length);
+        // 순서대로 "TX", "![", "!]"이 존재하는지 확인
+        if (data.contains("TX") && data.contains("![") && data.contains("!]")) {
+            if (!data.startsWith("RX(")){
+                return false;
+            }
+            int indexTX = data.indexOf("TX");
+            int indexStart = data.indexOf("![", indexTX); // "TX" 이후 검색
+            int indexEnd = data.indexOf("!]", indexStart); // "![ 이후 검색
+
+            // 순서가 올바른지 확인
+            return indexTX != -1 && indexStart != -1 && indexEnd != -1 && indexTX < indexStart && indexStart < indexEnd;
+        }
+
+        return length > 0 && buffer[length - 1] == (byte) ']' && buffer[length - 2] == (byte) '!';
+    }
+    public static boolean dataReceivedIsCompleteHex(byte[] buffer, int length) {
+        String data = bytesToHex(buffer, length);
+        if (data.contains("54 58 28") && data.contains("31 30 20 30 32") && data.contains("31 30 20 30 33")) {
+            if (!data.startsWith("52 58 28")) {
+                return false;
+            }
+            int indexTX = data.indexOf("54 58 28");
+            int indexStart = data.indexOf("31 30 20 30 32", indexTX); // "TX" 이후 검색
+            int indexEnd = data.indexOf("31 30 20 30 33", indexStart); // "10 02" 이후 검색
+            // 순서가 올바른지 확인
+            return indexTX != -1 && indexStart != -1 && indexEnd != -1 && indexTX < indexStart && indexStart < indexEnd;
+        }
+
+        return length > 0 && buffer[length - 1] == 0x03 && buffer[length - 2] == (byte) 0x10;
+    }
 }

@@ -97,6 +97,46 @@ public class ServerTCPManager {
         };
     }
 
+    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg) {
+        return new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                if (socket == null) {
+                    connect(serverTCPPort);
+                }
+
+                try {
+                    socket.setSoTimeout(RESPONSE_LATENCY * 1000); // 시간 초과 설정
+                    InputStream input = socket.getInputStream();
+                    OutputStream output = socket.getOutputStream();
+
+                    output.write(msg);
+                    output.flush();
+
+                    byte[] buffer = new byte[1024];
+                    int totalBytesRead = input.read(buffer);
+
+                    if (totalBytesRead > 0) {
+                        String response = bytesToHex(buffer, totalBytesRead);
+
+                        if (response.isEmpty()) {
+                            throw new IOException("서버 응답이 비어 있습니다.");
+                        }
+
+                        return response;
+                    } else {
+                        throw new IOException("서버에서 응답이 없습니다.");
+                    }
+                } catch (IOException e) {
+                    logService.errorLog(msg + " 전송에 실패했습니다: " + e.getMessage());
+                    throw new IOException("메시지 전송 실패", e);
+                } finally {
+                    disconnect();
+                }
+            }
+        };
+    }
+
 
 
     public Task<String> sendASCMsg(String msg, boolean utf8){
@@ -115,7 +155,7 @@ public class ServerTCPManager {
                     else if (ascUTF16) {
                         sendData = msg.getBytes(StandardCharsets.UTF_16BE);
                     }
-
+                    logService.updateInfoLog("전송 데이터 :"+msg);
                     output.write(sendData);
                     output.flush();
 
@@ -140,26 +180,19 @@ public class ServerTCPManager {
                             Thread.sleep(50);
                         }
                     }
-                    return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                    String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                    logService.updateInfoLog("받은 데이터 :"+result);
+                    return result;
                 } catch (IOException | InterruptedException e) {
                     e.getMessage();
 
                     logService.errorLog(msg + " 전송에 실패했습니다.");
-
-                    return "에러발생";
+                    throw e;
                 }finally {
                     disconnect();
                 }
             }
         };
-    }
-
-    private boolean dataReceivedIsComplete(byte[] buffer, int length) {
-        return length > 0 && buffer[length - 1]==(byte) ']' && buffer[length - 2]==(byte) '!';
-    }
-
-    private boolean dataReceivedIsCompleteHex(byte[] buffer, int length) {
-        return length >= 2 && buffer[length - 2] == (byte) 0x10 && buffer[length - 1] == (byte) 0x03;
     }
 
 }

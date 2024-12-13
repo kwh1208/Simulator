@@ -131,6 +131,7 @@ public class HEXMessageController {
         else{
             pageMsg.setSelected(true);
             pageMsgCnt.setVisible(true);
+            pageCntLabel.setVisible(true);
             pageMsgCnt.setValue(configService.getProperty("isHexRealTime"));
         }
         section0.setSelected(true);

@@ -16,6 +16,6 @@
       <Button layoutX="343.0" layoutY="405.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="125.0" text="%sendButton" />
       <Button layoutX="343.0" layoutY="445.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="30.0" prefWidth="125.0" text="%close" />
       <ProgressBar fx:id="firmwareProgressIndicator" layoutX="50.0" layoutY="170.0" prefWidth="400" visible="false" style="-fx-text-fill: red" />
-      <Label fx:id="firmwareProgressLabel" layoutX="220.0" layoutY="200.0" text="178/179" visible="false" style="-fx-text-fill: orange; -fx-font-size : 17px;"/>
+      <Label fx:id="firmwareProgressLabel" layoutX="220.0" layoutY="200.0" text="0/0" visible="false" style="-fx-text-fill: orange; -fx-font-size : 17px;"/>
    </children>
 </AnchorPane>

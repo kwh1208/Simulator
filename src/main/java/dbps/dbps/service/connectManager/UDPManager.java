@@ -2,6 +2,8 @@ package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.LogService;
 import javafx.concurrent.Task;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.net.*;
@@ -14,26 +16,15 @@ import static dbps.dbps.Constants.*;
 
 public class UDPManager {
     //IP, PORT에 정보 넣는 시점은 버튼 누를때 controller에서 파라미터로 넣을 예정
-
+    @Getter
+    @Setter
     private String IP;
 
+    @Getter
+    @Setter
     private int PORT;
 
-    public String getIP() {
-        return IP;
-    }
 
-    public int getPORT() {
-        return PORT;
-    }
-
-    public void setIP(String IP) {
-        this.IP = IP;
-    }
-
-    public void setPORT(int PORT) {
-        this.PORT = PORT;
-    }
 
     DatagramSocket socket = null;
 
@@ -42,6 +33,8 @@ public class UDPManager {
 
     private UDPManager() {
         logService = LogService.getLogService();
+        setIP(UDP_IP);
+        setPORT(UDP_PORT);
     }
 
     public static UDPManager getUDPManager() {
@@ -55,62 +48,108 @@ public class UDPManager {
         return new Task<String>() {
             @Override
             protected String call() throws Exception {
-                if (socket == null) {
+                if (socket == null||socket.isClosed()) {
                     connect(IP, PORT);
                 }
-
                 DatagramPacket receivePacket;
                 try{
                     InetAddress serverAddr = InetAddress.getByName(IP);
-                    DatagramPacket sendPacket = new DatagramPacket(msg.getBytes(Charset.forName("EUC-KR")), msg.getBytes().length, serverAddr, PORT);
-                    if (utf8) sendPacket = new DatagramPacket(msg.getBytes(StandardCharsets.UTF_8), msg.getBytes(StandardCharsets.UTF_8).length, serverAddr, PORT);
-                    else if (ascUTF16) {
-                        sendPacket = new DatagramPacket(msg.getBytes(StandardCharsets.UTF_16BE), msg.getBytes(StandardCharsets.UTF_16BE).length, serverAddr, PORT);
-                    }
+                    byte[] sendByte = msg.getBytes(Charset.forName("EUC-KR"));
+
+                    if (utf8) sendByte = msg.getBytes(StandardCharsets.UTF_8);
+                    else if (ascUTF16) sendByte = msg.getBytes(StandardCharsets.UTF_16BE);
+                    DatagramPacket sendPacket = new DatagramPacket(sendByte, sendByte.length, serverAddr, PORT);
+                    logService.updateInfoLog("전송 메세지 :"+msg);
                     socket.send(sendPacket);
-
-                    long startTime = System.currentTimeMillis();
-                    byte[] receiveBuffer = new byte[1024];
                     int totalBytesRead = 0;
+                    byte[] receiveBuffer = new byte[1024];
                     receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+                    while (true) {
+                        try {
+                            // 패킷 수신
+                            socket.receive(receivePacket);
+                            int bytesRead = receivePacket.getLength(); // 수신된 바이트 수
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
 
-                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000){
-                        socket.receive(receivePacket);
-                        int bytesRead = receivePacket.getLength();  // 수신된 바이트 수
-                        if (bytesRead > 0) {
-                            totalBytesRead += bytesRead;
-                            startTime = System.currentTimeMillis();  // 수신 시간 갱신
-
-                            // 데이터 처리 로직
-                            if (dataReceivedIsComplete(receiveBuffer, totalBytesRead)) {
-                                break;
+                                // 데이터 처리 로직
+                                if (dataReceivedIsComplete(receiveBuffer, totalBytesRead)) {
+                                    break; // 수신 완료 조건 만족 시 루프 종료
+                                }
                             }
+                        } catch (java.net.SocketTimeoutException e) {
+                            logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                            throw e;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            break;
                         }
-                        Thread.sleep(50);
                     }
-                    return new String(receivePacket.getData(), 0, receivePacket.getLength());
-                }catch (IOException | InterruptedException e){
+
+                    String result = new String(receiveBuffer, 0, totalBytesRead);
+                    logService.updateInfoLog("받은 메세지 :"+result);
+                    return result;
+                }catch (IOException e){
                     //에러 처리
                     logService.errorLog(msg+"전송에 실패했습니다.");
-                    return "에러코드";
+                    throw e;
+                } finally {
+                    disconnect();
                 }
             }
         };
-    }
-
-    private boolean dataReceivedIsComplete(byte[] buffer, int length) {
-        return length > 0 && buffer[length - 1]==(byte) ']' && buffer[length - 2]==(byte) '!';
-    }
-
-    private boolean dataReceivedIsCompleteHex(byte[] buffer, int length) {
-        return length >= 2 && buffer[length - 2] == (byte) 0x10 && buffer[length - 1] == (byte) 0x03;
     }
 
     public Task<String> sendMsgAndGetMsgByte(byte[] msg){
         return new Task<>() {
             @Override
             protected String call() throws Exception {
-                if (socket == null) {
+                if (socket == null||socket.isClosed()) {
+                    connect(IP, PORT);
+                }
+                DatagramPacket receivePacket;
+                try {
+                    InetAddress serverAddr = InetAddress.getByName(IP);
+                    logService.updateInfoLog("전송 메세지 :"+bytesToHex(msg, msg.length));
+                    DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
+                    socket.send(sendPacket);
+
+                    byte[] receiveBuffer = new byte[1024];
+                    int totalBytesRead = 0;
+                    receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+                    while (true) {
+                        try {
+                            socket.receive(receivePacket);
+                            int bytesRead = receivePacket.getLength();
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
+                                // 데이터 처리 로직
+                                if (dataReceivedIsCompleteHex(receiveBuffer, totalBytesRead)) {
+                                    break; // 수신 완료 조건 만족 시 루프 종료
+                                }
+                            }
+                        } catch (SocketTimeoutException e) {
+                            logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                            throw new RuntimeException();
+                        }
+                    }
+                    String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
+                    logService.updateInfoLog("받은 메세지 :"+result);
+                    return result;
+                } catch (IOException e) {
+                    throw e;
+                } finally {
+                    disconnect();
+                }
+            }
+        };
+    }
+
+    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg){
+        return new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                if (socket == null||socket.isClosed()) {
                     connect(IP, PORT);
                 }
                 DatagramPacket receivePacket;
@@ -119,32 +158,31 @@ public class UDPManager {
                     DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
                     socket.send(sendPacket);
 
-                    long startTime = System.currentTimeMillis();
                     byte[] receiveBuffer = new byte[1024];
                     int totalBytesRead = 0;
                     receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-
-                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000) {
-                        socket.receive(receivePacket);
-                        int bytesRead = receivePacket.getLength();// 수신된 바이트 수
-                        if (bytesRead > 0) {
-                            totalBytesRead += bytesRead;
-                            startTime = System.currentTimeMillis();  // 수신 시간 갱신
-                            // 데이터 처리 로직
-                            if (dataReceivedIsCompleteHex(receiveBuffer, totalBytesRead)) {
-                                break;
+                    while (true) {
+                        try {
+                            socket.receive(receivePacket);
+                            int bytesRead = receivePacket.getLength();
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
+                                // 데이터 처리 로직
+                                if (dataReceivedIsCompleteHex(receiveBuffer, totalBytesRead)) {
+                                    break; // 수신 완료 조건 만족 시 루프 종료
+                                }
                             }
+                        } catch (SocketTimeoutException e) {
+                            logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                            throw new RuntimeException();
                         }
-                        Thread.sleep(50);
                     }
-                    String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
                     return bytesToHex(receivePacket.getData(), receivePacket.getLength());
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
+                } catch (IOException e) {
+                    throw e;
                 } finally {
                     disconnect();
                 }
-                return null;
             }
         };
     }
@@ -152,8 +190,8 @@ public class UDPManager {
     public Task<String> send300MsgAndGetMsgByte(byte[] msg) {
         return new Task<>() {
             @Override
-            protected String call() throws Exception {
-                if (socket == null) {
+            protected String call() throws IOException {
+                if (socket == null||socket.isClosed()) {
                     connect300(); // 소켓 연결
                 }
 
@@ -163,48 +201,50 @@ public class UDPManager {
                     InetAddress serverAddr = InetAddress.getByName(IP);
                     DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
                     socket.send(sendPacket); // 메시지 전송
-
-                    long startTime = System.currentTimeMillis();
                     byte[] receiveBuffer = new byte[1024];
 
-                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000) {
+                    receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+                    while (true) {
                         try {
-                            receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-                            socket.receive(receivePacket); // 메시지 수신
-
-                            int bytesRead = receivePacket.getLength(); // 수신된 바이트 수
+                            socket.receive(receivePacket);
+                            int bytesRead = receivePacket.getLength();
                             if (bytesRead > 0) {
                                 String message = new String(receivePacket.getData(), 0, receivePacket.getLength());
                                 receivedMessages.add(message); // 리스트에 메시지 추가
-
-                                startTime = System.currentTimeMillis(); // 수신 시간 갱신
                             }
                         } catch (SocketTimeoutException e) {
                             break;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            break;
                         }
-                        Thread.sleep(50); // 짧은 대기
                     }
-
                     // 받은 메시지를 합쳐서 반환
-                    String result = String.join("", receivedMessages); // 리스트의 메시지를 연결
+                    String result = String.join("", receivedMessages);
                     return result;
 
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
+                } catch (IOException e) {
+                    throw e;
                 } finally {
                     disconnect(); // 자원 정리
                 }
-                return null; // 예외 발생 시 null 반환
             }
         };
     }
 
-    public void connect300() throws SocketException {
+    public void connect300(){
         this.IP = "255.255.255.255";
         this.PORT = 5108;
-        socket = new DatagramSocket();
-        socket.setBroadcast(true);
-        socket.setSoTimeout(RESPONSE_LATENCY*1000);
+        try {
+            if (socket == null) {
+                socket = new DatagramSocket(5109);
+            }
+            socket.setBroadcast(true);
+            socket.setSoTimeout(RESPONSE_LATENCY*1000);
+        } catch (SocketException e) {
+            e.printStackTrace();
+            logService.errorLog("IP: " + IP + ", PORT: " + PORT+"열기에 실패했습니다.");
+        }
     }
 
     //접속하기
@@ -212,32 +252,14 @@ public class UDPManager {
         logService.updateInfoLog("UDP 서버에 연결합니다. IP: " + IP + ", PORT: " + PORT);
         this.IP = IP;
         this.PORT = PORT;
-        DatagramPacket receivePacket;
         try {
-            socket = new DatagramSocket();
-            socket.setSoTimeout(RESPONSE_LATENCY*1000);
-            InetAddress serverAddr = InetAddress.getByName(IP);
-            DatagramPacket sendPacket = new DatagramPacket(CONNECT_START, CONNECT_START.length, serverAddr, PORT);
-            socket.send(sendPacket);
-            logService.updateInfoLog("전송 메세지: 10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03");
-            byte[] receiveBuffer = new byte[1024];
-            receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-            socket.receive(receivePacket);
-
-            byte[] receiveData = receivePacket.getData();
-
-            String receivedMsg = bytesToHex(receiveData, receivePacket.getLength());
-            logService.updateInfoLog("수신 메세지: " + receivedMsg);
-            if (receivedMsg.equals("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03 ")) {
-                logService.updateInfoLog("UDP 서버에 연결되었습니다. IP: " + IP + ", PORT: " + PORT);
-            } else {
-                logService.errorLog("UDP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
+            if (socket == null) {
+                socket = new DatagramSocket(5109);
             }
-        }catch (IOException e){
-            //에러처리
-            logService.errorLog("UDP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
-        } finally {
-            disconnect();
+            socket.setBroadcast(true);
+            socket.setSoTimeout(RESPONSE_LATENCY*1000);
+        } catch (SocketException e) {
+            logService.errorLog("IP: " + IP + ", PORT: " + PORT+"열기에 실패했습니다.");
         }
     }
 
@@ -245,5 +267,6 @@ public class UDPManager {
     public void disconnect() {
         socket.close();
         socket = null;
+        logService.updateInfoLog("UDP 서버를 종료합니다. IP: " + IP + ", PORT: " + PORT);
     }
 }

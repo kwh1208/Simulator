@@ -17,9 +17,11 @@ public class FirmwareService {
 
     private static FirmwareService instance = null;
     HexMsgTransceiver hexMsgTransceiver;
+    LogService logService;
 
     private FirmwareService() {
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
+        logService = LogService.getLogService();
     }
 
     public static FirmwareService getFirmwareService() {
@@ -132,10 +134,6 @@ public class FirmwareService {
             }
 
             Thread.sleep(500);
-            //포트닫고열기
-            if(CONNECT_TYPE.equals("serial")){
-
-            }
             return null;
         }
     };

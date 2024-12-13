@@ -77,7 +77,6 @@ public class TCPManager {
                             break; // 타임아웃
                         }
                     }
-
                     String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
                     if (result.contains("TX") && result.contains("![") && result.contains("!]")) {
                         int tmp = extractNumberAfterTXBeforeByte(result);
@@ -93,8 +92,7 @@ public class TCPManager {
                     e.getMessage();
 
                     logService.errorLog(msg + " 전송에 실패했습니다.");
-
-                    return "에러발생";
+                    throw e;
                 }finally {
                     socket.close();
                 }
@@ -113,40 +111,6 @@ public class TCPManager {
         }
 
         return -1; // "TX" 뒤 "byte" 앞 숫자가 없을 경우 -1 반환
-    }
-
-    private boolean dataReceivedIsComplete(byte[] buffer, int length) {
-        String data = new String(buffer, 0, length);
-        // 순서대로 "TX", "![", "!]"이 존재하는지 확인
-        if (data.contains("TX") && data.contains("![") && data.contains("!]")) {
-            if (!data.startsWith("RX(")){
-                return false;
-            }
-            int indexTX = data.indexOf("TX");
-            int indexStart = data.indexOf("![", indexTX); // "TX" 이후 검색
-            int indexEnd = data.indexOf("!]", indexStart); // "![ 이후 검색
-
-            // 순서가 올바른지 확인
-            return indexTX != -1 && indexStart != -1 && indexEnd != -1 && indexTX < indexStart && indexStart < indexEnd;
-        }
-
-        return length > 0 && buffer[length - 1] == (byte) ']' && buffer[length - 2] == (byte) '!';
-    }
-
-    private boolean dataReceivedIsCompleteHex(byte[] buffer, int length) {
-        String data = bytesToHex(buffer, length);
-        if (data.contains("54 58 28") && data.contains("31 30 20 30 32") && data.contains("31 30 20 30 33")) {
-            if (!data.startsWith("52 58 28")) {
-                return false;
-            }
-            int indexTX = data.indexOf("54 58 28");
-            int indexStart = data.indexOf("31 30 20 30 32", indexTX); // "TX" 이후 검색
-            int indexEnd = data.indexOf("31 30 20 30 33", indexStart); // "10 02" 이후 검색
-            // 순서가 올바른지 확인
-            return indexTX != -1 && indexStart != -1 && indexEnd != -1 && indexTX < indexStart && indexStart < indexEnd;
-        }
-
-        return length > 0 && buffer[length - 1] == 0x03 && buffer[length - 2] == (byte) 0x10;
     }
 
 
@@ -226,7 +190,60 @@ public class TCPManager {
                     return result;
                 } catch (IOException e) {
                     logService.errorLog(msg + "전송에 실패했습니다.");
-                    return null;
+                    throw e;
+                } finally {
+                    disconnect();
+                }
+            }
+        };
+    }
+
+    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg){
+        return new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                if (socket==null||socket.isClosed()){
+                    connect(IP, PORT);
+                }
+                try {
+                    InputStream input = socket.getInputStream();
+                    OutputStream output = socket.getOutputStream();
+                    input.skip(input.available());
+
+                    output.write(msg);
+                    output.flush();
+
+
+                    byte[] buffer = new byte[1024];
+                    int totalBytesRead = 0;
+                    while (true) {
+                        int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                        if (bytesRead > 0) {
+                            totalBytesRead += bytesRead;
+
+                            // 데이터가 모두 수신되었는지 확인
+                            if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                                break;
+                            }
+                        } else {
+                            break; // 타임아웃
+                        }
+                    }
+
+                    String result = bytesToHex(buffer, totalBytesRead);
+                    if (result.contains("54 58 28")) {
+                        result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                        int tmp = extractNumberAfterTXBeforeByteHex(result);
+                        if (tmp > 0 && 14 + String.valueOf(tmp).length() + result.indexOf("TX(") + tmp <= buffer.length) {
+                            result = new String(buffer, 15 + String.valueOf(tmp).length() + result.indexOf("54 58 28"), tmp * 3, Charset.forName("EUC-KR"));
+                        } else {
+                            throw new IllegalArgumentException("유효하지 않은 offset 또는 tmp 값입니다.");
+                        }
+                    }
+                    return result;
+                } catch (IOException e) {
+                    logService.errorLog(msg + "전송에 실패했습니다.");
+                    throw e;
                 } finally {
                     disconnect();
                 }

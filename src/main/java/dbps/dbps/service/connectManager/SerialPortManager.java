@@ -153,10 +153,10 @@ public class SerialPortManager {
 
                     } catch (SerialPortTimeoutException | SerialPortIOException e) {
                         logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
-                        return null;
+                        throw e;
                     } catch (Exception e) {
                         logService.errorLog("기타 예외 발생: " + e.getMessage());
-                        return null;
+                        throw e;
                     } finally {
                         closePort(portName); // 작업 후 포트 닫기
                     }
@@ -192,40 +192,6 @@ public class SerialPortManager {
         }
 
         return -1;
-    }
-
-
-    private boolean dataReceivedIsComplete(byte[] buffer, int length) {
-        String data = new String(buffer, 0, length);
-        // 순서대로 "TX", "![", "!]"이 존재하는지 확인
-        if (data.contains("TX") && data.contains("![") && data.contains("!]")) {
-            if (!data.startsWith("RX(")){
-                return false;
-            }
-            int indexTX = data.indexOf("TX");
-            int indexStart = data.indexOf("![", indexTX); // "TX" 이후 검색
-            int indexEnd = data.indexOf("!]", indexStart); // "![ 이후 검색
-
-            // 순서가 올바른지 확인
-            return indexTX != -1 && indexStart != -1 && indexEnd != -1 && indexTX < indexStart && indexStart < indexEnd;
-        }
-
-        return length > 0 && buffer[length - 1] == (byte) ']' && buffer[length - 2] == (byte) '!';
-    }
-    private boolean dataReceivedIsCompleteHex(byte[] buffer, int length) {
-        String data = bytesToHex(buffer, length);
-        if (data.contains("54 58 28") && data.contains("31 30 20 30 32") && data.contains("31 30 20 30 33")) {
-            if (!data.startsWith("52 58 28")) {
-                return false;
-            }
-            int indexTX = data.indexOf("54 58 28");
-            int indexStart = data.indexOf("31 30 20 30 32", indexTX); // "TX" 이후 검색
-            int indexEnd = data.indexOf("31 30 20 30 33", indexStart); // "10 02" 이후 검색
-            // 순서가 올바른지 확인
-            return indexTX != -1 && indexStart != -1 && indexEnd != -1 && indexTX < indexStart && indexStart < indexEnd;
-        }
-
-        return length > 0 && buffer[length - 1] == 0x03 && buffer[length - 2] == (byte) 0x10;
     }
 
     public Task<String> sendMsgAndGetMsgByte(byte[] msg) {
@@ -282,10 +248,10 @@ public class SerialPortManager {
 
                     } catch (SerialPortTimeoutException | SerialPortIOException e) {
                         logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
-                        return null;
+                        throw e;
                     } catch (Exception e) {
                         logService.errorLog("기타 예외 발생: " + e.getMessage());
-                        return null;
+                        throw e;
                     } finally {
                         closePort(portName); // 작업 후 포트 닫기
                     }
@@ -340,7 +306,7 @@ public class SerialPortManager {
                     return bytesToHex(buffer, totalBytesRead);
                 } catch (Exception e) {
                     logService.errorLog("에러가 발생했습니다: " + e.getMessage());
-                    return null;
+                    throw e;
                 } finally {
                     closePortNoLog(portName);
                 }
@@ -407,6 +373,7 @@ public class SerialPortManager {
                 } catch (IOException | InterruptedException e) {
                     // 예외 발생 시 로그 업데이트
                     logService.warningLog("예외 발생: " + e.getMessage());
+                    throw e;
                 }
             }
 
@@ -452,7 +419,7 @@ public class SerialPortManager {
                     return result;
                 } catch (Exception e) {
                     logService.errorLog("에러가 발생했습니다: " + e.getMessage());
-                    return null;
+                    throw e;
                 } finally {
                     port.closePort();
                 }

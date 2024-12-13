@@ -438,7 +438,6 @@ public class FontSettingController {
 //        totalFileSize+=getFileSize(fontGroup1fontPath1.getText());
 //        if (!fontGroup1fontSelected2.getSelectionModel().getSelectedItem().equals("사용안함")){
 //            String size = extractTwoCharsAroundX(fontGroup1fontPath2.getText(), 'x');
-//            System.out.println("size = " + size);
 //            long size_int = Long.parseLong(size.substring(0, 2)) * Long.parseLong(size.substring(3, 5)) / 16;
 //            switch (fontGroup1fontSelected2.getSelectionModel().getSelectedItem()){
 //                case "유니코드 한국어": totalFileSize+=size_int* 11172L;

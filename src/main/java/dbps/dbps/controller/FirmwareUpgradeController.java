@@ -109,7 +109,7 @@ public class FirmwareUpgradeController {
 
     public void send() {
         if (firmwareInformation.getText().isEmpty()){
-            logService.warningLog("컨트롤러의 버전을 먼저 확인해주세요.");
+            logService.warningLog("컨트롤러의 펌웨어 버전을 먼저 읽어주세요.");
         }
         String firmwareInformationText = firmwareInformation.getText();
         String firmwareFileInformationText = firmwareFileInformation.getText();
@@ -129,13 +129,15 @@ public class FirmwareUpgradeController {
             result2 = firmwareFileInformationText.substring(index2 +"DB".length(), index2 + "DB".length() + 4);
         }
         else if (index2 != -1 && index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
-            result2 = firmwareFileInformationText.substring(index2 , index2 + "DIBD".length() + 4);
+            result2 = firmwareFileInformationText.substring(index2 + "DIBD".length(), index2 + "DIBD".length() + 4);
         } else {
             logService.errorLog("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
             return;
         }
 
         if (!result1.equals(result2)){
+            System.out.println("result1 = " + result1);
+            System.out.println("result2 = " + result2);
             logService.errorLog("업로드할 수 없습니다. 컨트롤러의 펌웨어와 동일한 펌웨어를 업로드해주세요.");
             return;
         }

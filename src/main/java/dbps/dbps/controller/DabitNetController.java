@@ -106,6 +106,7 @@ public class DabitNetController {
             Thread searchTask = new Thread(search);
             searchTask.start();
             String result = search.get();
+            //한빛전자 - 모듈 구매 문의 2*6 자석 포함 10개
 
             get300IPPort(result);
         }

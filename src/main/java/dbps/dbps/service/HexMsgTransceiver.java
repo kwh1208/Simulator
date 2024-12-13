@@ -109,7 +109,7 @@ public class HexMsgTransceiver {
             case "UDP" -> //udp로 메세지 전송
             {
                 try {
-                    Task<String> sendTask = udpManager.sendMsgAndGetMsgByte(msg);
+                    Task<String> sendTask = udpManager.sendMsgAndGetMsgByteNoLog(msg);
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 
@@ -121,7 +121,7 @@ public class HexMsgTransceiver {
             case "clientTCP" -> //tcp로 메세지 전송
             {
                 try {
-                    Task<String> sendTask = tcpManager.sendMsgAndGetMsgByte(msg);
+                    Task<String> sendTask = tcpManager.sendMsgAndGetMsgByteNoLog(msg);
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 
@@ -143,7 +143,7 @@ public class HexMsgTransceiver {
             }
             case "serverTCP" ->{
                 try {
-                    Task<String> sendTask  = serverTCPManager.sendMsgAndGetMsgByte(msg);
+                    Task<String> sendTask  = serverTCPManager.sendMsgAndGetMsgByteNoLog(msg);
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 

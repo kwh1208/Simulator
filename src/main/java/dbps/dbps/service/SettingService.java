@@ -24,15 +24,12 @@ public class SettingService {
 
     // ProgressIndicator 설정
     public static void showProgress() {
-        System.out.println("SettingController.showProgress");
         if (commonProgressIndicator != null) {
-            System.out.println(1111);
             Platform.runLater(() -> commonProgressIndicator.setVisible(true));
         }
     }
 
     public static void hideProgress() {
-        System.out.println("SettingController.hideProgress");
         if (commonProgressIndicator != null) {
             Platform.runLater(() -> commonProgressIndicator.setVisible(false));
         }

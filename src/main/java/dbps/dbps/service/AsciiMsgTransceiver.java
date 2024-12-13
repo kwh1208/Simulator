@@ -85,7 +85,6 @@ public class AsciiMsgTransceiver {
             sendTask.setOnFailed(event -> {
                 Throwable exception = sendTask.getException();
                 resultFuture.completeExceptionally(exception);
-
                 Platform.runLater(() -> {
                     if (progressIndicator != null) {
                         progressIndicator.setVisible(false);
