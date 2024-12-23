@@ -61,7 +61,7 @@ public class AsciiMsgTransceiver {
             case "serial", "bluetooth", "rs485" -> serialPortManager.sendMsgAndGetMsg(msg, utf8);
             case "UDP" -> udpManager.sendASCMsg(msg, utf8);
             case "clientTCP" -> tcpManager.sendASCMsg(msg, utf8);
-            case "mqtt" -> mqttManager.sendASCMsg(msg);
+//            case "mqtt" -> mqttManager.sendASCMsg(msg);
             case "serverTCP" -> serverTCPManager.sendASCMsg(msg, utf8);
             default -> {
                 resultFuture.completeExceptionally(new IllegalStateException("Unexpected value: " + CONNECT_TYPE));
@@ -168,7 +168,7 @@ public class AsciiMsgTransceiver {
             return;
         }
         if (cmd.equals("B3")) {
-            boardSettingService.setUI(receiveMsg.substring(7,18));
+            boardSettingService.setUI(receiveMsg.substring(7,21));
             return;
         }
         if (cmd.equals("B2")) {

@@ -1,6 +1,7 @@
 package dbps.dbps.service;
 
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import lombok.Setter;
 
 @Setter
@@ -23,6 +24,7 @@ public class BoardSettingService {
     public ComboBox<String> J2_baud;
     public ComboBox<String> J3_baud;
     public ComboBox<String> BH1_baud;
+    public Label rs_address;
 
     public void setUI(String result){
         String[] split = result.split(",");
@@ -32,5 +34,6 @@ public class BoardSettingService {
         J2_baud.getSelectionModel().select(Integer.parseInt(split[3]));
         J3_baud.getSelectionModel().select(Integer.parseInt(split[4]));
         BH1_baud.getSelectionModel().select(Integer.parseInt(split[5]));
+        rs_address.setText(split[6]);
     }
 }

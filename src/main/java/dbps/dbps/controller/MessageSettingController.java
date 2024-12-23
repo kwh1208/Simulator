@@ -1,7 +1,10 @@
 package dbps.dbps.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import dbps.dbps.Simulator;
-import dbps.dbps.service.*;
+import dbps.dbps.service.AsciiMsgTransceiver;
+import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.connectManager.MQTTManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.Pane;
@@ -14,6 +17,7 @@ public class MessageSettingController {
     HexMsgTransceiver hexMsgTransceiver = HexMsgTransceiver.getInstance();
     
     AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+    MQTTManager mqttManager;
 
     @FXML
     public ChoiceBox<String> msgInitialize;
@@ -26,6 +30,7 @@ public class MessageSettingController {
 
     @FXML
     public void initialize() {
+        mqttManager=MQTTManager.getInstance();
         msPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/messageSetting.css").toExternalForm());
 
         pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -41,7 +46,7 @@ public class MessageSettingController {
         });
     }
 
-    public void sendMsgInitialize() {
+    public void sendMsgInitialize() throws JsonProcessingException {
         if (IS_ASCII){
             // ![006103!]
             String msg = "![0061";
@@ -97,7 +102,5 @@ public class MessageSettingController {
 
             hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
         }
-
-        //헥사프로토콜 , 메세지만들기에 페이지메세지 갯수 줄이기
     }
 }

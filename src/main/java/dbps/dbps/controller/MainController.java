@@ -30,12 +30,14 @@ public class MainController {
     public void initialize() {
         configService = ConfigService.getInstance();
         mainService = MainService.getInstance();
-        mainService.setMessageTab(messageTab);
+        MainService.setMessageTab(messageTab);
+        MainService.setSettingTab(setting);
         if (IS_ASCII){
             mainService.showASCiiMsgTab();
         }else {
             mainService.showHEXMsgTab();
         }
+        mainService.changeSetTab();
     }
 
     public void handleHelpAction() {

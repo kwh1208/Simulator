@@ -2,13 +2,17 @@ package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
+import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 import java.util.*;
 
@@ -28,10 +32,12 @@ public class BGScheduleController {
     private final double TAG_HEIGHT = 30; // 태그의 높이
     private final double TAG_PADDING = 10; // 태그 간 간격
     AsciiMsgTransceiver asciiMsgTransceiver;
+    ResourceBundle bundle;
 
 
     public void initialize() {
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+        bundle= ResourceManager.getInstance().getBundle();
         BGScheduleAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/BGSchedule.css").toExternalForm());
         // 동적으로 체크박스 추가
         for (int i = 1; i <= 64; i++) {
@@ -123,9 +129,9 @@ public class BGScheduleController {
     // 경고 메시지 표시
     private void showAlert() {
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("경고");
-        alert.setHeaderText("태그 개수 초과");
-        alert.setContentText("최대 10개의 항목만 선택할 수 있습니다.");
+        alert.setTitle(bundle.getString("alert"));
+        alert.setHeaderText(bundle.getString("tagLimit"));
+        alert.setContentText(bundle.getString("tagLimitDes"));
         alert.showAndWait();
     }
 
@@ -137,5 +143,10 @@ public class BGScheduleController {
         sendMsg = sendMsg.trim();
         sendMsg+="!]";
         asciiMsgTransceiver.sendMessages(sendMsg, false, progressIndicator);
+    }
+
+    public void close(MouseEvent mouseEvent) {
+        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        stage.close();
     }
 }

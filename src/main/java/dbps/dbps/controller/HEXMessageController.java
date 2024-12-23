@@ -2,7 +2,9 @@ package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ConfigService;
+import dbps.dbps.service.HexMsgService;
 import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.ResourceManager;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -13,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
 
@@ -20,6 +23,7 @@ public class HEXMessageController {
 
     public ProgressIndicator progressIndicator;
     HexMsgTransceiver hexMsgTransceiver;
+    HexMsgService hexMsgService;
 
     @FXML
     private AnchorPane HEXMsgAP;
@@ -110,11 +114,15 @@ public class HEXMessageController {
 
     ToggleGroup sectionGroup = new ToggleGroup();
 
+    ResourceBundle bundle;
+
     @FXML
     private void initialize() {
         configService = ConfigService.getInstance();
         HEXMsgAP.getStylesheets().add(Objects.requireNonNull(Simulator.class.getResource("/dbps/dbps/css/hexMessage.css")).toExternalForm());
-
+        bundle= ResourceManager.getInstance().getBundle();
+        hexMsgService = HexMsgService.getInstance();
+        hexMsgService.setPageMsgCnt(pageMsgCnt);
 
 
         realTimeMsg.setToggleGroup(msgTypeGroup);
@@ -305,7 +313,7 @@ public class HEXMessageController {
         //msg 길이
         byte[] textBytes;
         try {
-            if (charCodesValue.equals("한글 조합형"))
+            if (charCodesValue.equals(bundle.getString("CombinationType")))
                 textBytes = text.getBytes("KSC5601");
             else textBytes = text.getBytes(StandardCharsets.UTF_16BE);
         } catch (UnsupportedEncodingException e) {
@@ -315,7 +323,7 @@ public class HEXMessageController {
         msg.append(" 94 ");
 
         //실시간메세지
-        if (msgType.equals("실시간 메세지")) {
+        if (msgType.equals(bundle.getString("realTimeMsg"))) {
             msg.append("00 ");
         } else {
             msg.append(Integer.toHexString(Integer.parseInt(pageMsgCntValue))).append(" ");
@@ -338,7 +346,7 @@ public class HEXMessageController {
         msg.append(displayMethodValue.equals("Normal") ? "00 " : "01 ");
 
         //문자코드
-        msg.append(charCodesValue.equals("한글 조합형") ? "00 " : "01 ");
+        msg.append(charCodesValue.equals(bundle.getString("CombinationType")) ? "00 " : "01 ");
 
         //폰트크기
         fontSizeValue = fontSizeValue.replaceAll("[^0-9]", "");
@@ -375,7 +383,7 @@ public class HEXMessageController {
         msg.append(String.format("%02d", (Integer.parseInt(yEndValue) / 4))).append(" ");
 
         //배경이미지
-        msg.append(bgImgValue.equals("사용안함") ? "00 " : String.format("%02d ", Integer.parseInt(bgImgValue)));
+        msg.append(bgImgValue.equals(bundle.getString("notUsed")) ? "00 " : String.format("%02d ", Integer.parseInt(bgImgValue)));
 
         //글자
         for (int i = 0; i < text.length(); i++) {
@@ -409,7 +417,7 @@ public class HEXMessageController {
             }
 
             msg.append(resultHex);
-            if (charCodes.getValue().equals("UTF16유니코드")&&String.valueOf(text.charAt(i)).getBytes(Charset.forName("EUC-KR")).length==1){
+            if (charCodes.getValue().equals(bundle.getString("UTF16"))&&String.valueOf(text.charAt(i)).getBytes(Charset.forName("EUC-KR")).length==1){
                 msg.append(String.format("%02X ", 0));
             }
         }
@@ -424,113 +432,127 @@ public class HEXMessageController {
     }
 
     private String makeEffectTime(String effectTimeValue) {
-        if (effectTimeValue.contains("초")) {
+        if (effectTimeValue.contains(bundle.getString("sec"))) {
             return String.format("%02x ", Integer.parseInt(effectTimeValue.replaceAll("[^0-9]", "")));
         }
-        switch (effectTimeValue){
-            case "2분"->{
-                return "5A ";
-            }
-            case "3분"->{
-                return "5B ";
-            }
-            case "5분"->{
-                return "5C ";
-            }
-            case "10분"->{
-                return "5D ";
-            }
-            case "30분"->{
-                return "5E ";
-            }
-            case "1시간"-> {
-                return "5F ";
-            }
-            case "3시간"-> {
-                return "60 ";
-            }
-            case "5시간"-> {
-                return "61 ";
-            }
-            case "9시간"-> {
-                return "62 ";
-            }
-            default -> {
-                return "00 ";
-            }
+        if (effectTimeValue.equals(bundle.getString("2min"))) {
+            return "5A ";
+        } else if (effectTimeValue.equals(bundle.getString("3min"))) {
+            return "5B ";
+        } else if (effectTimeValue.equals(bundle.getString("5min"))) {
+            return "5C ";
+        } else if (effectTimeValue.equals(bundle.getString("10min"))) {
+            return "5D ";
+        } else if (effectTimeValue.equals(bundle.getString("30min"))) {
+            return "5E ";
+        } else if (effectTimeValue.equals(bundle.getString("1hr"))) {
+            return "5F ";
+        } else if (effectTimeValue.equals(bundle.getString("3hr"))) {
+            return "60 ";
+        } else if (effectTimeValue.equals(bundle.getString("5hr"))) {
+            return "61 ";
+        } else if (effectTimeValue.equals(bundle.getString("9hr"))) {
+            return "62 ";
+        } else {
+            return "00 ";
         }
+
     }
 
     private String makeEffect(String effect, String direction){
-        switch (effect){
-            case "효과없음", "사용안함" ->{
-                return "00 ";
+        if (effect.equals(bundle.getString("noEffect")) || effect.equals(bundle.getString("notUsed"))) {
+            return "00 ";
+        } else if (effect.equals(bundle.getString("staticEffect"))) {
+            if (direction.equals(bundle.getString("noDirection"))) {
+                return "01 ";
+            } else if (direction.equals(bundle.getString("brighten"))) {
+                return "02 ";
+            } else if (direction.equals(bundle.getString("darken"))) {
+                return "03 ";
+            } else if (direction.equals(bundle.getString("horizontalReflection"))) {
+                return "04 ";
+            } else {
+                return "05 ";
             }
-            case "정지효과"-> {
-                return switch (direction) {
-                    case "방향없음" -> "01 ";
-                    case "밝아지기" -> "02 ";
-                    case "어두워지기" -> "03 ";
-                    case "수평반사" -> "04 ";
-                    default -> "05 ";
-                };
+        } else if (effect.equals(bundle.getString("move"))) {
+            if (direction.equals(bundle.getString("left"))) {
+                return "06 ";
+            } else if (direction.equals(bundle.getString("right"))) {
+                return "07 ";
+            } else if (direction.equals(bundle.getString("up"))) {
+                return "08 ";
+            } else {
+                return "09 ";
             }
-            case "이동하기"->{
-                return switch (direction) {
-                    case "왼쪽" -> "06 ";
-                    case "오른쪽" -> "07 ";
-                    case "위쪽" -> "08 ";
-                    default -> "09 ";
-                };
+        } else if (effect.equals(bundle.getString("wipe"))) {
+            if (direction.equals(bundle.getString("left"))) {
+                return "0C ";
+            } else if (direction.equals(bundle.getString("right"))) {
+                return "0D ";
+            } else if (direction.equals(bundle.getString("up"))) {
+                return "0E ";
+            } else {
+                return "0F ";
             }
-            case "닦아내기"->{
-                return switch (direction) {
-                    case "왼쪽" -> "0C ";
-                    case "오른쪽" -> "0D ";
-                    case "위쪽" -> "0E ";
-                    default -> "0F ";
-                };
+        }//blind없음.
+        else if (effect.equals(bundle.getString("curtainEffect"))) {
+            if (direction.equals(bundle.getString("horizontalOutward"))) {
+                return "18 ";
+            } else if (direction.equals(bundle.getString("horizontalInward"))) {
+                return "19 ";
+            } else if (direction.equals(bundle.getString("verticalOutward"))) {
+                return "1A ";
+            } else {
+                return "1B ";
             }
-            case "커튼효과"->{
-                return switch (direction) {
-                    case "수평밖으로" -> "18 ";
-                    case "수평안으로" -> "19 ";
-                    case "수직밖으로" -> "1A ";
-                    default -> "1B ";
-                };
-            } case "확대효과"->{
-                return switch (direction) {
-                    case "왼쪽" -> "23 ";
-                    case "오른쪽" -> "24 ";
-                    case "위쪽" -> "25 ";
-                    case "아래쪽" -> "26 ";
-                    default -> "27 ";
-                };
-            } case "회전효과"->{
-                return switch (direction) {
-                    case "시계반대1" -> "28 ";
-                    case "시계방향1" -> "29 ";
-                    case "시계반대2" -> "2A ";
-                    default -> "2B ";
-                };
-            } case "배경깜빡이기"->{
-                return switch (direction) {
-                    case "빨강" -> "31 ";
-                    case "초록" -> "32 ";
-                    case "파랑" -> "33 ";
-                    case "흰색" -> "34 ";
-                    case "모든색상(순차적)" -> "35 ";
-                    default -> "36 ";
-                };
-            } case "3D 효과"->{
-                return "37 ";
-            }default -> {//무작위
-                return "7A ";
+        } else if (effect.equals(bundle.getString("zoomEffect"))) {
+            if (direction.equals(bundle.getString("left"))) {
+                return "23 ";
+            } else if (direction.equals(bundle.getString("right"))) {
+                return "24 ";
+            } else if (direction.equals(bundle.getString("up"))) {
+                return "25 ";
+            } else if (direction.equals(bundle.getString("down"))) {
+                return "26 ";
+            } else {
+                return "27 ";
             }
+        } else if (effect.equals(bundle.getString("rotateEffect"))) {
+            if (direction.equals(bundle.getString("counterclockwise1"))) {
+                return "28 ";
+            } else if (direction.equals(bundle.getString("clockwise1"))) {
+                return "29 ";
+            } else if (direction.equals(bundle.getString("counterclockwise2"))) {
+                return "2A ";
+            } else {
+                return "2B ";
+            }
+        } else if (effect.equals(bundle.getString("backgroundFlash"))) {
+            if (direction.equals(bundle.getString("red"))) {
+                return "31 ";
+            } else if (direction.equals(bundle.getString("green"))) {
+                return "32 ";
+            } else if (direction.equals(bundle.getString("blue"))) {
+                return "33 ";
+            } else if (direction.equals(bundle.getString("white"))) {
+                return "34 ";
+            } else if (direction.equals(bundle.getString("allSequential"))) {
+                return "35 ";
+            } else {
+                return "36 ";
+            }
+        } else if (effect.equals("3DEffect")) {
+            return "37 ";
+        } else {
+            // 무작위
+            //textflash 없음
+            return "7A ";
         }
+
     }
 
     private void selectEffect(String effect, ChoiceBox<String> directionBox) {
+        //배경.색상깜빡이기 작동되나 확인.
         switch (effect) {
             case "정지효과" ->
                     directionBox.setItems(FXCollections.observableArrayList("방향없음", "밝아지기", "어두워지기", "수평 반사", "수직 반사"));
@@ -549,7 +571,7 @@ public class HEXMessageController {
         }
 
 
-        directionBox.getSelectionModel().selectFirst(); // 첫 번째 항목 선택
+        directionBox.getSelectionModel().selectFirst();
     }
 
     private void updateInDirections(String effect) {

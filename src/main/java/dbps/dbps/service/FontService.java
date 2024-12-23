@@ -312,10 +312,9 @@ public class FontService {
                 finalPacket[1] = 0x02;
                 finalPacket[finalPacket.length-2] = 0x10;
                 finalPacket[finalPacket.length-1] = 0x03;
-                returnMsg = String.valueOf(hexMsgTransceiver.sendByteMessages(finalPacket, commonProgressIndicator));
-                if (!returnMsg.equals("10 02 00 00 02 4D 00 10 03 ")){
-                    wait();
-                }
+                hexMsgTransceiver.sendByteMessages(finalPacket, commonProgressIndicator);
+
+                Thread.sleep(500);
 
                 hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
 

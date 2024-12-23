@@ -1,21 +1,14 @@
 package dbps.dbps.service;
 
 
-import dbps.dbps.Simulator;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class ASCiiMsgService {
-    public static Stage makeMsgWindow;
 
     private static ASCiiMsgService instance = null;
 
@@ -75,25 +68,4 @@ public class ASCiiMsgService {
 
         return messages;
     }
-
-    //메세지 만들기 창 띄우기
-    public void makeOwnMsg() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/asciiDefaultSetting.fxml"));
-            AnchorPane root = fxmlLoader.load();
-
-            makeMsgWindow = new Stage();
-            makeMsgWindow.setTitle("메세지 만들기");
-
-            Scene scene = new Scene(root, 550, 550);
-            makeMsgWindow.setScene(scene);
-            makeMsgWindow.setResizable(false);
-
-            makeMsgWindow.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
 }

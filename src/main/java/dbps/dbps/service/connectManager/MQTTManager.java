@@ -1,14 +1,21 @@
 package dbps.dbps.service.connectManager;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dbps.dbps.BrokerInfo;
+import dbps.dbps.MQTTMsgGet;
+import dbps.dbps.MQTTMsgSet;
 import dbps.dbps.service.LogService;
-import javafx.concurrent.Task;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import java.nio.charset.Charset;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 
 public class MQTTManager {
 
@@ -22,155 +29,156 @@ public class MQTTManager {
         return instance;
     }
 
-    public void test(){
-        try {
-            System.out.println("Creating MqttClient...");
-            MqttClient client = new MqttClient("tcp://test.mosquitto.org:1883", MqttClient.generateClientId());
-            System.out.println("MqttClient created successfully: " + client.getClientId());
-        } catch (Exception e) {
-            System.err.println("Error while creating MqttClient: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-    }
+    private String brokerIp = "io.adafruit.com";
+    private String brokerPort = "1883";
+    private String clientId = "테스트중";
+    private String username = "kwh1208";
+    private String password = "aio_fLUD30H5OsH7Dwz6HFup90nLE6xe";
+    private MqttClient client;
+    private String topic = "kwh1208/feeds/msg";
+    private String topicR = "kwh1208/feeds/msg_r";
 
     private MQTTManager() {
         logService = LogService.getLogService();
     }
 
-    public String MQTT_BROKER = "";
-    public String MQTT_TOPIC_SEND = "";
-    public String MQTT_TOPIC_RECEIVED = "";
-    public String MQTT_ID = "";
-    public String MQTT_PWD = "";
+    public void connect(){
+        String brokerUrl = "tcp://" + brokerIp + ":" + brokerPort;
 
-    public void setMQTTInfo(String broker, String topic,String topic_r, String id, String pwd){
-        MQTT_BROKER = broker;
-        MQTT_TOPIC_SEND = topic;
-        MQTT_ID = id;
-        MQTT_PWD = pwd;
-        MQTT_TOPIC_RECEIVED = topic_r;
+        try {
+            client = new MqttClient(brokerUrl, clientId);
+
+            MqttConnectOptions options = new MqttConnectOptions();
+            options.setCleanSession(true);
+            options.setUserName(username);
+            options.setPassword(password.toCharArray());
+            client.connect(options);
+
+
+        } catch (MqttException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public Task<String> sendMsgAndGetMsgByte(byte[] msg) {
-        return new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                MqttClient client = new MqttClient(MQTT_BROKER, MqttClient.generateClientId());
-
-                MqttConnectOptions connOpts = new MqttConnectOptions();
-                System.out.println(1111);
-                connOpts.setCleanSession(true); // 클린 세션 사용
-                connOpts.setUserName(MQTT_ID);
-                connOpts.setPassword(MQTT_PWD.toCharArray());
-
-                client.connect(connOpts);
-                MqttMessage message = new MqttMessage(msg);
-                message.setQos(0);
-                client.publish(MQTT_TOPIC_SEND, message);
-
-                CountDownLatch latch = new CountDownLatch(1);
-                final StringBuilder response = new StringBuilder();
-
-                // 응답 토픽 구독
-                client.subscribe(MQTT_TOPIC_RECEIVED, (topic, responseMessage) -> {
-                    // 메시지 수신 시 처리
-                    response.append(new String(responseMessage.getPayload(), Charset.forName("EUC-KR")));
-                    latch.countDown(); // 메시지 수신 시 카운트다운
-                });
-
-                // 타임아웃 시간 설정 (예: 5초)
-                boolean receivedInTime = latch.await(5, TimeUnit.SECONDS);
-                client.disconnect(); // 연결 종료
-
-                if (receivedInTime) {
-                    return response.toString(); // 응답을 받은 경우 반환
-                } else {
-                    throw new Exception("Timeout: No response received within the specified time.");
-                }
+    public void publishGet(List<String> moid) throws JsonProcessingException {
+        try {
+            if (client == null || !client.isConnected()) {
+                System.out.println("Client is not connected. Connect first.");
+                connect();
             }
-        };
+
+            subscribe();
+            // 메시지 생성
+            MqttMessage message = new MqttMessage(makeGetMsg(moid).getBytes());
+            message.setQos(0);
+
+            // 메시지 발행
+            System.out.println("Publishing message: " + message + " to topic: " + topic);
+            client.publish(topic, message);
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public Task<String> sendASCMsg(String msg) {
-        return new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                MqttClient client = new MqttClient(MQTT_BROKER, MqttClient.generateClientId());
-
-                MqttConnectOptions connOpts = new MqttConnectOptions();
-                connOpts.setCleanSession(true); // 클린 세션 사용
-                connOpts.setUserName(MQTT_ID);
-                connOpts.setPassword(MQTT_PWD.toCharArray());
-
-                client.connect(connOpts);
-                MqttMessage message = new MqttMessage(msg.getBytes(Charset.forName("EUC-KR")));
-                message.setQos(0);
-                client.publish(MQTT_TOPIC_SEND, message);
-
-                CountDownLatch latch = new CountDownLatch(1);
-                final StringBuilder response = new StringBuilder();
-
-                // 응답 토픽 구독
-                client.subscribe(MQTT_TOPIC_RECEIVED, (topic, responseMessage) -> {
-                    // 메시지 수신 시 처리
-                    response.append(new String(responseMessage.getPayload(), Charset.forName("EUC-KR")));
-                    latch.countDown(); // 메시지 수신 시 카운트다운
-                });
-
-                // 타임아웃 시간 설정 (예: 5초)
-                boolean receivedInTime = latch.await(5, TimeUnit.SECONDS);
-                client.disconnect(); // 연결 종료
-
-                if (receivedInTime) {
-                    return response.toString(); // 응답을 받은 경우 반환
-                } else {
-                    throw new Exception("Timeout: No response received within the specified time.");
-                }
+    public void newBrokerInfo(String MAC, String apiUrl, String brokerIp, String brokerPort, String clientId, String username, String password) {
+        try {
+            if (client == null || !client.isConnected()) {
+                System.out.println("Client is not connected. Connect first.");
+                connect();
             }
-        };
+
+            // JSON 메시지 생성
+            ObjectMapper objectMapper = new ObjectMapper();
+            BrokerInfo brokerInfo = new BrokerInfo(MAC, apiUrl, brokerIp, Integer.parseInt(brokerPort), clientId, username, password);
+            String jsonMessage = objectMapper.writeValueAsString(brokerInfo);
+
+            // MQTT 메시지 생성
+            MqttMessage message = new MqttMessage(jsonMessage.getBytes());
+            message.setQos(0);
+
+            // 메시지 발행
+            System.out.println("Publishing message: " + jsonMessage + " to topic: " + topic);
+            client.publish(topic, message);
+
+            // 구독 설정
+            subscribe();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public Task<String> sendJSONMsg(String msg) {
-        return new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                MqttClient client = new MqttClient(MQTT_BROKER, MqttClient.generateClientId());
+    private String makeGetMsg(List<String> moid) throws JsonProcessingException {
+        // MQTT 메시지 객체 생성
+        MQTTMsgGet mqttDomain = MQTTMsgGet.builder()
+                .MSG_TYPE("GET")
+                .MSG_VER(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+                .MSG_ID(String.valueOf(Instant.now().getEpochSecond()))
+                .MOID(moid) // MOID를 동적으로 추가
+                .build();
 
-                MqttConnectOptions connOpts = new MqttConnectOptions();
-                connOpts.setCleanSession(true); // 클린 세션 사용
-                connOpts.setUserName(MQTT_ID);
-                connOpts.setPassword(MQTT_PWD.toCharArray());
+        // JSON 직렬화
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(mqttDomain);
+    }
 
-                //제이슨 메세지 만들기.
-
-                client.connect(connOpts);
-                MqttMessage message = new MqttMessage(msg.getBytes(Charset.forName("EUC-KR")));
-                message.setQos(0);
-                client.publish(MQTT_TOPIC_SEND, message);
-
-                CountDownLatch latch = new CountDownLatch(1);
-                final StringBuilder response = new StringBuilder();
-
-                // 응답 토픽 구독
-                client.subscribe(MQTT_TOPIC_RECEIVED, (topic, responseMessage) -> {
-                    // 메시지 수신 시 처리
-                    response.append(new String(responseMessage.getPayload(), Charset.forName("EUC-KR")));
-                    latch.countDown(); // 메시지 수신 시 카운트다운
-                });
-
-                // 타임아웃 시간 설정 (예: 5초)
-                boolean receivedInTime = latch.await(5, TimeUnit.SECONDS);
-                client.disconnect(); // 연결 종료
-
-                if (receivedInTime) {
-                    return response.toString(); // 응답을 받은 경우 반환
-                } else {
-                    throw new Exception("Timeout: No response received within the specified time.");
-                }
+    public void publishSet(Map<String, Object> moid) throws JsonProcessingException {
+        try {
+            if (client == null || !client.isConnected()) {
+                System.out.println("Client is not connected. Connect first.");
+                connect();
             }
-        };
+
+            subscribe();
+            // 메시지 생성
+            String jsonMessage = makeSetMsg(moid); // JSON 메시지 생성
+            MqttMessage message = new MqttMessage(jsonMessage.getBytes());
+            message.setQos(0);
+
+            // 메시지 발행
+            System.out.println("Publishing message: " + jsonMessage + " to topic: " + topic);
+            client.publish(topic, message);
+            System.out.println("Message published!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String makeSetMsg(Map<String, Object> moid) throws JsonProcessingException {
+        // MQTT 메시지 객체 생성
+        MQTTMsgSet mqttDomain = dbps.dbps.MQTTMsgSet.builder()
+                .MSG_TYPE("SET")
+                .MSG_VER(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+                .MSG_ID(String.valueOf(Instant.now().getEpochSecond()))
+                .MOID(moid)
+                .build();
+
+        // JSON 직렬화
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(mqttDomain);
     }
 
 
+    public void subscribe() {
+        try {
+            if (client == null || !client.isConnected()) {
+                System.out.println("Client is not connected. Connect first.");
+                return;
+            }
+
+            // 토픽 구독
+            System.out.println("Subscribing to topicR: " + topicR);
+            client.subscribe(topicR, (receivedTopic, message) -> {
+                // 메시지 처리
+                System.out.println("Received message from topicR: " + receivedTopic);
+                logService.updateInfoLog(new String(message.getPayload()));
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
 }

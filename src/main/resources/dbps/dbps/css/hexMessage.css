@@ -32,3 +32,6 @@
 .label{
     -fx-min-width: 160px;
 }
+.root{
+    -fx-font-family: Gulim;
+}

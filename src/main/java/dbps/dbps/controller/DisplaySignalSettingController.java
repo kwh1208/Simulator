@@ -97,11 +97,22 @@ public class DisplaySignalSettingController {
             memo.setText(configService.getDisplayProperty(signalList.getFocusModel().getFocusedItem()));
         });
 
+        signalList.setOnMouseClicked(event -> handleDoubleClick(event, signalList));
+
         displaySignalAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/displaySignal.css").toExternalForm());
         displaySignal = DisplaySignal.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         configService = ConfigService.getInstance();
+    }
+
+    private void handleDoubleClick(MouseEvent event, ListView<String> listView) {
+        if (event.getClickCount() == 2) { // 더블클릭 감지
+            String selectedItem = listView.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                signalTransfer();
+            }
+        }
     }
 
     //현재창 닫기
@@ -330,6 +341,24 @@ public class DisplaySignalSettingController {
         modalStage.setOnHiding(event -> {
             int targetIndex = signalList.getItems().indexOf(SELECTED_SIGNAL);
             signalList.getSelectionModel().select(targetIndex);
+        });
+
+        modalStage.setOnShown(event -> {
+            // 부모 창 위치와 크기 가져오기
+            double parentX = parentStage.getX();
+            double parentY = parentStage.getY();
+            double parentWidth = parentStage.getWidth();
+
+            // 모달 창 크기 계산
+            double modalWidth = modalStage.getWidth();
+
+            // 위치 계산
+            double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
+            double modalY = parentY;
+
+            // 위치 설정
+            modalStage.setX(modalX);
+            modalStage.setY(modalY);
         });
 
         modalStage.showAndWait();

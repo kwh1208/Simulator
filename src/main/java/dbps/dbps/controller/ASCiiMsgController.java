@@ -5,17 +5,26 @@ import dbps.dbps.Simulator;
 import dbps.dbps.service.ASCiiMsgService;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.ConfigService;
+import dbps.dbps.service.ResourceManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.ascUTF16;
 
@@ -29,6 +38,7 @@ public class ASCiiMsgController {
     private AnchorPane ASCiiMsgAnchorPane;
     @FXML
     ProgressIndicator progressIndicator;
+    ResourceBundle bundle;
 
     @FXML
     private CheckBox utf_8;
@@ -46,6 +56,7 @@ public class ASCiiMsgController {
     @FXML
     public void initialize() {
         Platform.runLater(() -> progressIndicator.toFront());
+        bundle= ResourceManager.getInstance().getBundle();
 
         msgService = ASCiiMsgService.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
@@ -101,8 +112,41 @@ public class ASCiiMsgController {
 
     //기본 속성 설정 창
     @FXML
-    public void setDefault(){
-        msgService.makeOwnMsg();
+    public void setDefault(MouseEvent mouseEvent) throws IOException {
+        ResourceBundle bundle = ResourceManager.getInstance().getBundle();
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/asciiDefaultSetting.fxml"), bundle);
+        Parent root = fxmlLoader.load();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle("기본값 설정");
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root, 550, 550);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.setOnShown(event -> {
+            // 부모 창 위치와 크기 가져오기
+            double parentX = parentStage.getX();
+            double parentY = parentStage.getY();
+            double parentWidth = parentStage.getWidth();
+
+            // 모달 창 크기 계산
+            double modalWidth = modalStage.getWidth();
+
+            // 위치 계산
+            double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
+            double modalY = parentY;
+
+            // 위치 설정
+            modalStage.setX(modalX);
+            modalStage.setY(modalY);
+        });
+
+        modalStage.showAndWait();
     }
 
     //미리보기
@@ -168,7 +212,7 @@ public class ASCiiMsgController {
             textField.setText(transmitMsgContents.get(i - 1));
             transmitMsgs.add(textField);
 
-            Button sendButton = new Button("전송");
+            Button sendButton = new Button(bundle.getString("sendButton"));
             sendButton.setPrefHeight(45.0);
             sendButton.setPrefWidth(61.0);
             AnchorPane.setLeftAnchor(sendButton, 620.0);

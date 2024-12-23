@@ -3,27 +3,27 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="mqttAP" minHeight="384.0" minWidth="400.0" prefHeight="384.0" prefWidth="400.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MqttController">
-    <children>
-        <Label layoutX="36.0" layoutY="30.0" prefHeight="29.0" prefWidth="64.0" text="브로커 주소" />
-        <TextField fx:id="mqttBroker" layoutX="126.0" layoutY="34.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
-        <Label layoutX="40.0" layoutY="74.0" prefHeight="29.0" prefWidth="32.0" text="Topic" />
-        <TextField fx:id="mqttTopic" layoutX="126.0" layoutY="75.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
-        <Label layoutX="40.0" layoutY="114.0" prefHeight="29.0" prefWidth="32.0" text="Topic_R" />
-        <TextField fx:id="mqttTopic_R" layoutX="126.0" layoutY="115.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
-        <Pane layoutX="29.0" layoutY="160.0" prefHeight="151.0" prefWidth="346.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
-            <children>
-                <Label layoutX="10.0" layoutY="-11.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 17" text="인증정보" />
-                <Label layoutX="25.0" layoutY="38.0" prefHeight="21.0" prefWidth="12.0" text="ID" />
-                <TextField fx:id="mqttId" layoutX="94.0" layoutY="34.0" prefHeight="29.0" prefWidth="240.0" />
-                <Label layoutX="25.0" layoutY="91.0" prefHeight="29.0" prefWidth="54.0" text="Password" />
-                <TextField fx:id="mqttPwd" layoutX="94.0" layoutY="90.0" prefHeight="29.0" prefWidth="240.0" />
-            </children>
-        </Pane>
-        <Button layoutX="196.0" layoutY="349.0" mnemonicParsing="false" onMouseClicked="#connect" text="테스트 접속" />
-        <Button layoutX="221.0" layoutY="318.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="21.0" prefWidth="64.0" text="읽기" />
-        <Button layoutX="301.0" layoutY="318.0" mnemonicParsing="false" onMouseClicked="#set" prefHeight="21.0" prefWidth="64.0" text="설정" />
-        <Button layoutX="302.0" layoutY="348.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="21.0" prefWidth="64.0" text="닫기" />
-        <ProgressIndicator fx:id="progressIndicator" layoutX="180.0" layoutY="160.0" visible="false"/>
-    </children>
+<AnchorPane fx:id="mqttAP" minHeight="384.0" minWidth="400.0" prefHeight="481.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MqttController" style="-fx-background-color: #333333">
+    <Label layoutX="36.0" layoutY="30.0" prefHeight="29.0" prefWidth="64.0" text="MAC 주소" />
+    <TextField fx:id="mqttMac" layoutX="126.0" layoutY="34.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
+    <Label layoutX="40.0" layoutY="74.0" prefHeight="29.0" prefWidth="32.0" text="API" />
+    <TextField fx:id="API" layoutX="126.0" layoutY="75.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
+    <Label layoutX="40.0" layoutY="114.0" prefHeight="29.0" prefWidth="54.0" text="broker ip" />
+    <TextField fx:id="brokerIP" layoutX="126.0" layoutY="115.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
+    <Label layoutX="36.0" layoutY="150.0" prefHeight="29.0" prefWidth="64.0" text="broker port" />
+    <TextField fx:id="brokerPort" layoutX="126.0" layoutY="154.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
+    <Pane layoutX="25.0" layoutY="200.0" prefHeight="202.0" prefWidth="346.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
+        <Label layoutX="10.0" layoutY="-11.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 17" text="인증정보" />
+        <Label layoutX="25.0" layoutY="38.0" prefHeight="21.0" prefWidth="54.0" text="Client ID" />
+        <TextField fx:id="clientId" layoutX="94.0" layoutY="34.0" prefHeight="29.0" prefWidth="240.0" />
+        <Label layoutX="25.0" layoutY="91.0" prefHeight="29.0" prefWidth="54.0" text="User" />
+        <TextField fx:id="userName" layoutX="94.0" layoutY="90.0" prefHeight="29.0" prefWidth="240.0" />
+      <Label layoutX="25.0" layoutY="141.0" prefHeight="29.0" prefWidth="54.0" text="Password" />
+      <TextField fx:id="password" layoutX="94.0" layoutY="140.0" prefHeight="29.0" prefWidth="240.0" />
+    </Pane>
+    <Button layoutX="202.0" layoutY="410.0" mnemonicParsing="false" onMouseClicked="#connect" text="테스트 접속" />
+    <Button layoutX="127.0" layoutY="410.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="21.0" prefWidth="64.0" text="읽기" />
+    <Button layoutX="54.0" layoutY="410.0" mnemonicParsing="false" onMouseClicked="#set" prefHeight="21.0" prefWidth="64.0" text="설정" />
+    <Button layoutX="298.0" layoutY="410.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="21.0" prefWidth="64.0" text="닫기" />
+    <ProgressIndicator fx:id="progressIndicator" layoutX="180.0" layoutY="160.0" visible="false" />
 </AnchorPane>

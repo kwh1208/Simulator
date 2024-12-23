@@ -29,10 +29,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 import static dbps.dbps.Constants.*;
 
@@ -48,6 +45,7 @@ public class CommunicationSettingController {
     ConfigService configService;
     LogService logService;
     ServerTCPManager serverTCPManager;
+    ResourceBundle bundle;
 
     @FXML
     private AnchorPane communicationSettingAP;
@@ -140,6 +138,7 @@ public class CommunicationSettingController {
     //초기화
     @FXML
     private void initialize() {
+        bundle=ResourceManager.getInstance().getBundle();
         serialPortManager = SerialPortManager.getManager();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         tcpManager = TCPManager.getManager();
@@ -163,8 +162,8 @@ public class CommunicationSettingController {
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(false);
-                connect.setText("포트열기");
-                shutConnect.setText("포트닫기");
+                connect.setText(bundle.getString("openPort"));
+                shutConnect.setText(bundle.getString("closePort"));
                 break;
             case "clientTCP":
                 communicationGroup.selectToggle(clientTCPRadioBtn);  // Client TCP 버튼 선택
@@ -209,8 +208,8 @@ public class CommunicationSettingController {
                 UDPRadioToggle(false);
                 CONNECT_TYPE = "serial";
                 configService.setProperty("connectType", "serial");
-                connect.setText("포트열기");
-                shutConnect.setText("포트닫기");
+                connect.setText(bundle.getString("openPort"));
+                shutConnect.setText(bundle.getString("closePort"));
             } else if (selectedRadioButton.equals(clientTCPRadioBtn)) {
                 serialRadioToggle(false);
                 clientTCPRadioToggle(true);
@@ -243,6 +242,7 @@ public class CommunicationSettingController {
             serialPortComboBox.setValue(newValue);
             configService.setProperty("openPortName", newValue);
         });
+
         serialPortComboBox.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
 
         RS485ChkBox.selectedProperty().addListener((observableValue, oldValue, newValue) ->
@@ -313,6 +313,7 @@ public class CommunicationSettingController {
     //통신속도 찾기
     public void findCommunicationSpeed() {
         // UI 업데이트를 JavaFX 애플리케이션 스레드에서 즉시 실행
+        System.out.println(1111);
         Task<Integer> findSpeedTask = serialPortManager.findSpeedTask;
 
         findSpeedTask.setOnSucceeded(event -> {
@@ -365,8 +366,6 @@ public class CommunicationSettingController {
 
         TCP_IP = IPAddress;
         TCP_PORT = port;
-
-        hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
     }
 
     private void connectUDP(){
@@ -380,8 +379,6 @@ public class CommunicationSettingController {
 
         UDP_IP = IPAddress;
         UDP_PORT = port;
-
-        hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
     }
 
     @FXML
@@ -421,6 +418,24 @@ public class CommunicationSettingController {
         modalStage.setScene(scene);
         modalStage.setResizable(false);
 
+        modalStage.setOnShown(event -> {
+            // 부모 창 위치와 크기 가져오기
+            double parentX = parentStage.getX();
+            double parentY = parentStage.getY();
+            double parentWidth = parentStage.getWidth();
+
+            // 모달 창 크기 계산
+            double modalWidth = modalStage.getWidth();
+
+            // 위치 계산
+            double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
+            double modalY = parentY;
+
+            // 위치 설정
+            modalStage.setX(modalX);
+            modalStage.setY(modalY);
+        });
+
         modalStage.showAndWait();
     }
 
@@ -449,6 +464,24 @@ public class CommunicationSettingController {
         modalStage.setScene(scene);
         modalStage.setResizable(false);
 
+        modalStage.setOnShown(event -> {
+            // 부모 창 위치와 크기 가져오기
+            double parentX = parentStage.getX();
+            double parentY = parentStage.getY();
+            double parentWidth = parentStage.getWidth();
+
+            // 모달 창 크기 계산
+            double modalWidth = modalStage.getWidth();
+
+            // 위치 계산
+            double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
+            double modalY = parentY;
+
+            // 위치 설정
+            modalStage.setX(modalX);
+            modalStage.setY(modalY);
+        });
+
         modalStage.showAndWait();
     }
 
@@ -464,34 +497,38 @@ public class CommunicationSettingController {
                     if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
                         if (RS485ChkBox.isSelected()) {
                             CONNECT_TYPE = "rs485";
-                            serialPortManager.openPort(serialPortComboBox.getValue(),
-                                    Integer.parseInt(serialSpeedChoiceBox.getValue()));
+                            OPEN_PORT_NAME = serialPortComboBox.getValue();
+                            SERIAL_BAUDRATE = Integer.parseInt(serialSpeedChoiceBox.getValue());
                             RS485_ADDR_NUM = Integer.parseInt(RS485ChoiceBox.getValue().replaceAll("[^0-9]", ""));
                             String msg = "10 02 " + convertRS485AddrASCii() + " 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
                             hexMsgTransceiver.sendMessages(msg, progressIndicator);
                         } else {
                             CONNECT_TYPE = "serial";
-                            serialPortManager.openPort(serialPortComboBox.getValue(),
-                                    Integer.parseInt(serialSpeedChoiceBox.getValue()));
+                            OPEN_PORT_NAME = serialPortComboBox.getValue();
+                            SERIAL_BAUDRATE = Integer.parseInt(serialSpeedChoiceBox.getValue());
                             hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03", progressIndicator);
                         }
-                        OPEN_PORT_NAME = serialPortComboBox.getValue();
                         configService.setProperty("openPortName", OPEN_PORT_NAME);
+                        configService.setProperty("serialSpeed", String.valueOf(SERIAL_BAUDRATE));
                     } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn)) {
                         CONNECT_TYPE = "clientTCP";
                         connectClientTCP();
+                        hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                     } else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)) {
                         CONNECT_TYPE = "serverTCP";
                         connectServerTCP();
-                        serverTCPManager.sendMsgAndGetMsgByte(CONNECT_START);
+                        hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                     } else {
                         CONNECT_TYPE = "UDP";
                         connectUDP();
+                        hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                     }
                     configService.setProperty("connectType", CONNECT_TYPE);
 
                 } finally {
-                    Platform.runLater(() -> hideLoading()); // 작업 완료 후 로딩 애니메이션 종료
+                    Platform.runLater(() -> {
+                        hideLoading();
+                    }); // 작업 완료 후 로딩 애니메이션 종료
                 }
                 return null;
             }
@@ -568,23 +605,5 @@ public class CommunicationSettingController {
         }
     }
 
-    public void openMqtt(MouseEvent mouseEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/mqtt.fxml"));
-        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
-        Parent root = fxmlLoader.load();
 
-        Stage modalStage = new Stage();
-        modalStage.setTitle("Mqtt 설정");
-
-        modalStage.initModality(Modality.APPLICATION_MODAL);
-
-        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-        modalStage.initOwner(parentStage);
-
-        Scene scene = new Scene(root);
-        modalStage.setScene(scene);
-        modalStage.setResizable(false);
-
-        modalStage.showAndWait();
-    }
 }

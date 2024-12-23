@@ -14,6 +14,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
@@ -55,7 +57,7 @@ public class FirmwareUpgradeController {
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         logService = LogService.getLogService();
         firmwareService = FirmwareService.getFirmwareService();
-        firmwareService.setFirmwareInformation(firmwareInformation);
+        FirmwareService.setFirmwareInformation(firmwareInformation);
     }
 
 
@@ -104,7 +106,35 @@ public class FirmwareUpgradeController {
         }
 
         //파일 정보읽어서 firmwareFileInformation에 업데이트
-        firmwareFileInformation.setText(selectedFile.getAbsolutePath());
+        String result = "";
+        try (RandomAccessFile file = new RandomAccessFile(selectedFile.getAbsolutePath(), "r")) {
+            int startByte = 0;
+            int length = 0;
+            if (!selectedFile.getName().contains("502")){
+                startByte = 516;
+                length = 38;
+            }
+            else {
+                startByte = 15796;
+                length = 38;
+            }
+            // 파일의 해당 위치로 이동
+            file.seek(startByte);
+
+            // 읽을 바이트 배열 생성
+            byte[] buffer = new byte[length];
+            int bytesRead = file.read(buffer);
+
+            if (bytesRead == length) {
+                result = new String(buffer, "EUC-KR"); // ASCII 호환 인코딩
+                System.out.println("Read ASCII content: " + result);
+            } else {
+                System.out.println("Unable to read the full length. Bytes read: " + bytesRead);
+            }}
+        catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        }
+        firmwareFileInformation.setText(result);
     }
 
     public void send() {
@@ -136,8 +166,6 @@ public class FirmwareUpgradeController {
         }
 
         if (!result1.equals(result2)){
-            System.out.println("result1 = " + result1);
-            System.out.println("result2 = " + result2);
             logService.errorLog("업로드할 수 없습니다. 컨트롤러의 펌웨어와 동일한 펌웨어를 업로드해주세요.");
             return;
         }

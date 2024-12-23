@@ -4,7 +4,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.UDPManager;
-import javafx.collections.ObservableList;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -12,6 +12,8 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +27,7 @@ public class DabitNetController {
     public ChoiceBox<String> networkSelection;
     public RadioButton isSerial;
     public RadioButton isUDP;
-    public ChoiceBox<String> serialPortChoiceBox;
+    public ComboBox<String> serialPortComboBox;
     public ListView<String> dbList;
     public TextField clientIPTF;
     public TextField clientPortTF;
@@ -53,7 +55,14 @@ public class DabitNetController {
 
     public AnchorPane dabitNetAP;
     public TextField keepAlive;
+    public ProgressIndicator progressIndicator;
+    public RadioButton DHCPRadio;
+    public RadioButton wifiAP;
+    public Tab wifiTab;
 
+    ToggleGroup connectionToggleGroup = new ToggleGroup();
+    ToggleGroup IPToggleGroup = new ToggleGroup();
+    ToggleGroup wifiToggleGroup = new ToggleGroup();
 
     SerialPortManager serialPortManager;
     UDPManager udpManager;
@@ -71,13 +80,22 @@ public class DabitNetController {
         serialPortManager = SerialPortManager.getManager();
         udpManager = UDPManager.getUDPManager();
         db300InfoList = new HashMap<>();
-        if (!serialPortChoiceBox.getItems().isEmpty()) {
-            serialPortChoiceBox.setValue(serialPortChoiceBox.getItems().get(0));
+        if (!serialPortComboBox.getItems().isEmpty()) {
+            serialPortComboBox.setValue(serialPortComboBox.getItems().get(0));
         }
 
         getSerialPortList();
 
-        serialPortChoiceBox.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
+        if (!serialPortComboBox.getItems().isEmpty()) {
+            serialPortComboBox.setValue(serialPortComboBox.getItems().get(0));
+        }
+
+        serialPortComboBox.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+            serialPortComboBox.setValue(newValue);
+        });
+
+        serialPortComboBox.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
+
 
         dbList.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             DB300IPPort selectedItem = db300InfoList.get(dbList.getSelectionModel().getSelectedItem());
@@ -85,6 +103,15 @@ public class DabitNetController {
         });
 
         dabitNetAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/dabitNet.css").toExternalForm());
+
+        isUDP.setToggleGroup(connectionToggleGroup);
+        isSerial.setToggleGroup(connectionToggleGroup);
+
+        staticRadio.setToggleGroup(IPToggleGroup);
+        DHCPRadio.setToggleGroup(IPToggleGroup);
+
+        wifiStation.setToggleGroup(wifiToggleGroup);
+        wifiAP.setToggleGroup(wifiToggleGroup);
     }
 
 
@@ -92,32 +119,104 @@ public class DabitNetController {
     public void search() throws ExecutionException, InterruptedException, IOException {
         dbList.getItems().clear();
         db300InfoList.clear();
-        if (isSerial.isSelected()) {//시리얼
-            Task<String> search = serialPortManager.send300MsgAndGetMsg("++SET++![SEARCHING DIBD  B\r\n!]", serialPortChoiceBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
 
-            Thread searchTask = new Thread(search);
-            searchTask.start();
+        Platform.runLater(() -> {
+            if (progressIndicator != null) {
+                progressIndicator.setVisible(true);
+            }
+        });
 
-            String result = search.get();
-            get300IPPort(result);
+        Task<String> search;
+        if (isSerial.isSelected()) { // 시리얼
+            search = serialPortManager.send300MsgAndGetMsg("++SET++![SEARCHING DIBD  B\r\n!]", serialPortComboBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
+            configureTaskHandlers(search);
+            new Thread(search).start();
         } else {
-            udpManager.connect300();
-            Task<String> search = udpManager.send300MsgAndGetMsgByte("SEARCHING DIBD  B\r\n".getBytes());
-            Thread searchTask = new Thread(search);
-            searchTask.start();
-            String result = search.get();
-            //한빛전자 - 모듈 구매 문의 2*6 자석 포함 10개
-
-            get300IPPort(result);
+            if (networkSelection.getValue().equals("All")) {
+                search = null;
+                // 두 개의 포트에 대해 각각 Task 실행
+                List<Integer> portNumbers = List.of(5107, 5108);
+                for (int port : portNumbers) {
+                    udpManager.connect300(port);
+                    Task<String> udpSearchTask = udpManager.send300MsgAndGetMsgByte("SEARCHING DIBD  B\r\n".getBytes());
+                    configureTaskHandlers(udpSearchTask);
+                    new Thread(udpSearchTask).start();
+                }
+            } else {
+                // 단일 포트에 대해 Task 실행
+                int port = networkSelection.getValue().equals("Ethernet") ? 5107 : 5108;
+                udpManager.connect300(port);
+                search = udpManager.send300MsgAndGetMsgByte("SEARCHING DIBD  B\r\n".getBytes());
+                configureTaskHandlers(search);
+                new Thread(search).start();
+            }
         }
-        for (Map.Entry<String, DB300IPPort> db300Infos : db300InfoList.entrySet()) {
-            DB300IPPort db300IPPort = db300Infos.getValue();
-            dbList.getItems().add(db300IPPort.getMacAddress());
+
+
+        if (search != null) {
+            search.setOnSucceeded(event -> {
+                String receivedMsg = search.getValue();
+                try {
+                    get300IPPort(receivedMsg);
+                } catch (IOException | NullPointerException e) {
+                    Platform.runLater(() -> {
+                        if (progressIndicator != null) {
+                            progressIndicator.setVisible(false);
+                        }
+                    });
+                }
+
+                Platform.runLater(() -> {
+                    if (progressIndicator != null) {
+                        progressIndicator.setVisible(false);
+                    }
+                });
+            });
+
+
+            search.setOnFailed(event -> {
+                Throwable exception = search.getException();
+
+                Platform.runLater(() -> {
+                    if (progressIndicator != null) {
+                        progressIndicator.setVisible(false);
+                    }
+                });
+            });
+
+            new Thread(search).start(); // 비동기로 실행
         }
     }
 
+    private void configureTaskHandlers(Task<String> task) {
+        task.setOnSucceeded(event -> {
+            String receivedMsg = task.getValue();
+            try {
+                get300IPPort(receivedMsg);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Platform.runLater(() -> {
+                if (progressIndicator != null) {
+                    progressIndicator.setVisible(false);
+                }
+            });
+        });
+
+        task.setOnFailed(event -> {
+            Throwable exception = task.getException();
+            exception.printStackTrace();
+            Platform.runLater(() -> {
+                if (progressIndicator != null) {
+                    progressIndicator.setVisible(false);
+                }
+            });
+        });
+    }
+
+
     @FXML
-    public void set() throws ExecutionException, InterruptedException, IOException {
+    public void set() throws IOException {
         DB300IPPort newDB300 = new DB300IPPort();
         newDB300.setMacAddress(dbList.getSelectionModel().getSelectedItem());
         newDB300.setClientIP(newDB300.formatInetAddress(InetAddress.getByName(clientIPTF.getText())));
@@ -139,7 +238,7 @@ public class DabitNetController {
 
             sendByte = getBytesSerial(newDB300);
 
-            Task<Void> set = serialPortManager.send300ByteMsg(sendByte, serialPortChoiceBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
+            Task<Void> set = serialPortManager.send300ByteMsg(sendByte, serialPortComboBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
 
             new Thread(set).start();
         } else {
@@ -209,7 +308,7 @@ public class DabitNetController {
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 22;
 
-        if (newDB300.getWifiPW()!=null) tmp = newDB300.getWifiPW().getBytes();
+        if (newDB300.getWifiPW() != null) tmp = newDB300.getWifiPW().getBytes();
         else tmp = new byte[]{0x20};
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 22;
@@ -303,11 +402,10 @@ public class DabitNetController {
     @FXML
     public void reboot(MouseEvent mouseEvent) {
         if (isSerial.isSelected()) {
-            Task<String> reboot = serialPortManager.send300MsgAndGetMsg("++SET++![RESET  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortChoiceBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
+            Task<String> reboot = serialPortManager.send300MsgAndGetMsg("++SET++![RESET  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortComboBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
 
             new Thread(reboot).start();
-        }
-        else {
+        } else {
             Task<String> reboot = udpManager.send300MsgAndGetMsgByte(("RESET  " + dbList.getSelectionModel().getSelectedItem() + "\r\n").getBytes());
 
             new Thread(reboot).start();
@@ -329,10 +427,11 @@ public class DabitNetController {
         clientSubnetMaskTF.setText("255.255.255.0");
     }
 
+    //
     @FXML
     public void read(MouseEvent mouseEvent) throws ExecutionException, InterruptedException, IOException {
         if (isSerial.isSelected()) {
-            Task<String> read = serialPortManager.send300MsgAndGetMsg("++SET++![INFO_R  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortChoiceBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
+            Task<String> read = serialPortManager.send300MsgAndGetMsg("++SET++![INFO_R  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortComboBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
 
             Thread readTask = new Thread(read);
             readTask.start();
@@ -348,18 +447,6 @@ public class DabitNetController {
         }
     }
 
-    /**
-     * INFO_R
-     * 54-FF-82-80-14-57
-     * 014!]1003010
-     * WB V2.0.5 2024-09-16
-     */
-
-    /**
-     * ++SET++![INFO_W  54-FF-82-80-14-57  014!]1003010
-     * !]
-     */
-
     public void write(MouseEvent mouseEvent) {
         if (isSerial.isSelected()) {
             Task<String> write = serialPortManager.send300MsgAndGetMsg("++SET++![INFO_W  "
@@ -373,12 +460,11 @@ public class DabitNetController {
                             + hexSecond.getText()
                             + String.format("%03d", Integer.parseInt(timeOut.getText()))
                             + "\r\n!]",
-                            serialPortChoiceBox.getValue(),
+                    serialPortComboBox.getValue(),
                     Integer.parseInt(baudRateChoiceBox.getValue()));
 
             new Thread(write).start();
-        }
-        else {
+        } else {
             Task<String> write = udpManager.send300MsgAndGetMsgByte(("INFO_W  "
                     + dbList.getSelectionModel().getSelectedItem() + "  "
                     + debugging.getItems().indexOf(debugging.getValue())
@@ -453,7 +539,7 @@ public class DabitNetController {
             line = line.trim();
             if (line.equals("DIBD")) {
                 idx = 0;
-                if (readDB300IPPort!=null){
+                if (readDB300IPPort != null) {
                     db300InfoList.put(readDB300IPPort.getMacAddress(), readDB300IPPort);
                 }
                 readDB300IPPort = new DB300IPPort();
@@ -492,6 +578,7 @@ public class DabitNetController {
                     break;
                 case 11:
                     readDB300IPPort.setHeartbeat(line);
+                    break;
                 case 13:
                     readDB300IPPort.setWifiSSID(line);
                     break;
@@ -504,7 +591,12 @@ public class DabitNetController {
                 default:
                     break;
             }
-        }db300InfoList.put(readDB300IPPort.getMacAddress(), readDB300IPPort);
+        }
+        db300InfoList.put(readDB300IPPort.getMacAddress(), readDB300IPPort);
+        for (Map.Entry<String, DB300IPPort> db300Infos : db300InfoList.entrySet()) {
+            DB300IPPort db300IPPort = db300Infos.getValue();
+            dbList.getItems().add(db300IPPort.getMacAddress());
+        }
     }
 
 
@@ -513,27 +605,19 @@ public class DabitNetController {
 
 
     private void getSerialPortList() {
-        SerialPort[] ports = SerialPort.getCommPorts();
-        ObservableList<String> items = serialPortChoiceBox.getItems();
-
-        String currentSelection = serialPortChoiceBox.getValue(); // 현재 선택된 값 저장
-
-
-        List<String> portNames = Arrays.stream(ports)
+        String selectedValue = serialPortComboBox.getValue();
+        List<String> portNames = Arrays.stream(SerialPort.getCommPorts())
                 .map(SerialPort::getSystemPortName)
-                .sorted(Comparator.comparingInt(this::extractPortNumber)) // 포트 번호 기준으로 정렬
+                .sorted(Comparator.comparingInt(this::extractPortNumber))
                 .toList();
 
-        items.clear();
-        // 정렬된 포트 이름을 items에 추가
-        items.addAll(portNames);
-
-        // ComboBox에 정렬된 목록 설정
-        serialPortChoiceBox.setItems(items);
-
-        // 기존에 선택한 값이 여전히 리스트에 있다면, 다시 선택해줍니다.
-        if (currentSelection != null && items.contains(currentSelection)) {
-            serialPortChoiceBox.setValue(currentSelection);
+        serialPortComboBox.getItems().setAll(portNames);
+        // 기존 선택값 복원
+        if (selectedValue != null && portNames.contains(selectedValue)) {
+            serialPortComboBox.setValue(selectedValue);
+        } else {
+            // 기존 선택값이 없거나 리스트에 없으면 첫 번째 항목 선택
+            serialPortComboBox.getSelectionModel().selectFirst();
         }
     }
 
@@ -557,9 +641,16 @@ public class DabitNetController {
         isClient.setSelected(!db300IPPort.isServerMode());
         wifiStation.setSelected(db300IPPort.isStation());
         keepAlive.setText(db300IPPort.heartbeat);
+
+        if (wifiPW == null) {
+            wifiTab.setDisable(true);
+        } else {
+            wifiTab.setDisable(false);
+        }
     }
 
-
+    @Setter
+    @Getter
     public class DB300IPPort {
         String macAddress;
         String clientIP;
@@ -575,131 +666,6 @@ public class DabitNetController {
         String wifiPW;
         String heartbeat;
         boolean isStation; //true = sta(30), false = ap(31)
-
-        public String getMacAddress() {
-            return macAddress;
-        }
-
-        public void setMacAddress(String macAddress) {
-            this.macAddress = macAddress;
-        }
-
-        // Getter and Setter for clientIP
-        public String getClientIP() {
-            return clientIP;
-        }
-
-        public void setClientIP(String clientIP) {
-            this.clientIP = clientIP;
-        }
-
-        // Getter and Setter for clientPort
-        public String getClientPort() {
-            return clientPort;
-        }
-
-        public void setClientPort(String clientPort) {
-            this.clientPort = clientPort;
-        }
-
-        // Getter and Setter for clientSubnetMask
-        public String getClientSubnetMask() {
-            return clientSubnetMask;
-        }
-
-        public void setClientSubnetMask(String clientSubnetMask) {
-            this.clientSubnetMask = clientSubnetMask;
-        }
-
-        // Getter and Setter for clientGateway
-        public String getClientGateway() {
-            return clientGateway;
-        }
-
-        public void setClientGateway(String clientGateway) {
-            this.clientGateway = clientGateway;
-        }
-
-        // Getter and Setter for serverIP
-        public String getServerIP() {
-            return serverIP;
-        }
-
-        public void setServerIP(String serverIP) {
-            this.serverIP = serverIP;
-        }
-
-        // Getter and Setter for serverPort
-        public String getServerPort() {
-            return serverPort;
-        }
-
-        public void setServerPort(String serverPort) {
-            this.serverPort = serverPort;
-        }
-
-        // Getter and Setter for ipStatic
-        public boolean isIpStatic() {
-            return ipStatic;
-        }
-
-        public void setIpStatic(boolean ipStatic) {
-            this.ipStatic = ipStatic;
-        }
-
-        // Getter and Setter for serverMode
-        public boolean isServerMode() {
-            return serverMode;
-        }
-
-        public void setServerMode(boolean serverMode) {
-            this.serverMode = serverMode;
-        }
-
-        // Getter and Setter for name
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        // Getter and Setter for wifiSSID
-        public String getWifiSSID() {
-            return wifiSSID;
-        }
-
-        public void setWifiSSID(String wifiSSID) {
-            this.wifiSSID = wifiSSID;
-        }
-
-        // Getter and Setter for wifiPW
-        public String getWifiPW() {
-            return wifiPW;
-        }
-
-        public void setWifiPW(String wifiPW) {
-            this.wifiPW = wifiPW;
-        }
-
-        // Getter and Setter for heartbeat
-        public String getHeartbeat() {
-            return heartbeat;
-        }
-
-        public void setHeartbeat(String heartbeat) {
-            this.heartbeat = heartbeat;
-        }
-
-        // Getter and Setter for isStation
-        public boolean isStation() {
-            return isStation;
-        }
-
-        public void setStation(boolean isStation) {
-            this.isStation = isStation;
-        }
 
 
         private String formatInetAddress(InetAddress address) {
@@ -720,115 +686,30 @@ public class DabitNetController {
         }
     }
 
+    @Setter
+    @Getter
     public class DB300Info {
         String communication;
+        // Getter and Setter for macAddress
         String macAddress;
+        // Getter and Setter for debugging
         boolean debugging;
+        // Getter and Setter for connectedTTL
         boolean connectedTTL;
+        // Getter and Setter for baudRate
         Integer baudRate;
+        // Getter and Setter for asc_1
         String asc_1;
+        // Getter and Setter for asc_2
         String asc_2;
+        // Getter and Setter for hex_1
         String hex_1;
+        // Getter and Setter for hex_2
         String hex_2;
+        // Getter and Setter for timeout
         String timeout;
+        // Getter and Setter for version
         String version;
 
-        public String getCommunication() {
-            return communication;
-        }
-
-        public void setCommunication(String communication) {
-            this.communication = communication;
-        }
-
-        // Getter and Setter for macAddress
-        public String getMacAddress() {
-            return macAddress;
-        }
-
-        public void setMacAddress(String macAddress) {
-            this.macAddress = macAddress;
-        }
-
-        // Getter and Setter for debugging
-        public boolean isDebugging() {
-            return debugging;
-        }
-
-        public void setDebugging(boolean debugging) {
-            this.debugging = debugging;
-        }
-
-        // Getter and Setter for connectedTTL
-        public boolean isConnectedTTL() {
-            return connectedTTL;
-        }
-
-        public void setConnectedTTL(boolean connectedTTL) {
-            this.connectedTTL = connectedTTL;
-        }
-
-        // Getter and Setter for baudRate
-        public Integer getBaudRate() {
-            return baudRate;
-        }
-
-        public void setBaudRate(Integer baudRate) {
-            this.baudRate = baudRate;
-        }
-
-        // Getter and Setter for asc_1
-        public String getAsc_1() {
-            return asc_1;
-        }
-
-        public void setAsc_1(String asc_1) {
-            this.asc_1 = asc_1;
-        }
-
-        // Getter and Setter for asc_2
-        public String getAsc_2() {
-            return asc_2;
-        }
-
-        public void setAsc_2(String asc_2) {
-            this.asc_2 = asc_2;
-        }
-
-        // Getter and Setter for hex_1
-        public String getHex_1() {
-            return hex_1;
-        }
-
-        public void setHex_1(String hex_1) {
-            this.hex_1 = hex_1;
-        }
-
-        // Getter and Setter for hex_2
-        public String getHex_2() {
-            return hex_2;
-        }
-
-        public void setHex_2(String hex_2) {
-            this.hex_2 = hex_2;
-        }
-
-        // Getter and Setter for timeout
-        public String getTimeout() {
-            return timeout;
-        }
-
-        public void setTimeout(String timeout) {
-            this.timeout = timeout;
-        }
-
-        // Getter and Setter for version
-        public String getVersion() {
-            return version;
-        }
-
-        public void setVersion(String version) {
-            this.version = version;
-        }
     }
 }
