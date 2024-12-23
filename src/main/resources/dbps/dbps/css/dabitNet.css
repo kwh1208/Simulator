@@ -5,19 +5,19 @@
     -fx-background-color: #1C1F26; /* 전체 ListView 배경색 */
 }
 
-.list-view .list-cell:odd {
+.list-cell:odd {
     -fx-background-color: #2B2B2B; /* 홀수 셀의 배경색 */
     -fx-text-fill: white; /* 홀수 셀의 텍스트 색상 */
 }
 
-.list-view .list-cell:even {
+.list-cell:even {
     -fx-background-color: #3C3C3C; /* 짝수 셀의 배경색 */
     -fx-text-fill: white; /* 짝수 셀의 텍스트 색상 */
 }
 
-.list-view .list-cell:filled:selected, .list-view:filled:selected:focused {
-    -fx-border-color: orange;
-    -fx-text-fill: white; /* 선택된 항목의 텍스트 색상 */
+.list-cell:filled:selected, .list-cell:filled:selected:focused {
+    -fx-background-color: orange; /* 선택된 항목의 배경색 */
+    -fx-text-fill: black; /* 선택된 항목의 텍스트 색상 */
 }
 
 .label{
@@ -35,31 +35,25 @@
 .text-field:focused{
     -fx-border-color: orange;
 }
-.root{
-    -fx-font-family: Gulim;
-}
+
 .button {
-    -fx-font-size: 15px; /* 폰트 크기 */
-    -fx-background-color: linear-gradient(#444444, #222222); /* 위에서 아래로 밝아지는 배경색 */
+    -fx-font-size : 15px; /* 폰트 크기 */
+    -fx-background-color: #222222; /* 버튼 배경색 */
     -fx-text-fill: white; /* 텍스트 색상 */
-    -fx-border-color: #4A4A4A; /* 버튼 테두리 색상 */
-    -fx-border-radius: 10; /* 버튼 모서리 둥글기 */
+    -fx-border-color: #4A4A4A;
+    -fx-border-radius: 10; /* 버튼 모서리 둥글기 제거 */
     -fx-padding: 5 10 5 10; /* 버튼 내부 여백 */
-    -fx-background-radius: 10; /* 배경 둥글기 */
+    -fx-background-radius: 10;
 }
 
 .button:hover {
-    -fx-background-color: linear-gradient(orange, darkorange); /* 마우스 올렸을 때 배경색 */
-    -fx-border-color: orange; /* 마우스 올렸을 때 테두리 색상 */
+    -fx-background-color: orange; /* 마우스 올렸을 때 배경색 */
+    -fx-border-color: orange;
     -fx-text-fill: black; /* 마우스 올렸을 때 텍스트 색상 */
 }
 
 .button:pressed {
-    -fx-background-color: linear-gradient(darkorange, orange); /* 눌렀을 때 오렌지 계열 색상 */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 2, 0.1, 0, 0); /* 눌렀을 때 그림자 약화 */
-    -fx-translate-y: 2px; /* 눌렀을 때 버튼이 살짝 내려가는 효과 */
-    -fx-text-fill: white; /* 눌렀을 때 텍스트 색상 */
-    -fx-border-color: darkorange; /* 눌렀을 때 테두리 색상 */
+    -fx-background-color: darkorange; /* 버튼 눌렀을 때 배경색 */
 }
 
 .radio-button .radio {
@@ -99,37 +93,6 @@
 }
 .choice-box .menu-item:focused > .label {
     -fx-text-fill: black;
-}
-
-.combo-box {
-    -fx-background-color: #1C1F26;
-    -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
-    -fx-text-fill: white;
-    -fx-font-size: 15px;
-}
-
-.combo-box .list-cell {
-    -fx-text-fill: white; /* 드롭다운 목록의 기본 텍스트 색상 */
-}
-.combo-box .arrow-button {
-    -fx-background-color: #1C1F26; /* 화살표 버튼 배경색 */
-}
-.combo-box .arrow-button .arrow {
-    -fx-background-color: white; /* 화살표 색상 */
-}
-.combo-box .list-view .list-cell {
-    -fx-background-color: #1C1F26; /* 각 항목의 배경색 */
-    -fx-text-fill: white; /* 텍스트 색상 */
-}
-.combo-box .list-view .list-cell:hover {
-    -fx-background-color: orange; /* 각 항목의 배경색 */
-    -fx-text-fill: black; /* 텍스트 색상 */
-}
-
-.combo-box .scroll-bar:vertical {
-    -fx-opacity: 0; /* 스크롤바를 완전히 숨김 */
-    -fx-pref-width: 0; /* 수직 스크롤바 너비를 0으로 설정 */
-    -fx-pref-height: 0; /* 수평 스크롤바 높이를 0으로 설정 */
 }
 
 

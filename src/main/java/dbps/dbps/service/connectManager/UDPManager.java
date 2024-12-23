@@ -191,6 +191,10 @@ public class UDPManager {
         return new Task<>() {
             @Override
             protected String call() throws IOException {
+                if (socket == null||socket.isClosed()) {
+                    connect300(); // 소켓 연결
+                }
+
                 DatagramPacket receivePacket;
                 List<String> receivedMessages = new ArrayList<>();
                 try {
@@ -210,12 +214,14 @@ public class UDPManager {
                             }
                         } catch (SocketTimeoutException e) {
                             break;
-                        } catch (Exception e) {
-                            throw e;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            break;
                         }
                     }
                     // 받은 메시지를 합쳐서 반환
-                    return String.join("", receivedMessages);
+                    String result = String.join("", receivedMessages);
+                    return result;
 
                 } catch (IOException e) {
                     throw e;
@@ -226,9 +232,9 @@ public class UDPManager {
         };
     }
 
-    public void connect300(int port){
+    public void connect300(){
         this.IP = "255.255.255.255";
-        this.PORT = port;
+        this.PORT = 5108;
         try {
             if (socket == null) {
                 socket = new DatagramSocket(5109);
@@ -259,9 +265,6 @@ public class UDPManager {
 
     //접속끊기
     public void disconnect() {
-        if (socket == null){
-            return;
-        }
         socket.close();
         socket = null;
         logService.updateInfoLog("UDP 서버를 종료합니다. IP: " + IP + ", PORT: " + PORT);

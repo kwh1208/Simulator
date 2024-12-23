@@ -21,21 +21,20 @@ public class HexMsgTransceiver {
     private final LogService logService;
     private final UDPManager udpManager;
     private final TCPManager tcpManager;
+    private final MQTTManager mqttManager;
     private final ServerTCPManager serverTCPManager;
     private final UnderTheLineLeftService underTheLineLeftService;
     private final SizeOfDisplayBoardService sizeOfDisplayBoardService;
-    private final HexMsgService hexMsgService;
-
 
     private HexMsgTransceiver() {
         serialPortManager = SerialPortManager.getManager();
         logService = LogService.getLogService();
         udpManager = UDPManager.getUDPManager();
         tcpManager = TCPManager.getManager();
+        mqttManager = MQTTManager.getInstance();
         serverTCPManager = ServerTCPManager.getInstance();
         underTheLineLeftService = UnderTheLineLeftService.getInstance();
         sizeOfDisplayBoardService = SizeOfDisplayBoardService.getInstance();
-        hexMsgService=HexMsgService.getInstance();
     }
 
     public static HexMsgTransceiver getInstance() {
@@ -51,6 +50,7 @@ public class HexMsgTransceiver {
             case "serial", "bluetooth", "rs485" -> serialPortManager.sendMsgAndGetMsgByte(msg);
             case "UDP" -> udpManager.sendMsgAndGetMsgByte(msg);
             case "clientTCP" -> tcpManager.sendMsgAndGetMsgByte(msg);
+            case "mqtt" -> mqttManager.sendMsgAndGetMsgByte(msg);
             case "serverTCP" -> serverTCPManager.sendMsgAndGetMsgByte(msg);
             default -> throw new IllegalStateException("Unexpected value: " + CONNECT_TYPE);
         };
@@ -130,17 +130,17 @@ public class HexMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
-//            case "mqtt" -> {
-//                try {
-//                    Task<String> sendTask = mqttManager.sendMsgAndGetMsgByte(msg);
-//                    Thread taskThread = new Thread(sendTask);
-//                    taskThread.start();
-//
-//                    return sendTask.get();
-//                } catch (Exception e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
+            case "mqtt" -> {
+                try {
+                    Task<String> sendTask = mqttManager.sendMsgAndGetMsgByte(msg);
+                    Thread taskThread = new Thread(sendTask);
+                    taskThread.start();
+
+                    return sendTask.get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
             case "serverTCP" ->{
                 try {
                     Task<String> sendTask  = serverTCPManager.sendMsgAndGetMsgByteNoLog(msg);
@@ -163,9 +163,6 @@ public class HexMsgTransceiver {
     private void msgReceive(String receiveMsg, byte[] msg) {
         if (receiveMsg.isEmpty()) {
             return;
-        }
-        if (receiveMsg.equals("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03 ")){
-            logService.updateInfoLog("성공적으로 연결되었습니다.");
         }
         String[] splitMsg = receiveMsg.split(" ");
         if (splitMsg[5].equals("94")) {
@@ -194,37 +191,11 @@ public class HexMsgTransceiver {
             }
             case "66" -> handleTimeRead(receiveMsg, splitMsg);
             case "6F" -> {
-                updateFirmwareUI(splitMsg);
-            }
-            case "4C" -> {
-                hexMsgService.setUI((msg[6]& 0xFF));
+                return;
             }
 
             default -> handleDefaultCommands(status, receiveMsg, splitMsg);
         }
-    }
-
-    private void updateFirmwareUI(String[] splitMsg) {
-        // splitMsg의 7번째부터 끝에서 3번째까지 추출
-        StringBuilder hexStringBuilder = new StringBuilder();
-        for (int i = 7; i < splitMsg.length - 3; i++) { // 인덱스 6부터 끝에서 3번째 전까지
-            hexStringBuilder.append(splitMsg[i]);
-        }
-
-        // 헥사 문자열을 ASCII로 변환
-        String hexString = hexStringBuilder.toString();
-        StringBuilder asciiStringBuilder = new StringBuilder();
-        for (int i = 0; i < hexString.length(); i += 2) {
-            String hexChar = hexString.substring(i, i + 2); // 2글자씩 잘라서
-            char asciiChar = (char) Integer.parseInt(hexChar, 16); // 16진수 -> 10진수 -> 문자
-            asciiStringBuilder.append(asciiChar);
-        }
-
-        // ASCII 문자열 생성
-        String asciiString = asciiStringBuilder.toString();
-
-        // firmwareService에 전달
-        FirmwareService.firmwareInformation.setText(asciiString);
     }
 
 

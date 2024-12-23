@@ -60,8 +60,8 @@
             </items>
        </ListView>
        <TextArea fx:id="memo" layoutX="268.0" layoutY="36.0" prefHeight="200.0" prefWidth="259.0" />
-       <Button layoutX="270.0" layoutY="246.0" mnemonicParsing="false" onMouseClicked="#search" prefHeight="28.0" prefWidth="140.0" text="%searchSignal" />
-       <Button layoutX="415.0" layoutY="246.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="28.0" prefWidth="110.0" text="%saveMemo" />
+       <Button layoutX="280.0" layoutY="246.0" mnemonicParsing="false" onMouseClicked="#search" prefHeight="28.0" prefWidth="141.0" text="%searchSignal" />
+       <Button layoutX="430.0" layoutY="246.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="28.0" prefWidth="86.0" text="%saveMemo" />
        <Label layoutX="289.0" layoutY="284.0" text="Color Order" />
        <ChoiceBox fx:id="colorScan" layoutX="413.0" layoutY="282.0" prefHeight="21.0" prefWidth="107.0" value="RGB">
            <items>
@@ -84,9 +84,9 @@
                </FXCollections>
            </items>
        </ChoiceBox>
-       <Button layoutX="456.0" layoutY="343.0" mnemonicParsing="false" onMouseClicked="#signalTransfer" prefHeight="28.0" prefWidth="64.0" text="%sendButton" />
-       <Spinner fx:id="spinnerForSec" layoutX="330.0" layoutY="379.0" prefHeight="28.0" prefWidth="64.0" />
-       <Button fx:id="autoTransfer" layoutX="400.0" layoutY="379.0" mnemonicParsing="false" onMouseClicked="#autoTransfer" prefHeight="28.0" prefWidth="120.0" text="%autoTransfer" />
+       <Button layoutX="452.0" layoutY="343.0" mnemonicParsing="false" onMouseClicked="#signalTransfer" prefHeight="28.0" prefWidth="64.0" text="%sendButton" />
+       <Button fx:id="autoTransfer" layoutX="430.0" layoutY="379.0" mnemonicParsing="false" onMouseClicked="#autoTransfer" prefHeight="28.0" prefWidth="86.0" text="%autoTransfer" />
+       <Spinner fx:id="spinnerForSec" layoutX="356.0" layoutY="379.0" prefHeight="28.0" prefWidth="64.0" />
        <Pane layoutX="14.0" layoutY="383.0" prefHeight="77.0" prefWidth="304.0" style="-fx-border-color: black;">
            <children>
                <Label layoutX="14.0" layoutY="-6.0" prefHeight="13.0" prefWidth="107.0" style="-fx-background-color: #333333;" text="%afterimageDelaySetting" />
@@ -94,11 +94,11 @@
                <Label layoutX="81.0" layoutY="18.0" text="After" />
                <Spinner fx:id="spinnerForBefore" layoutX="14.0" layoutY="39.0" prefHeight="21.0" prefWidth="60.0" />
                <Spinner fx:id="spinnerForAfter" layoutX="80.0" layoutY="39.0" prefHeight="21.0" prefWidth="60.0" />
-               <Button layoutX="159.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#setting" prefHeight="28.0" prefWidth="64.0" text="%set" />
+               <Button layoutX="159.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#setting" prefHeight="28.0" prefWidth="64.0" text="%setting" />
                <Button layoutX="230.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="28.0" prefWidth="64.0" text="%read" />
            </children>
        </Pane>
-       <Button layoutX="456.0" layoutY="419.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="28.0" prefWidth="64.0" text="%close" />
+       <Button layoutX="461.0" layoutY="419.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="28.0" prefWidth="64.0" text="%close" />
        <ProgressIndicator fx:id="progressIndicator" layoutX="250.0" layoutY="150.0" visible="false"/>
    </children>
 </AnchorPane>

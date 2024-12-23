@@ -43,9 +43,7 @@
 .spinner .increment-arrow-button:hover, .spinner .decrement-arrow-button:hover {
     -fx-background-color: #2A2E35; /* 마우스 오버 시 배경색 */
 }
-.root{
-    -fx-font-family: Gulim;
-}
+
 .spinner .increment-arrow-button:pressed, .spinner .decrement-arrow-button:pressed {
     -fx-background-color: orange; /* 클릭 시 배경색 */
 }

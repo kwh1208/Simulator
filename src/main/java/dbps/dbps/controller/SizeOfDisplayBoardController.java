@@ -1,11 +1,7 @@
 package dbps.dbps.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import dbps.dbps.Simulator;
-import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.HexMsgTransceiver;
-import dbps.dbps.service.SizeOfDisplayBoardService;
-import dbps.dbps.service.connectManager.MQTTManager;
+import dbps.dbps.service.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Spinner;
@@ -25,7 +21,8 @@ public class SizeOfDisplayBoardController {
     HexMsgTransceiver hexMsgTransceiver;
 
     SizeOfDisplayBoardService sizeOfDisplayBoardService;
-    MQTTManager mqttManager;
+
+
 
     @FXML
     public ChoiceBox<String> colorNum;
@@ -55,7 +52,6 @@ public class SizeOfDisplayBoardController {
 
         spinnerForColumn.setEditable(true);
         spinnerForRow.setEditable(true);
-        mqttManager = MQTTManager.getInstance();
 
         spinnerForRow.valueProperty().addListener((obs, oldValue, newValue) -> {
             SIZE_ROW = newValue;
@@ -82,7 +78,7 @@ public class SizeOfDisplayBoardController {
     }
 
 
-    public void sendDisplaySize() throws ExecutionException, InterruptedException, JsonProcessingException {
+    public void sendDisplaySize() throws ExecutionException, InterruptedException {
         if (IS_ASCII){
             displaySizeASC();
         }

@@ -8,7 +8,6 @@ import dbps.dbps.service.LogService;
 import javafx.concurrent.Task;
 
 import java.io.*;
-import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -51,7 +50,6 @@ public class SerialPortManager {
 
             if (!port.openPort()) {
                 logService.errorLog(portName + " 포트를 열 수 없습니다.");
-                return;
             }
 
             serialPortMap.put(portName, port);
@@ -66,7 +64,7 @@ public class SerialPortManager {
             }
             SerialPort port = SerialPort.getCommPort(portName);
             port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY * 1000, 1000);
+            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000, RESPONSE_LATENCY * 1000);
 
             if (!port.openPort()) {
                 throw new IllegalStateException(portName + " 포트를 열 수 없습니다.");
@@ -117,12 +115,6 @@ public class SerialPortManager {
                         throw new IllegalStateException("포트를 열 수 없습니다: " + portName);
                     }
 
-                    if(port.getPortDescription().toLowerCase().contains("bluetooth")){
-                        logService.warningLog("해당 포트는 블루투스 포트입니다.");
-                        closePort(portName);
-                        throw new RuntimeException();
-                    }
-
                     logService.updateInfoLog("전송 메세지: " + msg);
 
                     try (InputStream inputStream = new BufferedInputStream(port.getInputStream());
@@ -136,7 +128,6 @@ public class SerialPortManager {
                         int totalBytesRead = 0;
                         while (true) {
                             int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-
                             if (bytesRead > 0) {
                                 totalBytesRead += bytesRead;
 
@@ -216,11 +207,6 @@ public class SerialPortManager {
                     if (port == null) {
                         throw new IllegalStateException("포트를 열 수 없습니다: " + portName);
                     }
-                    if(port.getPortDescription().toLowerCase().contains("bluetooth")){
-                        logService.warningLog("해당 포트는 블루투스 포트입니다.");
-                        closePort(portName);
-                        throw new RuntimeException();
-                    }
 
                     logService.updateInfoLog("전송 메세지: " + bytesToHex(msg, msg.length));
 
@@ -232,23 +218,18 @@ public class SerialPortManager {
 
                         byte[] buffer = new byte[1024];
                         int totalBytesRead = 0;
+
                         while (true) {
-                            try {
-                                int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-                                if (bytesRead > 0) {
-                                    totalBytesRead += bytesRead;
+                            int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
 
-                                    // 데이터가 모두 수신되었는지 확인
-                                    if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
-                                        break;
-                                    }
-                                } else {
-                                    break; // 스트림 종료
+                                // 데이터가 모두 수신되었는지 확인
+                                if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                                    break;
                                 }
-                            } catch (SocketTimeoutException e) {
-
-                                logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
-                                throw e;
+                            } else {
+                                break; // 타임아웃
                             }
                         }
 
@@ -338,11 +319,11 @@ public class SerialPortManager {
         protected Integer call() throws Exception {
             int[] baudRates = {9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600};
 
+            serialPortMap.get(OPEN_PORT_NAME).closePort();
             for (int baudRate : baudRates) {
                 try {
-                    System.out.println("baudRate = " + baudRate);
-                    closePortNoLog(OPEN_PORT_NAME);
                     openPortNoLog(OPEN_PORT_NAME, baudRate);
+                    Thread.sleep(300);
                     SerialPort port = serialPortMap.get(OPEN_PORT_NAME);
                     OutputStream outputStream = port.getOutputStream();
                     InputStream inputStream = port.getInputStream();
@@ -358,7 +339,7 @@ public class SerialPortManager {
 
                     String msg = "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
                     if (isRS) {
-                        msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                        msg = "10 02 " + String.format("02X ", RS485_ADDR_NUM) + "00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
                     }
                     outputStream.write(hexStringToByteArray(msg));
                     outputStream.flush();
@@ -389,9 +370,10 @@ public class SerialPortManager {
                     }
 
                     closePortNoLog(OPEN_PORT_NAME);
-                } catch (IOException e) {
+                } catch (IOException | InterruptedException e) {
                     // 예외 발생 시 로그 업데이트
-                    logService.warningLog("응답 대기 시간 초과");
+                    logService.warningLog("예외 발생: " + e.getMessage());
+                    throw e;
                 }
             }
 
@@ -410,35 +392,33 @@ public class SerialPortManager {
                 port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY * 1000, RESPONSE_LATENCY * 1000);
                 port.openPort();
                 try {
-                    // 데이터 전송
                     byte[] dataToSend = msg.getBytes(Charset.forName("EUC-KR"));
                     OutputStream outputStream = new BufferedOutputStream(port.getOutputStream());
                     outputStream.write(dataToSend);
                     outputStream.flush();
 
-                    // 데이터 수신
                     InputStream inputStream = new BufferedInputStream(port.getInputStream());
-                    byte[] buffer = new byte[212];
+                    byte[] buffer = new byte[1024];
                     int totalBytesRead = 0;
 
-                    while (totalBytesRead < 212) { // 212바이트가 채워질 때까지 읽기
+                    while (true) {
                         int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
                         if (bytesRead > 0) {
                             totalBytesRead += bytesRead;
+
+                            // 데이터가 모두 수신되었는지 확인
+                            if (dataReceivedIsComplete(buffer, totalBytesRead)) {
+                                break;
+                            }
                         } else {
-                            break; // 더 이상 읽을 데이터가 없을 경우
+                            // 타임아웃 발생 시 루프 종료
+                            break;
                         }
                     }
-
-                    if (totalBytesRead == 212) {
-                        // 212바이트를 읽었으면 결과 출력
-                        String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
-                        return result;
-                    } else {
-                        throw new IOException("212 바이트를 읽는 데 실패했습니다. 총 읽은 바이트: " + totalBytesRead);
-                    }
+                    String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                    return result;
                 } catch (Exception e) {
-                    logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
+                    logService.errorLog("에러가 발생했습니다: " + e.getMessage());
                     throw e;
                 } finally {
                     port.closePort();
@@ -446,7 +426,6 @@ public class SerialPortManager {
             }
         };
     }
-
 
     public Task<Void> send300ByteMsg(byte[] sendByte, String portNum, int baudRate) {
         return new Task<Void>() {

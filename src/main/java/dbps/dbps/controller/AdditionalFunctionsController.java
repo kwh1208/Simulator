@@ -13,12 +13,10 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
 
@@ -31,16 +29,12 @@ public class AdditionalFunctionsController {
     public ChoiceBox<Double> fontWidth;
     public ChoiceBox<Double> fontHeight;
     public ProgressIndicator progressIndicator;
-    public AnchorPane additionalFunctionAp;
     AsciiMsgTransceiver asciiMsgTransceiver;
-    ResourceBundle bundle;
 
     HexMsgTransceiver hexMsgTransceiver;
     @FXML
     public void initialize(){
-        additionalFunctionAp.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/additionalFunction.css").toExternalForm());
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
-        bundle = ResourceManager.getInstance().getBundle();
 
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
 
@@ -69,21 +63,6 @@ public class AdditionalFunctionsController {
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
 
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
-
-        addItems();
-    }
-
-    private void addItems() {
-        fillColor.getItems().addAll(
-                bundle.getString("black"),
-                bundle.getString("red"),
-                bundle.getString("green"),
-                bundle.getString("yellow"),
-                bundle.getString("blue"),
-                bundle.getString("pink"),
-                bundle.getString("cyan"),
-                bundle.getString("white")
-        );
     }
 
     public void openBGSchedule(MouseEvent mouseEvent) throws IOException {
@@ -104,11 +83,9 @@ public class AdditionalFunctionsController {
         fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
         Parent root = fxmlLoader.load();
 
-
         Stage modalStage = new Stage();
         modalStage.setTitle(title);
         modalStage.initModality(Modality.APPLICATION_MODAL);
-
 
         Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         modalStage.initOwner(parentStage);
@@ -116,27 +93,6 @@ public class AdditionalFunctionsController {
         Scene scene = new Scene(root);
         modalStage.setScene(scene);
         modalStage.setResizable(false);
-
-        modalStage.setOnShown(event -> {
-            // 부모 창 위치와 크기 가져오기
-            double parentX = parentStage.getX();
-            double parentY = parentStage.getY();
-            double parentWidth = parentStage.getWidth();
-            double parentHeight = parentStage.getHeight();
-
-            // 모달 창 크기 계산
-            double modalWidth = modalStage.getWidth();
-            double modalHeight = modalStage.getHeight();
-
-            // 위치 계산
-            double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
-            double modalY = parentY;
-
-            // 위치 설정
-            modalStage.setX(modalX);
-            modalStage.setY(modalY);
-        });
-
 
         modalStage.showAndWait();
     }
@@ -211,7 +167,23 @@ public class AdditionalFunctionsController {
     }
 
     public void fontName(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/fontName.fxml", "폰트 이름 설정", mouseEvent);
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/fontName.fxml"));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
+        Parent root = fxmlLoader.load();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle("폰트 이름 설정");
+
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.showAndWait();
     }
 
     public void sendFontWeight() {

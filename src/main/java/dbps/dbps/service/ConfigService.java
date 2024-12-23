@@ -10,12 +10,10 @@ public class ConfigService {
     private static ConfigService instance;
     private final Properties properties;
     public final Properties displayProperties;
-    public static String configFilePath;
+    private final String configFilePath;
     private final String displayFilePath;
-    LogService logService;
 
     private ConfigService() {
-        logService = LogService.getLogService();
         configFilePath = System.getProperty("user.dir") + File.separator + "config" + File.separator + "config.properties";
         displayFilePath = System.getProperty("user.dir") + File.separator + "config" + File.separator + "display.properties";
         properties = new Properties();
@@ -44,9 +42,6 @@ public class ConfigService {
     }
 
     private void createFileIfNotExists(String filePath) {
-        if (new File(filePath).exists()) {
-            return;
-        }
         Properties defaultProperties = new Properties();
             for (int i = 1; i < 10; i++) {
                 if (i==1){
@@ -76,7 +71,7 @@ public class ConfigService {
             defaultProperties.setProperty("RESPONSE_LATENCY", "3");
             defaultProperties.setProperty("latency", "3");
             defaultProperties.setProperty("lastDisplaySignal", "16D-P16D1S11");
-            defaultProperties.setProperty("PROGRAM_LANGUAGE", "한국어");
+            defaultProperties.setProperty("PROGRAM_LANGUAGE", "korean");
 
             defaultProperties.setProperty("fontGroup1Size", "8X16/16X16");
             defaultProperties.setProperty("fontGroup1FontPath1", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
@@ -173,7 +168,7 @@ public class ConfigService {
             try {
                 configFile.createNewFile();  // 파일이 없을 경우 생성
                 // 기본 설정 값 저장
-                try (Writer writer = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8)) {
+                try (FileWriter writer = new FileWriter(configFile)) {
                     defaultProperties.store(writer, "Default configuration");
                 }
             } catch (IOException e) {
@@ -190,11 +185,11 @@ public class ConfigService {
     }
 
     private void loadProperties() {
-        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(configFilePath), StandardCharsets.UTF_8)) {
+        try (FileReader reader = new FileReader(configFilePath)) {
             properties.load(reader);
         } catch (IOException e) {
         }
-        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(displayFilePath), StandardCharsets.UTF_8)) {
+        try (FileReader reader = new FileReader(displayFilePath)){
             displayProperties.load(reader);
         } catch (IOException e) {
 

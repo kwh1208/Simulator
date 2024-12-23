@@ -90,10 +90,11 @@ public class MQTTManager {
                 connect();
             }
 
-            // JSON 메시지 생성
-            ObjectMapper objectMapper = new ObjectMapper();
-            BrokerInfo brokerInfo = new BrokerInfo(MAC, apiUrl, brokerIp, Integer.parseInt(brokerPort), clientId, username, password);
-            String jsonMessage = objectMapper.writeValueAsString(brokerInfo);
+    public String MQTT_BROKER = "";
+    public String MQTT_TOPIC_SEND = "";
+    public String MQTT_TOPIC_RECEIVED = "";
+    public String MQTT_ID = "";
+    public String MQTT_PWD = "";
 
             // MQTT 메시지 생성
             MqttMessage message = new MqttMessage(jsonMessage.getBytes());

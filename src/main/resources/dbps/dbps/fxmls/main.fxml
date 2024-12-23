@@ -12,7 +12,7 @@
             <TabPane fx:id="mainTab" prefHeight="640.0" prefWidth="590.0" tabClosingPolicy="UNAVAILABLE">
                 <tabs>
                     <Tab fx:id="messageTab" text="아스키 프로토콜"/>
-                    <Tab fx:id="setting" text="%setting"/>
+                    <fx:include fx:id="setting" source="setting.fxml"/>
                 </tabs>
             </TabPane>
             <!-- HELP 버튼 추가 -->

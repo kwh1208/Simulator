@@ -43,9 +43,7 @@
     -fx-background-radius: 5px; /* 둥근 모서리 */
     -fx-padding: 5px;
 }
-.root{
-    -fx-font-family: Gulim;
-}
+
 /* 스크롤바 화살표 */
 .scroll-bar:horizontal .increment-arrow,
 .scroll-bar:horizontal .decrement-arrow,
