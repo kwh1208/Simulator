@@ -13,7 +13,6 @@ import javafx.scene.layout.Pane;
 import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.IS_ASCII;
-import static dbps.dbps.Constants.IS_MQTT;
 
 public class BasicSettingController {
     @FXML
@@ -41,14 +40,10 @@ public class BasicSettingController {
 
         protocolFormat.getItems().addAll(
                 bundle.getString("ASCiiProtocol"),
-                bundle.getString("HexProtocol"),
-                bundle.getString("mqtt")
+                bundle.getString("HexProtocol")
         );
 
-        if (IS_MQTT){
-            protocolFormat.setValue(bundle.getString("mqtt"));
-        }
-        else if (IS_ASCII){
+        if (IS_ASCII){
             protocolFormat.setValue(bundle.getString("ASCiiProtocol"));
         } else {
             protocolFormat.setValue(bundle.getString("HexProtocol"));
@@ -56,10 +51,7 @@ public class BasicSettingController {
 
         //드롭다운 감지해서 탭 변경
         protocolFormat.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue.equals(bundle.getString("mqtt"))){
-                mainService.showMQTTTab();
-                IS_MQTT=true;
-            } else if (newValue.equals(bundle.getString("ASCiiProtocol"))) {
+            if (newValue.equals(bundle.getString("ASCiiProtocol"))) {
                 mainService.showASCiiMsgTab();
                 IS_ASCII = true;
                 configService.setProperty("IS_ASCII", "true");
