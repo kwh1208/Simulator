@@ -3,7 +3,6 @@ package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
-import dbps.dbps.service.connectManager.MQTTManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -31,7 +30,7 @@ public class SettingController {
     AsciiMsgTransceiver asciiMsgTransceiver;
     LogService logService;
     SettingService settingService;
-    MQTTManager mqttManager;
+
     @FXML
     public ChoiceBox<String> displayBright;
 
@@ -44,7 +43,6 @@ public class SettingController {
         logService = LogService.getLogService();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
-        mqttManager = MQTTManager.getInstance();
     }
 
     @FXML

@@ -8,18 +8,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import lombok.Getter;
 
 import java.io.IOException;
 
 public class Simulator extends Application {
+    @Getter
     private static Simulator instance = null;
     private static ResourceManager resourceManager;
 
     private Stage stage;
-
-    public static Simulator getInstance() {
-        return instance;
-    }
 
     @Override
     public void init() throws Exception {
@@ -59,10 +57,11 @@ public class Simulator extends Application {
         stage.show();
     }
 
-    // 재귀적으로 모든 노드에 폰트 적
-
 
     public static void main(String[] args) {
+        System.setProperty("prism.text", "t2k"); // 텍스트 렌더링 엔진 설정
+        System.setProperty("prism.lcdtext", "false"); // LCD 텍스트 렌더링 비활성화
+
         launch();
     }
 }
