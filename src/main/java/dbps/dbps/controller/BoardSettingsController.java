@@ -9,7 +9,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -49,7 +52,6 @@ public class BoardSettingsController {
     @FXML
     public ComboBox<String> BH1_baud;
     public ProgressIndicator progressIndicator;
-    public Label rs_address;
 
     private AsciiMsgTransceiver asciiMsgTransceiver;
     private ToggleGroup group = new ToggleGroup();
@@ -89,7 +91,6 @@ public class BoardSettingsController {
         boardSettingService.setJ4_func(J4_func);
         boardSettingService.setJ2_baud(J2_baud);
         boardSettingService.setJ3_baud(J3_baud);
-        boardSettingService.setRs_address(rs_address);
     }
 
     private void toggleDisableBoard(boolean enable) {
@@ -145,6 +146,13 @@ public class BoardSettingsController {
         msg.append(getComboBoxIndex(BH1_baud, BAUD_RATES)).append("!]");
 
         asciiMsgTransceiver.sendMessages(msg.toString(), false, progressIndicator);
+    }
+
+    private void setComboBoxValue(ComboBox<String> comboBox, String[] options, String value) {
+        int index = Integer.parseInt(value);
+        if (index >= 0 && index < options.length) {
+            comboBox.setValue(options[index]);
+        }
     }
 
     private String getComboBoxIndex(ComboBox<String> comboBox, String[] options) {

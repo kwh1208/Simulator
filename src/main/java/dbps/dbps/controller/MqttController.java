@@ -3,6 +3,7 @@ package dbps.dbps.controller;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.connectManager.MQTTManager;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ProgressIndicator;
@@ -11,23 +12,24 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+import static dbps.dbps.Constants.CONNECT_START;
+import static dbps.dbps.Constants.CONNECT_TYPE;
+
 public class MqttController {
 
     @FXML
     public AnchorPane mqttAP;
     @FXML
-    public TextField mqttMac;
+    public TextField mqttBroker;
     @FXML
-    public TextField API;
+    public TextField mqttTopic;
     @FXML
-    public TextField brokerIP;
+    public TextField mqttTopic_R;
     @FXML
-    public TextField clientId;
+    public TextField mqttId;
     @FXML
-    public TextField userName;
+    public TextField mqttPwd;
     public ProgressIndicator progressIndicator;
-    public TextField brokerPort;
-    public TextField password;
 
     HexMsgTransceiver hexTransceiver;
     MQTTManager mqttManager;
@@ -42,7 +44,11 @@ public class MqttController {
 
 
     public void connect() {
-        mqttManager.connect();
+        mqttManager.setMQTTInfo(mqttBroker.getText(), mqttTopic.getText(), mqttTopic_R.getText() ,mqttId.getText(), mqttPwd.getText());
+
+        CONNECT_TYPE="mqtt";
+
+        hexTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
     }
 
     public void close(MouseEvent mouseEvent) {
@@ -51,10 +57,12 @@ public class MqttController {
     }
 
     public void read(MouseEvent mouseEvent) {
-
+        System.out.println(222);
+        mqttManager.test();
+        Task<String> send = mqttManager.sendMsgAndGetMsgByte(CONNECT_START);
+        new Thread(send).start();
     }
 
     public void set(MouseEvent mouseEvent) {
-        mqttManager.newBrokerInfo(mqttMac.getText(), API.getText(), brokerIP.getText(), brokerPort.getText(), clientId.getText(), userName.getText(), password.getText());
     }
 }

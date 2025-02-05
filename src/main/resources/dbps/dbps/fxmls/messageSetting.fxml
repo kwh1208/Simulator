@@ -8,9 +8,9 @@
 <?import javafx.collections.FXCollections?>
 <Pane fx:id="msPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dbps.dbps.controller.MessageSettingController" layoutX="350.0" layoutY="210.0" prefHeight="101.0" prefWidth="330.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
 <children>
-    <Label alignment="CENTER" layoutX="85.0" layoutY="-14.0" prefHeight="18.0" prefWidth="160.0" text="%PageMessageSettings"
+    <Label alignment="CENTER" layoutX="85.0" layoutY="-14.0" prefHeight="18.0" prefWidth="160.0" text="페이지 메시지 설정"
            style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white;-fx-font-size: 17; -fx-font-weight: bolder"/>
-    <Label layoutX="19.0" layoutY="26.0" text="%SetTotalCount" />
+    <Label layoutX="19.0" layoutY="26.0" text="총 개수 등록" />
     <ChoiceBox fx:id="pageMsgCnt" layoutX="140.0" layoutY="20.0" prefHeight="25.0" prefWidth="109" value="10개">
         <items>
             <FXCollections fx:factory="observableArrayList">
@@ -27,8 +27,8 @@
             </FXCollections>
         </items>
     </ChoiceBox>
-    <Button layoutX="260.0" layoutY="19.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="%sendButton" onMouseClicked="#sendPageCnt"/>
-    <Label layoutX="17.0" layoutY="63.0" text="%ResetMsg" />
+    <Button layoutX="260.0" layoutY="19.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendPageCnt"/>
+    <Label layoutX="17.0" layoutY="63.0" text="메시지 초기화" />
     <ChoiceBox fx:id="msgInitialize" layoutX="140.0" layoutY="58.0" prefHeight="25.0" prefWidth="109.0" value="전체">
         <items>
             <FXCollections fx:factory="observableArrayList">
@@ -46,6 +46,6 @@
             </FXCollections>
         </items>
     </ChoiceBox>
-    <Button layoutX="260.0" layoutY="57.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="%sendButton" onMouseClicked="#sendMsgInitialize"/>
+    <Button layoutX="260.0" layoutY="57.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="전송" onMouseClicked="#sendMsgInitialize"/>
 </children>
 </Pane>

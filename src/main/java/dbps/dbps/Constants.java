@@ -29,8 +29,6 @@ public class Constants {
         configService = ConfigService.getInstance();
     }
 
-    public static boolean IS_MQTT = false;
-
     public static int RESPONSE_LATENCY = 3;
 
     public static boolean IS_ASCII = false;

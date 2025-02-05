@@ -29,14 +29,14 @@ public class MQTTManager {
         return instance;
     }
 
-    private String brokerIp = "io.adafruit.com";
-    private String brokerPort = "1883";
-    private String clientId = "테스트중";
-    private String username = "kwh1208";
-    private String password = "aio_fLUD30H5OsH7Dwz6HFup90nLE6xe";
+    private String brokerIp;
+    private String brokerPort;
+    private String clientId;
+    private String username;
+    private String password;
     private MqttClient client;
-    private String topic = "kwh1208/feeds/msg";
-    private String topicR = "kwh1208/feeds/msg_r";
+    private String topic;
+    private String topicR;
 
     private MQTTManager() {
         logService = LogService.getLogService();
@@ -90,10 +90,11 @@ public class MQTTManager {
                 connect();
             }
 
-            // JSON 메시지 생성
-            ObjectMapper objectMapper = new ObjectMapper();
-            BrokerInfo brokerInfo = new BrokerInfo(MAC, apiUrl, brokerIp, Integer.parseInt(brokerPort), clientId, username, password);
-            String jsonMessage = objectMapper.writeValueAsString(brokerInfo);
+    public String MQTT_BROKER = "";
+    public String MQTT_TOPIC_SEND = "";
+    public String MQTT_TOPIC_RECEIVED = "";
+    public String MQTT_ID = "";
+    public String MQTT_PWD = "";
 
             // MQTT 메시지 생성
             MqttMessage message = new MqttMessage(jsonMessage.getBytes());

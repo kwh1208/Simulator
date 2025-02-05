@@ -3,7 +3,6 @@ package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
-import dbps.dbps.service.connectManager.MQTTManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -31,7 +30,6 @@ public class SettingController {
     AsciiMsgTransceiver asciiMsgTransceiver;
     LogService logService;
     SettingService settingService;
-    MQTTManager mqttManager;
     @FXML
     public ChoiceBox<String> displayBright;
 
@@ -44,7 +42,6 @@ public class SettingController {
         logService = LogService.getLogService();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
-        mqttManager = MQTTManager.getInstance();
     }
 
     @FXML
@@ -65,24 +62,6 @@ public class SettingController {
             Scene scene = new Scene(root);
             modalStage.setScene(scene);
             modalStage.setResizable(false);
-
-            modalStage.setOnShown(event -> {
-                // 부모 창 위치와 크기 가져오기
-                double parentX = parentStage.getX();
-                double parentY = parentStage.getY();
-                double parentWidth = parentStage.getWidth();
-
-                // 모달 창 크기 계산
-                double modalWidth = modalStage.getWidth();
-
-                // 위치 계산
-                double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
-                double modalY = parentY;
-
-                // 위치 설정
-                modalStage.setX(modalX);
-                modalStage.setY(modalY);
-            });
 
             modalStage.showAndWait();
         } catch (IOException e) {
@@ -108,6 +87,7 @@ public class SettingController {
 
 
     public void sendDisplayBright() {
+//        ![005099!]
         if (IS_ASCII){
             String msg = "![0050";
             if (isRS){

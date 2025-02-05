@@ -52,7 +52,7 @@ public class UnderTheLineRightController {
     }
 
 
-    public void sendBGImgSelection() {
+    public void sendBGImgSelection(MouseEvent mouseEvent) {
         String value = BGImgSelection.getValue();
         if (IS_ASCII){
             String result = "";
@@ -98,24 +98,6 @@ public class UnderTheLineRightController {
         Scene scene = new Scene(root);
         modalStage.setScene(scene);
         modalStage.setResizable(false);
-
-        modalStage.setOnShown(event -> {
-            // 부모 창 위치와 크기 가져오기
-            double parentX = parentStage.getX();
-            double parentY = parentStage.getY();
-            double parentWidth = parentStage.getWidth();
-
-            // 모달 창 크기 계산
-            double modalWidth = modalStage.getWidth();
-
-            // 위치 계산
-            double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
-            double modalY = parentY;
-
-            // 위치 설정
-            modalStage.setX(modalX);
-            modalStage.setY(modalY);
-        });
 
         modalStage.showAndWait();
     }

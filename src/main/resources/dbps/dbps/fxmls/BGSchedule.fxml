@@ -13,18 +13,17 @@
         </Pane>
 
         <!-- 체크박스 설명 Label -->
-        <Label layoutX="30.0" layoutY="220.0" text="%SelectItem"/>
+        <Label layoutX="30.0" layoutY="220.0" text="항목을 선택하세요:"/>
 
         <!-- 스크롤 가능한 체크박스 리스트 -->
-        <ScrollPane layoutX="14.0" layoutY="239.0" prefHeight="275.0" prefWidth="370.0" style="-fx-border-color: #4A4A4A">
+        <ScrollPane layoutX="14.0" layoutY="239.0" prefHeight="275.0" prefWidth="360.0" style="-fx-border-color: #4A4A4A">
             <content>
                 <Pane fx:id="checkboxPane" prefHeight="500.0" prefWidth="350.0" style="-fx-background-color: #333333">
                     <!-- 체크박스는 동적으로 추가 -->
                 </Pane>
             </content>
         </ScrollPane>
-        <Button layoutX="260.0" layoutY="518.0" mnemonicParsing="false" text="%sendButton" onMouseClicked="#send"/>
-        <Button layoutX="330.0" layoutY="518.0" mnemonicParsing="false" text="%close" onMouseClicked="#close"/>
+        <Button layoutX="340.0" layoutY="520.0" mnemonicParsing="false" text="전송" onMouseClicked="#send"/>
         <ProgressIndicator fx:id="progressIndicator" layoutX="180.0" layoutY="150.0" visible="false"/>
     </children>
 </AnchorPane>
