@@ -21,7 +21,7 @@
 }
 .check-box {
     -fx-text-fill: white; /* 글씨 색상을 흰색으로 설정 */
-    -fx-font-size: 14px; /* 글씨 크기 설정 */
+    -fx-font-size: 16px; /* 글씨 크기 설정 */
 }
 .label{
     -fx-text-fill: #E0E0E0;

@@ -59,7 +59,7 @@ public class Simulator extends Application {
 
 
     public static void main(String[] args) {
-        System.setProperty("prism.text", "t2k"); // 텍스트 렌더링 엔진 설정
+//        System.setProperty("prism.text", "t2k"); // 텍스트 렌더링 엔진 설정
         System.setProperty("prism.lcdtext", "false"); // LCD 텍스트 렌더링 비활성화
 
         launch();

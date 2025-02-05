@@ -21,10 +21,10 @@
 
 .label{
     -fx-text-fill: #E0E0E0;
-    -fx-font-size: 15px;
+    -fx-font-size: 16px;
 }
 .button {
-    -fx-font-size: 15px; /* 폰트 크기 */
+    -fx-font-size: 16px; /* 폰트 크기 */
     -fx-background-color: linear-gradient(#444444, #222222); /* 위에서 아래로 밝아지는 배경색 */
     -fx-text-fill: white; /* 텍스트 색상 */
     -fx-border-color: #4A4A4A; /* 버튼 테두리 색상 */

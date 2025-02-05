@@ -12,7 +12,7 @@
 <Pane layoutX="284.0" layoutY="539.0" prefHeight="67.0" prefWidth="288.0">
     <children>
         <Label layoutX="18.0" layoutY="5.0" text="%bgSelection" />
-        <ComboBox fx:id="BGImgSelection" layoutX="145.0"  prefHeight="28.0" prefWidth="113.0" value="사용안함">
+        <ComboBox fx:id="BGImgSelection" layoutX="140.0"  prefHeight="28.0" prefWidth="109.0" value="사용안함" style="-fx-font-size: 14px">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
@@ -20,6 +20,9 @@
         </ComboBox>
         <Button layoutX="261.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="%sendButton" onMouseClicked="#sendBGImgSelection"/>
         <Button layoutX="18.0" layoutY="40.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="306.0" text="%additionalFunction" onMouseClicked="#openAdditionalFunction"/>
+        <Button layoutX="18.0" layoutY="130.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="153.0" text="AS(사진첨부)" onMouseClicked="#ASPhoto"/>
+        <Button layoutX="171.0" layoutY="130.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="153.0" text="AS" onMouseClicked="#AS"/>
+        <Button layoutX="18.0" layoutY="160.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="306.0" text="공식문서" onMouseClicked="#docs"/>
     </children>
 </Pane>
 </VBox>

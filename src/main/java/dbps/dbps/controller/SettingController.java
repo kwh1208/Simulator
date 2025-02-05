@@ -125,7 +125,7 @@ public class SettingController {
         } else{
             String msg = "10 02 00 00 02 44 ";
             if (isRS){
-                msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 02 44";
+                msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 02 44 ";
             }
             switch (displayBright.getValue()){
                 case "100%(기본)": msg += "64"; break;

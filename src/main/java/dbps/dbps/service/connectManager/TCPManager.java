@@ -58,6 +58,7 @@ public class TCPManager {
                         sendBytes = msg.getBytes(StandardCharsets.UTF_16BE);
                     }
                     input.skip(input.available());
+                    logService.updateInfoLog("전송 메세지: "+msg);
                     output.write(sendBytes);
                     output.flush();
 
@@ -69,7 +70,6 @@ public class TCPManager {
                         int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
                         if (bytesRead > 0) {
                             totalBytesRead += bytesRead;
-
                             if (dataReceivedIsComplete(buffer, totalBytesRead)) {
                                 break;
                             }
@@ -78,13 +78,10 @@ public class TCPManager {
                         }
                     }
                     String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
-                    if (result.contains("TX") && result.contains("![") && result.contains("!]")) {
-                        int tmp = extractNumberAfterTXBeforeByte(result);
-                        if (tmp > 0 && 14 + String.valueOf(tmp).length() + result.indexOf("TX(") + tmp <= buffer.length) {
-                            result = new String(buffer, 14 + String.valueOf(tmp).length() + result.indexOf("TX("), tmp, Charset.forName("EUC-KR"));
-                        } else {
-                            throw new IllegalArgumentException("유효하지 않은 offset 또는 tmp 값입니다.");
-                        }
+                    if (result.contains("RX") && result.contains("![") && result.contains("!]")) {
+                        int indexTX = result.indexOf("TX");
+                        result = result.substring(indexTX);
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
                     }
                     logService.updateInfoLog("받은 메세지: " + result);
                     return result;
@@ -99,20 +96,6 @@ public class TCPManager {
             }
         };
     }
-
-    private int extractNumberAfterTXBeforeByte(String input) {
-        // "TX" 뒤의 "byte" 앞 숫자를 찾는 정규식
-        Pattern pattern = Pattern.compile("TX.*?(\\d+)\\s*byte");
-        Matcher matcher = pattern.matcher(input);
-
-        if (matcher.find()) {
-            String number = matcher.group(1); // 첫 번째 그룹에서 숫자 추출
-            return Integer.parseInt(number); // 숫자를 Integer로 변환하여 반환
-        }
-
-        return -1; // "TX" 뒤 "byte" 앞 숫자가 없을 경우 -1 반환
-    }
-
 
     //접속하기
     public void connect(String IP, int PORT){
@@ -177,19 +160,13 @@ public class TCPManager {
                     }
 
                     String result = bytesToHex(buffer, totalBytesRead);
-                    if (result.contains("54 58 28")) {
-                        result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
-                        int tmp = extractNumberAfterTXBeforeByteHex(result);
-                        if (tmp > 0 && 14 + String.valueOf(tmp).length() + result.indexOf("TX(") + tmp <= buffer.length) {
-                            result = new String(buffer, 15 + String.valueOf(tmp).length() + result.indexOf("54 58 28"), tmp * 3, Charset.forName("EUC-KR"));
-                        } else {
-                            throw new IllegalArgumentException("유효하지 않은 offset 또는 tmp 값입니다.");
-                        }
+                    if (result.contains("52 58 28")) {
+                            result = result.substring(result.indexOf("10 02"));
                     }
                     logService.updateInfoLog("받은 메세지: " + result);
                     return result;
                 } catch (IOException e) {
-                    logService.errorLog(msg + "전송에 실패했습니다.");
+                    logService.errorLog("전송에 실패했습니다.");
                     throw e;
                 } finally {
                     disconnect();

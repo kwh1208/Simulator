@@ -32,26 +32,22 @@ public class ServerTCPManager {
     }
 
     public void connect(int port) {
-        Thread connectThread = new Thread(() -> {
-            try (ServerSocket serverSocket = new ServerSocket(port)) {
-                serverSocket.setSoTimeout(RESPONSE_LATENCY * 1000);
-                logService.updateInfoLog("서버 소켓이 열렸습니다. 클라이언트 연결 대기 중...");
-                socket = serverSocket.accept();
-                logService.updateInfoLog("클라이언트 연결 성공: " + socket.getRemoteSocketAddress());
-            } catch (SocketTimeoutException e) {
-                logService.errorLog("클라이언트 연결 시간 초과");
-            } catch (IOException e) {
-                logService.errorLog("서버 소켓 오류: " + e.getMessage());
-            }
-        });
-        connectThread.setDaemon(true); // 데몬 스레드 설정
-        connectThread.start();
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            serverSocket.setSoTimeout(RESPONSE_LATENCY * 1000);
+            logService.updateInfoLog("서버 소켓이 열렸습니다. 클라이언트 연결 대기 중...");
+            socket = serverSocket.accept();
+        } catch (SocketTimeoutException e) {
+            logService.errorLog("클라이언트 연결 시간 초과");
+        } catch (IOException e) {
+            logService.errorLog("서버 소켓 오류: " + e.getMessage());
+        }
     }
 
     public void disconnect() {
         try {
             socket.close();
             socket = null;
+            logService.updateInfoLog("서버 소켓이 닫혔습니다.");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -166,7 +162,6 @@ public class ServerTCPManager {
                     while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000L) {
                         if (input.available() > 0) {
                             int bytesRead = input.read(buffer);
-
                             if (bytesRead > 0) {
                                 totalBytesRead += bytesRead;
 

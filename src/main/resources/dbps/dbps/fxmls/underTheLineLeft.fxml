@@ -9,7 +9,7 @@
     <TextField fx:id="timeBoard" alignment="CENTER" layoutX="65.0" layoutY="58.0" prefHeight="30.0" prefWidth="230.0" text="%currentTime" editable="false"/>
     <Button layoutX="65.0" layoutY="98.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="230.0" text="%controllerTime" onMouseClicked="#getControllerTime"/>
     <Button layoutX="65.0" layoutY="138.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="230.0" text="%syncWithPcTime" onMouseClicked="#synchronizeTime"/>
-    <Button layoutX="65.0" layoutY="178.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="120.0" text="%CPUReboot" onMouseClicked="#resetController"/>
-    <Button layoutX="185.0" layoutY="178.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="110.0" text="%FactoryReset" onMouseClicked="#hardReset"/>
+    <Button layoutX="65.0" layoutY="178.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="123.5" text="%CPUReboot" onMouseClicked="#resetController"/>
+    <Button layoutX="188.5" layoutY="178.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="108.5" text="%FactoryReset" onMouseClicked="#hardReset"/>
 </children>
 </Pane>

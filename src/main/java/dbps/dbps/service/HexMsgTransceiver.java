@@ -1,13 +1,15 @@
 package dbps.dbps.service;
 
-import dbps.dbps.service.connectManager.*;
+import dbps.dbps.service.connectManager.SerialPortManager;
+import dbps.dbps.service.connectManager.ServerTCPManager;
+import dbps.dbps.service.connectManager.TCPManager;
+import dbps.dbps.service.connectManager.UDPManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
@@ -90,7 +92,7 @@ public class HexMsgTransceiver {
 
 
 
-    public String sendByteMessagesNoLog(byte[] msg) {
+    public void sendByteMessagesNoLog(byte[] msg) {
         switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> {
                 try {
@@ -101,7 +103,7 @@ public class HexMsgTransceiver {
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 
-                    return sendTask.get();
+                    sendTask.get();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -113,7 +115,7 @@ public class HexMsgTransceiver {
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 
-                    return sendTask.get();
+                    sendTask.get();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -125,7 +127,7 @@ public class HexMsgTransceiver {
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 
-                    return sendTask.get();
+                    sendTask.get();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -136,13 +138,12 @@ public class HexMsgTransceiver {
                     Thread taskThread = new Thread(sendTask);
                     taskThread.start();
 
-                    return sendTask.get();
+                    sendTask.get();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
         }
-        return null;
     }
 
     public String sendMessages(String msg, ProgressIndicator progressIndicator) {
@@ -235,7 +236,7 @@ public class HexMsgTransceiver {
             }
 
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyMMddHHmmss");
-            SimpleDateFormat outputFormat = new SimpleDateFormat("yy년 MM월 dd일 E요일 HH시 mm분 ss초", Locale.KOREAN);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yy-MM-dd (E) HH:mm:ss");
 
             try {
                 Date date = inputFormat.parse(time.toString());

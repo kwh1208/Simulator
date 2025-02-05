@@ -123,6 +123,10 @@ public class HEXMessageController {
         bundle= ResourceManager.getInstance().getBundle();
         hexMsgService = HexMsgService.getInstance();
         hexMsgService.setPageMsgCnt(pageMsgCnt);
+        hexMsgService.setXStart(xStart);
+        hexMsgService.setYStart(yStart);
+        hexMsgService.setXEnd(xEnd);
+        hexMsgService.setYEnd(yEnd);
 
 
         realTimeMsg.setToggleGroup(msgTypeGroup);
@@ -182,14 +186,13 @@ public class HEXMessageController {
         int xLimit = Integer.parseInt(configService.getProperty("displayColumnSize"));
         int yLimit = Integer.parseInt(configService.getProperty("displayRowSize"));
 
-
         for (int i = 0; i <= 4*xLimit; i++) {
-            xStart.getItems().add(String.valueOf(i));
-            xEnd.getItems().add(String.valueOf(i));
+            xStart.getItems().add(String.valueOf(4*i));
+            xEnd.getItems().add(String.valueOf(4*i));
         }
         for (int i = 0; i <= 4*yLimit; i++) {
-            yStart.getItems().add(String.valueOf(i));
-            yEnd.getItems().add(String.valueOf(i));
+            yStart.getItems().add(String.valueOf(4*i));
+            yEnd.getItems().add(String.valueOf(4*i));
         }
 
         xStart.setValue("0");
@@ -217,7 +220,6 @@ public class HEXMessageController {
 
     private void doMsgSettings() {
         String msgNum = getMsgNum();
-
 
         displayControl.setValue(configService.getProperty("displayControl"+msgNum));
         displayMethod.setValue(configService.getProperty("displayMethod"+msgNum));
@@ -494,7 +496,17 @@ public class HEXMessageController {
             } else {
                 return "0F ";
             }
-        }//blind없음.
+        } else if(effect.equals(bundle.getString("blind"))){
+            if (direction.equals(bundle.getString("left"))) {
+                return "12 ";
+            } else if (direction.equals(bundle.getString("right"))) {
+                return "13 ";
+            } else if (direction.equals(bundle.getString("up"))) {
+                return "14 ";
+            } else {
+                return "15 ";
+            }
+        }
         else if (effect.equals(bundle.getString("curtainEffect"))) {
             if (direction.equals(bundle.getString("horizontalOutward"))) {
                 return "18 ";
@@ -519,15 +531,27 @@ public class HEXMessageController {
             }
         } else if (effect.equals(bundle.getString("rotateEffect"))) {
             if (direction.equals(bundle.getString("counterclockwise1"))) {
-                return "28 ";
-            } else if (direction.equals(bundle.getString("clockwise1"))) {
                 return "29 ";
+            } else if (direction.equals(bundle.getString("clockwise1"))) {
+                return "28 ";
             } else if (direction.equals(bundle.getString("counterclockwise2"))) {
-                return "2A ";
-            } else {
                 return "2B ";
+            } else {
+                return "2A ";
             }
         } else if (effect.equals(bundle.getString("backgroundFlash"))) {
+            if (direction.equals(bundle.getString("red"))) {
+                return "2C ";
+            } else if (direction.equals(bundle.getString("green"))) {
+                return "2D ";
+            } else if (direction.equals(bundle.getString("blue"))) {
+                return "2E ";
+            } else if (direction.equals(bundle.getString("white"))) {
+                return "2F ";
+            } else {
+                return "30 ";
+            }
+        } else if (effect.equals(bundle.getString("textFlash"))){
             if (direction.equals(bundle.getString("red"))) {
                 return "31 ";
             } else if (direction.equals(bundle.getString("green"))) {
@@ -539,13 +563,12 @@ public class HEXMessageController {
             } else if (direction.equals(bundle.getString("allSequential"))) {
                 return "35 ";
             } else {
-                return "36 ";
+                return "37 ";
             }
-        } else if (effect.equals("3DEffect")) {
-            return "37 ";
+        }
+        else if (effect.equals(bundle.getString("3DEffect"))) {
+            return "36 ";
         } else {
-            // 무작위
-            //textflash 없음
             return "7A ";
         }
 
@@ -558,13 +581,13 @@ public class HEXMessageController {
                     directionBox.setItems(FXCollections.observableArrayList("방향없음", "밝아지기", "어두워지기", "수평 반사", "수직 반사"));
             case "전체효과" -> directionBox.setItems(FXCollections.observableArrayList("무작위효과"));
             case "이동하기", "닦아내기", "블라인드" ->
-                    directionBox.setItems(FXCollections.observableArrayList("왼쪽", "오른쪽", "위", "아래"));
+                    directionBox.setItems(FXCollections.observableArrayList("왼쪽", "오른쪽", "위쪽", "아래"));
             case "커튼효과" -> directionBox.setItems(FXCollections.observableArrayList("수평밖으로", "수평안으로", "수직밖으로", "수직안으로"));
             case "확대효과" -> directionBox.setItems(FXCollections.observableArrayList("왼쪽", "오른쪽", "위쪽", "아래쪽", "오른쪽아래로"));
             case "회전효과" -> directionBox.setItems(FXCollections.observableArrayList("시계반대1", "시계방향1", "시계반대2", "시계방향2"));
-            case "배경깜빡이기" ->
+            case "배경깜박이기" ->
                     directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "파란색", "흰색", "전체(순차적)"));
-            case "색상깜빡이기" ->
+            case "색상깜박이기" ->
                     directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "파란색", "흰색", "전체(순차적)", "전체(동시에)"));
             case "3D 효과" -> directionBox.setItems(FXCollections.observableArrayList("왼쪽"));
             case "효과없음" -> directionBox.setDisable(true);

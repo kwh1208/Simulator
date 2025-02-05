@@ -126,8 +126,6 @@ public class FirmwareService {
                             // Label 업데이트 (i/totalPackets)
                             progressLabel.setText((finalI + 1) + "/" + totalPackets);
                         });
-
-                        Thread.sleep(200);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

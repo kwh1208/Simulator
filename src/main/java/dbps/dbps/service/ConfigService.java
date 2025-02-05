@@ -1,5 +1,7 @@
 package dbps.dbps.service;
 
+import dbps.dbps.service.connectManager.TCPManager;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
@@ -41,6 +43,9 @@ public class ConfigService {
         RESPONSE_LATENCY = Integer.parseInt(getProperty("latency"));
         isRS = Boolean.parseBoolean(getProperty("isRS"));
         serverTCPPort = Integer.parseInt(getProperty("serverTCPPort"));
+
+        TCPManager.getManager().setIP(TCP_IP);
+        TCPManager.getManager().setPORT(TCP_PORT);
     }
 
     private void createFileIfNotExists(String filePath) {

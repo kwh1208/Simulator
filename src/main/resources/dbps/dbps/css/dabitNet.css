@@ -22,7 +22,7 @@
 
 .label{
     -fx-text-fill: #E0E0E0;
-    -fx-font-size: 15px;
+    -fx-font-size: 16px;
 }
 
 .text-field{
@@ -39,7 +39,7 @@
     -fx-font-family: Gulim;
 }
 .button {
-    -fx-font-size: 15px; /* 폰트 크기 */
+    -fx-font-size: 16px; /* 폰트 크기 */
     -fx-background-color: linear-gradient(#444444, #222222); /* 위에서 아래로 밝아지는 배경색 */
     -fx-text-fill: white; /* 텍스트 색상 */
     -fx-border-color: #4A4A4A; /* 버튼 테두리 색상 */
@@ -82,7 +82,7 @@
     -fx-background-color: orange; /* 선택된 네모 내부 점 색상 */
 }
 .radio-button {
-    -fx-font-size: 14px; /* 글꼴 크기 */
+    -fx-font-size: 16px; /* 글꼴 크기 */
     -fx-text-fill: white;
 }
 
@@ -105,7 +105,7 @@
     -fx-background-color: #1C1F26;
     -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
     -fx-text-fill: white;
-    -fx-font-size: 15px;
+    -fx-font-size: 16px;
 }
 
 .combo-box .list-cell {
@@ -152,7 +152,7 @@
 
 .check-box {
     -fx-text-fill: white; /* 글씨 색상을 흰색으로 설정 */
-    -fx-font-size: 14px; /* 글씨 크기 설정 */
+    -fx-font-size: 16px; /* 글씨 크기 설정 */
 }
 .check-box .box {
     -fx-border-color: #5A5A5A; /* 체크박스 테두리 색상 */
@@ -181,7 +181,7 @@
 
 .tab .tab-label {
     -fx-text-fill: white; /* 텍스트 색상 */
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;
     -fx-text-alignment: CENTER; /* 텍스트 중앙 정렬 */
 }
 
