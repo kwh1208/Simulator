@@ -61,7 +61,7 @@ public class DisplaySignalSettingController {
 
     ConfigService configService;
 
-    private Timeline timeline;
+    public static Timeline timeline;
 
     @FXML
     private void initialize() {
@@ -271,9 +271,10 @@ public class DisplaySignalSettingController {
         timeline = new Timeline();
         timeline.setCycleCount(signalCount); // 각 신호에 대해 반복
 
+        long ctime = System.currentTimeMillis();
         for (int i = startIdx; i < signalCount; i++) {
             int index = i; // 람다식 내부에서 사용될 인덱스
-            KeyFrame keyFrame = new KeyFrame(Duration.seconds(i * time), event -> {
+            KeyFrame keyFrame = new KeyFrame(Duration.seconds((i - startIdx) * time), event -> {
                 // 신호를 선택하여 UI에 반영
                 signalList.getSelectionModel().select(index);
                 // signalTransfer() 호출
@@ -298,9 +299,12 @@ public class DisplaySignalSettingController {
         Integer before = spinnerForBefore.getValue();
         Integer after = spinnerForAfter.getValue();
 
-        String msg = "![00B4"+before+" "+after+"!]";
-        if (isRS){
-            msg = "!["+convertRS485AddrASCii()+"0B4"+before+" "+after+"!]";
+        String beforeStr = (before < 10) ? " " + before : before.toString();
+        String afterStr = (after < 10) ? " " + after : after.toString();
+
+        String msg = "![00B4" + beforeStr + " " + afterStr + "!]";
+        if (isRS) {
+            msg = "![" + convertRS485AddrASCii() + "0B4" + beforeStr + " " + afterStr + "!]";
         }
 
         asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);

@@ -19,7 +19,7 @@ public class FontService {
     private static FontService instance = null;
     HexMsgTransceiver hexMsgTransceiver;
     //사용안함, 영어, 유니코드 완성, 유니코드 일본어, 유니코드 중국어, 한글조합형, 사용자 폰트, 유니코드 전체
-    private int[][] fontKindAddr = {{0, 0, 0xac00, 0x3040, 0x4e00, 0x8861, 0xe000, 0}, {0, 0x7f, 0xd7a3, 0x30ff, 0x9fff, 0xd3bd, 0xe07f, 0xd7a3}};
+    private final int[][] fontKindAddr = {{0, 0, 0xac00, 0x3040, 0x4e00, 0x8861, 0xe000, 0}, {0, 0x7f, 0xd7a3, 0x30ff, 0x9fff, 0xd3bd, 0xe07f, 0xd7a3}};
 
     private FontService(){
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
@@ -31,12 +31,15 @@ public class FontService {
         }
         return instance;
     }
+
+
     
     public Task<Void> sendFont(String[] fontGroup1, String[] fontGroup2, String[] fontGroup3, String[] fontGroup4, String[] fontType, ProgressBar progressBar, Label progressLabel) {
         return new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                String returnMsg = hexMsgTransceiver.sendMessages("10 02 00 00 02 45 00 10 03", commonProgressIndicator);
+                int progress = -1;
+                hexMsgTransceiver.sendMessages("10 02 00 00 02 45 00 10 03", commonProgressIndicator);
 
                 Thread.sleep(200);
 
@@ -220,8 +223,8 @@ public class FontService {
                                 groupPacket.append(String.format("%02X ", 0));
                             }
                         }
-
                     }
+                    groupPackets[i] = (int) Math.ceil(fontPackets.size()/1024.0);
                     totalPackets+=groupPackets[i];
                     ByteBuffer buffer = ByteBuffer.allocate(4);
                     buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -241,10 +244,7 @@ public class FontService {
                 }
                 int sentPacket = 0;
                 int index = 0;
-                int sendGroupNum = 0;
-                //만약에 유니코드면 시작점 지정.
-                //송신패킷 생성
-                //groupFontPackets
+
                 for (int i = 0; i < groupNum; i++) {
                     combinedData = new byte[groupFontPackets.get(i).size()];
                     for (Byte b : groupFontPackets.get(i)) {
@@ -290,12 +290,9 @@ public class FontService {
                         sendPacket[sendPacket.length-2] = 0x10;
                         sendPacket[sendPacket.length-1] = 0x03;
 
-                        returnMsg = hexMsgTransceiver.sendByteMessagesNoLog(sendPacket);
-                        if (!returnMsg.equals("10 02 00 00 02 98 00 10 03 ")){
-                            wait();
-                        }
+                        hexMsgTransceiver.sendByteMessagesNoLog(sendPacket);
 
-                        int finalI = (i*groupPackets[i])+j;
+                        int finalI = progress++;
                         int total = totalPackets;
                         Platform.runLater(() -> {
                             // ProgressBar 업데이트 (0 ~ 1.0 범위)

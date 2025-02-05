@@ -4,10 +4,14 @@ import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.FirmwareService;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.LogService;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
@@ -58,6 +62,18 @@ public class FirmwareUpgradeController {
         logService = LogService.getLogService();
         firmwareService = FirmwareService.getFirmwareService();
         FirmwareService.setFirmwareInformation(firmwareInformation);
+
+        fileLocation.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+                fileLocation.positionCaret(fileLocation.getText().length()); // 텍스트 끝으로 캐럿 이동
+            });
+        });
+
+        fileLocation.textProperty().addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+                fileLocation.positionCaret(newValue.length()); // 텍스트 끝으로 캐럿 이동
+            });
+        });
     }
 
 
@@ -105,36 +121,45 @@ public class FirmwareUpgradeController {
             fileLocation.setText(selectedFile.getAbsolutePath());
         }
 
-        //파일 정보읽어서 firmwareFileInformation에 업데이트
         String result = "";
+        String hexToDecimal = "";
         try (RandomAccessFile file = new RandomAccessFile(selectedFile.getAbsolutePath(), "r")) {
             int startByte = 0;
             int length = 0;
-            if (!selectedFile.getName().contains("502")){
+            if (!selectedFile.getName().contains("502")) {
                 startByte = 516;
                 length = 38;
-            }
-            else {
+            } else {
                 startByte = 15796;
                 length = 38;
             }
-            // 파일의 해당 위치로 이동
-            file.seek(startByte);
 
-            // 읽을 바이트 배열 생성
-            byte[] buffer = new byte[length];
+            // 앞 한 글자를 추가로 읽기 위해 startByte를 1 줄임
+            int extendedStartByte = startByte - 1;
+
+            // 파일의 해당 위치로 이동
+            file.seek(extendedStartByte);
+
+            // 읽을 바이트 배열 생성 (기존 길이 + 앞 한 글자)
+            byte[] buffer = new byte[length + 1];
             int bytesRead = file.read(buffer);
 
-            if (bytesRead == length) {
-                result = new String(buffer, "EUC-KR"); // ASCII 호환 인코딩
-                System.out.println("Read ASCII content: " + result);
-            } else {
-                System.out.println("Unable to read the full length. Bytes read: " + bytesRead);
-            }}
-        catch (IOException e) {
-            System.err.println("Error reading file: " + e.getMessage());
+            if (bytesRead == length + 1) {
+                // 앞 한 글자 (바이트) 읽어서 16진수 변환 후 10진수 변환
+                int extraByte = buffer[0] & 0xFF;  // 부호 없는 값으로 변환
+                hexToDecimal = String.valueOf(extraByte);  // 10진수 문자열로 변환
+
+                // 기존 데이터 부분을 읽기 (1바이트 이후부터)
+                result = new String(buffer, 1, length, "EUC-KR"); // ASCII 호환 인코딩
+
+
+            }
+        } catch (IOException e) {
+
         }
-        firmwareFileInformation.setText(result);
+
+        // UI에 표시
+        firmwareFileInformation.setText("<"+hexToDecimal+">"+result);
     }
 
     public void send() {
@@ -175,7 +200,7 @@ public class FirmwareUpgradeController {
             return;
         }
 
-        uploadFirmwarePath = firmwareFileInformationText;
+        uploadFirmwarePath = fileLocation.getText();
         Task<Void> firmwareUpload = firmwareService.firmwareUpload(firmwareProgressIndicator, firmwareProgressLabel);
         firmwareProgressIndicator.setVisible(false);
         firmwareUpload.setOnRunning(e -> {

@@ -150,7 +150,7 @@ public class UDPManager {
             @Override
             protected String call() throws Exception {
                 if (socket == null||socket.isClosed()) {
-                    connect(IP, PORT);
+                    connectNoLog(IP, PORT);
                 }
                 DatagramPacket receivePacket;
                 try {
@@ -181,7 +181,7 @@ public class UDPManager {
                 } catch (IOException e) {
                     throw e;
                 } finally {
-                    disconnect();
+                    disconnectNoLog();
                 }
             }
         };
@@ -191,12 +191,17 @@ public class UDPManager {
         return new Task<>() {
             @Override
             protected String call() throws IOException {
+                if (socket == null||socket.isClosed()) {
+                    connectNoLog(IP, PORT);
+                }
                 DatagramPacket receivePacket;
                 List<String> receivedMessages = new ArrayList<>();
                 try {
                     InetAddress serverAddr = InetAddress.getByName(IP);
                     DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
-                    socket.send(sendPacket); // 메시지 전송
+
+                    socket.send(sendPacket);
+
                     byte[] receiveBuffer = new byte[1024];
 
                     receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
@@ -220,7 +225,7 @@ public class UDPManager {
                 } catch (IOException e) {
                     throw e;
                 } finally {
-                    disconnect(); // 자원 정리
+                    disconnectNoLog(); // 자원 정리
                 }
             }
         };
@@ -257,6 +262,20 @@ public class UDPManager {
         }
     }
 
+    public void connectNoLog(String IP, int PORT){
+        this.IP = IP;
+        this.PORT = PORT;
+        try {
+            if (socket == null) {
+                socket = new DatagramSocket(5109);
+            }
+            socket.setBroadcast(true);
+            socket.setSoTimeout(RESPONSE_LATENCY*1000);
+        } catch (SocketException e) {
+            logService.errorLog("IP: " + IP + ", PORT: " + PORT+"열기에 실패했습니다.");
+        }
+    }
+
     //접속끊기
     public void disconnect() {
         if (socket == null){
@@ -265,5 +284,13 @@ public class UDPManager {
         socket.close();
         socket = null;
         logService.updateInfoLog("UDP 서버를 종료합니다. IP: " + IP + ", PORT: " + PORT);
+    }
+
+    public void disconnectNoLog() {
+        if (socket == null){
+            return;
+        }
+        socket.close();
+        socket = null;
     }
 }

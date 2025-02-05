@@ -8,7 +8,7 @@
 <AnchorPane fx:id="communicationSettingAP" prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.CommunicationSettingController">
    <Pane layoutX="15.0" layoutY="14.0" prefHeight="161.0" prefWidth="373.0" style="-fx-border-color: black;">
       <RadioButton fx:id="serialRadioBtn" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="80.0" style="-fx-background-color: #333333;" text="Serial" />
-      <Label layoutX="14.0" layoutY="20.0" prefHeight="13.0" prefWidth="99.0" text="%comPort" />
+      <Label layoutX="14.0" layoutY="20.0" prefHeight="13.0" text="%comPort" />
       <ComboBox fx:id="serialPortComboBox" layoutX="235.0" layoutY="11.0" prefHeight="25.0" prefWidth="120.0" value="COM4">
          <items>
             <FXCollections fx:factory="observableArrayList">
@@ -83,8 +83,9 @@
       <TextField fx:id="clientIPPort" layoutX="210.0" layoutY="48.0" prefWidth="145.0" text="5000">
          </TextField>
    </Pane>
+
    <Pane layoutX="15.0" layoutY="294.0" prefHeight="95.0" prefWidth="373.0" style="-fx-border-color: black;">
-      <RadioButton fx:id="serverTCPRadioBtn" layoutX="16.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="125.0" style="-fx-background-color: #333333;" text="Server TCP/IP" />
+      <RadioButton fx:id="serverTCPRadioBtn" layoutX="16.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" style="-fx-background-color: #333333;" text="Server TCP/IP" />
       <Label layoutX="16.0" layoutY="21.0" text="IP Address" />
       <ChoiceBox fx:id="serverIPAddress" layoutX="210.0" layoutY="17.0" prefWidth="145.0">
          <items>
@@ -96,7 +97,7 @@
       <TextField fx:id="serverIPPort" layoutX="210.0" layoutY="50.0" prefWidth="145.0" />
    </Pane>
    <Pane layoutX="15.0" layoutY="403.0" prefHeight="87.0" prefWidth="373.0" style="-fx-border-color: black;">
-      <RadioButton fx:id="UDPRadioBtn" layoutX="18.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="61.0" style="-fx-background-color: #333333;" text="UDP" />
+      <RadioButton fx:id="UDPRadioBtn" layoutX="18.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" style="-fx-background-color: #333333;" text="UDP" />
       <Label layoutX="16.0" layoutY="21.0" text="IP Address" />
       <TextField fx:id="UDPIPAddress" layoutX="210.0" layoutY="17.0" prefWidth="145.0" text="192.168.0.202" />
       <Label layoutX="16.0" layoutY="47.0" text="IP Port" />

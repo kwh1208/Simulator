@@ -167,6 +167,8 @@ public class AdditionalFunctionsController {
             asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
         }
         else {
+            hexMsgTransceiver.sendMessages("10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 02 45 00 10 03", progressIndicator);
+
             String msg;
             String result;
             if (value.equals("검은색")){

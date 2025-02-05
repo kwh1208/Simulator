@@ -188,22 +188,31 @@ public class AsciiMsgTransceiver {
             logService.updateInfoLog("폰트 이름 설정에 성공했습니다.");
             return;
         }
+        if (cmd.equals("40")) {
+            int row = 0;
+            int column = 0;
+
+            try {
+                row = Integer.parseInt(receiveMsg.substring(6, 8));
+                column = Integer.parseInt(receiveMsg.substring(8, 10));
+            } catch (NumberFormatException e) {
+                row = Integer.parseInt(msg.substring(6, 8));
+                column = Integer.parseInt(msg.substring(8, 10));
+            }
+
+            finally {
+                sizeOfDisplayBoardService.setDisplaySize(row, column);
+if (row != Integer.parseInt(msg.substring(6, 8)) || column != Integer.parseInt(msg.substring(8, 10))) {
+                    logService.warningLog("화면 크기 설정에 실패했습니다.");
+                    logService.warningLog(row + "단, " + column + "열까지만 가능합니다.");
+                }
+            }
+        }
 
         if (status == '0') { // 정상 처리
             if (cmd.equals("83")) { // 맥주소 읽기
                 logService.updateInfoLog("맥주소 : " + receiveMsg.substring(8, 20));
                 logService.updateInfoLog("받은 메세지 : " + receiveMsg);
-            }
-            if (cmd.equals("40")) {
-                int row = Integer.parseInt(receiveMsg.substring(6, 8));
-                int column = Integer.parseInt(receiveMsg.substring(8, 10));
-
-                sizeOfDisplayBoardService.setDisplaySize(row, column);
-
-                if (row != Integer.parseInt(msg.substring(6, 8)) || column != Integer.parseInt(msg.substring(8, 10))) {
-                    logService.warningLog("화면 크기 설정에 실패했습니다.");
-                    logService.warningLog(row + "단, " + column + "열까지만 가능합니다.");
-                }
             }
             if (cmd.equals("20")) {
                 logService.updateInfoLog("배경이미지 표출에 성공했습니다.");
@@ -233,7 +242,7 @@ public class AsciiMsgTransceiver {
                 logService.updateInfoLog("표출 속도 변경에 성공했습니다.");
             }
             if (cmd.equals("56")) {
-                logService.updateInfoLog("배경이미지 표출 목록 선택에 성공했습니다.");
+                logService.updateInfoLog("폰트 두께 설정 선택에 성공했습니다.");
             }
             if (cmd.equals("60")) {
                 logService.updateInfoLog("페이지 메세지 개수 설정에 성공했습니다.");

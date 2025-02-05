@@ -16,39 +16,41 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 public class FontSettingController {
     public Label fontProgressLabel;
     public ProgressBar fontProgressBar;
     public Label fontCapacity;
-    public ChoiceBox<String> fontGroup1fontSelected1;
+    public ComboBox<String> fontGroup1fontSelected1;
     ResourceBundle bundle = ResourceManager.getInstance().getBundle();
 
     ConfigService configService;
     FontService fontService = FontService.getInstance();
     @FXML
-    public ChoiceBox<String> fontGroup2fontSelected1;
+    public ComboBox<String> fontGroup2fontSelected1;
     @FXML
     public TextArea fontGroup2fontPath1;
     @FXML
-    public ChoiceBox<String> fontGroup2fontSelected2;
+    public ComboBox<String> fontGroup2fontSelected2;
     @FXML
     public TextArea fontGroup2fontPath2;
     @FXML
-    public ChoiceBox<String> fontGroup2fontSelected3;
+    public ComboBox<String> fontGroup2fontSelected3;
     @FXML
     public TextArea fontGroup2fontPath3;
     @FXML
-    public ChoiceBox<String> fontGroup3fontSelected1;
+    public ComboBox<String> fontGroup3fontSelected1;
     @FXML
     public TextArea fontGroup3fontPath1;
     @FXML
-    public ChoiceBox<String> fontGroup3fontSelected2;
+    public ComboBox<String> fontGroup3fontSelected2;
     @FXML
     public TextArea fontGroup3fontPath2;
     @FXML
-    public ChoiceBox<String> fontGroup3fontSelected3;
+    public ComboBox<String> fontGroup3fontSelected3;
     @FXML
     public TextArea fontGroup3fontPath3;
     @FXML
@@ -58,19 +60,19 @@ public class FontSettingController {
     @FXML
     public TextArea fontGroup4fontPath3;
     @FXML
-    public ChoiceBox<String> fontGroup4fontSelected1;
+    public ComboBox<String> fontGroup4fontSelected1;
     @FXML
-    public ChoiceBox<String> fontGroup4fontSelected2;
+    public ComboBox<String> fontGroup4fontSelected2;
     @FXML
-    public ChoiceBox<String> fontGroup4fontSelected3;
+    public ComboBox<String> fontGroup4fontSelected3;
     @FXML
-    ChoiceBox<String> fontGroup1fontSelected3;
+    ComboBox<String> fontGroup1fontSelected3;
     @FXML
     TextArea fontGroup1fontPath3;
     @FXML
     TextArea fontGroup1fontPath2;
     @FXML
-    ChoiceBox<String> fontGroup1fontSelected2;
+    ComboBox<String> fontGroup1fontSelected2;
     @FXML
     TextArea fontGroup1fontPath1;
 
@@ -96,6 +98,37 @@ public class FontSettingController {
         configService = ConfigService.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
 
+        if (Boolean.parseBoolean(configService.getProperty("fontGroup2selected"))){
+            fontGroup2ChkBox.setSelected(true);
+            ableAllNodesInPane((Pane) fontGroup2ChkBox.getParent());
+        }
+        else {
+            fontGroup2ChkBox.setSelected(false);
+            disableAllNodesInPane((Pane) fontGroup2ChkBox.getParent());
+        }
+
+        if (Boolean.parseBoolean(configService.getProperty("fontGroup3selected"))){
+            fontGroup3ChkBox.setSelected(true);
+            ableAllNodesInPane((Pane) fontGroup3ChkBox.getParent());
+        }
+        else {
+            fontGroup3ChkBox.setSelected(false);
+            disableAllNodesInPane((Pane) fontGroup3ChkBox.getParent());
+        }
+
+        if (Boolean.parseBoolean(configService.getProperty("fontGroup4selected"))){
+            fontGroup4ChkBox.setSelected(true);
+            ableAllNodesInPane((Pane) fontGroup4ChkBox.getParent());
+        }
+        else {
+            fontGroup4ChkBox.setSelected(false);
+            disableAllNodesInPane((Pane) fontGroup4ChkBox.getParent());
+        }
+
+        fontGroup2ChkBox.setDisable(false);
+        fontGroup3ChkBox.setDisable(false);
+        fontGroup4ChkBox.setDisable(false);
+
         fontGroup1ChkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             fontGroup1ChkBox.setSelected(true);
         });
@@ -111,11 +144,18 @@ public class FontSettingController {
                 disableAllNodesInPane((Pane) fontGroup3ChkBox.getParent());
                 disableAllNodesInPane((Pane) fontGroup4ChkBox.getParent());
                 fontGroup2ChkBox.setDisable(false);
+                fontGroup3ChkBox.setDisable(false);
+                fontGroup4ChkBox.setDisable(false);
             }
             updateFontSize();
+            configService.setProperty("fontGroup2selected", String.valueOf(fontGroup2ChkBox.isSelected()));
         });
 
         fontGroup3ChkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!fontGroup2ChkBox.isSelected()){
+                fontGroup3ChkBox.setSelected(false);
+                return;
+            }
             if (newValue) {
                 ableAllNodesInPane((Pane) fontGroup3ChkBox.getParent());
                 fontGroup4ChkBox.setDisable(false);
@@ -123,19 +163,29 @@ public class FontSettingController {
                 fontGroup4ChkBox.setSelected(false);
                 disableAllNodesInPane((Pane) fontGroup3ChkBox.getParent());
                 disableAllNodesInPane((Pane) fontGroup4ChkBox.getParent());
+                fontGroup2ChkBox.setDisable(false);
                 fontGroup3ChkBox.setDisable(false);
+                fontGroup4ChkBox.setDisable(false);
             }
             updateFontSize();
+            configService.setProperty("fontGroup3selected", String.valueOf(fontGroup3ChkBox.isSelected()));
         });
 
         fontGroup4ChkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!fontGroup3ChkBox.isSelected()){
+                fontGroup4ChkBox.setSelected(false);
+                return;
+            }
             if (newValue) {
                 ableAllNodesInPane((Pane) fontGroup4ChkBox.getParent());
             } else {
                 disableAllNodesInPane((Pane) fontGroup4ChkBox.getParent());
+                fontGroup2ChkBox.setDisable(false);
+                fontGroup3ChkBox.setDisable(false);
                 fontGroup4ChkBox.setDisable(false);
             }
             updateFontSize();
+            configService.setProperty("fontGroup4selected", String.valueOf(fontGroup4ChkBox.isSelected()));
         });
 
         fontSettingAnchorPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/fontSetting.css").toExternalForm());
@@ -240,6 +290,18 @@ public class FontSettingController {
         });
 
         addItem();
+
+        fontGroup1fontSelected2.setValue(configService.getProperty("fontGroup1FontType2"));
+        fontGroup1fontSelected3.setValue(configService.getProperty("fontGroup1FontType3"));
+        fontGroup2fontSelected1.setValue(configService.getProperty("fontGroup2FontType1"));
+        fontGroup2fontSelected2.setValue(configService.getProperty("fontGroup2FontType2"));
+        fontGroup2fontSelected3.setValue(configService.getProperty("fontGroup2FontType3"));
+        fontGroup3fontSelected1.setValue(configService.getProperty("fontGroup3FontType1"));
+        fontGroup3fontSelected2.setValue(configService.getProperty("fontGroup3FontType2"));
+        fontGroup3fontSelected3.setValue(configService.getProperty("fontGroup3FontType3"));
+        fontGroup4fontSelected1.setValue(configService.getProperty("fontGroup4FontType1"));
+        fontGroup4fontSelected2.setValue(configService.getProperty("fontGroup4FontType2"));
+        fontGroup4fontSelected3.setValue(configService.getProperty("fontGroup4FontType3"));
     }
 
     private void addItem() {
@@ -418,10 +480,12 @@ public class FontSettingController {
         if (!fontGroup1fontSelected2.getValue().equals(bundle.getString("notUsed"))){
             fontGroup1Path[1] = fontGroup1fontPath2.getText();
             fontType[1] = fontGroup1fontSelected2.getValue();
+            configService.setProperty("fontGroup1FontPath2", fontGroup1Path[1]);
         }
         if (!fontGroup1fontSelected3.getValue().equals(bundle.getString("notUsed"))){
             fontGroup1Path[2] = fontGroup1fontPath3.getText();
             fontType[2] = fontGroup1fontSelected3.getValue();
+            configService.setProperty("fontGroup1FontPath3", fontGroup1Path[2]);
         }
 
 
@@ -431,14 +495,17 @@ public class FontSettingController {
             if (!fontGroup2fontSelected1.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup2Path[0] = fontGroup2fontPath1.getText();
                 fontType[3] = fontGroup2fontSelected1.getValue();
+                configService.setProperty("fontGroup2FontPath1", fontGroup2Path[0]);
             }
             if (!fontGroup2fontSelected2.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup2Path[1] = fontGroup2fontPath2.getText();
                 fontType[4] = fontGroup2fontSelected2.getValue();
+                configService.setProperty("fontGroup2FontPath2", fontGroup2Path[1]);
             }
             if (!fontGroup2fontSelected3.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup2Path[2] = fontGroup2fontPath3.getText();
                 fontType[5] = fontGroup2fontSelected3.getValue();
+                configService.setProperty("fontGroup2FontPath3", fontGroup2Path[2]);
             }
 
         }
@@ -496,6 +563,11 @@ public class FontSettingController {
             // Task가 실패했을 때 로딩 애니메이션 숨김
             fontProgressBar.setVisible(false);
             fontProgressLabel.setVisible(false);
+
+            Throwable ex = fontSend.getException();
+            if (ex != null) {
+                ex.printStackTrace(); // 예외 출력
+            }
         });
 
         fontSend.setOnCancelled(e -> {
@@ -505,7 +577,6 @@ public class FontSettingController {
         });
 
         new Thread(fontSend).start();
-
     }
 
     public void close(MouseEvent mouseEvent) {
@@ -517,17 +588,19 @@ public class FontSettingController {
 
     private void updateFontSize() {
         long totalFileSize = 0; // 총 파일 크기
-        System.out.println("Updating font size...");
 
         try {
             // 1번 폰트 그룹
             totalFileSize += getFileSize(fontGroup1fontPath1.getText());
             if (fontGroup1fontSelected2.getSelectionModel().getSelectedItem() != null &&
                     !fontGroup1fontSelected2.getSelectionModel().getSelectedItem().equals("사용안함")) {
+                if (fontGroup1fontSelected2.getValue().equals("한글 조합형")||fontGroup1fontSelected2.getValue().equals("유니코드 전체")){
+                    totalFileSize += Files.size(Paths.get(fontGroup1fontPath2.getText()))-16L;
+                }
+                else{
                 String size = extractTwoCharsAroundX(fontGroup1fontPath2.getText(), 'x');
-                System.out.println("Font Group 1 Size: " + size);
                 long sizeInt = parseSize(size);
-                totalFileSize += calculateFontSize(sizeInt, fontGroup1fontSelected2.getSelectionModel().getSelectedItem());
+                totalFileSize += calculateFontSize(sizeInt, fontGroup1fontSelected2.getSelectionModel().getSelectedItem());}
             }
             if (fontGroup1fontSelected3.getSelectionModel().getSelectedItem() != null &&
                     !fontGroup1fontSelected3.getSelectionModel().getSelectedItem().equals("사용안함")) {
@@ -535,58 +608,79 @@ public class FontSettingController {
             }
 
             // 2번 폰트 그룹
+            if (fontGroup2ChkBox.isSelected()){
             if (fontGroup2fontSelected1.getSelectionModel().getSelectedItem() != null &&
                     !fontGroup2fontSelected1.getSelectionModel().getSelectedItem().equals("사용안함")) {
                 totalFileSize += getFileSize(fontGroup2fontPath1.getText());
             }
             if (fontGroup2fontSelected2.getSelectionModel().getSelectedItem() != null &&
                     !fontGroup2fontSelected2.getSelectionModel().getSelectedItem().equals("사용안함")) {
-                String size = extractTwoCharsAroundX(fontGroup2fontPath2.getText(), 'x');
-                System.out.println("Font Group 2 Size: " + size);
-                long sizeInt = parseSize(size);
-                totalFileSize += calculateFontSize(sizeInt, fontGroup2fontSelected2.getSelectionModel().getSelectedItem());
+                if (fontGroup2fontSelected2.getValue().equals("한글 조합형")||fontGroup2fontSelected2.getValue().equals("유니코드 전체")){
+                    totalFileSize += Files.size(Paths.get(fontGroup2fontPath2.getText()))-16L;
+                }
+                else {
+                    String size = extractTwoCharsAroundX(fontGroup2fontPath2.getText(), 'x');
+                    long sizeInt = parseSize(size);
+                    totalFileSize += calculateFontSize(sizeInt, fontGroup2fontSelected2.getSelectionModel().getSelectedItem());
+                }
             }
             if (fontGroup2fontSelected3.getSelectionModel().getSelectedItem() != null &&
                     !fontGroup2fontSelected3.getSelectionModel().getSelectedItem().equals("사용안함")) {
                 totalFileSize += getFileSize(fontGroup2fontPath3.getText());
-            }
+            }}
 
             // 3번 폰트 그룹
+            if (fontGroup3ChkBox.isSelected()){
             if (fontGroup3fontSelected1.getSelectionModel().getSelectedItem() != null &&
                     !fontGroup3fontSelected1.getSelectionModel().getSelectedItem().equals("사용안함")) {
                 totalFileSize += getFileSize(fontGroup3fontPath1.getText());
             }
             if (fontGroup3fontSelected2.getSelectionModel().getSelectedItem() != null &&
                     !fontGroup3fontSelected2.getSelectionModel().getSelectedItem().equals("사용안함")) {
-                String size = extractTwoCharsAroundX(fontGroup3fontPath2.getText(), 'x');
-                System.out.println("Font Group 3 Size: " + size);
-                long sizeInt = parseSize(size);
-                totalFileSize += calculateFontSize(sizeInt, fontGroup3fontSelected2.getSelectionModel().getSelectedItem());
+                if (fontGroup3fontSelected2.getValue().equals("한글 조합형")||fontGroup3fontSelected2.getValue().equals("유니코드 전체")){
+                    totalFileSize += Files.size(Paths.get(fontGroup3fontPath2.getText()))-16L;
+                }
+                else {
+                    String size = extractTwoCharsAroundX(fontGroup3fontPath2.getText(), 'x');
+                    long sizeInt = parseSize(size);
+                    totalFileSize += calculateFontSize(sizeInt, fontGroup3fontSelected2.getSelectionModel().getSelectedItem());
+                }
             }
             if (fontGroup3fontSelected3.getSelectionModel().getSelectedItem() != null &&
                     !fontGroup3fontSelected3.getSelectionModel().getSelectedItem().equals("사용안함")) {
                 totalFileSize += getFileSize(fontGroup3fontPath3.getText());
-            }
+            }}
 
             // 4번 폰트 그룹
+            if (fontGroup4ChkBox.isSelected()){
             if (fontGroup4fontSelected1.getSelectionModel().getSelectedItem() != null &&
                     !fontGroup4fontSelected1.getSelectionModel().getSelectedItem().equals("사용안함")) {
                 totalFileSize += getFileSize(fontGroup4fontPath1.getText());
             }
             if (fontGroup4fontSelected2.getSelectionModel().getSelectedItem() != null &&
                     !fontGroup4fontSelected2.getSelectionModel().getSelectedItem().equals("사용안함")) {
-                String size = extractTwoCharsAroundX(fontGroup4fontPath2.getText(), 'x');
-                System.out.println("Font Group 4 Size: " + size);
-                long sizeInt = parseSize(size);
-                totalFileSize += calculateFontSize(sizeInt, fontGroup4fontSelected2.getSelectionModel().getSelectedItem());
+                if (fontGroup4fontSelected2.getValue().equals("한글 조합형")||fontGroup4fontSelected2.getValue().equals("유니코드 전체")){
+                    totalFileSize += Files.size(Paths.get(fontGroup4fontPath2.getText()))-16L;
+                }
+                else {
+                    String size = extractTwoCharsAroundX(fontGroup4fontPath2.getText(), 'x');
+                    long sizeInt = parseSize(size);
+                    totalFileSize += calculateFontSize(sizeInt, fontGroup4fontSelected2.getSelectionModel().getSelectedItem());
+                }
             }
             if (fontGroup4fontSelected3.getSelectionModel().getSelectedItem() != null &&
                     !fontGroup4fontSelected3.getSelectionModel().getSelectedItem().equals("사용안함")) {
                 totalFileSize += getFileSize(fontGroup4fontPath3.getText());
-            }
+            }}
 
             fontCapacity.setText(totalFileSize + "/3145727 Byte");
-            System.out.println("Total File Size: " + totalFileSize);
+
+            if (totalFileSize>3145727){
+                fontCapacity.setStyle("-fx-text-fill: red");
+            }
+            else {
+                fontCapacity.setStyle("-fx-text-fill: white");
+            }
 
         } catch (Exception e) {
             System.err.println("Error while updating font size: " + e.getMessage());
@@ -622,7 +716,7 @@ public class FontSettingController {
 
         try {
             String[] dimensions = size.split("x");
-            return Long.parseLong(dimensions[0]) * Long.parseLong(dimensions[1]) / 16;
+            return Long.parseLong(dimensions[0]) * Long.parseLong(dimensions[1]) / 8;
         } catch (Exception e) {
             System.err.println("Error parsing size: " + size);
             return 0;
@@ -637,8 +731,6 @@ public class FontSettingController {
                 return sizeInt * 192L;
             case "유니코드 중국어":
                 return sizeInt * 20992L;
-            case "한글 조합형":
-                return sizeInt * 360L;
             case "유니코드 전체":
                 return sizeInt; // 전체 크기 반환
             default:

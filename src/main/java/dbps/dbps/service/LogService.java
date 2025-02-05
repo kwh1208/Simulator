@@ -24,18 +24,31 @@ public class LogService {
     private LogService() {
         String currentDir = System.getProperty("user.dir");
 
-        // 로그 파일 경로 설정 (현재 디렉토리와 파일 이름)
+        // 로그 디렉토리 경로 설정
+        String logDirPath = currentDir + File.separator + "log";
+        Path logDir = Paths.get(logDirPath);
+
+        // 로그 디렉토리가 없으면 생성
+        if (Files.notExists(logDir)) {
+            try {
+                Files.createDirectories(logDir); // 디렉토리 생성
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // 현재 날짜로 로그 파일 이름 설정
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String currentDate = dateFormat.format(new Date());
 
-        // 로그 파일 경로 설정 (현재 디렉토리와 파일 이름: log_날짜.txt)
-        this.logFilePath = currentDir + File.separator + "log_" + currentDate + ".txt";
+        // 로그 파일 경로 설정
+        this.logFilePath = logDirPath + File.separator + "log_" + currentDate + ".txt";
 
         // 로그 파일이 없으면 생성
         Path logFilePath = Paths.get(this.logFilePath);
         if (Files.notExists(logFilePath)) {
             try {
-                Files.createFile(logFilePath);  // 로그 파일 생성
+                Files.createFile(logFilePath); // 로그 파일 생성
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -63,7 +76,7 @@ public class LogService {
 
         // 텍스트 추가 및 스타일 적용
         Platform.runLater(()->{
-            logTextArea.append(logMessage + "\n", "-fx-fill: white; -fx-padding: 0 0 5px 0;");
+            logTextArea.append(logMessage + "\n", "-fx-fill: white; -fx-font-size:16px");
             scrollToBottom();
         });
 
@@ -81,7 +94,7 @@ public class LogService {
         Platform.runLater(()->{
             int start = logTextArea.getLength();
             logTextArea.appendText(logMessage);
-            logTextArea.setStyle(start, start+logMessage.length(),"-fx-fill: #FFA500; -fx-font-weight: bold;");
+            logTextArea.setStyle(start, start+logMessage.length(),"-fx-fill: #FFA500; -fx-font-weight: bold;-fx-padding: 0 5px 5px 5px;");
             scrollToBottom();
         });
 
@@ -100,7 +113,7 @@ public class LogService {
             // 텍스트 추가 및 스타일 적용
             int start = logTextArea.getLength();
             logTextArea.appendText(logMessage);
-            logTextArea.setStyle(start, logTextArea.getLength(), "-fx-fill: red; -fx-font-weight: bold;");
+            logTextArea.setStyle(start, logTextArea.getLength(), "-fx-fill: red; -fx-font-weight: bold;-fx-padding: 0 5px 5px 5px;");
             scrollToBottom();
         });
 

@@ -84,8 +84,6 @@ public class UnderTheLineLeftController {
             msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 02 41 00 10 03";
         }
         hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
-
-
     }
 
 
@@ -159,7 +157,6 @@ public class UnderTheLineLeftController {
     }
 
     public void resetController() throws InterruptedException {
-
         if (IS_ASCII) {
             String msg = "![0041!]";
             if (isRS) {
@@ -170,7 +167,8 @@ public class UnderTheLineLeftController {
             String msg = "10 02 00 00 02 89 00 10 03";
             if (isRS) {
                 msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 02 89 00 10 03";
-            } else hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
+            }
+            hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
         }
     }
 

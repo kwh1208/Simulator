@@ -15,7 +15,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static dbps.dbps.Constants.*;
 import static dbps.dbps.service.SettingService.commonProgressIndicator;
@@ -115,5 +118,29 @@ public class UnderTheLineRightController {
         });
 
         modalStage.showAndWait();
+    }
+
+    public void docs() {
+        try {
+            Desktop.getDesktop().browse(new URI("https://publish.obsidian.md/dabitdocs"));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void AS() {
+        try {
+            Desktop.getDesktop().browse(new URI("https://forms.gle/kuZM2CbKDnicmRp3A"));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void ASPhoto() {
+        try {
+            Desktop.getDesktop().browse(new URI("https://forms.gle/zkt5ALsQKKZhbQnx9"));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 }

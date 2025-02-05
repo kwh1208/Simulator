@@ -36,50 +36,39 @@
                     <TextField fx:id="serverPortTF" layoutX="90.0" layoutY="75.0" />
                 </Pane>
                 <Label layoutX="34.0" layoutY="455.0" text="keep-alive" />
-                <TextField fx:id="keepAlive" layoutX="170.0" layoutY="451.0" prefWidth="150.0"/>
+                <TextField fx:id="keepAlive" layoutX="170.0" layoutY="451.0" prefWidth="150.0" />
             </AnchorPane>
         </Tab>
 
-        <Tab text="Wifi" fx:id="wifiTab">
+        <Tab fx:id="wifiTab" text="Wifi">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <Label layoutX="22.0" layoutY="31.0" text="Mode" />
                 <Pane layoutX="74.0" layoutY="21.0" prefHeight="35.0" prefWidth="319.0">
-                    <RadioButton fx:id="wifiStation" layoutX="14.0" layoutY="10.0" mnemonicParsing="false" text="STA" />
+                    <RadioButton fx:id="wifiStation" layoutX="36.0" layoutY="10.0" mnemonicParsing="false" text="STA" />
                     <RadioButton fx:id="wifiAP" layoutX="160.0" layoutY="10.0" mnemonicParsing="false" text="AP" />
                 </Pane>
                 <Label layoutX="22.0" layoutY="89.0" text="SSID" />
-                <TextField fx:id="wifiSSID" layoutX="100.0" layoutY="81.0" />
+                <TextField fx:id="wifiSSID" layoutX="110.0" layoutY="81.0" />
                 <Label layoutX="22.0" layoutY="137.0" text="Password" />
-                <TextField fx:id="wifiPW" layoutX="100.0" layoutY="129.0" />
+                <TextField fx:id="wifiPW" layoutX="110.0" layoutY="129.0" />
             </AnchorPane>
         </Tab>
 
         <Tab text="COMM">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <Pane layoutX="14.0" layoutY="14.0" prefHeight="171.0" prefWidth="350.0" style="-fx-border-color: black;-fx-border-width: 1px">
-                    <RadioButton fx:id="isUDP" layoutX="11.0" layoutY="-8.0" mnemonicParsing="false" style="-fx-background-color: #333333" text="UDP" selected="true"/>
+                    <RadioButton fx:id="isUDP" layoutX="11.0" layoutY="-8.0" mnemonicParsing="false" selected="true" style="-fx-background-color: #333333" text="UDP" />
                     <Label layoutX="25.0" layoutY="26.0" text="Network Selection" />
-                    <ChoiceBox fx:id="networkSelection" layoutX="160.0" layoutY="22.0" prefWidth="150.0" value="Wifi">
+                    <ChoiceBox fx:id="networkSelection" layoutX="163.0" layoutY="22.0" prefWidth="150.0" value="Wifi">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="All"/>
                                 <String fx:value="Wifi" />
                                 <String fx:value="Ethernet" />
                             </FXCollections>
                         </items>
                     </ChoiceBox>
-                    <Label layoutX="25.0" layoutY="65.0" prefHeight="13.0" text="Search Target" />
-                    <ChoiceBox layoutX="160.0" layoutY="61.0" prefWidth="150.0" value="All">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="All" />
-                                <String fx:value="Ethernet" />
-                                <String fx:value="Wifi" />
-                            </FXCollections>
-                        </items>
-                    </ChoiceBox>
-                    <Label layoutX="25.0" layoutY="104.0" text="Response Type" />
-                    <ChoiceBox layoutX="160.0" layoutY="100.0" prefWidth="150.0" value="Broadcast">
+                    <Label layoutX="25.0" layoutY="64.0" text="Response Type" />
+                    <ChoiceBox layoutX="163.0" layoutY="60.0" prefWidth="150.0" value="Broadcast">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="Broadcast" />
@@ -87,12 +76,12 @@
                             </FXCollections>
                         </items>
                     </ChoiceBox>
-                    <Button layoutX="200.0" layoutY="135.0" mnemonicParsing="false" text="Network Adapter" />
+                    <Button layoutX="202.0" layoutY="95.0" mnemonicParsing="false" text="Network Adapter" />
                 </Pane>
                 <Pane layoutX="14.0" layoutY="215.0" prefHeight="150.0" prefWidth="350.0" style="-fx-border-color: black;-fx-border-width: 1px">
                     <RadioButton fx:id="isSerial" layoutX="18.0" layoutY="-8.0" mnemonicParsing="false" style="-fx-background-color: #333333" text="Serial" />
                     <Label layoutX="25.0" layoutY="30.0" text="COM Port" />
-                    <ComboBox fx:id="serialPortComboBox" layoutX="124.0" layoutY="27.0" prefWidth="150.0" value="COM3" style="-fx-border-width: 0">
+                    <ComboBox fx:id="serialPortComboBox" layoutX="124.0" layoutY="27.0" prefWidth="150.0" style="-fx-border-width: 0" value="COM3">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                             </FXCollections>
@@ -127,7 +116,7 @@
                 <Pane layoutX="14.0" layoutY="99.0" prefHeight="120.0" prefWidth="350.0" style="-fx-border-width: 1px; -fx-border-color: black">
                     <Label layoutX="20.0" layoutY="-8.0" style="-fx-background-color: #333333" text="Options" />
                     <Label layoutX="25.0" layoutY="14.0" text="Debugging State" />
-                    <ChoiceBox fx:id="debugging" layoutX="155.0" layoutY="10.0" prefWidth="150.0">
+                    <ChoiceBox fx:id="debugging" layoutX="185.0" layoutY="10.0" prefWidth="150.0">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="Disabled" />
@@ -136,7 +125,7 @@
                         </items>
                     </ChoiceBox>
                     <Label layoutX="25.0" layoutY="54.0" text="Dev Connect Port" />
-                    <ChoiceBox fx:id="connectPort" layoutX="155.0" layoutY="52.0" prefWidth="150.0">
+                    <ChoiceBox fx:id="connectPort" layoutX="185.0" layoutY="52.0" prefWidth="150.0">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="TTL" />
@@ -145,7 +134,7 @@
                         </items>
                     </ChoiceBox>
                     <Label layoutX="25.0" layoutY="93.0" text="Dev BaudRate" />
-                    <ChoiceBox fx:id="baudRate" layoutX="155.0" layoutY="89.0" prefWidth="150.0">
+                    <ChoiceBox fx:id="baudRate" layoutX="185.0" layoutY="89.0" prefWidth="150.0">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <Integer fx:value="9600" />
@@ -163,20 +152,20 @@
                 <Pane layoutX="14.0" layoutY="228.0" prefHeight="163.0" prefWidth="350.0" style="-fx-border-color: black;-fx-border-width: 1px">
                     <Label layoutX="20.0" layoutY="-8.0" style="-fx-background-color: #333333" text="Data Packing Condition" />
                     <Label layoutX="20.0" layoutY="35.0" text="Char(ASCII) 1st" />
-                    <TextField fx:id="ascFirst" layoutX="135.0" layoutY="30.0" prefHeight="21.0" prefWidth="70.0" />
-                    <Label layoutX="210.0" layoutY="35.0" text="2nd" />
-                    <TextField fx:id="ascSecond" layoutX="250.0" layoutY="30.0" prefHeight="21.0" prefWidth="70.0" />
+                    <TextField fx:id="ascFirst" layoutX="145.0" layoutY="30.0" prefHeight="21.0" prefWidth="70.0" />
+                    <Label layoutX="220.0" layoutY="35.0" text="2nd" />
+                    <TextField fx:id="ascSecond" layoutX="260.0" layoutY="30.0" prefHeight="21.0" prefWidth="70.0" />
                     <Label layoutX="20.0" layoutY="69.0" text="Char(HEX) 1st" />
-                    <TextField fx:id="hexFirst" layoutX="135.0" layoutY="65.0" prefHeight="21.0" prefWidth="70.0" />
-                    <Label layoutX="210.0" layoutY="69.0" text="2nd" />
-                    <TextField fx:id="hexSecond" layoutX="250.0" layoutY="65.0" prefHeight="21.0" prefWidth="70.0" />
+                    <TextField fx:id="hexFirst" layoutX="145.0" layoutY="65.0" prefHeight="21.0" prefWidth="70.0" />
+                    <Label layoutX="220.0" layoutY="69.0" text="2nd" />
+                    <TextField fx:id="hexSecond" layoutX="260.0" layoutY="65.0" prefHeight="21.0" prefWidth="70.0" />
                     <Label layoutX="20.0" layoutY="104.0" text="Timeout(ms)" />
-                    <TextField fx:id="timeOut" layoutX="135.0" layoutY="100.0" prefHeight="21.0" prefWidth="70.0" />
-                    <Label layoutX="210.0" layoutY="104.0" text="(10 ~ 255)" />
+                    <TextField fx:id="timeOut" layoutX="145.0" layoutY="100.0" prefHeight="21.0" prefWidth="70.0" />
+                    <Label layoutX="220.0" layoutY="104.0" text="(10 ~ 255)" />
                 </Pane>
                 <Pane layoutX="14.0" layoutY="400.0" prefHeight="52.0" prefWidth="350.0" style="-fx-border-width: 1px;-fx-border-color: black;">
                     <Label layoutX="14.0" layoutY="-6.0" style="-fx-background-color: #333333" text="Version Information" />
-                    <TextField fx:id="versionInfo" editable="false" layoutX="20.0" layoutY="15.0" prefWidth="300"/>
+                    <TextField fx:id="versionInfo" editable="false" layoutX="20.0" layoutY="15.0" prefWidth="300" />
                 </Pane>
                 <Button layoutX="230.0" layoutY="455.0" mnemonicParsing="false" onMouseClicked="#read" text="Read" />
                 <Button layoutX="300.0" layoutY="455.0" mnemonicParsing="false" onMouseClicked="#write" text="Write" />
@@ -184,9 +173,9 @@
         </Tab>
     </TabPane>
     <Button layoutX="255.0" layoutY="554.0" mnemonicParsing="false" onMouseClicked="#search" text="Search" />
-    <Button layoutX="330.0" layoutY="554.0" mnemonicParsing="false" onMouseClicked="#set" text="Set" />
+    <Button layoutX="332.0" layoutY="554.0" mnemonicParsing="false" onMouseClicked="#set" text="Set" />
     <Button layoutX="383.0" layoutY="554.0" mnemonicParsing="false" onMouseClicked="#add" text="Add" />
     <Button layoutX="440.0" layoutY="554.0" mnemonicParsing="false" onMouseClicked="#reboot" text="Reboot" />
     <Button layoutX="520.0" layoutY="554.0" mnemonicParsing="false" onMouseClicked="#close" text="Close" />
-    <ProgressIndicator fx:id="progressIndicator" layoutX="300.0" layoutY="250.0" visible="false"/>
+    <ProgressIndicator fx:id="progressIndicator" layoutX="300.0" layoutY="250.0" visible="false" />
 </AnchorPane>

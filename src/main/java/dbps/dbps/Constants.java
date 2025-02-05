@@ -1,7 +1,17 @@
 package dbps.dbps;
 
 import dbps.dbps.service.ConfigService;
+import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class Constants {
     //현재 연결 방법(serial, tcp, udp, RS485, WiFi, Bluetooth)
@@ -137,10 +147,7 @@ public class Constants {
     public static boolean dataReceivedIsComplete(byte[] buffer, int length) {
         String data = new String(buffer, 0, length);
         // 순서대로 "TX", "![", "!]"이 존재하는지 확인
-        if (data.contains("TX") && data.contains("![") && data.contains("!]")) {
-            if (!data.startsWith("RX(")){
-                return false;
-            }
+        if (data.contains("RX") && data.contains("![") && data.contains("!]")) {
             int indexTX = data.indexOf("TX");
             int indexStart = data.indexOf("![", indexTX); // "TX" 이후 검색
             int indexEnd = data.indexOf("!]", indexStart); // "![ 이후 검색
@@ -165,5 +172,45 @@ public class Constants {
         }
 
         return length > 0 && buffer[length - 1] == 0x03 && buffer[length - 2] == (byte) 0x10;
+    }
+
+
+    public static void openModal(String fxmlPath, String title, MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource(fxmlPath));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
+        Parent root = fxmlLoader.load();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle(title);
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.setOnShown(event -> {
+            // 부모 창 위치와 크기 가져오기
+            double parentX = parentStage.getX();
+            double parentY = parentStage.getY();
+            double parentWidth = parentStage.getWidth();
+            double parentHeight = parentStage.getHeight();
+
+            // 모달 창 크기 계산
+            double modalWidth = modalStage.getWidth();
+            double modalHeight = modalStage.getHeight();
+
+            // 위치 계산
+            double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
+            double modalY = parentY;
+
+            // 위치 설정
+            modalStage.setX(modalX);
+            modalStage.setY(modalY);
+        });
+
+        modalStage.showAndWait();
     }
 }

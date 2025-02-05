@@ -333,73 +333,64 @@ public class SerialPortManager {
         };
     }
 
-    public Task<Integer> findSpeedTask = new Task<>() {
-        @Override
-        protected Integer call() throws Exception {
-            int[] baudRates = {9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600};
+    public Task<Integer> findSpeedTask() {
+        return new Task<>() {
+            @Override
+            protected Integer call() throws Exception {
+                int[] baudRates = {9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600};
 
-            for (int baudRate : baudRates) {
-                try {
-                    System.out.println("baudRate = " + baudRate);
-                    closePortNoLog(OPEN_PORT_NAME);
-                    openPortNoLog(OPEN_PORT_NAME, baudRate);
-                    SerialPort port = serialPortMap.get(OPEN_PORT_NAME);
-                    OutputStream outputStream = port.getOutputStream();
-                    InputStream inputStream = port.getInputStream();
+                for (int baudRate : baudRates) {
+                    try {
+                        closePortNoLog(OPEN_PORT_NAME);
+                        openPortNoLog(OPEN_PORT_NAME, baudRate);
+                        SerialPort port = serialPortMap.get(OPEN_PORT_NAME);
+                        OutputStream outputStream = port.getOutputStream();
+                        InputStream inputStream = port.getInputStream();
 
-                    if (!port.isOpen()) {
-                        // 포트를 열 수 없을 때 로그 업데이트
-                        logService.warningLog("포트를 열 수 없습니다.");
-                        continue;
-                    }
+                        if (!port.isOpen()) {
+                            logService.warningLog("포트를 열 수 없습니다.");
+                            continue;
+                        }
 
-                    // 포트가 열렸을 때 로그 업데이트
-                    logService.updateInfoLog("현재 속도 " + baudRate + "에서 응답을 대기 중...");
+                        logService.updateInfoLog("현재 속도 " + baudRate + "에서 응답을 대기 중...");
+                        String msg = "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                        if (isRS) {
+                            msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                        }
+                        outputStream.write(hexStringToByteArray(msg));
+                        outputStream.flush();
 
-                    String msg = "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
-                    if (isRS) {
-                        msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
-                    }
-                    outputStream.write(hexStringToByteArray(msg));
-                    outputStream.flush();
-
-                    byte[] buffer = new byte[1024];
-                    int totalBytesRead = 0;
-                    while (true) {
-                        int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-                        if (bytesRead > 0) {
-                            totalBytesRead += bytesRead;
-
-                            // 데이터가 모두 수신되었는지 확인
-                            if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                        byte[] buffer = new byte[1024];
+                        int totalBytesRead = 0;
+                        while (true) {
+                            int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
+                                if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                                    break;
+                                }
+                            } else {
                                 break;
                             }
-                        } else {
-                            // 타임아웃 발생 시 루프 종료
-                            break;
                         }
+
+                        String response = bytesToHex(buffer, totalBytesRead);
+                        if (!response.isBlank()) {
+                            logService.updateInfoLog(OPEN_PORT_NAME + "의 적정 통신 속도는 " + baudRate + "입니다.");
+                            return baudRate;
+                        }
+
+                        closePortNoLog(OPEN_PORT_NAME);
+                    } catch (IOException e) {
+                        logService.warningLog("응답 대기 시간 초과");
                     }
-
-                    String response = bytesToHex(buffer, totalBytesRead);
-
-                    if (!response.isBlank()) {
-                        // 통신 속도 찾기 성공 로그 업데이트
-                        logService.updateInfoLog(OPEN_PORT_NAME + "의 적정 통신 속도는 " + baudRate + "입니다.");
-                        return baudRate;
-                    }
-
-                    closePortNoLog(OPEN_PORT_NAME);
-                } catch (IOException e) {
-                    // 예외 발생 시 로그 업데이트
-                    logService.warningLog("응답 대기 시간 초과");
                 }
-            }
 
-            // 통신 속도를 찾지 못한 경우 경고 로그 업데이트
-            logService.warningLog("적정 통신 속도를 찾지 못했습니다.");
-            return 0;
-        }
-    };
+                logService.warningLog("적정 통신 속도를 찾지 못했습니다.");
+                return 0;
+            }
+        };
+    }
 
     public Task<String> send300MsgAndGetMsg(String msg, String portNum, int baudRate) {
         return new Task<>() {
@@ -409,6 +400,8 @@ public class SerialPortManager {
                 port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
                 port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY * 1000, RESPONSE_LATENCY * 1000);
                 port.openPort();
+                byte[] buffer = new byte[230];
+                int totalBytesRead = 0;
                 try {
                     // 데이터 전송
                     byte[] dataToSend = msg.getBytes(Charset.forName("EUC-KR"));
@@ -418,10 +411,10 @@ public class SerialPortManager {
 
                     // 데이터 수신
                     InputStream inputStream = new BufferedInputStream(port.getInputStream());
-                    byte[] buffer = new byte[212];
-                    int totalBytesRead = 0;
 
-                    while (totalBytesRead < 212) { // 212바이트가 채워질 때까지 읽기
+
+
+                    while (totalBytesRead < 230) { // 212바이트가 채워질 때까지 읽기
                         int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
                         if (bytesRead > 0) {
                             totalBytesRead += bytesRead;
@@ -430,14 +423,16 @@ public class SerialPortManager {
                         }
                     }
 
-                    if (totalBytesRead == 212) {
+                    if (totalBytesRead == 230) {
                         // 212바이트를 읽었으면 결과 출력
-                        String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
-                        return result;
+                        return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
                     } else {
                         throw new IOException("212 바이트를 읽는 데 실패했습니다. 총 읽은 바이트: " + totalBytesRead);
                     }
-                } catch (Exception e) {
+                } catch (SerialPortTimeoutException e){
+                    return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                }
+                catch (Exception e) {
                     logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
                     throw e;
                 } finally {
@@ -457,9 +452,9 @@ public class SerialPortManager {
                 port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY * 1000, RESPONSE_LATENCY * 1000);
                 port.openPort();
 
-                BufferedOutputStream output = new BufferedOutputStream(port.getOutputStream());
-                output.write(sendByte);
-                output.flush();
+                OutputStream outputStream = new BufferedOutputStream(port.getOutputStream());
+                outputStream.write(sendByte);
+                outputStream.flush();
 
                 port.closePort();
 
