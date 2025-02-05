@@ -476,6 +476,7 @@ public class FontSettingController {
         String[] fontGroup4Path = null;
         //첫번째 그룹
         fontGroup1Path[0] = fontGroup1fontPath1.getText();
+        configService.setProperty("fontGroup1FontPath1", fontGroup1Path[0]);
         fontType[0] = "영어";
         if (!fontGroup1fontSelected2.getValue().equals(bundle.getString("notUsed"))){
             fontGroup1Path[1] = fontGroup1fontPath2.getText();
