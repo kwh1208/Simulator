@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="mqttSettingAP" prefHeight="596.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MqttSettingController">
+    <Label layoutX="394.0" layoutY="20.0" style="-fx-font-size: 15" text="%protocolFormat" />
+    <ChoiceBox fx:id="protocolFormat" layoutX="550.0" layoutY="14.0" prefHeight="25.0" prefWidth="130.0" value="%ASCiiProtocol">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+            </FXCollections>
+        </items>
+    </ChoiceBox>
+    <Button layoutX="25.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#openMqtt" prefHeight="30.0" prefWidth="176.0" style="-fx-font-weight: bolder; -fx-font-size: 17" text="%mqtt.Setting" />
+    <Pane layoutX="25.0" layoutY="63.0" prefHeight="182.0" prefWidth="656.0" style="-fx-border-color: black">
+        <Label layoutX="21.0" layoutY="-12.0" prefHeight="19.0" prefWidth="74.0" style="-fx-background-color: #333333;-fx-text-fill: white" text="%mqtt.get" />
+        <Label layoutX="27.0" layoutY="21.0" text="%controllerTime" />
+        <TextField fx:id="timeField" editable="false" layoutX="162.0" layoutY="17.0" prefHeight="21.0" prefWidth="470.0" />
+        <Label layoutX="27.0" layoutY="53.0" text="%mqtt.module" />
+        <TextField fx:id="moduleField" editable="false" layoutX="162.0" layoutY="49.0" prefHeight="21.0" prefWidth="176.0" />
+        <Label layoutX="366.0" layoutY="52.0" text="%mqtt.LED" />
+        <TextField fx:id="LEDField" editable="false" layoutX="465.0" layoutY="49.0" prefHeight="21.0" prefWidth="166.0" />
+        <Label layoutX="27.0" layoutY="86.0" text="%font" />
+        <TextField fx:id="fontField" editable="false" layoutX="162.0" layoutY="82.0" prefHeight="21.0" prefWidth="470.0" />
+        <Label layoutX="27.0" layoutY="116.0" text="%mqtt.firmware" />
+        <TextField fx:id="firmwareField" editable="false" layoutX="162.0" layoutY="112.0" prefHeight="21.0" prefWidth="176.0" />
+        <Label layoutX="364.0" layoutY="116.0" text="%mqtt.CPU" />
+        <TextField fx:id="CPUField" editable="false" layoutX="465.0" layoutY="112.0" prefHeight="21.0" prefWidth="166.0" />
+        <CheckBox fx:id="returnField" layoutX="27.0" layoutY="148.0" mnemonicParsing="false" mouseTransparent="true" prefHeight="16.0" prefWidth="326.0" text="%mqtt.return" />
+      <Button layoutX="500.0" layoutY="146.0" mnemonicParsing="false" onMouseClicked="#getInfo" prefHeight="28.0" prefWidth="100.0" text="%mqtt.get" />
+    </Pane>
+    <Pane layoutX="25.0" layoutY="259.0" prefHeight="331.0" prefWidth="656.0" style="-fx-border-color: black">
+        <Label layoutX="21.0" layoutY="-7.0" prefHeight="19.0" prefWidth="74.0" style="-fx-background-color: #333333; -fx-text-fill: white" text="%mqtt.set" />
+        <Button layoutX="25.0" layoutY="33.0" mnemonicParsing="false" onMouseClicked="#synchronizeTime" prefHeight="28.0" prefWidth="291.0" text="%syncWithPcTime" />
+        <ChoiceBox fx:id="displayBright" layoutX="26.0" layoutY="221.0" prefHeight="25.0" prefWidth="145.0" value="100%(기본)">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="100%(기본)" />
+                    <String fx:value="75%" />
+                    <String fx:value="50%" />
+                    <String fx:value="25%" />
+                    <String fx:value="5%" />
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+        <Pane layoutX="333.0" layoutY="27.0" prefHeight="151.0" prefWidth="305.0" style="-fx-border-color: black" />
+        <Button layoutX="254.0" layoutY="220.0" mnemonicParsing="false" onMouseClicked="#sendDisplayBright" prefHeight="28.0" prefWidth="63.0" text="%sendButton" />
+        <Button layoutX="25.0" layoutY="68.0" mnemonicParsing="false" onMouseClicked="#sendDisplayOn" prefHeight="30.0" prefWidth="291.0" text="%displayOn" />
+        <Button layoutX="27.0" layoutY="108.0" mnemonicParsing="false" onMouseClicked="#sendDisplayOff" prefHeight="30.0" prefWidth="291.0" text="%displayOff" />
+
+        <Label layoutX="350.0" layoutY="45.0" text="%height" />
+        <Spinner fx:id="spinnerForRow" layoutX="485.0" layoutY="38.0" prefHeight="25.0" prefWidth="64.0" />
+        <Label layoutX="555.0" layoutY="46.0" prefHeight="13.0" prefWidth="80.0" text="X16 Pixels" />
+
+        <Label layoutX="350.0" layoutY="79.0" text="%width" />
+        <Spinner fx:id="spinnerForColumn" layoutX="485.0" layoutY="74.0" prefHeight="25.0" prefWidth="64.0" />
+        <Label layoutX="555.0" layoutY="81.0" prefHeight="13.0" prefWidth="80.0" text="X16 Pixels" />
+
+        <Label layoutX="350.0" layoutY="113.0" text="%moduleArrangementMethod" />
+        <ChoiceBox fx:id="howToArray" layoutX="485.0" layoutY="108.0" prefHeight="25.0" prefWidth="145.0" value="가로형(default)">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="가로형(default)" />
+                    <String fx:value="1줄 세로형" />
+                    <String fx:value="2줄 세로형" />
+                    <String fx:value="가로형 양면" />
+                    <String fx:value="1줄 세로형 양면" />
+                    <String fx:value="2줄 가로형" />
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+        <Button layoutX="567.0" layoutY="145.0" mnemonicParsing="false" onMouseClicked="#sendDisplaySize" prefHeight="28.0" prefWidth="63.0" text="%sendButton" />
+
+        <Pane layoutX="333.0" layoutY="190.0" prefHeight="102.0" prefWidth="305.0" style="-fx-border-color: black" />
+        <Label layoutX="349.0" layoutY="216.0" text="%SetTotalCount" />
+        <ChoiceBox fx:id="pageMsgCnt" layoutX="448.0" layoutY="210.0" prefHeight="25.0" prefWidth="109" value="10개">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="1개" />
+                    <String fx:value="2개" />
+                    <String fx:value="3개" />
+                    <String fx:value="4개" />
+                    <String fx:value="5개" />
+                    <String fx:value="6개" />
+                    <String fx:value="7개" />
+                    <String fx:value="8개" />
+                    <String fx:value="9개" />
+                    <String fx:value="10개" />
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+        <Button layoutX="568.0" layoutY="209.0" mnemonicParsing="false" onMouseClicked="#sendPageCnt" prefHeight="28.0" prefWidth="63.0" text="%sendButton" />
+        <Label layoutX="347.0" layoutY="253.0" text="%ResetMsg" />
+        <ChoiceBox fx:id="msgInitialize" layoutX="448.0" layoutY="248.0" prefHeight="25.0" prefWidth="109.0" value="전체">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="전체" />
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+        <Button layoutX="568.0" layoutY="247.0" mnemonicParsing="false" onMouseClicked="#sendMsgInitialize" prefHeight="28.0" prefWidth="63.0" text="%sendButton" />
+        <Button layoutX="27.0" layoutY="148.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="291.0" text="%defaultSetting" />
+      <Label layoutX="27.0" layoutY="197.0" text="%displayBrightness" />
+    </Pane>
+
+</AnchorPane>

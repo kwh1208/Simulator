@@ -132,6 +132,17 @@ public class HexMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
+//            case "mqtt" -> {
+//                try {
+//                    Task<String> sendTask = mqttManager.sendMsgAndGetMsgByte(msg);
+//                    Thread taskThread = new Thread(sendTask);
+//                    taskThread.start();
+//
+//                    return sendTask.get();
+//                } catch (Exception e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
             case "serverTCP" ->{
                 try {
                     Task<String> sendTask  = serverTCPManager.sendMsgAndGetMsgByteNoLog(msg);
