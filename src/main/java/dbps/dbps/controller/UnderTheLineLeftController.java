@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.UnderTheLineLeftService;
+import dbps.dbps.service.connectManager.MQTTManager;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.TCPManager;
 import javafx.fxml.FXML;
@@ -26,7 +27,7 @@ public class UnderTheLineLeftController {
     SerialPortManager serialPortManager;
     TCPManager tcpManager;
     UnderTheLineLeftService underTheLineLeftService;
-
+    MQTTManager mqttManager;
 
     @FXML
     public Pane leftPane;
@@ -37,6 +38,8 @@ public class UnderTheLineLeftController {
     @FXML
     public void initialize() {
         leftPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/underTheLineLeft.css").toExternalForm());
+
+        mqttManager = MQTTManager.getInstance();
 
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd (E) HH:mm:ss");

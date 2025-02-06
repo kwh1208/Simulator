@@ -2,7 +2,10 @@ package dbps.dbps.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dbps.dbps.Simulator;
-import dbps.dbps.service.*;
+import dbps.dbps.service.AsciiMsgTransceiver;
+import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.SizeOfDisplayBoardService;
+import dbps.dbps.service.connectManager.MQTTManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Spinner;
@@ -22,11 +25,7 @@ public class SizeOfDisplayBoardController {
     HexMsgTransceiver hexMsgTransceiver;
 
     SizeOfDisplayBoardService sizeOfDisplayBoardService;
-
-    ConfigService configService;
-
-    HexMsgService hexMsgService;
-
+    MQTTManager mqttManager;
 
     @FXML
     public ChoiceBox<String> colorNum;
@@ -46,9 +45,6 @@ public class SizeOfDisplayBoardController {
 
     @FXML
     public void initialize(){
-        configService = ConfigService.getInstance();
-        hexMsgService = HexMsgService.getInstance();
-
         dpPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/sizeOfDisplayBoard.css").toExternalForm());
 
         SpinnerValueFactory<Integer> valueFactoryForRow = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, SIZE_ROW);
@@ -59,6 +55,7 @@ public class SizeOfDisplayBoardController {
 
         spinnerForColumn.setEditable(true);
         spinnerForRow.setEditable(true);
+        mqttManager = MQTTManager.getInstance();
 
         spinnerForRow.valueProperty().addListener((obs, oldValue, newValue) -> {
             SIZE_ROW = newValue;
@@ -82,8 +79,6 @@ public class SizeOfDisplayBoardController {
         SIZE_ROW = spinnerForRow.getValue();
         SIZE_COLUMN = spinnerForColumn.getValue();
         BITS_PER_PIXEL = Integer.parseInt(String.valueOf(colorNum.getValue()).substring(0,1));
-        configService.setProperty("displayRowSize", String.valueOf(SIZE_ROW));
-        configService.setProperty("displayColumnSize", String.valueOf(SIZE_COLUMN));
     }
 
 
@@ -95,8 +90,6 @@ public class SizeOfDisplayBoardController {
             displaySizeHEX();
         }
         setInitialValues();
-
-        hexMsgService.changeXY(SIZE_COLUMN,SIZE_ROW);
     }
 
     private void displaySizeASC() throws ExecutionException, InterruptedException {
