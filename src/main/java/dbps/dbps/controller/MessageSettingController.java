@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
-import dbps.dbps.service.connectManager.MQTTManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.Pane;
@@ -17,7 +16,7 @@ public class MessageSettingController {
     HexMsgTransceiver hexMsgTransceiver = HexMsgTransceiver.getInstance();
     
     AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
-    MQTTManager mqttManager;
+
 
     @FXML
     public ChoiceBox<String> msgInitialize;
@@ -30,7 +29,6 @@ public class MessageSettingController {
 
     @FXML
     public void initialize() {
-        mqttManager=MQTTManager.getInstance();
         msPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/messageSetting.css").toExternalForm());
 
         pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {

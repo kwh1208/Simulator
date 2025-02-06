@@ -18,7 +18,6 @@ public class AsciiMsgTransceiver {
     private final LogService logService;
     private final UDPManager udpManager;
     private final TCPManager tcpManager;
-    private final MQTTManager mqttManager;
     private final ServerTCPManager serverTCPManager;
     private final UnderTheLineLeftService underTheLineLeftService;
     private final SizeOfDisplayBoardService sizeOfDisplayBoardService;
@@ -32,7 +31,6 @@ public class AsciiMsgTransceiver {
         logService = LogService.getLogService();
         udpManager = UDPManager.getUDPManager();
         tcpManager = TCPManager.getManager();
-        mqttManager = MQTTManager.getInstance();
         serverTCPManager = ServerTCPManager.getInstance();
         underTheLineLeftService = UnderTheLineLeftService.getInstance();
         sizeOfDisplayBoardService = SizeOfDisplayBoardService.getInstance();
@@ -61,7 +59,6 @@ public class AsciiMsgTransceiver {
             case "serial", "bluetooth", "rs485" -> serialPortManager.sendMsgAndGetMsg(msg, utf8);
             case "UDP" -> udpManager.sendASCMsg(msg, utf8);
             case "clientTCP" -> tcpManager.sendASCMsg(msg, utf8);
-//            case "mqtt" -> mqttManager.sendASCMsg(msg);
             case "serverTCP" -> serverTCPManager.sendASCMsg(msg, utf8);
             default -> {
                 resultFuture.completeExceptionally(new IllegalStateException("Unexpected value: " + CONNECT_TYPE));
