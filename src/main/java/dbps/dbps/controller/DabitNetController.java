@@ -16,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -666,7 +667,12 @@ public class DabitNetController {
                     readDB300IPPort.setWifiPW(line);
                     break;
                 case 15:
-                    readDB300IPPort.setStation(line.contains("30"));
+                    if (line.contains("30")){
+                        readDB300IPPort.setStation(true);
+                    }
+                    else if (line.contains("31")){
+                        readDB300IPPort.setStation(false);
+                    }
                     break;
                 default:
                     break;
@@ -713,7 +719,7 @@ public class DabitNetController {
         if(db300IPPort.isStation){
             wifiSSID.setText(db300IPPort.getWifiSSID());
         }
-        else wifiSSID.setText("AP-"+db300IPPort.getWifiSSID());
+        else if(!db300IPPort.isStation&&db300IPPort.wifiPW!=null) wifiSSID.setText("AP-"+db300IPPort.getWifiSSID());
 
         wifiPW.setText(db300IPPort.getWifiPW());
         staticRadio.setSelected(db300IPPort.isIpStatic());
@@ -721,15 +727,9 @@ public class DabitNetController {
         if(db300IPPort.isStation){
             wifiStation.setSelected(true);
         }
-        else wifiAP.setSelected(true);
+        else if(!db300IPPort.isStation&&db300IPPort.wifiPW!=null) wifiAP.setSelected(true);
 
         keepAlive.setText(db300IPPort.heartbeat);
-
-        if (wifiPW.getText().isBlank()) {
-            wifiTab.setDisable(true);
-        } else {
-            wifiTab.setDisable(false);
-        }
 
         if (!isClient.isSelected()) {
             serverIPTF.setDisable(true);
@@ -738,10 +738,18 @@ public class DabitNetController {
             serverIPTF.setDisable(false);
             serverPortTF.setDisable(false);
         }
+
+        if (db300IPPort.wifiPW==null){
+            wifiTab.setDisable(true);
+        }
+        else {
+            wifiTab.setDisable(false);
+        }
     }
 
     @Setter
     @Getter
+    @ToString
     public class DB300IPPort {
         String macAddress;
         String clientIP;

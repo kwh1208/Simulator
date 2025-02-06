@@ -36,10 +36,3 @@ public class ResourceManager {
         return bundle;
     }
 }
-//stm 정보통신
-//팔콘
-/**
- * 1단 6열
- * 2단 6열
- * 6년전
- */
