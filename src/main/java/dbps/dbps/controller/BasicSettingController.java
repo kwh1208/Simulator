@@ -6,9 +6,8 @@ import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
-
 
 import java.util.ResourceBundle;
 
@@ -18,14 +17,14 @@ import static dbps.dbps.Constants.IS_MQTT;
 public class BasicSettingController {
     @FXML
     public Pane basicPane;
-    public ChoiceBox<String> programLanguage;
+    public ComboBox<String> programLanguage;
 
 
     MainService mainService;
     ConfigService configService;
 
     @FXML
-    public ChoiceBox<String> protocolFormat;
+    public ComboBox<String> protocolFormat;
 
     ResourceBundle bundle;
 

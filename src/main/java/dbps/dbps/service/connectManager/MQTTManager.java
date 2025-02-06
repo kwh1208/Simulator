@@ -14,6 +14,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,14 +30,18 @@ public class MQTTManager {
         return instance;
     }
 
-    private String brokerIp = "io.adafruit.com";
+    private String brokerIp = "192.168.1.96";
     private String brokerPort = "1883";
     private String clientId = "테스트중";
-    private String username = "kwh1208";
-    private String password = "aio_fLUD30H5OsH7Dwz6HFup90nLE6xe";
+    private String username = "test1";
+    private String password = "dabit";
     private MqttClient client;
-    private String topic = "kwh1208/feeds/msg";
-    private String topicR = "kwh1208/feeds/msg_r";
+    private String topic = "/msg";
+    private String topicR = "/msg_r";
+
+    List<String> subscribedTopics = new ArrayList<>();
+
+
 
     private MQTTManager() {
         logService = LogService.getLogService();
@@ -60,7 +65,7 @@ public class MQTTManager {
         }
     }
 
-    public void publishGet(List<String> moid) throws JsonProcessingException {
+    public void publishGet(Map<String, Integer> moid) throws JsonProcessingException {
         try {
             if (client == null || !client.isConnected()) {
                 System.out.println("Client is not connected. Connect first.");
@@ -111,7 +116,7 @@ public class MQTTManager {
         }
     }
 
-    private String makeGetMsg(List<String> moid) throws JsonProcessingException {
+    private String makeGetMsg(Map<String, Integer> moid) throws JsonProcessingException {
         // MQTT 메시지 객체 생성
         MQTTMsgGet mqttDomain = MQTTMsgGet.builder()
                 .MSG_TYPE("GET")
@@ -170,8 +175,11 @@ public class MQTTManager {
                 return;
             }
 
+            for (String subscribedTopic : subscribedTopics) {
+                client.unsubscribe(subscribedTopic);
+            }
+
             // 토픽 구독
-            System.out.println("Subscribing to topicR: " + topicR);
             client.subscribe(topicR, (receivedTopic, message) -> {
                 // 메시지 처리
                 System.out.println("Received message from topicR: " + receivedTopic);

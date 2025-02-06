@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Map;
 
 @Builder
 @Getter
@@ -23,5 +23,5 @@ public class MQTTMsgGet {
     private String MSG_ID;
 
     @JsonProperty("MOID")
-    private List<String> MOID;
+    private Map<String, Integer> MOID;
 }

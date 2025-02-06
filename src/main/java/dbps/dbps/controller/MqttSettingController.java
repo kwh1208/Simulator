@@ -131,14 +131,7 @@ public class MqttSettingController {
 
 
     public void getInfo() throws JsonProcessingException {
-        mqttManager.publishGet(new ArrayList<>(List.of(
-                "2.RTE058.3.1",
-                "2.RTE058.3.2",
-                "2.RTE058.3.3",
-                "2.RTE058.3.4",
-                "2.RTE058.3.5",
-                "2.RTE058.3.6",
-                "2.RTE058.3.8")));
+        mqttManager.publishGet(Map.of("2.RTE058.2.4", 1));
     }
 
 
