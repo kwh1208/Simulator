@@ -126,6 +126,14 @@ public class TCPManager {
 
     }
 
+    public void disconnectNoLog(){
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.getStackTrace();
+        }
+    }
+
     public Task<String> sendMsgAndGetMsgByte(byte[] msg){
         return new Task<>() {
             @Override
@@ -168,8 +176,6 @@ public class TCPManager {
                 } catch (IOException e) {
                     logService.errorLog("전송에 실패했습니다.");
                     throw e;
-                } finally {
-                    disconnect();
                 }
             }
         };
@@ -190,7 +196,6 @@ public class TCPManager {
                     output.write(msg);
                     output.flush();
 
-
                     byte[] buffer = new byte[1024];
                     int totalBytesRead = 0;
                     while (true) {
@@ -198,31 +203,26 @@ public class TCPManager {
                         if (bytesRead > 0) {
                             totalBytesRead += bytesRead;
 
-                            // 데이터가 모두 수신되었는지 확인
                             if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
                                 break;
                             }
                         } else {
-                            break; // 타임아웃
+
                         }
                     }
 
                     String result = bytesToHex(buffer, totalBytesRead);
-                    if (result.contains("54 58 28")) {
-                        result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
-                        int tmp = extractNumberAfterTXBeforeByteHex(result);
-                        if (tmp > 0 && 14 + String.valueOf(tmp).length() + result.indexOf("TX(") + tmp <= buffer.length) {
-                            result = new String(buffer, 15 + String.valueOf(tmp).length() + result.indexOf("54 58 28"), tmp * 3, Charset.forName("EUC-KR"));
-                        } else {
-                            throw new IllegalArgumentException("유효하지 않은 offset 또는 tmp 값입니다.");
-                        }
+                    if (result.contains("52 58 28")) {
+                        result = result.substring(result.indexOf("10 02"));
                     }
                     return result;
                 } catch (IOException e) {
-                    logService.errorLog(msg + "전송에 실패했습니다.");
+                    System.out.println("socket.isClosed() = " + socket.isClosed());
+                    System.out.println("socket.isConnected() = " + socket.isConnected());
+                    System.out.println("socket.isInputShutdown() = " + socket.isInputShutdown());
+                    logService.errorLog("메세지 전송에 실패했습니다.");
+                    e.printStackTrace();
                     throw e;
-                } finally {
-                    disconnect();
                 }
             }
         };

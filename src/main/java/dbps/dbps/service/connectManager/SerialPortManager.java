@@ -4,6 +4,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortIOException;
 import com.fazecast.jSerialComm.SerialPortTimeoutException;
 import dbps.dbps.service.ConfigService;
+import dbps.dbps.service.DabitNetService;
 import dbps.dbps.service.LogService;
 import javafx.concurrent.Task;
 
@@ -27,10 +28,12 @@ public class SerialPortManager {
     ConfigService configService;
     private static final Object portLock = new Object();
     private final BlockingQueue<Task<?>> taskQueue = new LinkedBlockingQueue<>();
+    DabitNetService dabitNetService;
 
     private SerialPortManager() {
         logService = LogService.getLogService();
         configService = ConfigService.getInstance();
+        dabitNetService = DabitNetService.getInstance();
     }
 
     public static SerialPortManager getManager() {
@@ -66,7 +69,9 @@ public class SerialPortManager {
             }
             SerialPort port = SerialPort.getCommPort(portName);
             port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY * 1000, 1000);
+            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 500, 0);
+//            port.setFlowControl(SerialPort.FLOW_CONTROL_RTS_ENABLED | SerialPort.FLOW_CONTROL_CTS_ENABLED);
+
 
             if (!port.openPort()) {
                 throw new IllegalStateException(portName + " 포트를 열 수 없습니다.");
@@ -287,51 +292,70 @@ public class SerialPortManager {
         return new Task<>() {
             @Override
             protected String call() throws Exception {
+                long startTotal = System.nanoTime(); // 전체 실행 시간 측정 시작
+
                 String portName = OPEN_PORT_NAME;
                 SerialPort port = serialPortMap.get(portName);
 
+                long startOpenPort = System.nanoTime();
                 if (port == null || !isPortOpen(portName)) {
                     openPortNoLog(portName, SERIAL_BAUDRATE);
                     port = serialPortMap.get(portName);
                 }
+                long endOpenPort = System.nanoTime();
+                System.out.println("포트 열기 실행 시간: " + (endOpenPort - startOpenPort) / 1_000_000.0 + " ms");
 
                 try {
                     OutputStream outputStream = port.getOutputStream();
                     InputStream inputStream = port.getInputStream();
+
+                    long startWrite = System.nanoTime();
                     outputStream.write(msg);
-                    outputStream.flush();
+                    long endWrite = System.nanoTime();
+                    System.out.println("메시지 전송 실행 시간: " + (endWrite - startWrite) / 1_000_000.0 + " ms");
 
                     // 읽기용 버퍼 초기화
                     byte[] buffer = new byte[1024];
                     int totalBytesRead = 0;
 
-                    // 반복적으로 읽어 남아있는 데이터를 모두 수신
-                    while (true) {
-                        int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-                        if (bytesRead > 0) {
-                            totalBytesRead += bytesRead;
+                    long startRead = System.nanoTime();
+                    int readAttempts = 0;
+                    long startWait = System.currentTimeMillis();
+                    long timeout = 150;
 
-                            // 데이터가 모두 수신되었는지 확인
-                            if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
-                                break;
+                    while ((System.currentTimeMillis() - startWait) < timeout) {
+                        if (inputStream.available() > 0) {
+                            int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                            readAttempts++;
+
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
+                                if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                                    break;
+                                }
                             }
-                        } else {
-                            // 타임아웃 발생 시 루프 종료
-                            break;
                         }
                     }
+                    long endRead = System.nanoTime();
+                    System.out.println("데이터 수신 실행 시간: " + (endRead - startRead) / 1_000_000.0 + " ms (총 " + readAttempts + "번 읽음)");
 
-                    // 수신된 모든 데이터를 Hex로 변환하여 반환
-                    return bytesToHex(buffer, totalBytesRead);
+                    long startHexConversion = System.nanoTime();
+                    String hexData = bytesToHex(buffer, totalBytesRead);
+                    long endHexConversion = System.nanoTime();
+                    System.out.println("Hex 변환 실행 시간: " + (endHexConversion - startHexConversion) / 1_000_000.0 + " ms");
+
+                    long endTotal = System.nanoTime();
+                    System.out.println("전체 sendMsgAndGetMsgByteNoLog 실행 시간: " + (endTotal - startTotal) / 1_000_000.0 + " ms");
+
+                    return hexData;
                 } catch (Exception e) {
                     logService.errorLog("에러가 발생했습니다: " + e.getMessage());
                     throw e;
-                } finally {
-                    closePortNoLog(portName);
                 }
             }
         };
     }
+
 
     public Task<Integer> findSpeedTask() {
         return new Task<>() {
@@ -425,7 +449,9 @@ public class SerialPortManager {
 
                     if (totalBytesRead == 230) {
                         // 212바이트를 읽었으면 결과 출력
-                        return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                        String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                        dabitNetService.updateUI(result);
+                        return result;
                     } else {
                         throw new IOException("212 바이트를 읽는 데 실패했습니다. 총 읽은 바이트: " + totalBytesRead);
                     }

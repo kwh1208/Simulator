@@ -1,9 +1,6 @@
 package dbps.dbps.controller;
 
-import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.ConfigService;
-import dbps.dbps.service.FontService;
-import dbps.dbps.service.ResourceManager;
+import dbps.dbps.service.*;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,6 +16,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
+
+import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class FontSettingController {
     public Label fontProgressLabel;
@@ -92,11 +91,13 @@ public class FontSettingController {
     AnchorPane fontSettingAnchorPane;
 
     AsciiMsgTransceiver asciiMsgTransceiver;
+    HexMsgTransceiver hexMsgTransceiver;
     //초기화(하위 폰트그룹이랑 그룹화)
     @FXML
     public void initialize() {
         configService = ConfigService.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+        hexMsgTransceiver = HexMsgTransceiver.getInstance();
 
         if (Boolean.parseBoolean(configService.getProperty("fontGroup2selected"))){
             fontGroup2ChkBox.setSelected(true);
@@ -468,6 +469,9 @@ public class FontSettingController {
         }
     }
 
+    private Task<Void> fontSendTask;  // ✅ Task를 전역 변수로 선언
+
+
     public void send() throws InterruptedException {
         String[] fontGroup1Path = new String[3];
         String[] fontType = new String[12];
@@ -546,43 +550,53 @@ public class FontSettingController {
             }
         }
 
-        Task<Void> fontSend = fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path, fontGroup4Path, fontType, fontProgressBar, fontProgressLabel);
+        fontSendTask = fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path, fontGroup4Path, fontType, fontProgressBar, fontProgressLabel);
 
-        fontSend.setOnRunning(e -> {
+        fontSendTask.setOnRunning(e -> {
             // Task가 시작될 때 로딩 애니메이션 표시
             fontProgressBar.setVisible(true);
             fontProgressLabel.setVisible(true);
         });
 
-        fontSend.setOnSucceeded(e -> {
+        fontSendTask.setOnSucceeded(e -> {
             // Task가 성공적으로 끝났을 때 로딩 애니메이션 숨김
             fontProgressBar.setVisible(false);
             fontProgressLabel.setVisible(false);
         });
 
-        fontSend.setOnFailed(e -> {
+        fontSendTask.setOnFailed(e -> {
             // Task가 실패했을 때 로딩 애니메이션 숨김
             fontProgressBar.setVisible(false);
             fontProgressLabel.setVisible(false);
 
-            Throwable ex = fontSend.getException();
+            Throwable ex = fontSendTask.getException();
             if (ex != null) {
                 ex.printStackTrace(); // 예외 출력
             }
         });
 
-        fontSend.setOnCancelled(e -> {
+        fontSendTask.setOnCancelled(e -> {
             // Task가 취소됐을 때 로딩 애니메이션 숨김
             fontProgressBar.setVisible(false);
             fontProgressLabel.setVisible(false);
         });
 
-        new Thread(fontSend).start();
+        new Thread(fontSendTask).start();
     }
 
     public void close(MouseEvent mouseEvent) {
+        if (fontSendTask != null){
+            fontSendTask.cancel();
+            hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
+        }
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();
+    }
+
+    public void cancel(){
+        fontSendTask.cancel();
+
+        hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
     }
 
 

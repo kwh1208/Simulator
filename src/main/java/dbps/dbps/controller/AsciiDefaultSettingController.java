@@ -204,6 +204,29 @@ public class AsciiDefaultSettingController {
         for (int i = 1; i < 11; i++) {
             bgImg.getItems().add(String.valueOf(i));
         }
+        bgImg.getItems().add("사용안함");
+
+        fontColor.getItems().addAll(
+                bundle.getString("black"),
+                bundle.getString("red"),
+                bundle.getString("green"),
+                bundle.getString("yellow"),
+                bundle.getString("blue"),
+                bundle.getString("pink"),
+                bundle.getString("cyan"),
+                bundle.getString("white")
+        );
+
+        fontBgColor.getItems().addAll(
+                bundle.getString("black"),
+                bundle.getString("red"),
+                bundle.getString("green"),
+                bundle.getString("yellow"),
+                bundle.getString("blue"),
+                bundle.getString("pink"),
+                bundle.getString("cyan"),
+                bundle.getString("white")
+        );
     }
 
     private void setService() {
@@ -255,7 +278,7 @@ public class AsciiDefaultSettingController {
         displayMethod.setValue("Clear");
         charCodes.setValue(bundle.getString("CombinationType"));
         fontSize.setValue("16(Standard)");
-        fontGroup.setValue("fontGroup0");
+        fontGroup.setValue("fontGroup1");
         effectIn.setValue(bundle.getString("staticEffect"));
         inDirection.setValue(bundle.getString("noDirection"));
         effectOut.setValue(bundle.getString("staticEffect"));
@@ -382,7 +405,7 @@ public class AsciiDefaultSettingController {
         text += "/B" + (bgImg.getValue().equals("사용안함") ? "000" : String.format("%03d", parseInt(bgImg.getValue())));
         text += "/C" + setColorText(fontColor.getValue());
         text += "/G" + setColorText(fontBgColor.getValue());
-        text += "/T" + fontGroup.getValue().replaceAll("[^\\d]", "") + "!]";
+        text += "/T" + (Integer.parseInt(fontGroup.getValue().replaceAll("[^\\d]", ""))-1) + "!]";
 
         return text;
     }

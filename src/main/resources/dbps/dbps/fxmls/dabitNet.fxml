@@ -59,9 +59,10 @@
                 <Pane layoutX="14.0" layoutY="14.0" prefHeight="171.0" prefWidth="350.0" style="-fx-border-color: black;-fx-border-width: 1px">
                     <RadioButton fx:id="isUDP" layoutX="11.0" layoutY="-8.0" mnemonicParsing="false" selected="true" style="-fx-background-color: #333333" text="UDP" />
                     <Label layoutX="25.0" layoutY="26.0" text="Network Selection" />
-                    <ChoiceBox fx:id="networkSelection" layoutX="163.0" layoutY="22.0" prefWidth="150.0" value="Wifi">
+                    <ChoiceBox fx:id="networkSelection" layoutX="163.0" layoutY="22.0" prefWidth="150.0" value="All">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="All" />
                                 <String fx:value="Wifi" />
                                 <String fx:value="Ethernet" />
                             </FXCollections>
@@ -111,7 +112,7 @@
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="492.0" prefWidth="350.0">
                 <Pane layoutX="14.0" layoutY="20.0" prefHeight="70.0" prefWidth="350.0" style="-fx-border-color: black;-fx-border-width: 1px;">
                     <Label layoutX="14.0" layoutY="-6.0" prefHeight="13.0" style="-fx-background-color: #333333" text="Communication Type" />
-                    <TextField fx:id="DBCommunication" editable="false" layoutX="14.0" layoutY="15.0" prefHeight="13.0" prefWidth="300" text="" />
+                    <Label fx:id="DBCommunication" layoutX="100.0" layoutY="30.0" prefHeight="13.0" prefWidth="300" text="" />
                 </Pane>
                 <Pane layoutX="14.0" layoutY="99.0" prefHeight="120.0" prefWidth="350.0" style="-fx-border-width: 1px; -fx-border-color: black">
                     <Label layoutX="20.0" layoutY="-8.0" style="-fx-background-color: #333333" text="Options" />
@@ -124,8 +125,8 @@
                             </FXCollections>
                         </items>
                     </ChoiceBox>
-                    <Label layoutX="25.0" layoutY="54.0" text="Dev Connect Port" />
-                    <ChoiceBox fx:id="connectPort" layoutX="185.0" layoutY="52.0" prefWidth="150.0">
+                    <Label layoutX="25.0" layoutY="50.0" text="Dev Connect Port" />
+                    <ChoiceBox fx:id="connectPort" layoutX="185.0" layoutY="48.0" prefWidth="150.0">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="TTL" />
@@ -133,8 +134,8 @@
                             </FXCollections>
                         </items>
                     </ChoiceBox>
-                    <Label layoutX="25.0" layoutY="93.0" text="Dev BaudRate" />
-                    <ChoiceBox fx:id="baudRate" layoutX="185.0" layoutY="89.0" prefWidth="150.0">
+                    <Label layoutX="25.0" layoutY="91.0" text="Dev BaudRate" />
+                    <ChoiceBox fx:id="baudRate" layoutX="185.0" layoutY="87.0" prefWidth="150.0">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <Integer fx:value="9600" />
@@ -165,14 +166,14 @@
                 </Pane>
                 <Pane layoutX="14.0" layoutY="400.0" prefHeight="52.0" prefWidth="350.0" style="-fx-border-width: 1px;-fx-border-color: black;">
                     <Label layoutX="14.0" layoutY="-6.0" style="-fx-background-color: #333333" text="Version Information" />
-                    <TextField fx:id="versionInfo" editable="false" layoutX="20.0" layoutY="15.0" prefWidth="300" />
+                    <Label fx:id="versionInfo" layoutX="95.0" layoutY="18.0" prefWidth="300" />
                 </Pane>
                 <Button layoutX="230.0" layoutY="455.0" mnemonicParsing="false" onMouseClicked="#read" text="Read" />
                 <Button layoutX="300.0" layoutY="455.0" mnemonicParsing="false" onMouseClicked="#write" text="Write" />
             </AnchorPane>
         </Tab>
     </TabPane>
-    <Button layoutX="255.0" layoutY="554.0" mnemonicParsing="false" onMouseClicked="#search" text="Search" />
+    <Button fx:id="searchBtn" layoutX="255.0" layoutY="554.0" mnemonicParsing="false" onMouseClicked="#search" text="Search" />
     <Button layoutX="332.0" layoutY="554.0" mnemonicParsing="false" onMouseClicked="#set" text="Set" />
     <Button layoutX="383.0" layoutY="554.0" mnemonicParsing="false" onMouseClicked="#add" text="Add" />
     <Button layoutX="440.0" layoutY="554.0" mnemonicParsing="false" onMouseClicked="#reboot" text="Reboot" />

@@ -162,6 +162,10 @@ public class HEXMessageController {
             }
         });
 
+        for (int i = 1; i < 11; i++) {
+            bgImg.getItems().add(Integer.toString(i));
+        }
+
         pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)-> doMsgSettings());
 
         sectionGroup.selectedToggleProperty().addListener((observable, oldValue, newValue)-> doMsgSettings());
@@ -404,10 +408,10 @@ public class HEXMessageController {
 
             int add;
             switch (fontGroupValue){
-                case "FontGroup1"-> add = 8;
-                case "FontGroup2"-> add = 128;
-                case "FontGroup3"-> add = 136;
-                default -> add = 0;
+                case "FontGroup1"-> add = 0;
+                case "FontGroup2"-> add = 8;
+                case "FontGroup3"-> add = 128;
+                default -> add = 136;
             }
 
             int tmpValue = Integer.parseInt(tmp, 16);
@@ -608,10 +612,10 @@ public class HEXMessageController {
     public void reset() {
         String msgNum = getMsgNum();
         configService.setProperty("displayControl"+msgNum, "ON");
-        configService.setProperty("displayMethod"+msgNum, "Normal");
+        configService.setProperty("displayMethod"+msgNum, "Clear");
         configService.setProperty("charCode"+msgNum, "한글 조합형");
         configService.setProperty("fontSize"+msgNum, "16(Standard)");
-        configService.setProperty("fontGroup"+msgNum, "FontGroup0");
+        configService.setProperty("fontGroup"+msgNum, "FontGroup1");
         configService.setProperty("effectIn"+msgNum, "정지효과");
         configService.setProperty("effectInDirection"+msgNum, "방향없음");
         configService.setProperty("effectOut"+msgNum, "사용안함");

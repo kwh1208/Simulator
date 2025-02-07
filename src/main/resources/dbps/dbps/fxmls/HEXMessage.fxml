@@ -106,13 +106,13 @@
         </items>
     </ChoiceBox>
     <Label layoutX="415.0" layoutY="170.0" text="%fontGroup" />
-    <ChoiceBox fx:id="fontGroup" layoutX="519.0" layoutY="166.0" prefHeight="21.0" prefWidth="139.0" value="FontGroup0">
+    <ChoiceBox fx:id="fontGroup" layoutX="519.0" layoutY="166.0" prefHeight="21.0" prefWidth="139.0" value="FontGroup1">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="FontGroup0" />
                 <String fx:value="FontGroup1" />
                 <String fx:value="FontGroup2" />
                 <String fx:value="FontGroup3" />
+                <String fx:value="FontGroup4" />
             </FXCollections>
         </items>
     </ChoiceBox>

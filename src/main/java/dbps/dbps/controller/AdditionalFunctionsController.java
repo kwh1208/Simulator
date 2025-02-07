@@ -222,4 +222,9 @@ public class AdditionalFunctionsController {
         sendMsg+= (int) (fontHeight.getValue() * 10) +"!]";
         asciiMsgTransceiver.sendMessages(sendMsg, false, progressIndicator);
     }
+
+    public void close(MouseEvent mouseEvent) {
+        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        stage.close();
+    }
 }

@@ -5,9 +5,7 @@ import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
@@ -38,10 +36,9 @@ public class FontService {
         return new Task<Void>() {
             @Override
             protected Void call() throws Exception {
+                System.out.println("startTime = " + System.currentTimeMillis());
                 int progress = -1;
                 hexMsgTransceiver.sendMessages("10 02 00 00 02 45 00 10 03", commonProgressIndicator);
-
-                Thread.sleep(200);
 
                 int packetSize = 1024;
                 int totalPackets = 0;
@@ -93,18 +90,22 @@ public class FontService {
                         if (now[j]!=null){
                             byte[] fontData;
                             try {
-                                InputStream fontFile = new FileInputStream(now[j]);
-                                fontData = fontFile.readAllBytes();
-
-                                fontData = Arrays.copyOf(fontData, fontData.length - 16);
+                                try (InputStream fontFile = new FileInputStream(now[j])) {
+                                    fontData = fontFile.readAllBytes();
+                                }
                                 String size = extractTwoCharsAroundX(now[j], 'x');
                                 String width = size.substring(0, 2);
                                 String height = size.substring(3, 5);
+
+                                Arrays.fill(fontData, 0, 16, (byte)0x00);
+
+                                fontData = Arrays.copyOf(fontData, fontData.length - 16);
+                                int fontSize = Integer.parseInt(width) * Integer.parseInt(height) / 8;
                                 if (fontType[3*i+j].contains("유니코드")){
-                                    int fontSize = Integer.parseInt(width) * Integer.parseInt(height) / 8;
-                                    if (fontType[3*i+j].contains("완성형")){
+
+                                    if (fontType[3*i+j].contains("한국어")){
                                         int startUnicode = 0xAC00-33;
-                                        int endUnicode = 0xD7A3-33;
+                                        int endUnicode = 0xD7A3;
 
                                         int startIndex = (startUnicode) * fontSize;  // 유니코드의 시작 위치 계산
                                         int endIndex = (endUnicode + 1) * fontSize;  // 유니코드의 끝 위치 계산 (포함하려면 +1)
@@ -113,7 +114,7 @@ public class FontService {
                                         fontData = Arrays.copyOfRange(fontData, startIndex, endIndex);
                                     } else if (fontType[3 * i + j].contains("일본어")) {
                                         int startUnicode = 0x3040-33;  // U+3040의 유니코드 값
-                                        int endUnicode = 0x30FF-33;    // U+30FF의 유니코드 값
+                                        int endUnicode = 0x30FF;    // U+30FF의 유니코드 값
 
                                         int startIndex = (startUnicode) * fontSize;  // 유니코드의 시작 위치 계산
                                         int endIndex = (endUnicode + 1) * fontSize;  // 유니코드의 끝 위치 계산 (포함하려면 +1)
@@ -122,14 +123,34 @@ public class FontService {
                                         fontData = Arrays.copyOfRange(fontData, startIndex, endIndex);
                                     } else if (fontType[3 * i + j].contains("중국어")){
                                         int startUnicode = 0x4E00-33;
-                                        int endUnicode = 0x9FFF-33;
+                                        int endUnicode = 0x9FFF;
 
                                         int startIndex = (startUnicode) * fontSize;
                                         int endIndex = (endUnicode + 1) * fontSize;
 
                                         // 유니코드 범위 내의 데이터만 복사
                                         fontData = Arrays.copyOfRange(fontData, startIndex, endIndex);
+                                    } else {
+                                        int endUnicode = 0xd7a3+33;
+
+                                        int startIndex = 0;
+                                        int endIndex = (endUnicode + 1) * fontSize;
+
+                                        // 기존 데이터 크기 계산
+                                        byte[] trimmedFontData = Arrays.copyOfRange(fontData, startIndex, endIndex);
+
+                                        // 앞쪽에 33개의 문자 크기만큼 0x00 추가 (33 * fontSize)
+                                        byte[] dummyData = new byte[33 * fontSize];
+                                        Arrays.fill(dummyData, (byte) 0x00);
+
+                                        // 새롭게 결합된 폰트 데이터 만들기 (더미 데이터 + 기존 폰트 데이터)
+                                        ByteBuffer newFontData = ByteBuffer.allocate(dummyData.length + trimmedFontData.length);
+                                        newFontData.put(dummyData);
+                                        newFontData.put(trimmedFontData);
+
+                                        fontData = newFontData.array();
                                     }
+
                                 }
                                 //pos start end w h 순서로 추가
                                 //pos
@@ -304,6 +325,8 @@ public class FontService {
                     }
                 }
 
+                Thread.sleep(50);
+
                 //앞뒤로 붙이는거 추가
                 finalPacket[0] = 0x10;
                 finalPacket[1] = 0x02;
@@ -315,6 +338,7 @@ public class FontService {
 
                 hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
 
+                System.out.println("EndTime = " + System.currentTimeMillis());
                 return null;
             }
         };

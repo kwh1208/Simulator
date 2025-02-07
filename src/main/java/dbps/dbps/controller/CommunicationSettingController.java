@@ -362,8 +362,7 @@ public class CommunicationSettingController {
     private void connectServerTCP() {
         int port = Integer.parseInt(serverIPPort.getText());
         configService.setProperty("serverTCPPort", String.valueOf(port));
-        // 서버 연결 Task 생성
-        serverTCPManager.connect(port);
+        serverTCPManager.connect(serverIPAddress.getValue(), port);
     }
 
 

@@ -1,6 +1,8 @@
 package dbps.dbps.service.connectManager;
 
+import dbps.dbps.service.DabitNetService;
 import dbps.dbps.service.LogService;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +11,7 @@ import java.io.IOException;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static dbps.dbps.Constants.*;
 
@@ -25,14 +26,16 @@ public class UDPManager {
     private int PORT;
 
 
-
     DatagramSocket socket = null;
 
     private static UDPManager udpManager = null;
     private static LogService logService;
+    private static DabitNetService dabitNetService;
+
 
     private UDPManager() {
         logService = LogService.getLogService();
+        dabitNetService = DabitNetService.getInstance();
         setIP(UDP_IP);
         setPORT(UDP_PORT);
     }
@@ -187,63 +190,209 @@ public class UDPManager {
         };
     }
 
+    List<DatagramSocket> socketList = new ArrayList<>();
+
+    boolean WifiOnly;
+    boolean etherNetOnly;
+
     public Task<String> send300MsgAndGetMsgByte(byte[] msg) {
         return new Task<>() {
             @Override
             protected String call() throws IOException {
-                if (socket == null||socket.isClosed()) {
-                    connectNoLog(IP, PORT);
+                System.out.println(1111);
+                if (socketList == null || socketList.isEmpty()) {
+                    throw new IOException("연결된 소켓이 없습니다.");
                 }
-                DatagramPacket receivePacket;
+
                 List<String> receivedMessages = new ArrayList<>();
+                InetAddress serverAddr = InetAddress.getByName(IP); // ✅ DNS 조회는 한 번만
+
                 try {
-                    InetAddress serverAddr = InetAddress.getByName(IP);
-                    DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
+                    for (DatagramSocket socket : socketList) {
+                        if (socket == null || socket.isClosed()) {
+                            continue;
+                        }
 
-                    socket.send(sendPacket);
+                        InetAddress localAddr = socket.getLocalAddress(); // 현재 소켓의 로컬 IP
 
-                    byte[] receiveBuffer = new byte[1024];
+                        NetworkInterface netInterface = NetworkInterface.getByInetAddress(localAddr);
+                        String interfaceName = (netInterface != null) ? netInterface.getDisplayName().toLowerCase() : "unknown";
 
-                    receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-                    while (true) {
-                        try {
-                            socket.receive(receivePacket);
-                            int bytesRead = receivePacket.getLength();
-                            if (bytesRead > 0) {
-                                String message = new String(receivePacket.getData(), 0, receivePacket.getLength());
-                                receivedMessages.add(message); // 리스트에 메시지 추가
+                        boolean isWifi = interfaceName.contains("wi-fi") || interfaceName.contains("wlan");
+                        boolean isEthernet = (interfaceName.contains("ethernet") || interfaceName.contains("eth") || interfaceName.contains("usb") || interfaceName.contains("thunderbolt"))
+                                && !interfaceName.contains("vmware")
+                                && !interfaceName.contains("virtualbox")
+                                && !interfaceName.contains("hyper-v");
+
+                        if (isWifi) {
+                            if (!WifiOnly){
+                                continue;
                             }
-                        } catch (SocketTimeoutException e) {
-                            break;
-                        } catch (Exception e) {
-                            throw e;
+                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5107));
+                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
+                        } else if (isEthernet) {
+                            if (!etherNetOnly){
+                                continue;
+                            }
+                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
+                        }
+
+                        byte[] receiveBuffer = new byte[1024];
+
+                        while (true) {
+                            DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+                            try {
+                                socket.receive(receivePacket);
+                                int bytesRead = receivePacket.getLength();
+                                if (bytesRead > 0) {
+                                    String message = new String(receivePacket.getData(), 0, bytesRead);
+                                    System.out.println("message = " + message);
+                                    Platform.runLater(()->{
+                                        dabitNetService.updateUI(message);
+                                    });
+                                    receivedMessages.add(message);
+                                }
+                            } catch (SocketTimeoutException e) {
+                                break; // ✅ 타임아웃 발생 시 while 종료
+                            }
                         }
                     }
-                    // 받은 메시지를 합쳐서 반환
-                    return String.join("", receivedMessages);
-
                 } catch (IOException e) {
-                    throw e;
-                } finally {
-                    disconnectNoLog(); // 자원 정리
+                    e.printStackTrace();
                 }
+
+                return String.join("", receivedMessages);
             }
         };
     }
 
-    public void connect300(int port){
+
+
+    public void  connect300All(){
+        connect300Wifi(5107);
+        connect300Ethernet(5108);
+
+        WifiOnly = true;
+        etherNetOnly = true;
+    }
+
+    public void connect300Wifi(int port){
         this.IP = "255.255.255.255";
         this.PORT = port;
         try {
-            if (socket == null) {
-                socket = new DatagramSocket(5109);
+            System.out.println(System.currentTimeMillis());
+            String wifiIP = getLocalWiFiIP();
+            System.out.println(System.currentTimeMillis());
+            WifiOnly = true;
+            etherNetOnly = false;
+
+            boolean alreadyExists = false;
+            for (DatagramSocket socket : socketList) {
+                if (socket.getLocalAddress().getHostAddress().equals(wifiIP)) {
+                    alreadyExists = true;
+                    break;
+                }
             }
-            socket.setBroadcast(true);
-            socket.setSoTimeout(RESPONSE_LATENCY*1000);
+            System.out.println(System.currentTimeMillis());
+            if (alreadyExists) {
+                return;
+            }
+            System.out.println(System.currentTimeMillis());
+            DatagramSocket tmpSocket = new DatagramSocket(new InetSocketAddress(wifiIP, 5109));
+            tmpSocket.setBroadcast(true);
+            tmpSocket.setSoTimeout(RESPONSE_LATENCY*1000);
+
+            socketList.add(tmpSocket);
         } catch (SocketException e) {
             e.printStackTrace();
             logService.errorLog("IP: " + IP + ", PORT: " + PORT+"열기에 실패했습니다.");
         }
+    }
+
+    private String getLocalWiFiIP() {
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaces.nextElement();
+
+                // Wi-Fi 인터페이스인지 확인 (이름이 보통 "wlan" 또는 "wi-fi" 포함)
+                if (networkInterface.isLoopback() || !networkInterface.isUp() || networkInterface.getDisplayName().toLowerCase().contains("virtual")) {
+                    continue;
+                }
+
+                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+                    if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
+                        return addr.getHostAddress(); // Wi-Fi IP 주소 반환
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return "127.0.0.1"; // 실패 시 기본값
+    }
+
+    public void connect300Ethernet(int port) {
+        this.IP = "255.255.255.255";
+        this.PORT = port;
+
+        try {
+            List<String> ethernetIPs = getLocalEthernetIPs();
+
+            WifiOnly = false;
+            etherNetOnly = true;
+
+            // ✅ 기존 소켓의 IP 주소를 Set으로 변환하여 빠른 중복 검사 (O(1))
+            Set<String> existingIPs = new HashSet<>();
+            for (DatagramSocket socket : socketList) {
+                existingIPs.add(socket.getLocalAddress().getHostAddress());
+            }
+
+            for (String ethernetIP : ethernetIPs) {
+                if (existingIPs.contains(ethernetIP)) {
+                    continue; // ✅ 이미 존재하는 IP라면 건너뜀 (O(1) 연산)
+                }
+
+                DatagramSocket tmpSocket = new DatagramSocket(new InetSocketAddress(ethernetIP, 5109));
+                tmpSocket.setBroadcast(true);
+                tmpSocket.setSoTimeout(RESPONSE_LATENCY * 1000);
+                socketList.add(tmpSocket);
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+            logService.errorLog("IP: " + IP + ", PORT: " + PORT + " 열기에 실패했습니다.");
+        }
+    }
+
+
+    private List<String> getLocalEthernetIPs() {
+        List<String> ipList = new ArrayList<>();
+
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaces.nextElement();
+
+                // Wi-Fi가 아닌, 이더넷 인터페이스만 찾기
+                if (networkInterface.isLoopback() || !networkInterface.isUp() || networkInterface.getDisplayName().toLowerCase().contains("wi-fi")) {
+                    continue;
+                }
+
+                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+                    if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
+                        ipList.add(addr.getHostAddress());
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
+        return ipList;
     }
 
     //접속하기
@@ -267,7 +416,7 @@ public class UDPManager {
         this.PORT = PORT;
         try {
             if (socket == null) {
-                socket = new DatagramSocket(5109);
+                socket = new DatagramSocket();
             }
             socket.setBroadcast(true);
             socket.setSoTimeout(RESPONSE_LATENCY*1000);
