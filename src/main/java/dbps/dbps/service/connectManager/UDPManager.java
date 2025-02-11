@@ -90,6 +90,11 @@ public class UDPManager {
                     }
 
                     String result = new String(receiveBuffer, 0, totalBytesRead);
+                    if (result.contains("RX") && result.contains("![") && result.contains("!]")) {
+                        int indexTX = result.indexOf("TX");
+                        result = result.substring(indexTX);
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                    }
                     logService.updateInfoLog("받은 메세지 :"+result);
                     return result;
                 }catch (IOException e){
@@ -137,6 +142,9 @@ public class UDPManager {
                         }
                     }
                     String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
+                    if (result.contains("52 58 28")) {
+                        result = result.substring(result.indexOf("10 02"));
+                    }
                     logService.updateInfoLog("받은 메세지 :"+result);
                     return result;
                 } catch (IOException e) {
@@ -148,46 +156,45 @@ public class UDPManager {
         };
     }
 
-    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg){
-        return new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                if (socket == null||socket.isClosed()) {
-                    connectNoLog(IP, PORT);
-                }
-                DatagramPacket receivePacket;
-                try {
-                    InetAddress serverAddr = InetAddress.getByName(IP);
-                    DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
-                    socket.send(sendPacket);
+    public String sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
+        if (socket == null||socket.isClosed()) {
+            connectNoLog(IP, PORT);
+        }
+        DatagramPacket receivePacket;
+        try {
+            InetAddress serverAddr = InetAddress.getByName(IP);
+            DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
+            socket.send(sendPacket);
 
-                    byte[] receiveBuffer = new byte[1024];
-                    int totalBytesRead = 0;
-                    receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-                    while (true) {
-                        try {
-                            socket.receive(receivePacket);
-                            int bytesRead = receivePacket.getLength();
-                            if (bytesRead > 0) {
-                                totalBytesRead += bytesRead;
-                                // 데이터 처리 로직
-                                if (dataReceivedIsCompleteHex(receiveBuffer, totalBytesRead)) {
-                                    break; // 수신 완료 조건 만족 시 루프 종료
-                                }
-                            }
-                        } catch (SocketTimeoutException e) {
-                            logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
-                            throw new RuntimeException();
+            byte[] receiveBuffer = new byte[1024];
+            int totalBytesRead = 0;
+            receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+            while (true) {
+                try {
+                    socket.receive(receivePacket);
+                    int bytesRead = receivePacket.getLength();
+                    if (bytesRead > 0) {
+                        totalBytesRead += bytesRead;
+                        // 데이터 처리 로직
+                        if (dataReceivedIsCompleteHex(receiveBuffer, totalBytesRead)) {
+                            break; // 수신 완료 조건 만족 시 루프 종료
                         }
                     }
-                    return bytesToHex(receivePacket.getData(), receivePacket.getLength());
-                } catch (IOException e) {
-                    throw e;
-                } finally {
-                    disconnectNoLog();
+                } catch (SocketTimeoutException e) {
+                    logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                    throw new RuntimeException();
                 }
             }
-        };
+            String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
+            if (result.contains("52 58 28")) {
+                result = result.substring(result.indexOf("10 02"));
+            }
+            return result;
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            disconnectNoLog();
+        }
     }
 
     List<DatagramSocket> socketList = new ArrayList<>();
@@ -199,13 +206,13 @@ public class UDPManager {
         return new Task<>() {
             @Override
             protected String call() throws IOException {
-                System.out.println(1111);
                 if (socketList == null || socketList.isEmpty()) {
                     throw new IOException("연결된 소켓이 없습니다.");
                 }
 
                 List<String> receivedMessages = new ArrayList<>();
-                InetAddress serverAddr = InetAddress.getByName(IP); // ✅ DNS 조회는 한 번만
+                InetAddress serverAddr = InetAddress.getByName(IP);
+
 
                 try {
                     for (DatagramSocket socket : socketList) {
@@ -213,8 +220,7 @@ public class UDPManager {
                             continue;
                         }
 
-                        InetAddress localAddr = socket.getLocalAddress(); // 현재 소켓의 로컬 IP
-
+                        InetAddress localAddr = socket.getLocalAddress();
                         NetworkInterface netInterface = NetworkInterface.getByInetAddress(localAddr);
                         String interfaceName = (netInterface != null) ? netInterface.getDisplayName().toLowerCase() : "unknown";
 
@@ -225,20 +231,20 @@ public class UDPManager {
                                 && !interfaceName.contains("hyper-v");
 
                         if (isWifi) {
-                            if (!WifiOnly){
+                            if (!WifiOnly) {
                                 continue;
                             }
                             socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5107));
                             socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
                         } else if (isEthernet) {
-                            if (!etherNetOnly){
+                            if (!etherNetOnly) {
                                 continue;
                             }
                             socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
                         }
 
-                        byte[] receiveBuffer = new byte[1024];
 
+                        byte[] receiveBuffer = new byte[1024];
                         while (true) {
                             DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
                             try {
@@ -246,17 +252,15 @@ public class UDPManager {
                                 int bytesRead = receivePacket.getLength();
                                 if (bytesRead > 0) {
                                     String message = new String(receivePacket.getData(), 0, bytesRead);
-                                    System.out.println("message = " + message);
-                                    Platform.runLater(()->{
-                                        dabitNetService.updateUI(message);
-                                    });
+                                    Platform.runLater(() -> dabitNetService.updateUI(message));
                                     receivedMessages.add(message);
                                 }
                             } catch (SocketTimeoutException e) {
-                                break; // ✅ 타임아웃 발생 시 while 종료
+                                break;
                             }
                         }
                     }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -280,9 +284,7 @@ public class UDPManager {
         this.IP = "255.255.255.255";
         this.PORT = port;
         try {
-            System.out.println(System.currentTimeMillis());
             String wifiIP = getLocalWiFiIP();
-            System.out.println(System.currentTimeMillis());
             WifiOnly = true;
             etherNetOnly = false;
 
@@ -293,11 +295,9 @@ public class UDPManager {
                     break;
                 }
             }
-            System.out.println(System.currentTimeMillis());
             if (alreadyExists) {
                 return;
             }
-            System.out.println(System.currentTimeMillis());
             DatagramSocket tmpSocket = new DatagramSocket(new InetSocketAddress(wifiIP, 5109));
             tmpSocket.setBroadcast(true);
             tmpSocket.setSoTimeout(RESPONSE_LATENCY*1000);

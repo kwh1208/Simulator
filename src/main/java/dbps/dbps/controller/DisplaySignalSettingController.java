@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -98,6 +99,16 @@ public class DisplaySignalSettingController {
         });
 
         signalList.setOnMouseClicked(event -> handleDoubleClick(event, signalList));
+
+        signalList.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                String selectedItem = signalList.getSelectionModel().getSelectedItem(); // 선택된 항목 가져오기
+                if (selectedItem != null) {
+                    signalTransfer();
+                }
+            }
+        });
+
 
         displaySignalAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/displaySignal.css").toExternalForm());
         displaySignal = DisplaySignal.getInstance();

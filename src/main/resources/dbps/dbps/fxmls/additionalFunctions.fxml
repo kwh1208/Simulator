@@ -48,7 +48,7 @@
     </ChoiceBox>
     <Button layoutX="291.0" layoutY="140.0" mnemonicParsing="false" onMouseClicked="#sendoffSet" prefHeight="28.0" prefWidth="63.0" text="%sendButton" />
 
-    <Button layoutX="43.0" layoutY="175.0" onMouseClicked="#openBGSchedule" prefHeight="30" prefWidth="150" text="%BGSchedule" />
+    <Button layoutX="43.0" layoutY="175.0" onMouseClicked="#openBGSchedule" prefHeight="30" prefWidth="150" text="%BGSchedule" style="-fx-font-size: 11px"/>
     <Button layoutX="205.0" layoutY="175.0" onMouseClicked="#openRelay" prefHeight="30" prefWidth="150" text="%relaySignal" />
     <Button layoutX="43.0" layoutY="212.0" mnemonicParsing="false" onMouseClicked="#fontName" prefHeight="30.0" prefWidth="312.0" text="%fontFileName" />
     <Pane layoutX="6.0" layoutY="255.0" prefHeight="75.0" prefWidth="391.0" style="-fx-border-color: black;">

@@ -377,16 +377,16 @@ public class HEXMessageController {
         msg.append(makeEffectTime(effectTimeValue));
 
         //x축 시작**
-        msg.append(String.format("%02d", (Integer.parseInt(xStartValue) / 4))).append(" ");
+        msg.append(String.format("%02X", (Integer.parseInt(xStartValue) / 4))).append(" ");
 
         //y축 시작
-        msg.append(String.format("%02d", (Integer.parseInt(yStartValue) / 4))).append(" ");
+        msg.append(String.format("%02X", (Integer.parseInt(yStartValue) / 4))).append(" ");
 
         //x축 끝
-        msg.append(String.format("%02d", (Integer.parseInt(xEndValue) / 4))).append(" ");
+        msg.append(String.format("%02X", (Integer.parseInt(xEndValue) / 4))).append(" ");
 
         //y축 끝
-        msg.append(String.format("%02d", (Integer.parseInt(yEndValue) / 4))).append(" ");
+        msg.append(String.format("%02X", (Integer.parseInt(yEndValue) / 4))).append(" ");
 
         //배경이미지
         msg.append(bgImgValue.equals(bundle.getString("notUsed")) ? "00 " : String.format("%02d ", Integer.parseInt(bgImgValue)));
@@ -590,9 +590,9 @@ public class HEXMessageController {
             case "확대효과" -> directionBox.setItems(FXCollections.observableArrayList("왼쪽", "오른쪽", "위쪽", "아래쪽", "오른쪽아래로"));
             case "회전효과" -> directionBox.setItems(FXCollections.observableArrayList("시계반대1", "시계방향1", "시계반대2", "시계방향2"));
             case "배경깜박이기" ->
-                    directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "파란색", "흰색", "전체(순차적)"));
+                    directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "노란색", "흰색", "전체(순차적)"));
             case "색상깜박이기" ->
-                    directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "파란색", "흰색", "전체(순차적)", "전체(동시에)"));
+                    directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "노란색", "흰색", "전체(순차적)", "전체(동시에)"));
             case "3D 효과" -> directionBox.setItems(FXCollections.observableArrayList("왼쪽"));
             case "효과없음" -> directionBox.setDisable(true);
         }

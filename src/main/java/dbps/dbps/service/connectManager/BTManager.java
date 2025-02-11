@@ -2,28 +2,30 @@ package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.AsciiMsgTransceiver;
 import javafx.scene.control.ProgressIndicator;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
-
-import static dbps.dbps.Constants.CONNECT_TYPE;
+@Setter
+@Getter
 public class BTManager {
 
     private static BTManager instance = null;
     ProgressIndicator progressIndicator;
+
+
     AsciiMsgTransceiver asciiMsgTransceiver;
 
-    public static BTManager getInstance(ProgressIndicator progressIndicator) {
+    public static BTManager getInstance() {
         if (instance == null) {
-            instance = new BTManager(progressIndicator);
+            instance = new BTManager();
         }
         return instance;
     }
 
-    private BTManager(ProgressIndicator progressIndicator) {
+    private BTManager() {
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
-        this.progressIndicator = progressIndicator;
     }
 
     public void search() {
@@ -55,12 +57,9 @@ public class BTManager {
         asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
-    public void begin(String password) throws ExecutionException, InterruptedException {
+    public void begin(String password){
         String msg = "++SET++![BT " + password + " BEGIN!]";
-        String receivedMsg = asciiMsgTransceiver.sendMessages(msg, false, progressIndicator).get();
-        if (receivedMsg.equals("![DIBD BLE OK!]")){
-            CONNECT_TYPE = "bluetooth";
-        }
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     public void end(String password) {

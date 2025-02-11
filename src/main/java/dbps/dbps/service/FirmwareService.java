@@ -124,7 +124,7 @@ public class FirmwareService {
                             progressBar.setProgress((double) finalI / totalPackets);
 
                             // Label 업데이트 (i/totalPackets)
-                            progressLabel.setText((finalI + 1) + "/" + totalPackets);
+                            progressLabel.setText((int)((((double)finalI + 1)/totalPackets)*100) +"%");
                         });
                     }
                 } catch (Exception e) {

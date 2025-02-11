@@ -1,15 +1,17 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.service.*;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -89,6 +91,9 @@ public class FontSettingController {
 
     @FXML
     AnchorPane fontSettingAnchorPane;
+    Stage progressStage;
+    ProgressBar progressBar;
+    Label progressLabel;
 
     AsciiMsgTransceiver asciiMsgTransceiver;
     HexMsgTransceiver hexMsgTransceiver;
@@ -303,6 +308,37 @@ public class FontSettingController {
         fontGroup4fontSelected1.setValue(configService.getProperty("fontGroup4FontType1"));
         fontGroup4fontSelected2.setValue(configService.getProperty("fontGroup4FontType2"));
         fontGroup4fontSelected3.setValue(configService.getProperty("fontGroup4FontType3"));
+
+        progressStage = new Stage();
+        progressStage.initModality(Modality.APPLICATION_MODAL); // 부모 창을 블로킹
+        progressStage.setTitle("폰트 전송");
+
+        progressBar = new ProgressBar(0);
+        progressBar.setStyle("-fx-accent: green;");
+        progressBar.setVisible(true);
+        progressBar.setPrefWidth(250);
+
+        progressLabel = new Label("폰트 전송 준비 중...");
+
+        Button cancelButton = new Button("취소");
+        Region spacer = new Region(); // 중간에 공간을 추가
+        HBox buttonBox = new HBox(spacer, cancelButton);
+        HBox.setHgrow(spacer, Priority.ALWAYS); // spacer가 가능한 공간을 채우도록 설정
+        buttonBox.setSpacing(10); // 버튼과 spacer 사이 여백 설정
+
+        cancelButton.setOnAction(e -> {
+            if (fontSendTask != null) {
+                fontSendTask.cancel();
+                progressBar.setProgress(0);
+                closeWindowAfterDelay(progressStage, 1000);
+            }
+        });
+
+        VBox vbox = new VBox(15, progressLabel, progressBar, buttonBox);
+        vbox.setStyle("-fx-padding: 20px;");
+
+        Scene progressScene = new Scene(vbox, 300, 150);
+        progressStage.setScene(progressScene);
     }
 
     private void addItem() {
@@ -478,6 +514,7 @@ public class FontSettingController {
         String[] fontGroup2Path = null;
         String[] fontGroup3Path = null;
         String[] fontGroup4Path = null;
+
         //첫번째 그룹
         fontGroup1Path[0] = fontGroup1fontPath1.getText();
         configService.setProperty("fontGroup1FontPath1", fontGroup1Path[0]);
@@ -512,7 +549,6 @@ public class FontSettingController {
                 fontType[5] = fontGroup2fontSelected3.getValue();
                 configService.setProperty("fontGroup2FontPath3", fontGroup2Path[2]);
             }
-
         }
 
         //세번째 그룹
@@ -521,14 +557,17 @@ public class FontSettingController {
             if (!fontGroup3fontSelected1.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup3Path[0] = fontGroup3fontPath1.getText();
                 fontType[6] = fontGroup3fontSelected1.getValue();
+                configService.setProperty("fontGroup3FontPath1", fontGroup3Path[1]);
             }
             if (!fontGroup3fontSelected2.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup3Path[1] = fontGroup3fontPath2.getText();
                 fontType[7] = fontGroup3fontSelected2.getValue();
+                configService.setProperty("fontGroup3FontPath2", fontGroup3Path[1]);
             }
             if (!fontGroup3fontSelected3.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup3Path[2] = fontGroup3fontPath3.getText();
                 fontType[8] = fontGroup3fontSelected3.getValue();
+                configService.setProperty("fontGroup3FontPath3", fontGroup3Path[2]);
             }
 
         }
@@ -539,49 +578,55 @@ public class FontSettingController {
             if (!fontGroup4fontSelected1.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup4Path[0] = fontGroup4fontPath1.getText();
                 fontType[9] = fontGroup4fontSelected1.getValue();
+                configService.setProperty("fontGroup4FontPath1", fontGroup4Path[0]);
             }
             if (!fontGroup3fontSelected2.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup4Path[1] = fontGroup4fontPath2.getText();
                 fontType[10] = fontGroup4fontSelected2.getValue();
+                configService.setProperty("fontGroup4FontPath2", fontGroup4Path[1]);
             }
             if (!fontGroup4fontSelected3.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup4Path[2] = fontGroup4fontPath3.getText();
                 fontType[11] = fontGroup4fontSelected3.getValue();
+                configService.setProperty("fontGroup4FontPath3", fontGroup4Path[2]);
             }
         }
 
-        fontSendTask = fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path, fontGroup4Path, fontType, fontProgressBar, fontProgressLabel);
+        // ✅ 진행 상태를 표시할 새 창 만들기
+        Platform.runLater(()->{
+            progressStage.show();
+        });
+
+        // ✅ 폰트 전송 Task 실행
+        fontSendTask = fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path, fontGroup4Path, fontType, progressBar, progressLabel);
 
         fontSendTask.setOnRunning(e -> {
-            // Task가 시작될 때 로딩 애니메이션 표시
-            fontProgressBar.setVisible(true);
-            fontProgressLabel.setVisible(true);
+            progressLabel.setText("폰트 전송 준비 중...");
+            progressBar.setProgress(-1); // 진행 중 상태
         });
 
         fontSendTask.setOnSucceeded(e -> {
-            // Task가 성공적으로 끝났을 때 로딩 애니메이션 숨김
-            fontProgressBar.setVisible(false);
-            fontProgressLabel.setVisible(false);
-        });
-
-        fontSendTask.setOnFailed(e -> {
-            // Task가 실패했을 때 로딩 애니메이션 숨김
-            fontProgressBar.setVisible(false);
-            fontProgressLabel.setVisible(false);
-
-            Throwable ex = fontSendTask.getException();
-            if (ex != null) {
-                ex.printStackTrace(); // 예외 출력
-            }
-        });
-
-        fontSendTask.setOnCancelled(e -> {
-            // Task가 취소됐을 때 로딩 애니메이션 숨김
-            fontProgressBar.setVisible(false);
-            fontProgressLabel.setVisible(false);
+            progressLabel.setText("폰트 전송 완료!");
+            progressBar.setProgress(1.0);
+            closeWindowAfterDelay(progressStage, 1000); // 1초 후 창 닫기
         });
 
         new Thread(fontSendTask).start();
+    }
+
+//    final String[] finalFontGroup2path = fontGroup2Path;
+//    final String[] finalFontGroup3path = fontGroup3Path;
+//    final String[] finalFontGroup4path = fontGroup4Path;
+
+    // ✅ 일정 시간이 지나면 진행 상태 창 닫기
+    private void closeWindowAfterDelay(Stage stage, int delayMillis) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(delayMillis);
+                Platform.runLater(stage::close);
+            } catch (InterruptedException ignored) {
+            }
+        }).start();
     }
 
     public void close(MouseEvent mouseEvent) {

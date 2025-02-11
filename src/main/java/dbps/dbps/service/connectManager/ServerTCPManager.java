@@ -19,7 +19,6 @@ public class ServerTCPManager {
     Socket socket;
     LogService logService;
     static ServerTCPManager instance;
-    String hostIP;
 
     private ServerTCPManager() {
         logService = LogService.getLogService();
@@ -102,44 +101,39 @@ public class ServerTCPManager {
         };
     }
 
-    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg) {
-        return new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                if (socket == null) {
-                    connect(hostIP, serverTCPPort);
+    public String sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
+        if (socket == null) {
+            connect(hostIP, serverTCPPort);
+        }
+
+        try {
+            socket.setSoTimeout(RESPONSE_LATENCY * 1000); // 시간 초과 설정
+            InputStream input = socket.getInputStream();
+            OutputStream output = socket.getOutputStream();
+
+            output.write(msg);
+            output.flush();
+
+            byte[] buffer = new byte[1024];
+            int totalBytesRead = input.read(buffer);
+
+            if (totalBytesRead > 0) {
+                String response = bytesToHex(buffer, totalBytesRead);
+
+                if (response.isEmpty()) {
+                    throw new IOException("서버 응답이 비어 있습니다.");
                 }
 
-                try {
-                    socket.setSoTimeout(RESPONSE_LATENCY * 1000); // 시간 초과 설정
-                    InputStream input = socket.getInputStream();
-                    OutputStream output = socket.getOutputStream();
-
-                    output.write(msg);
-                    output.flush();
-
-                    byte[] buffer = new byte[1024];
-                    int totalBytesRead = input.read(buffer);
-
-                    if (totalBytesRead > 0) {
-                        String response = bytesToHex(buffer, totalBytesRead);
-
-                        if (response.isEmpty()) {
-                            throw new IOException("서버 응답이 비어 있습니다.");
-                        }
-
-                        return response;
-                    } else {
-                        throw new IOException("서버에서 응답이 없습니다.");
-                    }
-                } catch (IOException e) {
-                    logService.errorLog(msg + " 전송에 실패했습니다: " + e.getMessage());
-                    throw new IOException("메시지 전송 실패", e);
-                } finally {
-                    disconnect();
-                }
+                return response;
+            } else {
+                throw new IOException("서버에서 응답이 없습니다.");
             }
-        };
+        } catch (IOException e) {
+            logService.errorLog(msg + " 전송에 실패했습니다: " + e.getMessage());
+            throw e;
+        } finally {
+            disconnect();
+        }
     }
 
 
@@ -189,7 +183,6 @@ public class ServerTCPManager {
                     return result;
                 } catch (IOException | InterruptedException e) {
                     e.getMessage();
-
                     logService.errorLog(msg + " 전송에 실패했습니다.");
                     throw e;
                 }finally {

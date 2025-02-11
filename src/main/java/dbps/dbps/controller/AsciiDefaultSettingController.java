@@ -61,7 +61,7 @@ public class AsciiDefaultSettingController {
     ChoiceBox<String> effectSpeed;
 
     @FXML
-    ChoiceBox<String> effectTime;
+    ComboBox<String> effectTime;
 
     @FXML
     ChoiceBox<String> xStart;

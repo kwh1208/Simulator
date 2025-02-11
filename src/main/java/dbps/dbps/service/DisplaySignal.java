@@ -47,7 +47,7 @@ public class DisplaySignal {
         SignalMap_ASC.put("08D-P64D1S61", "0528161");
         SignalMap_ASC.put("08D-P64D1S71", "0528171");
         SignalMap_ASC.put("08D-P64D1S91-11", "0528191");
-        SignalMap_ASC.put("08D-P128D1S42", "00528142");
+        SignalMap_ASC.put("08D-P128D1S42", "0528142");
         SignalMap_ASC.put("08D-P128D1S51", "0528151");
         SignalMap_ASC.put("04D-P16D4S11-1^5^9^13", "0524411");
         SignalMap_ASC.put("04D-P16D4S21-1^5^9^13", "0524421");

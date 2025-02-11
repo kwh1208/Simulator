@@ -345,24 +345,13 @@ public class CommunicationSettingController {
     }
 
     //포트열기, 접속하기
-    @FXML
-    public void openSerialPort(){
-        if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
-            openPort(serialPortComboBox.getValue());
-        }
-        else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn))
-            connectClientTCP();
-        else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn))
-            connectServerTCP();
-        else if (communicationGroup.getSelectedToggle().equals(UDPRadioBtn)){
-            udpManager.connect(UDPIPAddress.getText(), Integer.parseInt(UDPIPPort.getText()));
-        }
-    }
+
 
     private void connectServerTCP() {
-        int port = Integer.parseInt(serverIPPort.getText());
-        configService.setProperty("serverTCPPort", String.valueOf(port));
-        serverTCPManager.connect(serverIPAddress.getValue(), port);
+        hostIP = serverIPAddress.getValue();
+        serverTCPPort = Integer.parseInt(serverIPPort.getText());
+
+        configService.setProperty("serverTCPPort", String.valueOf(serverTCPPort));
     }
 
 
@@ -374,6 +363,7 @@ public class CommunicationSettingController {
         tcpManager.setPORT(port);
         configService.setProperty("clientTCPAddr", IPAddress);
         configService.setProperty("clientTCPPort", String.valueOf(port));
+        tcpManager.connect(IPAddress, port);
 
         TCP_IP = IPAddress;
         TCP_PORT = port;
@@ -387,6 +377,7 @@ public class CommunicationSettingController {
         udpManager.setPORT(port);
         configService.setProperty("UDPAddr", IPAddress);
         configService.setProperty("UDPPort", String.valueOf(port));
+        udpManager.connect(IPAddress, port);
 
         UDP_IP = IPAddress;
         UDP_PORT = port;
@@ -394,7 +385,30 @@ public class CommunicationSettingController {
 
     @FXML
     public void closeSerialPort() {
-        closePort(serialPortComboBox.getValue());
+        if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
+            closePort(serialPortComboBox.getValue());
+        }
+        else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn))
+            tcpManager.disconnect();
+        else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn))
+            serverTCPManager.disconnect();
+        else if (communicationGroup.getSelectedToggle().equals(UDPRadioBtn)){
+            udpManager.disconnect();
+        }
+    }
+
+    @FXML
+    public void openSerialPort(){
+        if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
+            openPort(serialPortComboBox.getValue());
+        }
+        else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn))
+            connectClientTCP();
+        else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn))
+            connectServerTCP();
+        else if (communicationGroup.getSelectedToggle().equals(UDPRadioBtn)){
+            udpManager.connect(UDPIPAddress.getText(), Integer.parseInt(UDPIPPort.getText()));
+        }
     }
 
 

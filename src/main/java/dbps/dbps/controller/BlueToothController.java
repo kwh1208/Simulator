@@ -1,6 +1,7 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
+import dbps.dbps.service.BTService;
 import dbps.dbps.service.connectManager.BTManager;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -12,6 +13,8 @@ import javafx.stage.Stage;
 
 import java.util.concurrent.ExecutionException;
 
+import static dbps.dbps.Constants.isBT;
+
 public class BlueToothController {
 
     public TextField ble_id;
@@ -19,15 +22,22 @@ public class BlueToothController {
     public AnchorPane bluetoothAP;
     public ProgressIndicator progressIndicator;
     BTManager btManager;
+    BTService btService;
     @FXML
     public void initialize(){
-        btManager = BTManager.getInstance(progressIndicator);
+        btManager = BTManager.getInstance();
+        btService = BTService.getInstance();
+
+        btService.setBle_id(ble_id);
+        btService.setBle_password(ble_password);
+
+        btManager.setProgressIndicator(progressIndicator);
 
         bluetoothAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/bluetooth.css").toExternalForm());
     }
     //블루투스 검색
     public void search() {
-        //++SET++![BT SEARCHING DIBD!]
+        isBT = true;
         btManager.search();
     }
 

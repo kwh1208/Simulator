@@ -112,7 +112,7 @@ public class ConfigService {
                     defaultProperties.setProperty("displayMethod"+i+j, "Normal");
                     defaultProperties.setProperty("charCode"+i+j, "한글 조합형");
                     defaultProperties.setProperty("fontSize"+i+j, "16(Standard)");
-                    defaultProperties.setProperty("fontGroup"+i+j, "FontGroup0");
+                    defaultProperties.setProperty("fontGroup"+i+j, "FontGroup1");
                     defaultProperties.setProperty("effectIn"+i+j, "정지효과");
                     defaultProperties.setProperty("effectInDirection"+i+j, "방향없음");
                     defaultProperties.setProperty("effectOut"+i+j, "사용안함");
@@ -139,7 +139,7 @@ public class ConfigService {
             defaultProperties.setProperty("displayMethodDefault", "Normal");
             defaultProperties.setProperty("charCodeDefault", "한글 조합형");
             defaultProperties.setProperty("fontSizeDefault", "16(Standard)");
-            defaultProperties.setProperty("fontGroupDefault", "FontGroup0");
+            defaultProperties.setProperty("fontGroupDefault", "FontGroup1");
             defaultProperties.setProperty("effectInDefault", "정지효과");
             defaultProperties.setProperty("effectInDirectionDefault", "방향없음");
             defaultProperties.setProperty("effectOutDefault", "사용안함");

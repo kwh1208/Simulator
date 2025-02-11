@@ -8,13 +8,12 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -51,6 +50,11 @@ public class FirmwareUpgradeController {
     LogService logService;
     FirmwareService firmwareService;
 
+    Stage progressStage;
+    ProgressBar progressBar;
+    Label progressLabel;
+    Button cancelButton;
+
     @FXML
     public void initialize() {
         firmwareUpgradeAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/firmware.css").toExternalForm());
@@ -74,6 +78,29 @@ public class FirmwareUpgradeController {
                 fileLocation.positionCaret(newValue.length()); // 텍스트 끝으로 캐럿 이동
             });
         });
+
+        progressStage = new Stage();
+        progressStage.initModality(Modality.APPLICATION_MODAL); // 부모 창을 블로킹
+        progressStage.setTitle("펌웨어 업로드 진행 상태");
+
+        progressBar = new ProgressBar(0);
+        progressBar.setStyle("-fx-accent: green;");
+        progressBar.setPrefWidth(250);
+
+        progressLabel = new Label("펌웨어 업로드 준비 중...");
+        progressLabel.setStyle("-fx-text-fill: black; -fx-font-weight: bold;");
+
+        cancelButton = new Button("취소");
+
+
+        HBox buttonBox = new HBox(new Region(), cancelButton);
+        HBox.setHgrow(buttonBox.getChildren().get(0), Priority.ALWAYS);
+        buttonBox.setSpacing(10);
+
+        VBox vbox = new VBox(15, progressLabel, progressBar, buttonBox);
+        vbox.setStyle("-fx-padding: 20px;");
+        Scene progressScene = new Scene(vbox, 300, 150);
+        progressStage.setScene(progressScene);
     }
 
 
@@ -163,9 +190,11 @@ public class FirmwareUpgradeController {
     }
 
     public void send() {
-        if (firmwareInformation.getText().isEmpty()){
+        if (firmwareInformation.getText().isEmpty()) {
             logService.warningLog("컨트롤러의 펌웨어 버전을 먼저 읽어주세요.");
+            return;
         }
+
         String firmwareInformationText = firmwareInformation.getText();
         String firmwareFileInformationText = firmwareFileInformation.getText();
         int index1 = firmwareInformationText.lastIndexOf("DIBD");
@@ -179,56 +208,79 @@ public class FirmwareUpgradeController {
             logService.errorLog("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
             return;
         }
-        if (index2==-1){
+        if (index2 == -1) {
             index2 = firmwareFileInformationText.lastIndexOf("DB");
-            result2 = firmwareFileInformationText.substring(index2 +"DB".length(), index2 + "DB".length() + 4);
-        }
-        else if (index2 != -1 && index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
+            result2 = firmwareFileInformationText.substring(index2 + "DB".length(), index2 + "DB".length() + 4);
+        } else if (index2 != -1 && index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
             result2 = firmwareFileInformationText.substring(index2 + "DIBD".length(), index2 + "DIBD".length() + 4);
         } else {
             logService.errorLog("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
             return;
         }
 
-        if (!result1.equals(result2)){
+        if (!result1.equals(result2)) {
             logService.errorLog("업로드할 수 없습니다. 컨트롤러의 펌웨어와 동일한 펌웨어를 업로드해주세요.");
             return;
         }
 
-        if (!Files.exists(Path.of(uploadFirmwarePath))){
+        if (!Files.exists(Path.of(uploadFirmwarePath))) {
             logService.errorLog("파일을 찾을 수 없습니다.");
             return;
         }
 
         uploadFirmwarePath = fileLocation.getText();
-        Task<Void> firmwareUpload = firmwareService.firmwareUpload(firmwareProgressIndicator, firmwareProgressLabel);
-        firmwareProgressIndicator.setVisible(false);
-        firmwareUpload.setOnRunning(e -> {
-            // Task가 시작될 때 로딩 애니메이션 표시
-            firmwareProgressIndicator.setVisible(true);
-            firmwareProgressLabel.setVisible(true);
+
+        // 새로운 창 생성
+        progressStage.show();
+
+        // 펌웨어 업로드 Task 실행
+        Task<Void> firmwareUploadTask = firmwareService.firmwareUpload(progressBar, progressLabel);
+
+        firmwareUploadTask.setOnRunning(e -> {
+            progressLabel.setText("펌웨어 업로드 중...");
+            progressBar.setProgress(-1); // 애니메이션 상태
         });
 
-        firmwareUpload.setOnSucceeded(e -> {
-            // Task가 성공적으로 끝났을 때 로딩 애니메이션 숨김
-            firmwareProgressIndicator.setVisible(false);
-            firmwareProgressLabel.setVisible(false);
+        cancelButton.setOnAction(e -> {
+            if (firmwareUploadTask != null) {
+                firmwareUploadTask.cancel();
+                progressLabel.setText("업로드가 취소되었습니다.");
+                closeWindowAfterDelay(progressStage, 2000); // 2초 후 창 닫기
+            }
         });
 
-        firmwareUpload.setOnFailed(e -> {
-            // Task가 실패했을 때 로딩 애니메이션 숨김
-            firmwareProgressIndicator.setVisible(false);
-            firmwareProgressLabel.setVisible(false);
+        firmwareUploadTask.setOnSucceeded(e -> {
+            progressLabel.setText("펌웨어 업로드 완료!");
+            progressBar.setProgress(1.0);
+            closeWindowAfterDelay(progressStage, 2000); // 2초 후 창 닫기
         });
 
-        firmwareUpload.setOnCancelled(e -> {
-            // Task가 취소됐을 때 로딩 애니메이션 숨김
-            firmwareProgressIndicator.setVisible(false);
-            firmwareProgressLabel.setVisible(false);
+        firmwareUploadTask.setOnFailed(e -> {
+            progressLabel.setText("펌웨어 업로드 실패!");
+            progressBar.setProgress(0);
+            closeWindowAfterDelay(progressStage, 2000); // 실패 시 2초 후 창 닫기
         });
 
-        new Thread(firmwareUpload).start();
+        firmwareUploadTask.setOnCancelled(e -> {
+            progressLabel.setText("업로드가 취소되었습니다.");
+            progressBar.setProgress(0);
+            closeWindowAfterDelay(progressStage, 2000); // 취소 시 2초 후 창 닫기
+        });
+
+        new Thread(firmwareUploadTask).start();
     }
+
+    private void closeWindowAfterDelay(Stage stage, int delayMillis) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(delayMillis);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            Platform.runLater(stage::close);
+        }).start();
+    }
+
 
     public void close(MouseEvent mouseEvent) {
         ((Stage)(((Node) mouseEvent.getSource()).getScene().getWindow())).close();
