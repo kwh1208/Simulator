@@ -8,12 +8,16 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
 import static dbps.dbps.Constants.hexStringToByteArray;
+import static dbps.dbps.controller.FontNameController.getFontName;
 
 public class HexMsgTransceiver {
 
@@ -27,6 +31,7 @@ public class HexMsgTransceiver {
     private final UnderTheLineLeftService underTheLineLeftService;
     private final SizeOfDisplayBoardService sizeOfDisplayBoardService;
     private final HexMsgService hexMsgService;
+    private final FontNameService fontNameService;
 
 
     private HexMsgTransceiver() {
@@ -38,6 +43,7 @@ public class HexMsgTransceiver {
         underTheLineLeftService = UnderTheLineLeftService.getInstance();
         sizeOfDisplayBoardService = SizeOfDisplayBoardService.getInstance();
         hexMsgService=HexMsgService.getInstance();
+        fontNameService = FontNameService.getInstance();
     }
 
     public static HexMsgTransceiver getInstance() {
@@ -185,6 +191,28 @@ public class HexMsgTransceiver {
                 hexMsgService.setUI((msg[6]& 0xFF));
             }
 
+            case "48" ->{
+                StringBuilder result = new StringBuilder();
+
+                for (int i = 7; i <= 224; i++) {
+                    result.append(splitMsg[i]).append(" ");
+                }
+
+                String[] fontNames = null;
+                try {
+                    fontNames = getFontName(hexStringToByteArray(result.toString()));
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+
+                fontNameService.getGroup1font1().setText(fontNames[0]);
+                fontNameService.getGroup1font2().setText(fontNames[1]);
+                fontNameService.getGroup1font3().setText(fontNames[2]);
+                fontNameService.getGroup2font1().setText(fontNames[3]);
+                fontNameService.getGroup2font2().setText(fontNames[4]);
+                fontNameService.getGroup2font3().setText(fontNames[5]);
+            }
+
             default -> handleDefaultCommands(status, receiveMsg, splitMsg);
         }
     }
@@ -223,21 +251,43 @@ public class HexMsgTransceiver {
         sizeOfDisplayBoardService.setDisplaySize(Integer.parseInt(splitMsg[7], 16), Integer.parseInt(splitMsg[8], 16));
     }
 
+    Map<String, String> dayMap = new HashMap<>();
+
     private void handleTimeRead(String receiveMsg, String[] splitMsg) {
         if (!splitMsg[6].equals("10") && !splitMsg[6].equals("20") && !splitMsg[6].equals("40") && !splitMsg[6].equals("80")) {
             StringBuilder time = new StringBuilder();
-            for (int i = 6; i < 12; i++) {
+            for (int i = 6; i < 13; i++) {
                 time.append(splitMsg[i]);
             }
 
+            if (dayMap.isEmpty()){
+                dayMap.put("01", "월"); // 일요일
+                dayMap.put("02", "화"); // 월요일
+                dayMap.put("03", "수"); // 화요일
+                dayMap.put("04", "목"); // 수요일
+                dayMap.put("05", "금"); // 목요일
+                dayMap.put("06", "토"); // 금요일
+                dayMap.put("07", "일"); // 토요일
+            }
+
+
+            String datePart = time.substring(0, 6); // yyMMdd
+            String dayPart = time.substring(6, 8); // 요일 (숫자로 표현된 요일)
+            String timePart = time.substring(8);   // HHmmss
+
+            // 요일 변환
+            String dayOfWeek = dayMap.getOrDefault(dayPart, "?");
+
+            // 날짜 변환
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyMMddHHmmss");
-            SimpleDateFormat outputFormat = new SimpleDateFormat("yy-MM-dd (E) HH:mm:ss");
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
 
             try {
-                Date date = inputFormat.parse(time.toString());
-                String formattedTime = outputFormat.format(date);
-                underTheLineLeftService.setTime(formattedTime);
-                logService.updateInfoLog("컨트롤러 시간은 " + formattedTime + "입니다.");
+                Date date = inputFormat.parse(datePart + timePart);
+                String formattedDate = outputFormat.format(date);
+                String result = formattedDate.replace(" ", " (" + dayOfWeek + ") ");
+                underTheLineLeftService.setTime(result);
+                logService.updateInfoLog("컨트롤러 시간은 " + result + "입니다.");
             } catch (Exception e) {
                 logService.warningLog("시간 변환에 실패했습니다: " + e.getMessage());
             }

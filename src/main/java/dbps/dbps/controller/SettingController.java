@@ -142,7 +142,6 @@ public class SettingController {
     }
 
     public void sendPageMsgType() {
-        if (IS_ASCII){
             //![0062N!] : 동시, ![0062Y!] : 개별
             String msg = "![0062";
             if (isRS){
@@ -155,16 +154,5 @@ public class SettingController {
             }
             msg += "!]";
             asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
-            
-
-        } else {
-            String msg;
-            if (pageMsgType.getValue().contains("동시")){
-                msg = "21 5B 30 30 36 32 4E 21 5D";
-            }else{
-                msg = "21 5B 30 30 36 32 59 21 5D";
-            }
-            hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
-        }
     }
 }

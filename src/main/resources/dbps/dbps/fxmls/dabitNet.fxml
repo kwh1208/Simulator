@@ -48,9 +48,10 @@
                     <RadioButton fx:id="wifiAP" layoutX="160.0" layoutY="10.0" mnemonicParsing="false" text="AP" />
                 </Pane>
                 <Label layoutX="22.0" layoutY="89.0" text="SSID" />
-                <TextField fx:id="wifiSSID" layoutX="110.0" layoutY="81.0" />
+                <Label fx:id="AP" layoutX="110.0" layoutY="89.0" text=""/>
+                <TextField fx:id="wifiSSID" layoutX="110.0" layoutY="81.0" prefWidth="176"/>
                 <Label layoutX="22.0" layoutY="137.0" text="Password" />
-                <TextField fx:id="wifiPW" layoutX="110.0" layoutY="129.0" />
+                <TextField fx:id="wifiPW" layoutX="110.0" layoutY="129.0" prefWidth="176"/>
             </AnchorPane>
         </Tab>
 

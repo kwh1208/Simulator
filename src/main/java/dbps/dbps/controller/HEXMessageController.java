@@ -408,9 +408,9 @@ public class HEXMessageController {
 
             int add;
             switch (fontGroupValue){
-                case "FontGroup1"-> add = 0;
-                case "FontGroup2"-> add = 8;
-                case "FontGroup3"-> add = 128;
+                case "폰트그룹1"-> add = 0;
+                case "폰트그룹2"-> add = 8;
+                case "폰트그룹3"-> add = 128;
                 default -> add = 136;
             }
 
@@ -615,7 +615,7 @@ public class HEXMessageController {
         configService.setProperty("displayMethod"+msgNum, "Clear");
         configService.setProperty("charCode"+msgNum, "한글 조합형");
         configService.setProperty("fontSize"+msgNum, "16(Standard)");
-        configService.setProperty("fontGroup"+msgNum, "FontGroup1");
+        configService.setProperty("fontGroup"+msgNum, "폰트그룹1");
         configService.setProperty("effectIn"+msgNum, "정지효과");
         configService.setProperty("effectInDirection"+msgNum, "방향없음");
         configService.setProperty("effectOut"+msgNum, "사용안함");

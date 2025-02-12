@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 public class DabitNetController {
+
     @FXML
     public ChoiceBox<String> networkSelection;
     public RadioButton isSerial;
@@ -57,6 +58,7 @@ public class DabitNetController {
     public ChoiceBox<String> baudRateChoiceBox;
     public Label versionInfo;
     public Label DBCommunication;
+    public Label AP;
 
     public AnchorPane dabitNetAP;
     public TextField keepAlive;
@@ -154,15 +156,13 @@ public class DabitNetController {
             }
 
             if (newToggle.equals(wifiStation)) {
-                String text = wifiSSID.getText();
-                if (text != null && text.startsWith("AP-")) {
-                    wifiSSID.setText(text.substring(3));
-                }
+                wifiSSID.setLayoutX(110.0);
+                wifiSSID.setPrefWidth(176);
+                AP.setText("");
             } else if (newToggle.equals(wifiAP)) {
-                String text = wifiSSID.getText();
-                if (text != null && !text.startsWith("AP-")) {
-                    wifiSSID.setText("AP-" + text);
-                }
+                wifiSSID.setLayoutX(143.0);
+                wifiSSID.setPrefWidth(146);
+                AP.setText("AP-");
             }
         });
     }
@@ -485,6 +485,7 @@ public class DabitNetController {
         else{
             communicationSettingController.addIPAndPort(clientIPTF.getText(), clientPortTF.getText(), isClient.isSelected());
         }
+        udpManager.disconnectNoLog();
 
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();
@@ -506,6 +507,7 @@ public class DabitNetController {
 
     @FXML
     public void close(MouseEvent mouseEvent) {
+        udpManager.disconnectNoLog();
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();
     }
@@ -763,7 +765,7 @@ public class DabitNetController {
         if(db300IPPort.isStation){
             wifiSSID.setText(db300IPPort.getWifiSSID());
         }
-        else if(db300IPPort.wifiPW != null) wifiSSID.setText("AP-"+db300IPPort.getWifiSSID());
+        else if(db300IPPort.wifiPW != null) wifiSSID.setText(db300IPPort.getWifiSSID());
 
         wifiPW.setText(db300IPPort.getWifiPW());
         if(db300IPPort.isIpStatic()){

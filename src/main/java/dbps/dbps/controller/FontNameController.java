@@ -1,6 +1,7 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.service.AsciiMsgTransceiver;
+import dbps.dbps.service.FontNameService;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.LogService;
 import javafx.application.Platform;
@@ -49,6 +50,7 @@ public class FontNameController {
     AsciiMsgTransceiver asciiMsgTransceiver;
     HexMsgTransceiver hexMsgTransceiver;
     LogService logService;
+    FontNameService fontNameService;
 
     @FXML
     public void initialize() {
@@ -56,6 +58,13 @@ public class FontNameController {
         group = new ToggleGroup();
         readRadio.setToggleGroup(group);
         sendRadio.setToggleGroup(group);
+        fontNameService = FontNameService.getInstance();
+        fontNameService.setGroup1font1(group1font1);
+        fontNameService.setGroup1font2(group1font2);
+        fontNameService.setGroup1font3(group1font3);
+        fontNameService.setGroup2font1(group2font1);
+        fontNameService.setGroup2font2(group2font2);
+        fontNameService.setGroup2font3(group2font3);
 
         readRadio.setSelected(true);
         logService = LogService.getLogService();
@@ -213,20 +222,7 @@ public class FontNameController {
                 if (isRS){
                     msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 03 48 01 32 10 03";
                 }
-                String[] tmp = hexMsgTransceiver.sendMessages(msg, progressIndicator).split(" ");
-                StringBuilder result = new StringBuilder();
-                for (int i = 7; i <= 224; i++) {
-                    result.append(tmp[i]).append(" ");
-                }
-
-                String[] fontNames = getFontName(hexStringToByteArray(result.toString()));
-
-                group1font1.setText(fontNames[0]);
-                group1font2.setText(fontNames[1]);
-                group1font3.setText(fontNames[2]);
-                group2font1.setText(fontNames[3]);
-                group2font2.setText(fontNames[4]);
-                group2font3.setText(fontNames[5]);
+                hexMsgTransceiver.sendMessages(msg, progressIndicator);
             }
             else {
                 //10 02 00 00 DB 48 00 32
@@ -287,7 +283,7 @@ public class FontNameController {
         //36바이트까지 가능.
     }
 
-    private static String[] getFontName(byte[] tmp) throws UnsupportedEncodingException {
+    public static String[] getFontName(byte[] tmp) throws UnsupportedEncodingException {
         String[] fontName = new String[6];
         for (int i = 0; i < 6; i++) {
             byte[] chunk = new byte[36]; // 36바이트 크기의 새로운 배열 생성

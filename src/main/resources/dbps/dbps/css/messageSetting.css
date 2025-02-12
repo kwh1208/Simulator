@@ -1,6 +1,6 @@
 .choice-box .context-menu {
     -fx-background-color: #1C1F26;
-    -fx-pref-width: 81; /* 컨텍스트 메뉴 너비를 오른쪽 CSS와 동일하게 설정 */
+    -fx-pref-width: 120; /* 컨텍스트 메뉴 너비를 오른쪽 CSS와 동일하게 설정 */
 }
 .choice-box .menu-item:focused {
     -fx-background-color: orange;
