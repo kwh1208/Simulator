@@ -1,6 +1,7 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.service.*;
+import dbps.dbps.service.connectManager.TCPManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -30,6 +31,8 @@ public class FontSettingController {
 
     ConfigService configService;
     FontService fontService = FontService.getInstance();
+    TCPManager tcpManager;
+    LogService logService;
     @FXML
     public ComboBox<String> fontGroup2fontSelected1;
     @FXML
@@ -103,6 +106,14 @@ public class FontSettingController {
         configService = ConfigService.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
+        tcpManager = TCPManager.getManager();
+        logService = LogService.getLogService();
+
+
+
+
+
+
 
         if (Boolean.parseBoolean(configService.getProperty("fontGroup2selected"))){
             fontGroup2ChkBox.setSelected(true);
@@ -113,7 +124,7 @@ public class FontSettingController {
             disableAllNodesInPane((Pane) fontGroup2ChkBox.getParent());
         }
 
-        if (Boolean.parseBoolean(configService.getProperty("fontGroup3selected"))){
+        if (fontGroup2ChkBox.isSelected()&&Boolean.parseBoolean(configService.getProperty("fontGroup3selected"))){
             fontGroup3ChkBox.setSelected(true);
             ableAllNodesInPane((Pane) fontGroup3ChkBox.getParent());
         }
@@ -122,7 +133,7 @@ public class FontSettingController {
             disableAllNodesInPane((Pane) fontGroup3ChkBox.getParent());
         }
 
-        if (Boolean.parseBoolean(configService.getProperty("fontGroup4selected"))){
+        if (fontGroup3ChkBox.isSelected()&&Boolean.parseBoolean(configService.getProperty("fontGroup4selected"))){
             fontGroup4ChkBox.setSelected(true);
             ableAllNodesInPane((Pane) fontGroup4ChkBox.getParent());
         }
@@ -130,6 +141,10 @@ public class FontSettingController {
             fontGroup4ChkBox.setSelected(false);
             disableAllNodesInPane((Pane) fontGroup4ChkBox.getParent());
         }
+
+
+
+
 
         fontGroup2ChkBox.setDisable(false);
         fontGroup3ChkBox.setDisable(false);
@@ -330,6 +345,7 @@ public class FontSettingController {
             if (fontSendTask != null) {
                 fontSendTask.cancel();
                 progressBar.setProgress(0);
+                tcpManager.disconnect();
                 closeWindowAfterDelay(progressStage, 1000);
             }
         });
@@ -516,13 +532,27 @@ public class FontSettingController {
         String[] fontGroup4Path = null;
 
         //첫번째 그룹
+        if (chkFont(fontGroup1fontPath1.getText(), "영어")){
+            logService.warningLog("폰트그룹 1 영어 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+            return;
+        }
         fontGroup1Path[0] = fontGroup1fontPath1.getText();
         configService.setProperty("fontGroup1FontPath1", fontGroup1Path[0]);
         fontType[0] = "영어";
+
+        if (chkFont(fontGroup1fontPath2.getText(), fontGroup1fontSelected2.getValue())){
+            logService.warningLog("폰트그룹 1 "+fontGroup1fontSelected2.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+            return;
+        }
         if (!fontGroup1fontSelected2.getValue().equals(bundle.getString("notUsed"))){
             fontGroup1Path[1] = fontGroup1fontPath2.getText();
             fontType[1] = fontGroup1fontSelected2.getValue();
             configService.setProperty("fontGroup1FontPath2", fontGroup1Path[1]);
+        }
+
+        if (chkFont(fontGroup1fontPath3.getText(), fontGroup1fontSelected3.getValue())){
+            logService.warningLog("폰트그룹 1 "+fontGroup1fontSelected3.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+            return;
         }
         if (!fontGroup1fontSelected3.getValue().equals(bundle.getString("notUsed"))){
             fontGroup1Path[2] = fontGroup1fontPath3.getText();
@@ -532,17 +562,32 @@ public class FontSettingController {
 
 
         //두번째 그룹
+
         if (fontGroup2ChkBox.isSelected()) {
             fontGroup2Path = new String[3];
+            if (chkFont(fontGroup2fontPath1.getText(), fontGroup2fontSelected1.getValue())){
+                logService.warningLog("폰트그룹 2 "+fontGroup2fontSelected1.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
+            }
             if (!fontGroup2fontSelected1.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup2Path[0] = fontGroup2fontPath1.getText();
                 fontType[3] = fontGroup2fontSelected1.getValue();
                 configService.setProperty("fontGroup2FontPath1", fontGroup2Path[0]);
             }
+
+            if (chkFont(fontGroup2fontPath2.getText(), fontGroup2fontSelected2.getValue())){
+                logService.warningLog("폰트그룹 2 "+fontGroup2fontSelected2.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
+            }
             if (!fontGroup2fontSelected2.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup2Path[1] = fontGroup2fontPath2.getText();
                 fontType[4] = fontGroup2fontSelected2.getValue();
                 configService.setProperty("fontGroup2FontPath2", fontGroup2Path[1]);
+            }
+
+            if (chkFont(fontGroup2fontPath3.getText(), fontGroup2fontSelected3.getValue())){
+                logService.warningLog("폰트그룹 2 "+fontGroup2fontSelected3.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
             }
             if (!fontGroup2fontSelected3.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup2Path[2] = fontGroup2fontPath3.getText();
@@ -554,15 +599,30 @@ public class FontSettingController {
         //세번째 그룹
         if (fontGroup3ChkBox.isSelected()){
             fontGroup3Path = new String[3];
+
+            if (chkFont(fontGroup3fontPath1.getText(), fontGroup3fontSelected1.getValue())){
+                logService.warningLog("폰트그룹 3 "+fontGroup3fontSelected1.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
+            }
             if (!fontGroup3fontSelected1.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup3Path[0] = fontGroup3fontPath1.getText();
                 fontType[6] = fontGroup3fontSelected1.getValue();
                 configService.setProperty("fontGroup3FontPath1", fontGroup3Path[1]);
             }
+
+            if (chkFont(fontGroup3fontPath2.getText(), fontGroup3fontSelected2.getValue())){
+                logService.warningLog("폰트그룹 3 "+fontGroup3fontSelected2.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
+            }
             if (!fontGroup3fontSelected2.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup3Path[1] = fontGroup3fontPath2.getText();
                 fontType[7] = fontGroup3fontSelected2.getValue();
                 configService.setProperty("fontGroup3FontPath2", fontGroup3Path[1]);
+            }
+
+            if (chkFont(fontGroup3fontPath3.getText(), fontGroup3fontSelected3.getValue())){
+                logService.warningLog("폰트그룹 3 "+fontGroup3fontSelected3.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
             }
             if (!fontGroup3fontSelected3.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup3Path[2] = fontGroup3fontPath3.getText();
@@ -575,15 +635,30 @@ public class FontSettingController {
         //네번째 그룹
         if (fontGroup4ChkBox.isSelected()){
             fontGroup4Path = new String[3];
+
+            if (chkFont(fontGroup4fontPath1.getText(), fontGroup4fontSelected1.getValue())){
+                logService.warningLog("폰트그룹 4 "+fontGroup4fontSelected1.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
+            }
             if (!fontGroup4fontSelected1.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup4Path[0] = fontGroup4fontPath1.getText();
                 fontType[9] = fontGroup4fontSelected1.getValue();
                 configService.setProperty("fontGroup4FontPath1", fontGroup4Path[0]);
             }
+
+            if (chkFont(fontGroup4fontPath2.getText(), fontGroup4fontSelected2.getValue())){
+                logService.warningLog("폰트그룹 4 "+fontGroup4fontSelected2.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
+            }
             if (!fontGroup3fontSelected2.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup4Path[1] = fontGroup4fontPath2.getText();
                 fontType[10] = fontGroup4fontSelected2.getValue();
                 configService.setProperty("fontGroup4FontPath2", fontGroup4Path[1]);
+            }
+
+            if (chkFont(fontGroup4fontPath3.getText(), fontGroup4fontSelected3.getValue())){
+                logService.warningLog("폰트그룹 4 "+fontGroup4fontSelected3.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
             }
             if (!fontGroup4fontSelected3.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup4Path[2] = fontGroup4fontPath3.getText();
@@ -614,9 +689,32 @@ public class FontSettingController {
         new Thread(fontSendTask).start();
     }
 
-//    final String[] finalFontGroup2path = fontGroup2Path;
-//    final String[] finalFontGroup3path = fontGroup3Path;
-//    final String[] finalFontGroup4path = fontGroup4Path;
+    private boolean chkFont(String fileName, String fontType){
+        if (fontType==null||fontType.equals("사용안함")) return false;
+
+        if (!fileName.contains("fnt")){
+            return true;
+        }
+
+
+        if (fontType.contains("영어")){
+            return !fileName.contains("ENG");
+        }
+        if (fontType.contains("사용자폰트")){
+            return !fileName.contains("USER");
+        }
+        if (fontType.contains("조합형")){
+            if ((fileName.toLowerCase()).contains("uni")){
+                return true;
+            }
+            return !fileName.contains("KOR");
+        }
+        if (fontType.contains("유니코드")){
+            return !(fileName.toLowerCase()).contains("uni");
+        }
+
+        return false;
+    }
 
     // ✅ 일정 시간이 지나면 진행 상태 창 닫기
     private void closeWindowAfterDelay(Stage stage, int delayMillis) {
@@ -627,6 +725,7 @@ public class FontSettingController {
             } catch (InterruptedException ignored) {
             }
         }).start();
+        tcpManager.disconnect();
     }
 
     public void close(MouseEvent mouseEvent) {

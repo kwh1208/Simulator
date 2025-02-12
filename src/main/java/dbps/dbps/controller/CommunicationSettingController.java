@@ -545,7 +545,12 @@ public class CommunicationSettingController {
                         configService.setProperty("serialSpeed", String.valueOf(SERIAL_BAUDRATE));
                     } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn)) {
                         CONNECT_TYPE = "clientTCP";
-                        connectClientTCP();
+                        String IPAddress = clientIPAddress.getText();
+                        int port = Integer.parseInt(clientIPPort.getText());
+                        tcpManager.setIP(IPAddress);
+                        tcpManager.setPORT(port);
+                        configService.setProperty("clientTCPAddr", IPAddress);
+                        configService.setProperty("clientTCPPort", String.valueOf(port));
                         hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                     } else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)) {
                         CONNECT_TYPE = "serverTCP";
@@ -553,7 +558,13 @@ public class CommunicationSettingController {
                         hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                     } else {
                         CONNECT_TYPE = "UDP";
-                        connectUDP();
+                        String IPAddress = UDPIPAddress.getText();
+                        int port = Integer.parseInt(UDPIPPort.getText());
+
+                        udpManager.setIP(IPAddress);
+                        udpManager.setPORT(port);
+                        configService.setProperty("UDPAddr", IPAddress);
+                        configService.setProperty("UDPPort", String.valueOf(port));
                         hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                     }
                     configService.setProperty("connectType", CONNECT_TYPE);

@@ -35,8 +35,8 @@
                     <Label layoutX="25.0" layoutY="85.0" text="Port" />
                     <TextField fx:id="serverPortTF" layoutX="90.0" layoutY="75.0" />
                 </Pane>
-                <Label layoutX="34.0" layoutY="455.0" text="keep-alive" />
-                <TextField fx:id="Heartbeat" layoutX="170.0" layoutY="451.0" prefWidth="150.0" />
+                <Label layoutX="34.0" layoutY="455.0" text="Heartbeat" />
+                <TextField fx:id="keepAlive" layoutX="170.0" layoutY="451.0" prefWidth="150.0" />
             </AnchorPane>
         </Tab>
 
