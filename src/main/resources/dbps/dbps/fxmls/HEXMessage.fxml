@@ -11,8 +11,8 @@
         <RadioButton fx:id="realTimeMsg" layoutX="12.0" layoutY="5.0" mnemonicParsing="false" text="%realTimeMsg" />
         <RadioButton fx:id="pageMsg" layoutX="150.0" layoutY="5.0" mnemonicParsing="false" text="%pageMsg" />
     </Pane>
-    <Label fx:id="pageCntLabel" layoutX="487.0" layoutY="18.0" text="page" visible="false" />
-    <ChoiceBox fx:id="pageMsgCnt" layoutX="540.0" layoutY="14.0" prefHeight="21.0" prefWidth="139.0" value="1" visible="false">
+    <Label fx:id="pageCntLabel" layoutX="490.0" layoutY="16.0" text="page" visible="false" />
+    <ChoiceBox fx:id="pageMsgCnt" layoutX="540.0" layoutY="12.0" prefHeight="21.0" prefWidth="140" value="1" visible="false">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="1" />
@@ -109,10 +109,10 @@
     <ChoiceBox fx:id="fontGroup" layoutX="519.0" layoutY="166.0" prefHeight="21.0" prefWidth="139.0" value="FontGroup1">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="FontGroup1" />
-                <String fx:value="FontGroup2" />
-                <String fx:value="FontGroup3" />
-                <String fx:value="FontGroup4" />
+                <String fx:value="폰트그룹1" />
+                <String fx:value="폰트그룹2" />
+                <String fx:value="폰트그룹3" />
+                <String fx:value="폰트그룹4" />
             </FXCollections>
         </items>
     </ChoiceBox>
@@ -284,7 +284,7 @@
     </ChoiceBox>
 
     <Label layoutX="385.0" layoutY="350.0" text="%YStart" />
-    <ChoiceBox fx:id="yStart" layoutX="518.0" layoutY="346.0" prefHeight="21.0" style="-fx-pref-width: 10;" value="0">
+    <ChoiceBox fx:id="yStart" layoutX="518.0" layoutY="346.0" prefHeight="21.0" prefWidth="139" value="0">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="0" />
@@ -334,7 +334,7 @@
     </ChoiceBox>
 
     <Label layoutX="385.0" layoutY="380.0" text="%YEnd" />
-    <ChoiceBox fx:id="yEnd" layoutX="518.0" layoutY="376.0" prefHeight="21.0" prefWidth="1" style="-fx-max-width: 1;" value="0">
+    <ChoiceBox fx:id="yEnd" layoutX="518.0" layoutY="376.0" prefHeight="21.0" prefWidth="139" value="0">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="0" />

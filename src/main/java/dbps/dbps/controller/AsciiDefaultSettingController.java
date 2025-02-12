@@ -212,8 +212,8 @@ public class AsciiDefaultSettingController {
                 bundle.getString("green"),
                 bundle.getString("yellow"),
                 bundle.getString("blue"),
-                bundle.getString("pink"),
-                bundle.getString("cyan"),
+                bundle.getString("purple"),
+                bundle.getString("skyblue"),
                 bundle.getString("white")
         );
 
@@ -223,8 +223,8 @@ public class AsciiDefaultSettingController {
                 bundle.getString("green"),
                 bundle.getString("yellow"),
                 bundle.getString("blue"),
-                bundle.getString("pink"),
-                bundle.getString("cyan"),
+                bundle.getString("purple"),
+                bundle.getString("skyblue"),
                 bundle.getString("white")
         );
     }
@@ -607,9 +607,9 @@ public class AsciiDefaultSettingController {
         } else if (value.equals(bundle.getString("green"))) {
             return "2";
         } else if (value.equals(bundle.getString("blue"))) {
-            return "3";
-        } else if (value.equals(bundle.getString("yellow"))) {
             return "4";
+        } else if (value.equals(bundle.getString("yellow"))) {
+            return "3";
         } else if (value.equals(bundle.getString("purple"))) {
             return "5";
         } else if (value.equals(bundle.getString("skyblue"))) {

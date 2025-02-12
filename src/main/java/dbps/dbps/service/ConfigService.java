@@ -109,10 +109,10 @@ public class ConfigService {
             for (int i = 0; i <= 10; i++) {//페이지 개수(0은 실시간)
                 for (int j =0; j < 3; j++) {//섹션 개수
                     defaultProperties.setProperty("displayControl"+i+j, "ON");
-                    defaultProperties.setProperty("displayMethod"+i+j, "Normal");
+                    defaultProperties.setProperty("displayMethod"+i+j, "Clear");
                     defaultProperties.setProperty("charCode"+i+j, "한글 조합형");
                     defaultProperties.setProperty("fontSize"+i+j, "16(Standard)");
-                    defaultProperties.setProperty("fontGroup"+i+j, "FontGroup1");
+                    defaultProperties.setProperty("fontGroup"+i+j, "폰트그룹1");
                     defaultProperties.setProperty("effectIn"+i+j, "정지효과");
                     defaultProperties.setProperty("effectInDirection"+i+j, "방향없음");
                     defaultProperties.setProperty("effectOut"+i+j, "사용안함");
@@ -136,10 +136,10 @@ public class ConfigService {
             }
 
             defaultProperties.setProperty("displayControlDefault", "ON");
-            defaultProperties.setProperty("displayMethodDefault", "Normal");
+            defaultProperties.setProperty("displayMethodDefault", "Clear");
             defaultProperties.setProperty("charCodeDefault", "한글 조합형");
             defaultProperties.setProperty("fontSizeDefault", "16(Standard)");
-            defaultProperties.setProperty("fontGroupDefault", "FontGroup1");
+            defaultProperties.setProperty("fontGroupDefault", "폰트그룹1");
             defaultProperties.setProperty("effectInDefault", "정지효과");
             defaultProperties.setProperty("effectInDirectionDefault", "방향없음");
             defaultProperties.setProperty("effectOutDefault", "사용안함");

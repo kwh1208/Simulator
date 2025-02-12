@@ -55,7 +55,7 @@ public class MessageSettingController {
                 msg += "99";
             }
             else{
-                msg += String.format("%02d", Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", ""))-1);
+                msg += String.format("%02d", Integer.parseInt(msgInitialize.getValue().replaceAll("[^0-9]", ""))-1);
             }
             msg += "!]";
 
@@ -65,13 +65,13 @@ public class MessageSettingController {
             //10 02 00 00 02 4B 00 10 03
             String msg = "10 02 00 00 02 4B ";
             if (isRS){
-                msg = "10 02 "+String.format("02X", RS485_ADDR_NUM)+" 00 02 4B ";
+                msg = "10 02 "+String.format("%02X", RS485_ADDR_NUM)+" 00 02 4B ";
             }
             if (msgInitialize.getValue().equals("전체")){
                 msg += "80";
             }
             else{
-                msg += String.format("%02d", Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", ""))-1);
+                msg += String.format("%02d", Integer.parseInt(msgInitialize.getValue().replaceAll("[^0-9]", ""))-1);
             }
             msg += " 10 03";
 
@@ -93,7 +93,7 @@ public class MessageSettingController {
         } else {
             String msg = "10 02 00 00 02 4C ";
             if (isRS){
-                msg = "10 02 "+String.format("02X", RS485_ADDR_NUM)+" 00 02 4C ";
+                msg = "10 02 "+String.format("%02X", RS485_ADDR_NUM)+" 00 02 4C ";
             }
             msg += Integer.toHexString(Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", ""))).toUpperCase();
             msg += " 10 03";
