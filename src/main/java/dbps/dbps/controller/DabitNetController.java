@@ -652,84 +652,6 @@ public class DabitNetController {
         }
     }
 
-
-//    private void get300IPPort(String responseData) throws IOException {
-//        BufferedReader reader = new BufferedReader(new StringReader(responseData));
-//        String line;
-//        int idx = 0;
-//        DB300IPPort readDB300IPPort = null;
-//        while ((line = reader.readLine()) != null) {
-//            idx++;
-//            line = line.trim();
-//            if (line.equals("DIBD")) {
-//                idx = 0;
-//                if (readDB300IPPort != null) {
-//                    db300InfoList.put(readDB300IPPort.getMacAddress(), readDB300IPPort);
-//                }
-//                readDB300IPPort = new DB300IPPort();
-//                continue;
-//            }
-//            switch (idx) {
-//                case 1:
-//                    readDB300IPPort.setMacAddress(line);
-//                    break;
-//                case 2:
-//                    readDB300IPPort.setClientIP(line);
-//                    break;
-//                case 3:
-//                    readDB300IPPort.setClientSubnetMask(line);
-//                    break;
-//                case 4:
-//                    readDB300IPPort.setClientGateway(line);
-//                    break;
-//                case 5:
-//                    readDB300IPPort.setClientPort(line);
-//                    break;
-//                case 6:
-//                    readDB300IPPort.setIpStatic(line.equals("30"));
-//                    break;
-//                case 7:
-//                    readDB300IPPort.setServerIP(line);
-//                    break;
-//                case 8:
-//                    readDB300IPPort.setServerPort(line);
-//                    break;
-//                case 9:
-//                    readDB300IPPort.setServerMode(line.equals("30"));
-//                    break;
-//                case 10:
-//                    readDB300IPPort.setName(line);
-//                case 11:
-//                    readDB300IPPort.setHeartbeat(line);
-//                    break;
-//                case 13:
-//                    if (line.contains("TX")) {
-//                        break;
-//                    }
-//                    readDB300IPPort.setWifiSSID(line);
-//                    break;
-//                case 14:
-//                    readDB300IPPort.setWifiPW(line);
-//                    break;
-//                case 15:
-//                    if (line.contains("30")){
-//                        readDB300IPPort.setStation(true);
-//                    }
-//                    else if (line.contains("31")){
-//                        readDB300IPPort.setStation(false);
-//                    }
-//                    break;
-//                default:
-//                    break;
-//            }
-//        }
-//        db300InfoList.put(readDB300IPPort.getMacAddress(), readDB300IPPort);
-//        for (Map.Entry<String, DB300IPPort> db300Infos : db300InfoList.entrySet()) {
-//            DB300IPPort db300IPPort = db300Infos.getValue();
-//            dbList.getItems().add(db300IPPort.getMacAddress());
-//        }
-//    }
-
     private void getSerialPortList() {
         String selectedValue = serialPortComboBox.getValue();
         List<String> portNames = Arrays.stream(SerialPort.getCommPorts())
@@ -857,25 +779,15 @@ public class DabitNetController {
     @Getter
     public class DB300Info {
         String communication;
-        // Getter and Setter for macAddress
         String macAddress;
-        // Getter and Setter for debugging
         boolean debugging;
-        // Getter and Setter for connectedTTL
         boolean connectedTTL;
-        // Getter and Setter for baudRate
         Integer baudRate;
-        // Getter and Setter for asc_1
         String asc_1;
-        // Getter and Setter for asc_2
         String asc_2;
-        // Getter and Setter for hex_1
         String hex_1;
-        // Getter and Setter for hex_2
         String hex_2;
-        // Getter and Setter for timeout
         String timeout;
-        // Getter and Setter for version
         String version;
 
     }

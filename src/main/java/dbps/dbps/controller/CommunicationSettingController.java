@@ -468,6 +468,7 @@ public class CommunicationSettingController {
         if (selected){
             serverIPPort.setText(port);
             serverTCPRadioBtn.setSelected(true);
+            UDPIPPort.setText(port);
         }
         else {
             clientIPAddress.setText(ip);

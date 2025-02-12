@@ -39,7 +39,7 @@ public class MessageSettingController {
             msgInitialize.getItems().add("전체");
 
             for (int i = 1; i <= selectedCount; i++) {
-                msgInitialize.getItems().add(i+"개");
+                msgInitialize.getItems().add("page "+i);
             }
 
             msgInitialize.setValue("전체");
@@ -48,7 +48,6 @@ public class MessageSettingController {
 
     public void sendMsgInitialize() throws JsonProcessingException {
         if (IS_ASCII){
-            // ![006103!]
             String msg = "![0061";
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"061";
@@ -64,7 +63,6 @@ public class MessageSettingController {
             asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
 
         } else {
-            //10 02 00 00 02 4B 00 10 03
             String msg = "10 02 00 00 02 4B ";
             if (isRS){
                 msg = "10 02 "+String.format("%02X", RS485_ADDR_NUM)+" 00 02 4B ";

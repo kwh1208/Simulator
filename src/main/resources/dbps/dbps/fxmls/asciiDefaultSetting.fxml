@@ -79,10 +79,10 @@
        <ChoiceBox fx:id="fontGroup" layoutX="405.0" layoutY="106.0" prefHeight="21.0" prefWidth="139.0" value="FontGroup1">
            <items>
                <FXCollections fx:factory="observableArrayList">
-                   <String fx:value="FontGroup1" />
-                   <String fx:value="FontGroup2" />
-                   <String fx:value="FontGroup3" />
-                   <String fx:value="FontGroup4" />
+                   <String fx:value="폰트그룹1" />
+                   <String fx:value="폰트그룹2" />
+                   <String fx:value="폰트그룹3" />
+                   <String fx:value="폰트그룹4" />
                </FXCollections>
            </items>
        </ChoiceBox>

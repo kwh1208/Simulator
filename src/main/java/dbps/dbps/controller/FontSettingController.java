@@ -345,7 +345,6 @@ public class FontSettingController {
             if (fontSendTask != null) {
                 fontSendTask.cancel();
                 progressBar.setProgress(0);
-                tcpManager.disconnect();
                 closeWindowAfterDelay(progressStage, 1000);
             }
         });

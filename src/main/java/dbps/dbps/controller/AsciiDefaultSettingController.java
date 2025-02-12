@@ -99,11 +99,6 @@ public class AsciiDefaultSettingController {
         effectOut.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateOutDirections(newValue));
         effectIn.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateInDirections(newValue));
 
-
-        for (int i = 1; i < 256; i++) {
-            bgImg.getItems().add(String.valueOf(i));
-        }
-
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         asCiiDefaultSettingService = ASCiiDefaultSettingService.getInstance();
         makeOwnMsgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/makeOwnMsg.css").toExternalForm());
@@ -201,10 +196,10 @@ public class AsciiDefaultSettingController {
             yEnd.getItems().add(String.valueOf(4*i));
         }
 
-        for (int i = 1; i < 11; i++) {
+        bgImg.getItems().add("사용안함");
+        for (int i = 1; i <= 30; i++) {
             bgImg.getItems().add(String.valueOf(i));
         }
-        bgImg.getItems().add("사용안함");
 
         fontColor.getItems().addAll(
                 bundle.getString("black"),
@@ -448,7 +443,7 @@ public class AsciiDefaultSettingController {
         } else if (value2.equals("14")) {
             result += "01";
         } else {
-            result += String.format("%02d", (Integer.parseInt(value2) - 12) / 4);
+            result += String.format("%02d", (Integer.parseInt(value2) -4) / 4);
         }
 
         return result;
