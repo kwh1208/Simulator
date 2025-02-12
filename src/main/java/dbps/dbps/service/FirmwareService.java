@@ -69,7 +69,7 @@ public class FirmwareService {
 //            //{주소, isize 상하위데이터, 명령코드}
                     String msg = "10 02 00 00 02 6F F1 10 03";
                     if (isRS) {
-                        msg = "10 02 " + String.format("02X ", RS485_ADDR_NUM) + "00 02 6F F1 10 03";
+                        msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 02 6F F1 10 03";
                     }
                     hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
 

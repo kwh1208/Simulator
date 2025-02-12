@@ -429,7 +429,7 @@ public class UDPManager {
 
     //접속끊기
     public void disconnect() {
-        if (socket == null&& socketList.isEmpty()){
+        if (socket == null && socketList.isEmpty()){
             return;
         }
 
@@ -440,6 +440,7 @@ public class UDPManager {
                 datagramSocket.close();
             }
         }
+        socketList.clear();
 
         if (socket != null){
             socket.disconnect();
