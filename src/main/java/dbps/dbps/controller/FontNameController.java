@@ -2,6 +2,9 @@ package dbps.dbps.controller;
 
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.LogService;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -45,6 +48,7 @@ public class FontNameController {
 
     AsciiMsgTransceiver asciiMsgTransceiver;
     HexMsgTransceiver hexMsgTransceiver;
+    LogService logService;
 
     @FXML
     public void initialize() {
@@ -54,6 +58,7 @@ public class FontNameController {
         sendRadio.setToggleGroup(group);
 
         readRadio.setSelected(true);
+        logService = LogService.getLogService();
 
         sendRadio.setSelected(false);
 
@@ -104,27 +109,55 @@ public class FontNameController {
 
 
     public void send() throws UnsupportedEncodingException, ExecutionException, InterruptedException {
-        //읽기
-        //00960
-        //10 02 00 00 03 48 01 32 10 03
         if (IS_ASCII){
             if (readRadio.isSelected()) {
                 String msg = "![00960!]";
-                if (isRS){
-                    msg = "!["+convertRS485AddrASCii()+"0960!]";
+                if (isRS) {
+                    msg = "![" + convertRS485AddrASCii() + "0960!]";
                 }
-                String result = asciiMsgTransceiver.sendMessages(msg, false, progressIndicator).get();
 
-                result = result.substring(8, result.length()-2);
-                String[] fontNames = getFontName(result.getBytes(Charset.forName("EUC-KR")));
+                // 비동기 작업을 위한 Task 생성
+                String finalMsg = msg;
+                Task<String> readTask = new Task<>() {
+                    @Override
+                    protected String call() throws Exception {
+                        // 메시지 송신 및 응답 대기
+                        String response = asciiMsgTransceiver.sendMessages(finalMsg, false, progressIndicator).get();
 
-                group1font1.setText(fontNames[0]);
-                group1font2.setText(fontNames[1]);
-                group1font3.setText(fontNames[2]);
-                group2font1.setText(fontNames[3]);
-                group2font2.setText(fontNames[4]);
-                group2font3.setText(fontNames[5]);
+                        // 응답 데이터 가공
+                        return response.substring(8, response.length() - 2);
+                    }
+                };
+
+                // 작업 성공 시 처리
+                readTask.setOnSucceeded(e -> {
+                    try {
+                        String result = readTask.get();
+                        String[] fontNames = getFontName(result.getBytes(Charset.forName("EUC-KR")));
+
+                        // UI 업데이트
+                        Platform.runLater(() -> {
+                            group1font1.setText(fontNames[0]);
+                            group1font2.setText(fontNames[1]);
+                            group1font3.setText(fontNames[2]);
+                            group2font1.setText(fontNames[3]);
+                            group2font2.setText(fontNames[4]);
+                            group2font3.setText(fontNames[5]);
+                        });
+                    } catch (Exception ex) {
+                        logService.errorLog("결과 처리 중 오류 발생: " + ex.getMessage());
+                    }
+                });
+
+                // 작업 실패 시 처리
+                readTask.setOnFailed(e -> {
+                    logService.errorLog("메시지 송수신 실패: " + readTask.getException().getMessage());
+                });
+
+                // 작업 실행
+                new Thread(readTask).start();
             }
+
             else {
                 byte[] sendMsg = new byte[216 + 10];
                 sendMsg[0] = "!".getBytes(Charset.forName("EUC-KR"))[0];
@@ -178,7 +211,7 @@ public class FontNameController {
             if (readRadio.isSelected()) {
                 String msg = "10 02 00 00 03 48 01 32 10 03";
                 if (isRS){
-                    msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 03 48 01 32 10 03";
+                    msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 03 48 01 32 10 03";
                 }
                 String[] tmp = hexMsgTransceiver.sendMessages(msg, progressIndicator).split(" ");
                 StringBuilder result = new StringBuilder();

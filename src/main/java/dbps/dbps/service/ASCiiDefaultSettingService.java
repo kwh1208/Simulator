@@ -31,7 +31,7 @@ public class ASCiiDefaultSettingService {
     ChoiceBox<String> outDirection;
     ChoiceBox<String> sub;
     ChoiceBox<String> effectSpeed;
-    ChoiceBox<String> effectTime;
+    ComboBox<String> effectTime;
     ChoiceBox<String> xStart;
     ChoiceBox<String> yStart;
     ChoiceBox<String> xEnd;

@@ -8,11 +8,10 @@ import lombok.Setter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static dbps.dbps.Constants.*;
 
@@ -83,6 +82,9 @@ public class TCPManager {
                         result = result.substring(indexTX);
                         result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
                     }
+                    if (result.contains("init_rtcTimeDate Start")){
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                    }
                     logService.updateInfoLog("받은 메세지: " + result);
                     return result;
                 } catch (IOException e) {
@@ -98,17 +100,29 @@ public class TCPManager {
     }
 
     //접속하기
-    public void connect(String IP, int PORT){
+    public void connect(String IP, int PORT) {
         logService.updateInfoLog("TCP 서버에 연결합니다. IP: " + IP + ", PORT: " + PORT);
         this.IP = IP;
         this.PORT = PORT;
-
         try {
-            socket = new Socket(IP, PORT);
+            // ✅ 소켓을 먼저 생성하고, 명확한 타임아웃 설정
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(IP, PORT), RESPONSE_LATENCY*1000);
+            socket.setSoTimeout(RESPONSE_LATENCY * 1000);
+        } catch (IOException e) {
+            logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
+        }
+    }
 
-            socket.setSoTimeout(RESPONSE_LATENCY*1000);
-
-        }catch (IOException e){
+    public void connectNoLog(String IP, int PORT) {
+        this.IP = IP;
+        this.PORT = PORT;
+        try {
+            // ✅ 소켓을 먼저 생성하고, 명확한 타임아웃 설정
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(IP, PORT), RESPONSE_LATENCY*1000);
+            socket.setSoTimeout(RESPONSE_LATENCY * 1000);
+        } catch (IOException e) {
             logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
         }
     }
@@ -118,12 +132,22 @@ public class TCPManager {
     public void disconnect(){
         try {
             socket.close();
+            socket = null;
         } catch (IOException e) {
             e.getStackTrace();
         }
 
         logService.updateInfoLog("TCP 서버 연결이 종료되었습니다. IP: " + IP + ", PORT: " + PORT);
 
+    }
+
+    public void disconnectNoLog(){
+        try {
+            socket.close();
+            socket = null;
+        } catch (IOException e) {
+            e.getStackTrace();
+        }
     }
 
     public Task<String> sendMsgAndGetMsgByte(byte[] msg){
@@ -167,77 +191,56 @@ public class TCPManager {
                     return result;
                 } catch (IOException e) {
                     logService.errorLog("전송에 실패했습니다.");
+                    e.printStackTrace();
                     throw e;
-                } finally {
-                    disconnect();
+                }finally {
+                    disconnectNoLog();
                 }
             }
         };
     }
 
-    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg){
-        return new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                if (socket==null||socket.isClosed()){
-                    connect(IP, PORT);
-                }
-                try {
-                    InputStream input = socket.getInputStream();
-                    OutputStream output = socket.getOutputStream();
-                    input.skip(input.available());
-
-                    output.write(msg);
-                    output.flush();
-
-
-                    byte[] buffer = new byte[1024];
-                    int totalBytesRead = 0;
-                    while (true) {
-                        int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-                        if (bytesRead > 0) {
-                            totalBytesRead += bytesRead;
-
-                            // 데이터가 모두 수신되었는지 확인
-                            if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
-                                break;
-                            }
-                        } else {
-                            break; // 타임아웃
-                        }
-                    }
-
-                    String result = bytesToHex(buffer, totalBytesRead);
-                    if (result.contains("54 58 28")) {
-                        result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
-                        int tmp = extractNumberAfterTXBeforeByteHex(result);
-                        if (tmp > 0 && 14 + String.valueOf(tmp).length() + result.indexOf("TX(") + tmp <= buffer.length) {
-                            result = new String(buffer, 15 + String.valueOf(tmp).length() + result.indexOf("54 58 28"), tmp * 3, Charset.forName("EUC-KR"));
-                        } else {
-                            throw new IllegalArgumentException("유효하지 않은 offset 또는 tmp 값입니다.");
-                        }
-                    }
-                    return result;
-                } catch (IOException e) {
-                    logService.errorLog(msg + "전송에 실패했습니다.");
-                    throw e;
-                } finally {
-                    disconnect();
-                }
-            }
-        };
-    }
-
-    private int extractNumberAfterTXBeforeByteHex(String input) {
-        // "TX" 뒤의 "byte" 앞 숫자를 찾는 정규식
-        Pattern pattern = Pattern.compile("TX.*?(\\d+)\\s*byte");
-        Matcher matcher = pattern.matcher(input);
-
-        if (matcher.find()) {
-            String number = matcher.group(1); // 첫 번째 그룹에서 숫자 추출
-            return Integer.parseInt(number); // 숫자를 Integer로 변환하여 반환
+    public String sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
+        if (socket == null || socket.isClosed()) {
+            connectNoLog(IP, PORT);
         }
+        try {
+            InputStream input = socket.getInputStream();
+            OutputStream output = socket.getOutputStream();
+            input.skip(input.available()); // 기존에 남아있는 데이터 제거
 
-        return -1; // "TX" 뒤 "byte" 앞 숫자가 없을 경우 -1 반환
+            output.write(msg);
+            output.flush();
+
+            byte[] buffer = new byte[1024];
+            int totalBytesRead = 0;
+
+            while (true) {
+                int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                if (bytesRead > 0) {
+                    totalBytesRead += bytesRead;
+
+                    // 데이터가 모두 수신되었는지 확인
+                    if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                        break;
+                    }
+                } else {
+                    break; // 타임아웃
+                }
+            }
+
+            String result = bytesToHex(buffer, totalBytesRead);
+            if (result.contains("52 58 28")) {
+                result = result.substring(result.indexOf("10 02"));
+            }
+            return result;
+        } catch (IOException e) {
+            logService.errorLog("전송에 실패했습니다.");
+            System.out.println("msg = " + bytesToHex(msg, msg.length));
+            e.printStackTrace();
+            throw e;
+        }
     }
+
+
 }

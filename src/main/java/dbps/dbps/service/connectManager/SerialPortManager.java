@@ -4,6 +4,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortIOException;
 import com.fazecast.jSerialComm.SerialPortTimeoutException;
 import dbps.dbps.service.ConfigService;
+import dbps.dbps.service.DabitNetService;
 import dbps.dbps.service.LogService;
 import javafx.concurrent.Task;
 
@@ -27,10 +28,12 @@ public class SerialPortManager {
     ConfigService configService;
     private static final Object portLock = new Object();
     private final BlockingQueue<Task<?>> taskQueue = new LinkedBlockingQueue<>();
+    DabitNetService dabitNetService;
 
     private SerialPortManager() {
         logService = LogService.getLogService();
         configService = ConfigService.getInstance();
+        dabitNetService = DabitNetService.getInstance();
     }
 
     public static SerialPortManager getManager() {
@@ -66,7 +69,9 @@ public class SerialPortManager {
             }
             SerialPort port = SerialPort.getCommPort(portName);
             port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY * 1000, 1000);
+            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 500, 0);
+//            port.setFlowControl(SerialPort.FLOW_CONTROL_RTS_ENABLED | SerialPort.FLOW_CONTROL_CTS_ENABLED);
+
 
             if (!port.openPort()) {
                 throw new IllegalStateException(portName + " 포트를 열 수 없습니다.");
@@ -117,7 +122,7 @@ public class SerialPortManager {
                         throw new IllegalStateException("포트를 열 수 없습니다: " + portName);
                     }
 
-                    if(port.getPortDescription().toLowerCase().contains("bluetooth")){
+                    if(!isBT &&port.getPortDescription().toLowerCase().contains("bluetooth")){
                         logService.warningLog("해당 포트는 블루투스 포트입니다.");
                         closePort(portName);
                         throw new RuntimeException();
@@ -150,20 +155,17 @@ public class SerialPortManager {
 
                         String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
                         if (result.contains("TX") && result.contains("![") && result.contains("!]")) {
-                            int tmp = extractNumberAfterTXBeforeByte(result);
-                            if (tmp > 0 && 14 + String.valueOf(tmp).length() + result.indexOf("TX(") + tmp <= buffer.length) {
-                                result = new String(buffer, 14 + String.valueOf(tmp).length() + result.indexOf("TX("), tmp, Charset.forName("EUC-KR"));
-                            } else {
-                                throw new IllegalArgumentException("유효하지 않은 offset 또는 tmp 값입니다.");
-                            }
+                            int indexTX = result.indexOf("TX");
+                            result = result.substring(indexTX);
+                            result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
                         }
                         logService.updateInfoLog("받은 메세지: " + result);
                         return result;
-
                     } catch (SerialPortTimeoutException | SerialPortIOException e) {
                         logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
                         throw e;
                     } catch (Exception e) {
+                        e.printStackTrace();
                         logService.errorLog("기타 예외 발생: " + e.getMessage());
                         throw e;
                     } finally {
@@ -283,55 +285,50 @@ public class SerialPortManager {
     }
 
 
-    public Task<String> sendMsgAndGetMsgByteNoLog(byte[] msg) {
-        return new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                String portName = OPEN_PORT_NAME;
-                SerialPort port = serialPortMap.get(portName);
+    public String sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
+        String portName = OPEN_PORT_NAME;
+        SerialPort port = serialPortMap.get(portName);
 
-                if (port == null || !isPortOpen(portName)) {
-                    openPortNoLog(portName, SERIAL_BAUDRATE);
-                    port = serialPortMap.get(portName);
-                }
+        if (port == null || !isPortOpen(portName)) {
+            openPortNoLog(portName, SERIAL_BAUDRATE);
+            port = serialPortMap.get(portName);
+        }
+        try {
+            OutputStream outputStream = port.getOutputStream();
+            InputStream inputStream = port.getInputStream();
 
-                try {
-                    OutputStream outputStream = port.getOutputStream();
-                    InputStream inputStream = port.getInputStream();
-                    outputStream.write(msg);
-                    outputStream.flush();
+            outputStream.write(msg);
 
-                    // 읽기용 버퍼 초기화
-                    byte[] buffer = new byte[1024];
-                    int totalBytesRead = 0;
+            // 읽기용 버퍼 초기화
+            byte[] buffer = new byte[1024];
+            int totalBytesRead = 0;
 
-                    // 반복적으로 읽어 남아있는 데이터를 모두 수신
-                    while (true) {
-                        int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-                        if (bytesRead > 0) {
-                            totalBytesRead += bytesRead;
+            int readAttempts = 0;
+            long startWait = System.currentTimeMillis();
+            long timeout = 150;
 
-                            // 데이터가 모두 수신되었는지 확인
-                            if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
-                                break;
-                            }
-                        } else {
-                            // 타임아웃 발생 시 루프 종료
+            while ((System.currentTimeMillis() - startWait) < timeout) {
+                if (inputStream.available() > 0) {
+                    int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                    readAttempts++;
+
+                    if (bytesRead > 0) {
+                        totalBytesRead += bytesRead;
+                        if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
                             break;
                         }
                     }
-
-                    // 수신된 모든 데이터를 Hex로 변환하여 반환
-                    return bytesToHex(buffer, totalBytesRead);
-                } catch (Exception e) {
-                    logService.errorLog("에러가 발생했습니다: " + e.getMessage());
-                    throw e;
-                } finally {
-                    closePortNoLog(portName);
                 }
             }
-        };
+
+            return bytesToHex(buffer, totalBytesRead);
+        } catch (Exception e) {
+            logService.errorLog("에러가 발생했습니다: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
+
 
     public Task<Integer> findSpeedTask() {
         return new Task<>() {
@@ -423,17 +420,26 @@ public class SerialPortManager {
                         }
                     }
 
-                    if (totalBytesRead == 230) {
+                    if (totalBytesRead <= 230) {
                         // 212바이트를 읽었으면 결과 출력
-                        return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                        String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                        dabitNetService.updateUI(result);
+                        return result;
                     } else {
                         throw new IOException("212 바이트를 읽는 데 실패했습니다. 총 읽은 바이트: " + totalBytesRead);
                     }
                 } catch (SerialPortTimeoutException e){
+                    String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                    String[] lines = result.split("\r?\n"); // 윈도우(\r\n)와 유닉스(\n) 모두 대응 가능
+                    int lineCount = lines.length;
+                    if (lineCount>=14){
+                        dabitNetService.updateUI(result);
+                    }
                     return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
                 }
                 catch (Exception e) {
                     logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
+                    e.printStackTrace();
                     throw e;
                 } finally {
                     port.closePort();

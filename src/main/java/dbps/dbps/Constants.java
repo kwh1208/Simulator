@@ -37,6 +37,8 @@ public class Constants {
 
     public static int serverTCPPort = 5000;
 
+    public static String hostIP;
+
     public static boolean ascUTF16 = false;
 
     public static int SERIAL_BAUDRATE = 115200;
@@ -54,6 +56,8 @@ public class Constants {
     public static String UDP_IP = "";
 
     public static int UDP_PORT = 0;
+
+    public static boolean isBT = false;
 
     public static int SIZE_ROW = 0;
     public static int SIZE_COLUMN = 0;
@@ -148,7 +152,6 @@ public class Constants {
 
     public static boolean dataReceivedIsComplete(byte[] buffer, int length) {
         String data = new String(buffer, 0, length);
-        // 순서대로 "TX", "![", "!]"이 존재하는지 확인
         if (data.contains("RX") && data.contains("![") && data.contains("!]")) {
             int indexTX = data.indexOf("TX");
             int indexStart = data.indexOf("![", indexTX); // "TX" 이후 검색
@@ -156,6 +159,10 @@ public class Constants {
 
             // 순서가 올바른지 확인
             return indexTX != -1 && indexStart != -1 && indexEnd != -1 && indexTX < indexStart && indexStart < indexEnd;
+        }
+
+        if (data.contains("BT DIBD")&&data.contains("!]")){
+            return true;
         }
 
         return length > 0 && buffer[length - 1] == (byte) ']' && buffer[length - 2] == (byte) '!';

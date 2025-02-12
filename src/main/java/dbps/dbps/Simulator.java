@@ -2,6 +2,10 @@ package dbps.dbps;
 
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.ResourceManager;
+import dbps.dbps.service.connectManager.SerialPortManager;
+import dbps.dbps.service.connectManager.ServerTCPManager;
+import dbps.dbps.service.connectManager.TCPManager;
+import dbps.dbps.service.connectManager.UDPManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,10 +16,16 @@ import lombok.Getter;
 
 import java.io.IOException;
 
+import static dbps.dbps.Constants.OPEN_PORT_NAME;
+
 public class Simulator extends Application {
     @Getter
     private static Simulator instance = null;
     private static ResourceManager resourceManager;
+    SerialPortManager serialPortManager;
+    ServerTCPManager serverTCPManager;
+    TCPManager tcpManager;
+    UDPManager udpManager;
 
     private Stage stage;
 
@@ -24,6 +34,14 @@ public class Simulator extends Application {
         super.init();
         ConfigService.getInstance();
         resourceManager = ResourceManager.getInstance();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }));
     }
 
 
@@ -59,9 +77,48 @@ public class Simulator extends Application {
 
 
     public static void main(String[] args) {
-//        System.setProperty("prism.text", "t2k"); // 텍스트 렌더링 엔진 설정
         System.setProperty("prism.lcdtext", "false"); // LCD 텍스트 렌더링 비활성화
 
         launch();
+    }
+    @Override
+    public void stop() throws Exception{
+        super.stop();
+
+        try {
+            serialPortManager = SerialPortManager.getManager();
+            if (serialPortManager != null) {
+                serialPortManager.closePort(OPEN_PORT_NAME);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            serverTCPManager = ServerTCPManager.getInstance();
+            if (serverTCPManager != null) {
+                serverTCPManager.disconnect();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            tcpManager = TCPManager.getManager();
+            if (tcpManager != null) {
+                tcpManager.disconnect();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            udpManager = UDPManager.getUDPManager();
+            if (udpManager != null) {
+                udpManager.disconnect();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -345,25 +345,13 @@ public class CommunicationSettingController {
     }
 
     //포트열기, 접속하기
-    @FXML
-    public void openSerialPort(){
-        if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
-            openPort(serialPortComboBox.getValue());
-        }
-        else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn))
-            connectClientTCP();
-        else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn))
-            connectServerTCP();
-        else if (communicationGroup.getSelectedToggle().equals(UDPRadioBtn)){
-            udpManager.connect(UDPIPAddress.getText(), Integer.parseInt(UDPIPPort.getText()));
-        }
-    }
+
 
     private void connectServerTCP() {
-        int port = Integer.parseInt(serverIPPort.getText());
-        configService.setProperty("serverTCPPort", String.valueOf(port));
-        // 서버 연결 Task 생성
-        serverTCPManager.connect(port);
+        hostIP = serverIPAddress.getValue();
+        serverTCPPort = Integer.parseInt(serverIPPort.getText());
+
+        configService.setProperty("serverTCPPort", String.valueOf(serverTCPPort));
     }
 
 
@@ -375,6 +363,7 @@ public class CommunicationSettingController {
         tcpManager.setPORT(port);
         configService.setProperty("clientTCPAddr", IPAddress);
         configService.setProperty("clientTCPPort", String.valueOf(port));
+        tcpManager.connect(IPAddress, port);
 
         TCP_IP = IPAddress;
         TCP_PORT = port;
@@ -388,6 +377,7 @@ public class CommunicationSettingController {
         udpManager.setPORT(port);
         configService.setProperty("UDPAddr", IPAddress);
         configService.setProperty("UDPPort", String.valueOf(port));
+        udpManager.connect(IPAddress, port);
 
         UDP_IP = IPAddress;
         UDP_PORT = port;
@@ -395,7 +385,30 @@ public class CommunicationSettingController {
 
     @FXML
     public void closeSerialPort() {
-        closePort(serialPortComboBox.getValue());
+        if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
+            closePort(serialPortComboBox.getValue());
+        }
+        else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn))
+            tcpManager.disconnect();
+        else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn))
+            serverTCPManager.disconnect();
+        else if (communicationGroup.getSelectedToggle().equals(UDPRadioBtn)){
+            udpManager.disconnect();
+        }
+    }
+
+    @FXML
+    public void openSerialPort(){
+        if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
+            openPort(serialPortComboBox.getValue());
+        }
+        else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn))
+            connectClientTCP();
+        else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn))
+            connectServerTCP();
+        else if (communicationGroup.getSelectedToggle().equals(UDPRadioBtn)){
+            udpManager.connect(UDPIPAddress.getText(), Integer.parseInt(UDPIPPort.getText()));
+        }
     }
 
 
@@ -532,7 +545,12 @@ public class CommunicationSettingController {
                         configService.setProperty("serialSpeed", String.valueOf(SERIAL_BAUDRATE));
                     } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn)) {
                         CONNECT_TYPE = "clientTCP";
-                        connectClientTCP();
+                        String IPAddress = clientIPAddress.getText();
+                        int port = Integer.parseInt(clientIPPort.getText());
+                        tcpManager.setIP(IPAddress);
+                        tcpManager.setPORT(port);
+                        configService.setProperty("clientTCPAddr", IPAddress);
+                        configService.setProperty("clientTCPPort", String.valueOf(port));
                         hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                     } else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)) {
                         CONNECT_TYPE = "serverTCP";
@@ -540,7 +558,13 @@ public class CommunicationSettingController {
                         hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                     } else {
                         CONNECT_TYPE = "UDP";
-                        connectUDP();
+                        String IPAddress = UDPIPAddress.getText();
+                        int port = Integer.parseInt(UDPIPPort.getText());
+
+                        udpManager.setIP(IPAddress);
+                        udpManager.setPORT(port);
+                        configService.setProperty("UDPAddr", IPAddress);
+                        configService.setProperty("UDPPort", String.valueOf(port));
                         hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                     }
                     configService.setProperty("connectType", CONNECT_TYPE);

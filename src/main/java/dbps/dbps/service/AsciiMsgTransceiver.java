@@ -4,6 +4,7 @@ import dbps.dbps.service.connectManager.*;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TextField;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,10 +26,12 @@ public class AsciiMsgTransceiver {
     private final FirmwareService firmwareService;
     private final BoardSettingService boardSettingService;
     private final ASCiiDefaultSettingService asciiDefaultSettingService;
+    private final BTService btService;
 
 
     private AsciiMsgTransceiver() {
         serialPortManager = SerialPortManager.getManager();
+        btService = BTService.getInstance();
         logService = LogService.getLogService();
         udpManager = UDPManager.getUDPManager();
         tcpManager = TCPManager.getManager();
@@ -92,11 +95,14 @@ public class AsciiMsgTransceiver {
                 });
             });
 
-            new Thread(sendTask).start(); // 비동기로 실행
+            try {
+                new Thread(sendTask).start();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         } else {
             resultFuture.completeExceptionally(new IllegalStateException("Task is null."));
         }
-
 
         return resultFuture;
     }
@@ -125,6 +131,20 @@ public class AsciiMsgTransceiver {
     }
 
     private void chkSpecificCmdCode(String msg, String receiveMsg) {
+        if (receiveMsg.contains("BT DIBD")){
+            Platform.runLater(()->{
+                TextField bleId = btService.getBle_id();
+                TextField blePassword = btService.getBle_password();
+                String[] split = receiveMsg.split("\n");
+                bleId.setText(split[2]);
+                blePassword.setText(split[3].replaceAll("!]", ""));
+            });
+            return;
+        }
+        if (receiveMsg.contains("![DIBD BLE OK!]")){
+            return;
+        }
+
         String cmd = receiveMsg.substring(4, 6);
         char status = receiveMsg.charAt(6);
         if (cmd.equals("31")) {

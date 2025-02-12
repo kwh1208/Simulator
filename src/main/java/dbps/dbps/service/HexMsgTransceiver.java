@@ -92,30 +92,20 @@ public class HexMsgTransceiver {
 
 
 
-    public void sendByteMessagesNoLog(byte[] msg) {
+    public String sendByteMessagesNoLog(byte[] msg) {
         switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> {
                 try {
                     // Task 객체를 생성하여 비동기 작업 실행
-                    Task<String> sendTask = serialPortManager.sendMsgAndGetMsgByteNoLog(msg);
-
-                    // 새로운 스레드에서 Task를 실행
-                    Thread taskThread = new Thread(sendTask);
-                    taskThread.start();
-
-                    sendTask.get();
+                    serialPortManager.sendMsgAndGetMsgByteNoLog(msg);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
             case "UDP" -> //udp로 메세지 전송
             {
                 try {
-                    Task<String> sendTask = udpManager.sendMsgAndGetMsgByteNoLog(msg);
-                    Thread taskThread = new Thread(sendTask);
-                    taskThread.start();
-
-                    sendTask.get();
+                    udpManager.sendMsgAndGetMsgByteNoLog(msg);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -123,11 +113,8 @@ public class HexMsgTransceiver {
             case "clientTCP" -> //tcp로 메세지 전송
             {
                 try {
-                    Task<String> sendTask = tcpManager.sendMsgAndGetMsgByteNoLog(msg);
-                    Thread taskThread = new Thread(sendTask);
-                    taskThread.start();
+                    tcpManager.sendMsgAndGetMsgByteNoLog(msg);
 
-                    sendTask.get();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -145,16 +132,13 @@ public class HexMsgTransceiver {
 //            }
             case "serverTCP" ->{
                 try {
-                    Task<String> sendTask  = serverTCPManager.sendMsgAndGetMsgByteNoLog(msg);
-                    Thread taskThread = new Thread(sendTask);
-                    taskThread.start();
-
-                    sendTask.get();
+                    serverTCPManager.sendMsgAndGetMsgByteNoLog(msg);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
         }
+        return null;
     }
 
     public String sendMessages(String msg, ProgressIndicator progressIndicator) {

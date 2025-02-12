@@ -1,24 +1,26 @@
 package dbps.dbps.controller;
 
-import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.ConfigService;
-import dbps.dbps.service.FontService;
-import dbps.dbps.service.ResourceManager;
+import dbps.dbps.service.*;
+import dbps.dbps.service.connectManager.TCPManager;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
+
+import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class FontSettingController {
     public Label fontProgressLabel;
@@ -29,6 +31,8 @@ public class FontSettingController {
 
     ConfigService configService;
     FontService fontService = FontService.getInstance();
+    TCPManager tcpManager;
+    LogService logService;
     @FXML
     public ComboBox<String> fontGroup2fontSelected1;
     @FXML
@@ -90,13 +94,26 @@ public class FontSettingController {
 
     @FXML
     AnchorPane fontSettingAnchorPane;
+    Stage progressStage;
+    ProgressBar progressBar;
+    Label progressLabel;
 
     AsciiMsgTransceiver asciiMsgTransceiver;
+    HexMsgTransceiver hexMsgTransceiver;
     //초기화(하위 폰트그룹이랑 그룹화)
     @FXML
     public void initialize() {
         configService = ConfigService.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+        hexMsgTransceiver = HexMsgTransceiver.getInstance();
+        tcpManager = TCPManager.getManager();
+        logService = LogService.getLogService();
+
+
+
+
+
+
 
         if (Boolean.parseBoolean(configService.getProperty("fontGroup2selected"))){
             fontGroup2ChkBox.setSelected(true);
@@ -107,7 +124,7 @@ public class FontSettingController {
             disableAllNodesInPane((Pane) fontGroup2ChkBox.getParent());
         }
 
-        if (Boolean.parseBoolean(configService.getProperty("fontGroup3selected"))){
+        if (fontGroup2ChkBox.isSelected()&&Boolean.parseBoolean(configService.getProperty("fontGroup3selected"))){
             fontGroup3ChkBox.setSelected(true);
             ableAllNodesInPane((Pane) fontGroup3ChkBox.getParent());
         }
@@ -116,7 +133,7 @@ public class FontSettingController {
             disableAllNodesInPane((Pane) fontGroup3ChkBox.getParent());
         }
 
-        if (Boolean.parseBoolean(configService.getProperty("fontGroup4selected"))){
+        if (fontGroup3ChkBox.isSelected()&&Boolean.parseBoolean(configService.getProperty("fontGroup4selected"))){
             fontGroup4ChkBox.setSelected(true);
             ableAllNodesInPane((Pane) fontGroup4ChkBox.getParent());
         }
@@ -124,6 +141,10 @@ public class FontSettingController {
             fontGroup4ChkBox.setSelected(false);
             disableAllNodesInPane((Pane) fontGroup4ChkBox.getParent());
         }
+
+
+
+
 
         fontGroup2ChkBox.setDisable(false);
         fontGroup3ChkBox.setDisable(false);
@@ -302,6 +323,38 @@ public class FontSettingController {
         fontGroup4fontSelected1.setValue(configService.getProperty("fontGroup4FontType1"));
         fontGroup4fontSelected2.setValue(configService.getProperty("fontGroup4FontType2"));
         fontGroup4fontSelected3.setValue(configService.getProperty("fontGroup4FontType3"));
+
+        progressStage = new Stage();
+        progressStage.initModality(Modality.APPLICATION_MODAL); // 부모 창을 블로킹
+        progressStage.setTitle("폰트 전송");
+
+        progressBar = new ProgressBar(0);
+        progressBar.setStyle("-fx-accent: green;");
+        progressBar.setVisible(true);
+        progressBar.setPrefWidth(250);
+
+        progressLabel = new Label("폰트 전송 준비 중...");
+
+        Button cancelButton = new Button("취소");
+        Region spacer = new Region(); // 중간에 공간을 추가
+        HBox buttonBox = new HBox(spacer, cancelButton);
+        HBox.setHgrow(spacer, Priority.ALWAYS); // spacer가 가능한 공간을 채우도록 설정
+        buttonBox.setSpacing(10); // 버튼과 spacer 사이 여백 설정
+
+        cancelButton.setOnAction(e -> {
+            if (fontSendTask != null) {
+                fontSendTask.cancel();
+                progressBar.setProgress(0);
+                tcpManager.disconnect();
+                closeWindowAfterDelay(progressStage, 1000);
+            }
+        });
+
+        VBox vbox = new VBox(15, progressLabel, progressBar, buttonBox);
+        vbox.setStyle("-fx-padding: 20px;");
+
+        Scene progressScene = new Scene(vbox, 300, 150);
+        progressStage.setScene(progressScene);
     }
 
     private void addItem() {
@@ -468,20 +521,38 @@ public class FontSettingController {
         }
     }
 
+    private Task<Void> fontSendTask;  // ✅ Task를 전역 변수로 선언
+
+
     public void send() throws InterruptedException {
         String[] fontGroup1Path = new String[3];
         String[] fontType = new String[12];
         String[] fontGroup2Path = null;
         String[] fontGroup3Path = null;
         String[] fontGroup4Path = null;
+
         //첫번째 그룹
+        if (chkFont(fontGroup1fontPath1.getText(), "영어")){
+            logService.warningLog("폰트그룹 1 영어 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+            return;
+        }
         fontGroup1Path[0] = fontGroup1fontPath1.getText();
         configService.setProperty("fontGroup1FontPath1", fontGroup1Path[0]);
         fontType[0] = "영어";
+
+        if (chkFont(fontGroup1fontPath2.getText(), fontGroup1fontSelected2.getValue())){
+            logService.warningLog("폰트그룹 1 "+fontGroup1fontSelected2.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+            return;
+        }
         if (!fontGroup1fontSelected2.getValue().equals(bundle.getString("notUsed"))){
             fontGroup1Path[1] = fontGroup1fontPath2.getText();
             fontType[1] = fontGroup1fontSelected2.getValue();
             configService.setProperty("fontGroup1FontPath2", fontGroup1Path[1]);
+        }
+
+        if (chkFont(fontGroup1fontPath3.getText(), fontGroup1fontSelected3.getValue())){
+            logService.warningLog("폰트그룹 1 "+fontGroup1fontSelected3.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+            return;
         }
         if (!fontGroup1fontSelected3.getValue().equals(bundle.getString("notUsed"))){
             fontGroup1Path[2] = fontGroup1fontPath3.getText();
@@ -491,40 +562,72 @@ public class FontSettingController {
 
 
         //두번째 그룹
+
         if (fontGroup2ChkBox.isSelected()) {
             fontGroup2Path = new String[3];
+            if (chkFont(fontGroup2fontPath1.getText(), fontGroup2fontSelected1.getValue())){
+                logService.warningLog("폰트그룹 2 "+fontGroup2fontSelected1.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
+            }
             if (!fontGroup2fontSelected1.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup2Path[0] = fontGroup2fontPath1.getText();
                 fontType[3] = fontGroup2fontSelected1.getValue();
                 configService.setProperty("fontGroup2FontPath1", fontGroup2Path[0]);
+            }
+
+            if (chkFont(fontGroup2fontPath2.getText(), fontGroup2fontSelected2.getValue())){
+                logService.warningLog("폰트그룹 2 "+fontGroup2fontSelected2.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
             }
             if (!fontGroup2fontSelected2.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup2Path[1] = fontGroup2fontPath2.getText();
                 fontType[4] = fontGroup2fontSelected2.getValue();
                 configService.setProperty("fontGroup2FontPath2", fontGroup2Path[1]);
             }
+
+            if (chkFont(fontGroup2fontPath3.getText(), fontGroup2fontSelected3.getValue())){
+                logService.warningLog("폰트그룹 2 "+fontGroup2fontSelected3.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
+            }
             if (!fontGroup2fontSelected3.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup2Path[2] = fontGroup2fontPath3.getText();
                 fontType[5] = fontGroup2fontSelected3.getValue();
                 configService.setProperty("fontGroup2FontPath3", fontGroup2Path[2]);
             }
-
         }
 
         //세번째 그룹
         if (fontGroup3ChkBox.isSelected()){
             fontGroup3Path = new String[3];
+
+            if (chkFont(fontGroup3fontPath1.getText(), fontGroup3fontSelected1.getValue())){
+                logService.warningLog("폰트그룹 3 "+fontGroup3fontSelected1.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
+            }
             if (!fontGroup3fontSelected1.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup3Path[0] = fontGroup3fontPath1.getText();
                 fontType[6] = fontGroup3fontSelected1.getValue();
+                configService.setProperty("fontGroup3FontPath1", fontGroup3Path[1]);
+            }
+
+            if (chkFont(fontGroup3fontPath2.getText(), fontGroup3fontSelected2.getValue())){
+                logService.warningLog("폰트그룹 3 "+fontGroup3fontSelected2.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
             }
             if (!fontGroup3fontSelected2.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup3Path[1] = fontGroup3fontPath2.getText();
                 fontType[7] = fontGroup3fontSelected2.getValue();
+                configService.setProperty("fontGroup3FontPath2", fontGroup3Path[1]);
+            }
+
+            if (chkFont(fontGroup3fontPath3.getText(), fontGroup3fontSelected3.getValue())){
+                logService.warningLog("폰트그룹 3 "+fontGroup3fontSelected3.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
             }
             if (!fontGroup3fontSelected3.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup3Path[2] = fontGroup3fontPath3.getText();
                 fontType[8] = fontGroup3fontSelected3.getValue();
+                configService.setProperty("fontGroup3FontPath3", fontGroup3Path[2]);
             }
 
         }
@@ -532,57 +635,112 @@ public class FontSettingController {
         //네번째 그룹
         if (fontGroup4ChkBox.isSelected()){
             fontGroup4Path = new String[3];
+
+            if (chkFont(fontGroup4fontPath1.getText(), fontGroup4fontSelected1.getValue())){
+                logService.warningLog("폰트그룹 4 "+fontGroup4fontSelected1.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
+            }
             if (!fontGroup4fontSelected1.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup4Path[0] = fontGroup4fontPath1.getText();
                 fontType[9] = fontGroup4fontSelected1.getValue();
+                configService.setProperty("fontGroup4FontPath1", fontGroup4Path[0]);
+            }
+
+            if (chkFont(fontGroup4fontPath2.getText(), fontGroup4fontSelected2.getValue())){
+                logService.warningLog("폰트그룹 4 "+fontGroup4fontSelected2.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
             }
             if (!fontGroup3fontSelected2.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup4Path[1] = fontGroup4fontPath2.getText();
                 fontType[10] = fontGroup4fontSelected2.getValue();
+                configService.setProperty("fontGroup4FontPath2", fontGroup4Path[1]);
+            }
+
+            if (chkFont(fontGroup4fontPath3.getText(), fontGroup4fontSelected3.getValue())){
+                logService.warningLog("폰트그룹 4 "+fontGroup4fontSelected3.getValue()+" 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                return;
             }
             if (!fontGroup4fontSelected3.getValue().equals(bundle.getString("notUsed"))){
                 fontGroup4Path[2] = fontGroup4fontPath3.getText();
                 fontType[11] = fontGroup4fontSelected3.getValue();
+                configService.setProperty("fontGroup4FontPath3", fontGroup4Path[2]);
             }
         }
 
-        Task<Void> fontSend = fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path, fontGroup4Path, fontType, fontProgressBar, fontProgressLabel);
-
-        fontSend.setOnRunning(e -> {
-            // Task가 시작될 때 로딩 애니메이션 표시
-            fontProgressBar.setVisible(true);
-            fontProgressLabel.setVisible(true);
+        // ✅ 진행 상태를 표시할 새 창 만들기
+        Platform.runLater(()->{
+            progressStage.show();
         });
 
-        fontSend.setOnSucceeded(e -> {
-            // Task가 성공적으로 끝났을 때 로딩 애니메이션 숨김
-            fontProgressBar.setVisible(false);
-            fontProgressLabel.setVisible(false);
+        // ✅ 폰트 전송 Task 실행
+        fontSendTask = fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path, fontGroup4Path, fontType, progressBar, progressLabel);
+
+        fontSendTask.setOnRunning(e -> {
+            progressLabel.setText("폰트 전송 준비 중...");
+            progressBar.setProgress(-1); // 진행 중 상태
         });
 
-        fontSend.setOnFailed(e -> {
-            // Task가 실패했을 때 로딩 애니메이션 숨김
-            fontProgressBar.setVisible(false);
-            fontProgressLabel.setVisible(false);
+        fontSendTask.setOnSucceeded(e -> {
+            progressLabel.setText("폰트 전송 완료!");
+            progressBar.setProgress(1.0);
+            closeWindowAfterDelay(progressStage, 1000); // 1초 후 창 닫기
+        });
 
-            Throwable ex = fontSend.getException();
-            if (ex != null) {
-                ex.printStackTrace(); // 예외 출력
+        new Thread(fontSendTask).start();
+    }
+
+    private boolean chkFont(String fileName, String fontType){
+        if (fontType==null||fontType.equals("사용안함")) return false;
+
+        if (!fileName.contains("fnt")){
+            return true;
+        }
+
+
+        if (fontType.contains("영어")){
+            return !fileName.contains("ENG");
+        }
+        if (fontType.contains("사용자폰트")){
+            return !fileName.contains("USER");
+        }
+        if (fontType.contains("조합형")){
+            if ((fileName.toLowerCase()).contains("uni")){
+                return true;
             }
-        });
+            return !fileName.contains("KOR");
+        }
+        if (fontType.contains("유니코드")){
+            return !(fileName.toLowerCase()).contains("uni");
+        }
 
-        fontSend.setOnCancelled(e -> {
-            // Task가 취소됐을 때 로딩 애니메이션 숨김
-            fontProgressBar.setVisible(false);
-            fontProgressLabel.setVisible(false);
-        });
+        return false;
+    }
 
-        new Thread(fontSend).start();
+    // ✅ 일정 시간이 지나면 진행 상태 창 닫기
+    private void closeWindowAfterDelay(Stage stage, int delayMillis) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(delayMillis);
+                Platform.runLater(stage::close);
+            } catch (InterruptedException ignored) {
+            }
+        }).start();
+        tcpManager.disconnect();
     }
 
     public void close(MouseEvent mouseEvent) {
+        if (fontSendTask != null){
+            fontSendTask.cancel();
+            hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
+        }
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();
+    }
+
+    public void cancel(){
+        fontSendTask.cancel();
+
+        hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
     }
 
 
