@@ -20,8 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
-import static dbps.dbps.service.SettingService.commonProgressIndicator;
-
 public class FontSettingController {
     public Label fontProgressLabel;
     public ProgressBar fontProgressBar;
@@ -354,6 +352,14 @@ public class FontSettingController {
 
         Scene progressScene = new Scene(vbox, 300, 150);
         progressStage.setScene(progressScene);
+
+        progressStage.setOnCloseRequest(e->{
+            if (fontSendTask != null) {
+                fontSendTask.cancel();
+                progressBar.setProgress(0);
+                closeWindowAfterDelay(progressStage, 1000);
+            }
+        });
     }
 
     private void addItem() {
@@ -730,19 +736,11 @@ public class FontSettingController {
     public void close(MouseEvent mouseEvent) {
         if (fontSendTask != null){
             fontSendTask.cancel();
-            hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
         }
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();
+        tcpManager.disconnect();
     }
-
-    public void cancel(){
-        fontSendTask.cancel();
-
-        hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
-    }
-
-
 
     private void updateFontSize() {
         long totalFileSize = 0; // 총 파일 크기

@@ -233,10 +233,6 @@ if (row != Integer.parseInt(msg.substring(6, 8)) || column != Integer.parseInt(m
         }
 
         if (status == '0') { // 정상 처리
-            if (cmd.equals("83")) { // 맥주소 읽기
-                logService.updateInfoLog("맥주소 : " + receiveMsg.substring(8, 20));
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
-            }
             if (cmd.equals("20")) {
                 logService.updateInfoLog("배경이미지 표출에 성공했습니다.");
             }
@@ -274,10 +270,10 @@ if (row != Integer.parseInt(msg.substring(6, 8)) || column != Integer.parseInt(m
                 logService.updateInfoLog("페이지 메세지 삭제에 성공했습니다.");
             }
             if (cmd.equals("62")) {
-                logService.updateInfoLog("실시간 문구 설정에 성공했습니다.");
+                logService.updateInfoLog("섹션별 효과 설정에 성공했습니다.");
             }
             if (cmd.equals("70")) {
-                logService.updateInfoLog("화면 단색 채우기에 성공했습니다.");
+                logService.updateInfoLog("화면 채우기에 성공했습니다.");
             }
             if (cmd.equals("32")) {
                 logService.updateInfoLog("default 설정에 성공했습니다.");
@@ -316,10 +312,9 @@ if (row != Integer.parseInt(msg.substring(6, 8)) || column != Integer.parseInt(m
             case "56" -> "배경이미지 표출 목록 선택에 실패했습니다.";
             case "60" -> "페이지 메세지 개수 설정에 실패했습니다.";
             case "61" -> "페이지 메세지 삭제에 실패했습니다.";
-            case "62" -> "실시간 문구 설정에 실패했습니다.";
-            case "70" -> "화면 단색 채우기에 실패했습니다.";
+            case "62" -> "섹션별 효과 설정에 실패했습니다.";
+            case "70" -> "화면 채우기에 실패했습니다.";
             case "81" -> "펌웨어 정보 읽기에 실패했습니다.";
-            case "82" -> "맥주소 설정에 실패했습니다.";
             case "85" -> "하트비트 세팅에 실패했습니다.";
             default -> "알 수 없는 명령어입니다. 전송 패킷을 확인해주세요.";
         };

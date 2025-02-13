@@ -105,6 +105,7 @@ public class HexMsgTransceiver {
                     // Task 객체를 생성하여 비동기 작업 실행
                     serialPortManager.sendMsgAndGetMsgByteNoLog(msg);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     throw new RuntimeException(e);
                 }
             }
@@ -120,8 +121,8 @@ public class HexMsgTransceiver {
             {
                 try {
                     tcpManager.sendMsgAndGetMsgByteNoLog(msg);
-
                 } catch (Exception e) {
+
                     throw new RuntimeException(e);
                 }
             }

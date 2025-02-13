@@ -130,6 +130,8 @@ public class TCPManager {
 
     //접속끊기
     public void disconnect(){
+        if (socket==null)
+            return;
         try {
             socket.close();
             socket = null;
@@ -138,10 +140,11 @@ public class TCPManager {
         }
 
         logService.updateInfoLog("TCP 서버 연결이 종료되었습니다. IP: " + IP + ", PORT: " + PORT);
-
     }
 
     public void disconnectNoLog(){
+        if (socket==null)
+            return;
         try {
             socket.close();
             socket = null;
@@ -194,13 +197,13 @@ public class TCPManager {
                     e.printStackTrace();
                     throw e;
                 }finally {
-                    disconnectNoLog();
+                    disconnect();
                 }
             }
         };
     }
 
-    public String sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
+    public void sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
         if (socket == null || socket.isClosed()) {
             connectNoLog(IP, PORT);
         }
@@ -233,14 +236,9 @@ public class TCPManager {
             if (result.contains("52 58 28")) {
                 result = result.substring(result.indexOf("10 02"));
             }
-            return result;
         } catch (IOException e) {
-            logService.errorLog("전송에 실패했습니다.");
-            System.out.println("msg = " + bytesToHex(msg, msg.length));
             e.printStackTrace();
             throw e;
         }
     }
-
-
 }

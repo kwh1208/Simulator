@@ -129,7 +129,6 @@ public class ServerTCPManager {
                 throw new IOException("서버에서 응답이 없습니다.");
             }
         } catch (IOException e) {
-            logService.errorLog(msg + " 전송에 실패했습니다: " + e.getMessage());
             throw e;
         } finally {
             disconnect();
