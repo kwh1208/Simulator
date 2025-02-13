@@ -300,6 +300,7 @@ public class CommunicationSettingController {
     private void getSerialPortList() {
         String selectedValue = configService.getProperty("openPortName");
         List<String> portNames = Arrays.stream(SerialPort.getCommPorts())
+                .filter(port -> !port.getPortDescription().toLowerCase().contains("bluetooth"))
                 .map(SerialPort::getSystemPortName)
                 .sorted(Comparator.comparingInt(this::extractPortNumber))
                 .toList();

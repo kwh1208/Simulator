@@ -39,7 +39,7 @@ public class FontService {
             @Override
             protected Void call() throws Exception {
                 int progress = -1;
-                hexMsgTransceiver.sendByteMessagesNoLog(new byte[]{(byte) 0x10, (byte) 0x02, (byte) 0x00, (byte) 0x00, (byte) 0x02, (byte) 0x45, (byte) 0x00, (byte) 0x10, (byte) 0x03});
+                hexMsgTransceiver.sendMessages("10 02 00 00 02 45 00 10 03", commonProgressIndicator);
 
                 int packetSize = 1024;
                 int totalPackets = 0;
@@ -334,26 +334,30 @@ public class FontService {
                         sendPacket[sendPacket.length-1] = 0x03;
 
                         if (isCancelled()){
-                            Platform.runLater(()->{
-                                progressLabel.setText("전송이 취소되었습니다.");
-                            });
+                            logService.updateInfoLog("전송을 취소했습니다.");
+                            hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
                             return null;
                         }
-
 
                         boolean success = false;
                         int retryCount = 0;
                         while (!success && retryCount < 3) {
+
                             try {
                                 hexMsgTransceiver.sendByteMessagesNoLog(sendPacket);
-                                success = true; // 전송 성공하면 while 탈출
+                                success = true;
                             } catch (Exception e) {
+                                if (isCancelled()){
+                                    logService.updateInfoLog("전송을 취소했습니다.");
+                                    hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
+                                    return null;
+                                }
                                 retryCount++;
-                                logService.warningLog("패킷 전송 실패 "+retryCount+"번째 재시도");
+                                logService.warningLog("패킷 전송 실패 "+retryCount+"번째 재시도, 1초 후 재시도합니다.");
                                 if (retryCount >= 3) {
                                     logService.errorLog("⚠️ 3번 재시도 후에도 패킷 전송 실패");
                                 }
-                                Thread.sleep(1000); // 재시도 전 대기 (100ms)
+                                Thread.sleep(1000); // 재시도 전 대기 (1000ms)
                             }
                         }
 

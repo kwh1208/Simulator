@@ -218,11 +218,6 @@ public class SerialPortManager {
                     if (port == null) {
                         throw new IllegalStateException("포트를 열 수 없습니다: " + portName);
                     }
-                    if(port.getPortDescription().toLowerCase().contains("bluetooth")){
-                        logService.warningLog("해당 포트는 블루투스 포트입니다.");
-                        closePort(portName);
-                        throw new RuntimeException();
-                    }
 
                     logService.updateInfoLog("전송 메세지: " + bytesToHex(msg, msg.length));
 
@@ -285,7 +280,7 @@ public class SerialPortManager {
     }
 
 
-    public String sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
+    public void sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
         String portName = OPEN_PORT_NAME;
         SerialPort port = serialPortMap.get(portName);
 
@@ -303,14 +298,12 @@ public class SerialPortManager {
             byte[] buffer = new byte[1024];
             int totalBytesRead = 0;
 
-            int readAttempts = 0;
             long startWait = System.currentTimeMillis();
             long timeout = 150;
 
             while ((System.currentTimeMillis() - startWait) < timeout) {
                 if (inputStream.available() > 0) {
                     int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-                    readAttempts++;
 
                     if (bytesRead > 0) {
                         totalBytesRead += bytesRead;
@@ -320,10 +313,8 @@ public class SerialPortManager {
                     }
                 }
             }
-
-            return bytesToHex(buffer, totalBytesRead);
+            bytesToHex(buffer, totalBytesRead);
         } catch (Exception e) {
-            logService.errorLog("에러가 발생했습니다: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
