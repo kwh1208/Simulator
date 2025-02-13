@@ -29,3 +29,38 @@
 .root{
     -fx-font-family: Gulim;
 }
+
+.combo-box {
+    -fx-background-color: #1C1F26;
+    -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+}
+.combo-box .context-menu{
+    -fx-background-color: #1C1F26;
+    -fx-max-height: 300;
+    -fx-pref-width: 120;
+}
+.combo-box .list-cell {
+    -fx-text-fill: white; /* 드롭다운 목록의 기본 텍스트 색상 */
+}
+.combo-box .arrow-button {
+    -fx-background-color: #1C1F26; /* 화살표 버튼 배경색 */
+}
+.combo-box .arrow-button .arrow {
+    -fx-background-color: white; /* 화살표 색상 */
+}
+.combo-box .list-view .list-cell {
+    -fx-background-color: #1C1F26; /* 각 항목의 배경색 */
+    -fx-text-fill: white; /* 텍스트 색상 */
+}
+.combo-box .list-view .list-cell:hover {
+    -fx-background-color: orange; /* 각 항목의 배경색 */
+    -fx-text-fill: black; /* 텍스트 색상 */
+}
+
+.combo-box .scroll-bar:vertical {
+    -fx-opacity: 0; /* 스크롤바를 완전히 숨김 */
+    -fx-pref-width: 0; /* 수직 스크롤바 너비를 0으로 설정 */
+    -fx-pref-height: 0; /* 수평 스크롤바 높이를 0으로 설정 */
+}

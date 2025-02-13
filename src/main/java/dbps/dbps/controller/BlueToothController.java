@@ -53,10 +53,8 @@ public class BlueToothController {
 
         serialPortComboBox.valueProperty().addListener((observableValue, oldValue, newValue) -> {
             serialPortComboBox.setValue(newValue);
-            System.out.println("newValue = " + newValue);
-            System.out.println(newValue.getClass());
-            OPEN_PORT_NAME=newValue;
             configService.setProperty("openPortName", newValue);
+            OPEN_PORT_NAME=newValue;
         });
 
         serialPortComboBox.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
@@ -65,6 +63,7 @@ public class BlueToothController {
     private void getSerialPortList() {
         String selectedValue = configService.getProperty("openPortName");
         List<String> portNames = Arrays.stream(SerialPort.getCommPorts())
+                .filter(port -> !port.getPortDescription().toLowerCase().contains("bluetooth"))
                 .map(SerialPort::getSystemPortName)
                 .sorted(Comparator.comparingInt(this::extractPortNumber))
                 .toList();
@@ -84,6 +83,7 @@ public class BlueToothController {
 
     //블루투스 검색
     public void search() {
+        OPEN_PORT_NAME = serialPortComboBox.getValue();
         isBT = true;
         btManager.search();
     }
@@ -91,18 +91,21 @@ public class BlueToothController {
     //블루투스 이름 및 비밀번호 설정
     public void set( ){
         //++SET++![BT SETT  31  name  password!]
+        OPEN_PORT_NAME = serialPortComboBox.getValue();
         btManager.set(ble_id.getText(), ble_password.getText());
     }
 
     //블루투스 통신 시작
     public void begin( ) throws ExecutionException, InterruptedException {
         //++SET++![BT password             BEGIN!]
+        OPEN_PORT_NAME = serialPortComboBox.getValue();
         btManager.begin(ble_password.getText());
     }
 
     //블루투스 통신 종료
     public void end( ) {
         //++SET++![BT password             END!]
+        OPEN_PORT_NAME = serialPortComboBox.getValue();
         btManager.end(ble_password.getText());
     }
 
