@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -71,7 +72,8 @@ public class Simulator extends Application {
         // Stage 설정
         stage.setResizable(false);
         stage.setScene(scene);
-        stage.setTitle("DBPS");
+        stage.setTitle("dbProtocolSimulator");
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         stage.show();
     }
 

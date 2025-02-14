@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -343,6 +344,7 @@ public class DisplaySignalSettingController {
 
         Stage modalStage = new Stage();
         modalStage.setTitle("통신 설정");
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.png")));
 
         modalStage.initModality(Modality.APPLICATION_MODAL);
 

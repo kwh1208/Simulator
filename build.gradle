@@ -1,11 +1,11 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.13'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+
+    id 'org.beryx.jlink' version '2.26.0'
 }
 
-group = 'DBPS'
+group = 'dbps'
 version = '1.0.0'
 
 repositories {
@@ -15,55 +15,89 @@ repositories {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
-    modularity.inferModulePath = true // 모듈 시스템 유지
+    modularity.inferModulePath = true
 }
 
 application {
+    mainModule = 'DBPS.main'
     mainClass = 'dbps.dbps.Simulator'
-    applicationDefaultJvmArgs = [
-            "--add-modules", "javafx.controls,javafx.fxml",
-            "--add-reads", "dbps.dbps=ALL-UNNAMED",
-            "-Dprism.allowhidpi=true"
-    ]
 }
 
-javafx {
-    version = '17.0.6'
-    modules = [ 'javafx.controls', 'javafx.fxml' ]
-}
-
+// -----------------------------------
+// 의존성 (예시)
+// -----------------------------------
+def jfxVer = '17.0.14'
 dependencies {
-    implementation 'org.openjfx:javafx-controls:17.0.6'
-    implementation 'org.openjfx:javafx-fxml:17.0.6'
+    // JavaFX (Windows 64비트)
+    implementation  "org.openjfx:javafx-base:${jfxVer}:win"
+    implementation  "org.openjfx:javafx-graphics:${jfxVer}:win"
+    implementation  "org.openjfx:javafx-controls:${jfxVer}:win"
+    implementation  "org.openjfx:javafx-fxml:${jfxVer}:win"
+
+    // RichTextFX
     implementation 'org.fxmisc.richtext:richtextfx:0.11.3'
+
+    // Jackson
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+
+    // jSerialComm
     implementation 'com.fazecast:jSerialComm:2.11.0'
+
+    // SLF4J
     implementation 'org.slf4j:slf4j-api:2.0.16'
     implementation 'org.slf4j:slf4j-simple:2.0.16'
+
+    // MQTT (로컬 .jar)
     implementation files('libs/mqttv3.jar')
+
+    // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.34'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
 }
 
-shadowJar {
-    archiveClassifier.set('') // Shadow JAR 이름 설정
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    configurations = [project.configurations.runtimeClasspath] // 모든 런타임 의존성 포함
-    manifest {
-        attributes(
-                'Main-Class': 'dbps.dbps.Simulator' // 메인 클래스 지정
-        )
-    }
-}
+// -----------------------------------
+// Gradle 8.x 에서 distZip/distTar/startScripts
+// 등을 그대로 사용해도,
+// shadow 플러그인이 없으므로 충돌 없음
+// -----------------------------------
 
-// UTF-8 설정
+
+// UTF-8 컴파일 옵션
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-// Shadow JAR 빌드 후 실행하는 task 정의
-tasks.register('runShadowJar', JavaExec) {
-    dependsOn(shadowJar)
-    mainClass.set(application.mainClass)
-    classpath = files(shadowJar.get().archiveFile.get().asFile)
+// -----------------------------------
+// jlink + jpackage => Windows EXE
+// -----------------------------------
+jlink {
+    options = [
+            '--strip-debug',
+            '--compress', '2',
+            '--no-header-files',
+            '--no-man-pages'
+    ]
+    mergedModule {
+        enabled = false
+    }
+    addExtraDependencies("javafx")
+
+    launcher {
+        // 런처(실행 파일) 이름
+        name = 'dbProtocolSimulator'
+    }
+
+    jpackage {
+        imageName = 'dbProtocolSimulator'
+        installerName = 'dbProtocolSimulator'
+        installerType = 'exe'
+        icon = 'src/main/resources/icon.ico'
+        installerOptions = [
+                '--win-menu',
+                '--win-shortcut'
+        ]
+        jvmArgs = [
+                '--enable-preview'
+        ]
+    }
 }

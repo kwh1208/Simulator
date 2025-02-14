@@ -1,15 +1,16 @@
-module dbps.dbps {
+module DBPS.main {
+    requires com.fasterxml.jackson.databind;
+    requires com.fazecast.jSerialComm;
+    requires java.datatransfer;
+    requires javafx.base;
     requires javafx.controls;
+    requires java.desktop;
     requires javafx.fxml;
     requires javafx.graphics;
-    requires com.fazecast.jSerialComm;
     requires static lombok;
-    requires java.desktop;
     requires org.fxmisc.richtext;
-    requires com.fasterxml.jackson.databind;
+    requires org.slf4j;
 
-    opens dbps.dbps to javafx.fxml;
-    opens dbps.dbps.controller to javafx.fxml;
     exports dbps.dbps;
-    exports dbps.dbps.controller;
+    opens dbps.dbps.controller to javafx.fxml;
 }

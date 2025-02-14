@@ -20,6 +20,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -434,6 +435,7 @@ public class CommunicationSettingController {
 
         Stage modalStage = new Stage();
         modalStage.setTitle("dbNet");
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.png")));
 
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
@@ -488,6 +490,7 @@ public class CommunicationSettingController {
 
         Stage modalStage = new Stage();
         modalStage.setTitle("블루투스 설정");
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.png")));
 
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
