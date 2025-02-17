@@ -57,7 +57,7 @@ public class UDPManager {
                 DatagramPacket receivePacket;
                 try{
                     InetAddress serverAddr = InetAddress.getByName(IP);
-                    byte[] sendByte = msg.getBytes(Charset.forName("EUC-KR"));
+                    byte[] sendByte = msg.getBytes(Charset.forName("MS949"));
 
                     if (utf8) sendByte = msg.getBytes(StandardCharsets.UTF_8);
                     else if (ascUTF16) sendByte = msg.getBytes(StandardCharsets.UTF_16BE);
@@ -451,23 +451,33 @@ public class UDPManager {
     }
 
     public void disconnectNoLog() {
-        if (socket == null&& socketList.isEmpty()){
-            return;
-        }
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                if (socket == null && socketList.isEmpty()) {
+                    return null;
+                }
 
-        if (!socketList.isEmpty()){
-            for (DatagramSocket datagramSocket : socketList) {
-                System.out.println(datagramSocket.getInetAddress());
-                datagramSocket.disconnect();
-                datagramSocket.close();
+                if (!socketList.isEmpty()) {
+                    for (DatagramSocket datagramSocket : socketList) {
+                        datagramSocket.disconnect();
+                        datagramSocket.close();
+                    }
+                    socketList.clear();
+                }
+
+                if (socket != null) {
+                    socket.disconnect();
+                    socket.close();
+                    socket = null;
+                }
+
+                return null;
             }
-        }
+        };
 
-        if (socket != null){
-            socket.disconnect();
-            socket.close();
-            socket = null;
-        }
-
+        Thread thread = new Thread(task);
+        thread.setDaemon(true); // UI 종료 시 자동 종료되도록 설정
+        thread.start();
     }
 }

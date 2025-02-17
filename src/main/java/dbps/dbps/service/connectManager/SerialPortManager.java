@@ -133,7 +133,7 @@ public class SerialPortManager {
                     try (InputStream inputStream = new BufferedInputStream(port.getInputStream());
                          OutputStream outputStream = new BufferedOutputStream(port.getOutputStream())) {
                         inputStream.skip(inputStream.available());
-                        byte[] dataToSend = msg.getBytes(utf8 ? StandardCharsets.UTF_8 : Charset.forName("EUC-KR"));
+                        byte[] dataToSend = msg.getBytes(utf8 ? StandardCharsets.UTF_8 : Charset.forName("MS949"));
                         outputStream.write(dataToSend);
                         outputStream.flush();
 
@@ -153,7 +153,7 @@ public class SerialPortManager {
                             }
                         }
 
-                        String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                        String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
                         if (result.contains("TX") && result.contains("![") && result.contains("!]")) {
                             int indexTX = result.indexOf("TX");
                             result = result.substring(indexTX);
@@ -251,10 +251,10 @@ public class SerialPortManager {
 
                         String result = bytesToHex(buffer, totalBytesRead);
                         if (result.contains("54 58 28")) {
-                            result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                            result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
                             int tmp = extractNumberAfterTXBeforeByteHex(result);
                             if (tmp > 0 && 14 + String.valueOf(tmp).length() + result.indexOf("TX(") + tmp <= buffer.length) {
-                                result = new String(buffer, 15 + String.valueOf(tmp).length() + result.indexOf("54 58 28"), tmp * 3, Charset.forName("EUC-KR"));
+                                result = new String(buffer, 15 + String.valueOf(tmp).length() + result.indexOf("54 58 28"), tmp * 3, Charset.forName("MS949"));
                             } else {
                                 throw new IllegalArgumentException("유효하지 않은 offset 또는 tmp 값입니다.");
                             }
@@ -392,7 +392,7 @@ public class SerialPortManager {
                 int totalBytesRead = 0;
                 try {
                     // 데이터 전송
-                    byte[] dataToSend = msg.getBytes(Charset.forName("EUC-KR"));
+                    byte[] dataToSend = msg.getBytes(Charset.forName("MS949"));
                     OutputStream outputStream = new BufferedOutputStream(port.getOutputStream());
                     outputStream.write(dataToSend);
                     outputStream.flush();
@@ -413,20 +413,20 @@ public class SerialPortManager {
 
                     if (totalBytesRead <= 230) {
                         // 212바이트를 읽었으면 결과 출력
-                        String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                        String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
                         dabitNetService.updateUI(result);
                         return result;
                     } else {
                         throw new IOException("212 바이트를 읽는 데 실패했습니다. 총 읽은 바이트: " + totalBytesRead);
                     }
                 } catch (SerialPortTimeoutException e){
-                    String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                    String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
                     String[] lines = result.split("\r?\n"); // 윈도우(\r\n)와 유닉스(\n) 모두 대응 가능
                     int lineCount = lines.length;
                     if (lineCount>=14){
                         dabitNetService.updateUI(result);
                     }
-                    return new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                    return new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
                 }
                 catch (Exception e) {
                     logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");

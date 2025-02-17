@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -104,6 +105,7 @@ public class BoardSettingsController {
 
         Stage modalStage = new Stage();
         modalStage.setTitle("통신 설정");
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
         Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();

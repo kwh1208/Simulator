@@ -101,7 +101,7 @@ public class FontNameController {
             String newText = change.getControlNewText();
             int byteLength;
             try {
-                byteLength = newText.getBytes("EUC-KR").length;
+                byteLength = newText.getBytes("MS949").length;
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }
@@ -142,7 +142,7 @@ public class FontNameController {
                 readTask.setOnSucceeded(e -> {
                     try {
                         String result = readTask.get();
-                        String[] fontNames = getFontName(result.getBytes(Charset.forName("EUC-KR")));
+                        String[] fontNames = getFontName(result.getBytes(Charset.forName("MS949")));
 
                         // UI 업데이트
                         Platform.runLater(() -> {
@@ -169,51 +169,51 @@ public class FontNameController {
 
             else {
                 byte[] sendMsg = new byte[216 + 10];
-                sendMsg[0] = "!".getBytes(Charset.forName("EUC-KR"))[0];
-                sendMsg[1] = "[".getBytes(Charset.forName("EUC-KR"))[0];
-                sendMsg[2] = "0".getBytes(Charset.forName("EUC-KR"))[0];
+                sendMsg[0] = "!".getBytes(Charset.forName("MS949"))[0];
+                sendMsg[1] = "[".getBytes(Charset.forName("MS949"))[0];
+                sendMsg[2] = "0".getBytes(Charset.forName("MS949"))[0];
                 if (isRS){
-                    sendMsg[2] = (convertRS485AddrASCii().getBytes("EUC-KR"))[0];
+                    sendMsg[2] = (convertRS485AddrASCii().getBytes("MS949"))[0];
                 }
-                sendMsg[3] = "0".getBytes(Charset.forName("EUC-KR"))[0];
-                sendMsg[4] = "9".getBytes(Charset.forName("EUC-KR"))[0];
-                sendMsg[5] = "5".getBytes(Charset.forName("EUC-KR"))[0];
-                sendMsg[6] = " ".getBytes(Charset.forName("EUC-KR"))[0];
-                sendMsg[7] = "2".getBytes(Charset.forName("EUC-KR"))[0];
-                sendMsg[224] = "!".getBytes(Charset.forName("EUC-KR"))[0];
-                sendMsg[225] = "]".getBytes(Charset.forName("EUC-KR"))[0];
+                sendMsg[3] = "0".getBytes(Charset.forName("MS949"))[0];
+                sendMsg[4] = "9".getBytes(Charset.forName("MS949"))[0];
+                sendMsg[5] = "5".getBytes(Charset.forName("MS949"))[0];
+                sendMsg[6] = " ".getBytes(Charset.forName("MS949"))[0];
+                sendMsg[7] = "2".getBytes(Charset.forName("MS949"))[0];
+                sendMsg[224] = "!".getBytes(Charset.forName("MS949"))[0];
+                sendMsg[225] = "]".getBytes(Charset.forName("MS949"))[0];
                 int idx = 8;
                 byte[] tmp2 = new byte[36];
-                byte[] tmp1 = group1font1.getText().getBytes("EUC-KR");
+                byte[] tmp1 = group1font1.getText().getBytes("MS949");
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
                 idx+=36;
-                tmp1 = group1font2.getText().getBytes("EUC-KR");
+                tmp1 = group1font2.getText().getBytes("MS949");
                 tmp2 = new byte[36];
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
                 idx+=36;
-                tmp1 = group1font3.getText().getBytes("EUC-KR");
+                tmp1 = group1font3.getText().getBytes("MS949");
                 tmp2 = new byte[36];
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
                 idx+=36;
-                tmp1 = group2font1.getText().getBytes("EUC-KR");
+                tmp1 = group2font1.getText().getBytes("MS949");
                 tmp2 = new byte[36];
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
                 idx+=36;
-                tmp1 = group2font2.getText().getBytes("EUC-KR");
+                tmp1 = group2font2.getText().getBytes("MS949");
                 tmp2 = new byte[36];
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
                 idx+=36;
-                tmp1 = group2font3.getText().getBytes("EUC-KR");
+                tmp1 = group2font3.getText().getBytes("MS949");
                 tmp2 = new byte[36];
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
 
-                asciiMsgTransceiver.sendMessages(new String(sendMsg, "EUC-KR"), false, progressIndicator);
+                asciiMsgTransceiver.sendMessages(new String(sendMsg, "MS949"), false, progressIndicator);
             }
         }
         else {
@@ -242,31 +242,31 @@ public class FontNameController {
                 sendMsg[225] = (byte) 0x03;
                 int idx = 8;
                 byte[] tmp2 = new byte[36];
-                byte[] tmp1 = group1font1.getText().getBytes("EUC-KR");
+                byte[] tmp1 = group1font1.getText().getBytes("MS949");
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
                 idx+=36;
-                tmp1 = group1font2.getText().getBytes("EUC-KR");
+                tmp1 = group1font2.getText().getBytes("MS949");
                 tmp2 = new byte[36];
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
                 idx+=36;
-                tmp1 = group1font3.getText().getBytes("EUC-KR");
+                tmp1 = group1font3.getText().getBytes("MS949");
                 tmp2 = new byte[36];
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
                 idx+=36;
-                tmp1 = group2font1.getText().getBytes("EUC-KR");
+                tmp1 = group2font1.getText().getBytes("MS949");
                 tmp2 = new byte[36];
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
                 idx+=36;
-                tmp1 = group2font2.getText().getBytes("EUC-KR");
+                tmp1 = group2font2.getText().getBytes("MS949");
                 tmp2 = new byte[36];
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
                 idx+=36;
-                tmp1 = group2font3.getText().getBytes("EUC-KR");
+                tmp1 = group2font3.getText().getBytes("MS949");
                 tmp2 = new byte[36];
                 System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
                 System.arraycopy(tmp2, 0, sendMsg, idx, 36);
@@ -292,7 +292,7 @@ public class FontNameController {
             System.arraycopy(tmp, i*36, chunk, 0, 36);
 
             // 각 바이트 배열을 문자열로 변환 후 출력
-            fontName[i] = new String(chunk, "EUC-KR");
+            fontName[i] = new String(chunk, "MS949");
         }
         return fontName;
     }

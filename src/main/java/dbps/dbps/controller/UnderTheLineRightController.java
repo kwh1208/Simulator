@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -90,6 +91,7 @@ public class UnderTheLineRightController {
 
         Stage modalStage = new Stage();
         modalStage.setTitle("추가 기능");
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
         Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();

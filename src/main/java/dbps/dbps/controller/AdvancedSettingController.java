@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
@@ -43,6 +44,7 @@ public class AdvancedSettingController {
 
         Stage modalStage = new Stage();
         modalStage.setTitle("표출신호 설정");
+        modalStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
         Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();

@@ -10,11 +10,13 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import lombok.Getter;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import static dbps.dbps.Constants.OPEN_PORT_NAME;
 
@@ -68,10 +70,12 @@ public class Simulator extends Application {
         scene.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/main.css").toExternalForm());
 
 
+        Locale.setDefault(Locale.KOREAN);
         // Stage 설정
         stage.setResizable(false);
         stage.setScene(scene);
-        stage.setTitle("DBPS");
+        stage.setTitle("dbProtocolSimulator");
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         stage.show();
     }
 

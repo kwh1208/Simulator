@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -118,7 +119,9 @@ public class ASCiiMsgController {
         Parent root = fxmlLoader.load();
 
         Stage modalStage = new Stage();
+
         modalStage.setTitle("기본값 설정");
+        modalStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
         Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();

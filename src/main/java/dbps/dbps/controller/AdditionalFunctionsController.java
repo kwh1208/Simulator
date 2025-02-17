@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -107,6 +108,7 @@ public class AdditionalFunctionsController {
 
         Stage modalStage = new Stage();
         modalStage.setTitle(title);
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
 

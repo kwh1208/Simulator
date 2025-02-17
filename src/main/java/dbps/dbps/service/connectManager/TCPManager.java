@@ -51,7 +51,7 @@ public class TCPManager {
                 try {
                     InputStream input = socket.getInputStream();
                     OutputStream output = socket.getOutputStream();
-                    byte[] sendBytes = msg.getBytes(Charset.forName("EUC-KR"));
+                    byte[] sendBytes = msg.getBytes(Charset.forName("MS949"));
                     if (utf8) sendBytes = msg.getBytes(StandardCharsets.UTF_8);
                     else if (ascUTF16) {
                         sendBytes = msg.getBytes(StandardCharsets.UTF_16BE);
@@ -76,7 +76,7 @@ public class TCPManager {
                             break; // 타임아웃
                         }
                     }
-                    String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                    String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
                     if (result.contains("RX") && result.contains("![") && result.contains("!]")) {
                         int indexTX = result.indexOf("TX");
                         result = result.substring(indexTX);
