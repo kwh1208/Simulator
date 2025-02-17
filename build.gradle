@@ -1,7 +1,10 @@
 plugins {
     id 'java'
+    // 🔹 run 태스크와 jpackage에 필요한 application 플러그인
     id 'application'
-
+    // 🔹 모듈 관련 보조 플러그인
+    id 'org.javamodularity.moduleplugin' version '1.8.12'
+    // 🔹 jlink / jpackage 플러그인
     id 'org.beryx.jlink' version '2.26.0'
 }
 
@@ -15,24 +18,29 @@ repositories {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
-    modularity.inferModulePath = true
+    modularity.inferModulePath = true // 자동 모듈 감지
 }
 
+// -----------------------------------
+// application 플러그인 설정
+// -----------------------------------
 application {
+    // 🔹 모듈 이름 & 메인 클래스 지정
+    //    module-info.java에 선언된 이름과 정확히 일치해야 합니다.
     mainModule = 'DBPS.main'
     mainClass = 'dbps.dbps.Simulator'
 }
 
 // -----------------------------------
-// 의존성 (예시)
+// 의존성 설정
 // -----------------------------------
 def jfxVer = '17.0.14'
 dependencies {
     // JavaFX (Windows 64비트)
-    implementation  "org.openjfx:javafx-base:${jfxVer}:win"
-    implementation  "org.openjfx:javafx-graphics:${jfxVer}:win"
-    implementation  "org.openjfx:javafx-controls:${jfxVer}:win"
-    implementation  "org.openjfx:javafx-fxml:${jfxVer}:win"
+    implementation "org.openjfx:javafx-base:${jfxVer}:win"
+    implementation "org.openjfx:javafx-graphics:${jfxVer}:win"
+    implementation "org.openjfx:javafx-controls:${jfxVer}:win"
+    implementation "org.openjfx:javafx-fxml:${jfxVer}:win"
 
     // RichTextFX
     implementation 'org.fxmisc.richtext:richtextfx:0.11.3'
@@ -43,28 +51,45 @@ dependencies {
     // jSerialComm
     implementation 'com.fazecast:jSerialComm:2.11.0'
 
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+
     // SLF4J
     implementation 'org.slf4j:slf4j-api:2.0.16'
     implementation 'org.slf4j:slf4j-simple:2.0.16'
 
-    // MQTT (로컬 .jar)
-    implementation files('libs/mqttv3.jar')
-
-    // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.34'
-    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    // Paho MQTT
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
 }
-
-// -----------------------------------
-// Gradle 8.x 에서 distZip/distTar/startScripts
-// 등을 그대로 사용해도,
-// shadow 플러그인이 없으므로 충돌 없음
-// -----------------------------------
-
 
 // UTF-8 컴파일 옵션
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+}
+
+// -----------------------------------
+// run 태스크를 모듈 방식으로 재정의
+// -----------------------------------
+tasks.named("run", JavaExec).configure {
+    // (1) Gradle 기본 classpath 제거 -> 모듈 패스만 사용
+    classpath = files()
+
+    // (2) 빌드된 클래스 + 런타임 의존성 JAR 경로
+    def mainOutput = sourceSets.main.output.classesDirs.asPath
+    def runtimeDeps = configurations.runtimeClasspath.asPath
+    def modulePath = mainOutput + File.pathSeparator + runtimeDeps
+
+    // (3) jvmArgs로 모듈 실행 옵션 지정
+    jvmArgs = [
+            "--module-path", modulePath,
+            "--add-modules", "ALL-MODULE-PATH",
+            // --module <모듈명>/<메인클래스(패키지포함)>
+            "--module", "DBPS.main/dbps.dbps.Simulator"
+    ]
+
+    // 🔹 "No main class specified" 방지용
+    mainClass.set("dbps.dbps.Simulator")
 }
 
 // -----------------------------------
@@ -78,12 +103,13 @@ jlink {
             '--no-man-pages'
     ]
     mergedModule {
-        enabled = false
+        enabled = true
     }
     addExtraDependencies("javafx")
+    addExtraDependencies("automatic")
 
     launcher {
-        // 런처(실행 파일) 이름
+        // exe 등에서 사용할 실행파일 이름
         name = 'dbProtocolSimulator'
     }
 
@@ -100,4 +126,7 @@ jlink {
                 '--enable-preview'
         ]
     }
+}
+tasks.named("prepareMergedJarsDir") {
+    doNotTrackState("Disabling state tracking due to non-regular files in merged jars")
 }
