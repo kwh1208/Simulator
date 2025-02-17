@@ -1,7 +1,18 @@
 package dbps.dbps;
 
 import dbps.dbps.service.ConfigService;
+import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class Constants {
     //현재 연결 방법(serial, tcp, udp, RS485, WiFi, Bluetooth)
@@ -25,6 +36,10 @@ public class Constants {
 
     public static int serverTCPPort = 5000;
 
+    public static String hostIP;
+
+    public static boolean ascUTF16 = false;
+
     public static int SERIAL_BAUDRATE = 115200;
 
     public static String OPEN_PORT_NAME = null;
@@ -40,6 +55,8 @@ public class Constants {
     public static String UDP_IP = "";
 
     public static int UDP_PORT = 0;
+
+    public static boolean isBT = false;
 
     public static int SIZE_ROW = 0;
     public static int SIZE_COLUMN = 0;
@@ -130,5 +147,79 @@ public class Constants {
         String[] arr = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V"};
 
         return arr[RS485_ADDR_NUM];
+    }
+
+    public static boolean dataReceivedIsComplete(byte[] buffer, int length) {
+        String data = new String(buffer, 0, length);
+        if (data.contains("RX") && data.contains("![") && data.contains("!]")) {
+            int indexTX = data.indexOf("TX");
+            int indexStart = data.indexOf("![", indexTX); // "TX" 이후 검색
+            int indexEnd = data.indexOf("!]", indexStart); // "![ 이후 검색
+
+            // 순서가 올바른지 확인
+            return indexTX != -1 && indexStart != -1 && indexEnd != -1 && indexTX < indexStart && indexStart < indexEnd;
+        }
+
+        if (data.contains("BT DIBD")&&data.contains("!]")){
+            return true;
+        }
+
+        return length > 0 && buffer[length - 1] == (byte) ']' && buffer[length - 2] == (byte) '!';
+    }
+    public static boolean dataReceivedIsCompleteHex(byte[] buffer, int length) {
+        String data = bytesToHex(buffer, length);
+        if (data.contains("54 58 28") && data.contains("31 30 20 30 32") && data.contains("31 30 20 30 33")) {
+            if (!data.startsWith("52 58 28")) {
+                return false;
+            }
+            int indexTX = data.indexOf("54 58 28");
+            int indexStart = data.indexOf("31 30 20 30 32", indexTX); // "TX" 이후 검색
+            int indexEnd = data.indexOf("31 30 20 30 33", indexStart); // "10 02" 이후 검색
+            // 순서가 올바른지 확인
+            return indexTX != -1 && indexStart != -1 && indexEnd != -1 && indexTX < indexStart && indexStart < indexEnd;
+        }
+
+        return length > 0 && buffer[length - 1] == 0x03 && buffer[length - 2] == (byte) 0x10;
+    }
+
+
+    public static void openModal(String fxmlPath, String title, MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource(fxmlPath));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
+        Parent root = fxmlLoader.load();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle(title);
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.setOnShown(event -> {
+            // 부모 창 위치와 크기 가져오기
+            double parentX = parentStage.getX();
+            double parentY = parentStage.getY();
+            double parentWidth = parentStage.getWidth();
+            double parentHeight = parentStage.getHeight();
+
+            // 모달 창 크기 계산
+            double modalWidth = modalStage.getWidth();
+            double modalHeight = modalStage.getHeight();
+
+            // 위치 계산
+            double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
+            double modalY = parentY;
+
+            // 위치 설정
+            modalStage.setX(modalX);
+            modalStage.setY(modalY);
+        });
+
+        modalStage.showAndWait();
     }
 }

@@ -37,5 +37,6 @@
       </Pane>
       <Button layoutX="284.0" layoutY="347.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="81.0" onMouseClicked="#send" text="%sendButton" />
       <Button layoutX="380.0" layoutY="347.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="81.0" onMouseClicked="#close" text="%close" />
+       <ProgressIndicator fx:id="progressIndicator" layoutX="210.0" layoutY="150.0" visible="false"/>
    </children>
 </AnchorPane>

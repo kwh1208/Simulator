@@ -1,42 +1,20 @@
 package dbps.dbps.service;
 
 
-import dbps.dbps.Simulator;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
-import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-import static dbps.dbps.Constants.SIZE_COLUMN;
-import static dbps.dbps.Constants.SIZE_ROW;
 
 
 public class ASCiiMsgService {
 
-    private static final String FILE_NAME = "messages.txt";
-    public static Stage makeMsgWindow;
-
     private static ASCiiMsgService instance = null;
 
-    private final LogService logService;
     ConfigService configService;
 
     private ASCiiMsgService() {
-        logService = LogService.getLogService();
         configService = ConfigService.getInstance();
     }
 
@@ -90,25 +68,4 @@ public class ASCiiMsgService {
 
         return messages;
     }
-
-    //메세지 만들기 창 띄우기
-    public void makeOwnMsg() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/makeOwnMsg.fxml"));
-            AnchorPane root = fxmlLoader.load();
-
-            makeMsgWindow = new Stage();
-            makeMsgWindow.setTitle("메세지 만들기");
-
-            Scene scene = new Scene(root, 550, 600);
-            makeMsgWindow.setScene(scene);
-            makeMsgWindow.setResizable(false);
-
-            makeMsgWindow.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
 }

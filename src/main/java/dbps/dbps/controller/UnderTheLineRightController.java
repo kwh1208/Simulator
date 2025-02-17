@@ -1,30 +1,35 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static dbps.dbps.Constants.*;
+import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class UnderTheLineRightController {
     @FXML
     public ComboBox<String> BGImgSelection;
 
     @FXML
-    public ChoiceBox<String> fillColor;
-
-    @FXML
     public VBox rightVbox;
-
-    @FXML
-    public ComboBox<String> relayBox1;
-
-    @FXML
-    public ComboBox<String> relayBox2;
 
     AsciiMsgTransceiver asciiMsgTransceiver;
 
@@ -47,31 +52,8 @@ public class UnderTheLineRightController {
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
     }
 
-    public void sendRelaySignal() {
-        String msg = "![0022";
-        if (isRS){
-            msg = "!["+convertRS485AddrASCii()+"022";
-        }
-        msg+=makeRelayMsg(relayBox1.getValue());
-        msg+=makeRelayMsg(relayBox2.getValue());
-        msg+="!]";
 
-        asciiMsgTransceiver.sendMessages(msg);
-    }
-
-    private String makeRelayMsg(String value) {
-
-        if (value.equals("None")) {
-            return "61696";
-        } else if (value.equals("On")) {
-            return "61440";
-        } else if (value.equals("Off")) {
-            return "00000";
-        } else
-            return String.format("%05d", Integer.parseInt(value));
-    }
-
-    public void sendBGImgSelection(MouseEvent mouseEvent) {
+    public void sendBGImgSelection() {
         String value = BGImgSelection.getValue();
         if (IS_ASCII){
             String result = "";
@@ -85,7 +67,7 @@ public class UnderTheLineRightController {
                 if (isRS){
                     msg = "!["+convertRS485AddrASCii()+"020"+result+"!]";
                 }
-                asciiMsgTransceiver.sendMessages(msg);
+                asciiMsgTransceiver.sendMessages(msg,false, commonProgressIndicator);
             }
         }
         else {
@@ -95,67 +77,72 @@ public class UnderTheLineRightController {
             }
             String msg = "10 02 00 00 02 4F "+String.format("%02X ", result)+"10 03";
             if (isRS){
-                msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 02 4F "+String.format("%02X ", result)+"10 03";
+                msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 02 4F "+String.format("%02X ", result)+"10 03";
             }
-            hexMsgTransceiver.sendMessages(msg);
+            hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
         }
     }
 
-    public void sendFillColor() throws InterruptedException {
-        String value = fillColor.getValue();
-        if (IS_ASCII){
-            String result = "";
-            if (value.equals("검은색")){
-                result = "0";
-            }else if (value.equals("빨간색")){
-                result = "1";
-            } else if (value.equals("초록색")){
-                result = "2";
-            } else if (value.equals("노란색")){
-                result = "3";
-            } else if (value.equals("파란색")){
-                result = "4";
-            } else if (value.equals("분홍색")){
-                result = "5";
-            } else if (value.equals("청록색")){
-                result = "6";
-            } else result = "7";
-            String msg = "![0070"+result+"!]";
-            if (isRS){
-                msg = "!["+convertRS485AddrASCii()+"070"+result+"!]";
-            }
-            asciiMsgTransceiver.sendMessages(msg);
+
+    public void openAdditionalFunction(MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/additionalFunctions.fxml"));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
+        Parent root = fxmlLoader.load();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle("추가 기능");
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.setOnShown(event -> {
+            // 부모 창 위치와 크기 가져오기
+            double parentX = parentStage.getX();
+            double parentY = parentStage.getY();
+            double parentWidth = parentStage.getWidth();
+
+            // 모달 창 크기 계산
+            double modalWidth = modalStage.getWidth();
+
+            // 위치 계산
+            double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
+            double modalY = parentY;
+
+            // 위치 설정
+            modalStage.setX(modalX);
+            modalStage.setY(modalY);
+        });
+
+        modalStage.showAndWait();
+    }
+
+    public void docs() {
+        try {
+            Desktop.getDesktop().browse(new URI("https://publish.obsidian.md/dabitdocs"));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
         }
-        else {
-            String msg = "10 02 00 00 02 45 00 10 03";
-            if (isRS){
-                msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 02 45 00 10 03";
-            }
-            hexMsgTransceiver.sendMessages(msg);
+    }
 
-            Thread.sleep(500);
+    public void AS() {
+        try {
+            Desktop.getDesktop().browse(new URI("https://forms.gle/kuZM2CbKDnicmRp3A"));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
 
-            String result = "";
-            if (value.equals("검은색")){
-                result = "00 ";
-            }else if (value.equals("빨간색")){
-                result = "07 ";
-            } else if (value.equals("초록색")){
-                result = "38 ";
-            } else if (value.equals("노란색")){
-                result = "3F ";
-            } else if (value.equals("파란색")){
-                result = "C0 ";
-            } else if (value.equals("분홍색")){
-                result = "C7 ";
-            } else if (value.equals("청록색")){
-                result = "F8 ";
-            } else result = "FF ";
-            msg = "10 02 00 00 06 42 08 "+result+"00 00 00 10 03";
-            if (isRS){
-                msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 06 42 08 "+result+"00 00 00 10 03";
-            }
-            hexMsgTransceiver.sendMessages(msg);
+    public void ASPhoto() {
+        try {
+            Desktop.getDesktop().browse(new URI("https://forms.gle/zkt5ALsQKKZhbQnx9"));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
         }
     }
 }

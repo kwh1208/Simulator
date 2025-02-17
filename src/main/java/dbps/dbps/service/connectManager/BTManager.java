@@ -1,16 +1,20 @@
 package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.AsciiMsgTransceiver;
-import javafx.concurrent.Task;
+import javafx.scene.control.ProgressIndicator;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
-
-import static dbps.dbps.Constants.CONNECT_TYPE;
+@Setter
+@Getter
 public class BTManager {
 
     private static BTManager instance = null;
+    ProgressIndicator progressIndicator;
+
+
     AsciiMsgTransceiver asciiMsgTransceiver;
 
     public static BTManager getInstance() {
@@ -25,17 +29,17 @@ public class BTManager {
     }
 
     public void search() {
-        asciiMsgTransceiver.sendMessages("++SET++![BT SEARCHING DIBD!]");
+        asciiMsgTransceiver.sendMessages("++SET++![BT SEARCHING DIBD!]", false, progressIndicator);
     }
 
     public void set(String Id, String password) {
         String msg = "++SET++![BT SETT 31  ";
-        byte[] IdBytes = Id.getBytes(Charset.forName("EUC-KR"));
+        byte[] IdBytes = Id.getBytes(Charset.forName("MS949"));
         byte[] realId = new byte[20];
-        byte[] passwordBytes = password.getBytes(Charset.forName("EUC-KR"));
+        byte[] passwordBytes = password.getBytes(Charset.forName("MS949"));
         byte[] realPassword = new byte[20];
 
-        byte spaceByte = " ".getBytes(Charset.forName("EUC-KR"))[0];
+        byte spaceByte = " ".getBytes(Charset.forName("MS949"))[0];
 
         System.arraycopy(IdBytes, 0, realId, 0, Math.min(IdBytes.length, realId.length));
         if (IdBytes.length < realId.length) {
@@ -48,26 +52,18 @@ public class BTManager {
             Arrays.fill(realPassword, passwordBytes.length, realPassword.length, spaceByte);
         }
 
-        msg += new String(realId, Charset.forName("EUC-KR")) + "  " + new String(realPassword, Charset.forName("EUC-KR")) + "!]";
+        msg += new String(realId, Charset.forName("MS949")) + "  " + new String(realPassword, Charset.forName("MS949")) + "!]";
 
-        asciiMsgTransceiver.sendMessages(msg);
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
-    public void begin(String password) {
+    public void begin(String password){
         String msg = "++SET++![BT " + password + " BEGIN!]";
-        String receivedMsg = asciiMsgTransceiver.sendMessages(msg);
-        if (receivedMsg.equals("![DIBD BLE OK!]")){
-            CONNECT_TYPE = "bluetooth";
-        }
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     public void end(String password) {
         String msg = "++SET++![BT " + password + " END!]";
-        asciiMsgTransceiver.sendMessages(msg);
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
-
-
-    //++SET++![BT SETT  31  name  password!]
-    //++SET++![BT password             BEGIN!]
-    //++SET++![BT password             END!]
 }

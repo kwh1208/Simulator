@@ -6,7 +6,7 @@
 
 <VBox fx:id="logVBoX" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.LogController">
     <Pane prefHeight="30.0" prefWidth="590.0" style="-fx-background-color: #1C1F26">
-        <Label layoutX="8.0" prefHeight="23.0" prefWidth="685.0" text="로그 내역" />
+        <Label layoutX="8.0" prefHeight="23.0" prefWidth="685.0" text="%viewLog" />
       <Button fx:id="clearBtn" layoutX="642.0" mnemonicParsing="false" onMouseClicked="#clearBtnClicked" style="-fx-background-color: #1C1F26;">
           <graphic>
               <ImageView fx:id="trashCanImage" fitHeight="23.0" fitWidth="23" />

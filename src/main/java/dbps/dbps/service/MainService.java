@@ -4,7 +4,7 @@ package dbps.dbps.service;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
-
+import lombok.Setter;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,7 +12,10 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 public class MainService {
-    private static Tab messageTab = null;
+    @Setter
+    private static Tab messageTab;
+    @Setter
+    private static Tab settingTab;
 
     private static MainService instance;
 
@@ -27,10 +30,6 @@ public class MainService {
             instance = new MainService();
         }
         return instance;
-    }
-
-    public static void setMessageTab(Tab messageTab) {
-        MainService.messageTab = messageTab;
     }
 
     public void showASCiiMsgTab() {
@@ -68,6 +67,24 @@ public class MainService {
             messageTab.setContent(cachedContent.get("hex"));
             messageTab.setText(ResourceManager.getInstance().getBundle().getString("HexProtocol"));
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void changeSetTab(){
+        try {
+            {
+                if (!cachedContent.containsKey("set")) {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/dbps/dbps/fxmls/setting.fxml"));
+                    ResourceBundle bundle = ResourceManager.getInstance().getBundle();
+                    loader.setResources(bundle);
+                    Node hexContent = loader.load();
+                    cachedContent.put("set", hexContent);  // 캐싱
+                }
+                settingTab.setContent(cachedContent.get("set"));
+            }
+
+        }catch (IOException e){
             e.printStackTrace();
         }
     }

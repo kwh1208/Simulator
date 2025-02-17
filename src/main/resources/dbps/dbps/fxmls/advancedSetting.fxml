@@ -5,7 +5,7 @@
 
 <Pane fx:id="ASAP" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dbps.dbps.controller.AdvancedSettingController" layoutX="19.0" layoutY="183.0" prefHeight="174.0" prefWidth="310.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
 <children>
-    <Label alignment="CENTER" layoutX="85.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0" text="고급 설정"
+    <Label alignment="CENTER" layoutX="85.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0" text="%advancedSetting"
            style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white;-fx-font-size: 17; -fx-font-weight: bolder"/>
     <Button layoutX="40.0" layoutY="23.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="230.0" text="%fontSetting" onMouseClicked="#fontSetting" style="-fx-font-size: 15"/>
     <Button layoutX="40.0" layoutY="60.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="230.0" text="%displaySignalSetting" onMouseClicked="#transferSignalSetting" style="-fx-font-size: 15"/>

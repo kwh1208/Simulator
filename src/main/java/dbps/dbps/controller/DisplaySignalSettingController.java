@@ -10,6 +10,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -27,6 +29,7 @@ public class DisplaySignalSettingController {
 
     @FXML
     public TextArea memo;
+    public ProgressIndicator progressIndicator;
 
     @FXML
     private AnchorPane displaySignalAP;
@@ -60,7 +63,7 @@ public class DisplaySignalSettingController {
 
     ConfigService configService;
 
-    private Timeline timeline;
+    public static Timeline timeline;
 
     @FXML
     private void initialize() {
@@ -96,11 +99,32 @@ public class DisplaySignalSettingController {
             memo.setText(configService.getDisplayProperty(signalList.getFocusModel().getFocusedItem()));
         });
 
+        signalList.setOnMouseClicked(event -> handleDoubleClick(event, signalList));
+
+        signalList.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                String selectedItem = signalList.getSelectionModel().getSelectedItem(); // 선택된 항목 가져오기
+                if (selectedItem != null) {
+                    signalTransfer();
+                }
+            }
+        });
+
+
         displaySignalAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/displaySignal.css").toExternalForm());
         displaySignal = DisplaySignal.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         configService = ConfigService.getInstance();
+    }
+
+    private void handleDoubleClick(MouseEvent event, ListView<String> listView) {
+        if (event.getClickCount() == 2) { // 더블클릭 감지
+            String selectedItem = listView.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                signalTransfer();
+            }
+        }
     }
 
     //현재창 닫기
@@ -119,12 +143,12 @@ public class DisplaySignalSettingController {
         if (isRS){
             transferProtocol = "!["+convertRS485AddrASCii()+signalProtocol+"!]";
         }else transferProtocol = "![0"+signalProtocol+"!]";
-        asciiMsgTransceiver.sendMessages(transferProtocol);
+        asciiMsgTransceiver.sendMessages(transferProtocol, false, progressIndicator);
         }
         else {
             String selectedSignal = signalList.getSelectionModel().getSelectedItem();
             String signalProtocol = makePerfectProtocolHEX(selectedSignal);
-            hexMsgTransceiver.sendMessages(signalProtocol);
+            hexMsgTransceiver.sendMessages(signalProtocol, progressIndicator);
         }
     }
 
@@ -259,9 +283,10 @@ public class DisplaySignalSettingController {
         timeline = new Timeline();
         timeline.setCycleCount(signalCount); // 각 신호에 대해 반복
 
+        long ctime = System.currentTimeMillis();
         for (int i = startIdx; i < signalCount; i++) {
             int index = i; // 람다식 내부에서 사용될 인덱스
-            KeyFrame keyFrame = new KeyFrame(Duration.seconds(i * time), event -> {
+            KeyFrame keyFrame = new KeyFrame(Duration.seconds((i - startIdx) * time), event -> {
                 // 신호를 선택하여 UI에 반영
                 signalList.getSelectionModel().select(index);
                 // signalTransfer() 호출
@@ -286,12 +311,15 @@ public class DisplaySignalSettingController {
         Integer before = spinnerForBefore.getValue();
         Integer after = spinnerForAfter.getValue();
 
-        String msg = "![00B4"+before+" "+after+"!]";
-        if (isRS){
-            msg = "!["+convertRS485AddrASCii()+"0B4"+before+" "+after+"!]";
+        String beforeStr = (before < 10) ? " " + before : before.toString();
+        String afterStr = (after < 10) ? " " + after : after.toString();
+
+        String msg = "![00B4" + beforeStr + " " + afterStr + "!]";
+        if (isRS) {
+            msg = "![" + convertRS485AddrASCii() + "0B4" + beforeStr + " " + afterStr + "!]";
         }
 
-        asciiMsgTransceiver.sendMessages(msg);
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     @FXML
@@ -300,7 +328,7 @@ public class DisplaySignalSettingController {
         if (isRS){
             msg = "!["+convertRS485AddrASCii()+"0B50!]";
         }
-        asciiMsgTransceiver.sendMessages(msg);
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     public void save() {
@@ -316,6 +344,7 @@ public class DisplaySignalSettingController {
 
         Stage modalStage = new Stage();
         modalStage.setTitle("통신 설정");
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
 
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
@@ -329,6 +358,24 @@ public class DisplaySignalSettingController {
         modalStage.setOnHiding(event -> {
             int targetIndex = signalList.getItems().indexOf(SELECTED_SIGNAL);
             signalList.getSelectionModel().select(targetIndex);
+        });
+
+        modalStage.setOnShown(event -> {
+            // 부모 창 위치와 크기 가져오기
+            double parentX = parentStage.getX();
+            double parentY = parentStage.getY();
+            double parentWidth = parentStage.getWidth();
+
+            // 모달 창 크기 계산
+            double modalWidth = modalStage.getWidth();
+
+            // 위치 계산
+            double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
+            double modalY = parentY;
+
+            // 위치 설정
+            modalStage.setX(modalX);
+            modalStage.setY(modalY);
         });
 
         modalStage.showAndWait();

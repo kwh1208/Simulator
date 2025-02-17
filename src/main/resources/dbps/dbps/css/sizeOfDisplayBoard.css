@@ -21,11 +21,11 @@
 }
 .check-box {
     -fx-text-fill: white; /* 글씨 색상을 흰색으로 설정 */
-    -fx-font-size: 14px; /* 글씨 크기 설정 */
+    -fx-font-size: 16px; /* 글씨 크기 설정 */
 }
 .label{
     -fx-text-fill: #E0E0E0;
-    -fx-font-size: 15px;
+    -fx-font-size: 16px;
 }
 
 .check-box .box {
@@ -43,7 +43,9 @@
 .spinner .increment-arrow-button:hover, .spinner .decrement-arrow-button:hover {
     -fx-background-color: #2A2E35; /* 마우스 오버 시 배경색 */
 }
-
+.root{
+    -fx-font-family: Gulim;
+}
 .spinner .increment-arrow-button:pressed, .spinner .decrement-arrow-button:pressed {
     -fx-background-color: orange; /* 클릭 시 배경색 */
 }

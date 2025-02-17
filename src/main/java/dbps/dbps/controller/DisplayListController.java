@@ -40,11 +40,22 @@ public class DisplayListController {
             });
         });
 
+        moduleList.setOnMouseClicked(event -> handleDoubleClick(event, moduleList));
+
         displayListAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/displayList.css").toExternalForm());
 
         moduleList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             displaySignal.setText(displayModuleMap.get(newValue));
         });
+    }
+
+    private void handleDoubleClick(MouseEvent event, ListView<String> listView) {
+        if (event.getClickCount() == 2) { // 더블클릭 감지
+            String selectedItem = listView.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                confirm(event);
+            }
+        }
     }
 
     private void inputData() {

@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import javafx.fxml.FXML;
@@ -8,13 +9,24 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.Pane;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import static dbps.dbps.Constants.*;
+import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class SizeOfDisplayBoardController {
 
-    AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+    AsciiMsgTransceiver asciiMsgTransceiver;
 
-    HexMsgTransceiver hexMsgTransceiver = HexMsgTransceiver.getInstance();
+    HexMsgTransceiver hexMsgTransceiver;
+
+    SizeOfDisplayBoardService sizeOfDisplayBoardService;
+
+    ConfigService configService;
+
+    HexMsgService hexMsgService;
+
 
     @FXML
     public ChoiceBox<String> colorNum;
@@ -34,6 +46,9 @@ public class SizeOfDisplayBoardController {
 
     @FXML
     public void initialize(){
+        configService = ConfigService.getInstance();
+        hexMsgService = HexMsgService.getInstance();
+
         dpPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/sizeOfDisplayBoard.css").toExternalForm());
 
         SpinnerValueFactory<Integer> valueFactoryForRow = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, SIZE_ROW);
@@ -54,16 +69,25 @@ public class SizeOfDisplayBoardController {
         });
 
         setInitialValues();
+
+        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+        hexMsgTransceiver = HexMsgTransceiver.getInstance();
+        sizeOfDisplayBoardService = SizeOfDisplayBoardService.getInstance();
+        sizeOfDisplayBoardService.setHowToArray(howToArray);
+        sizeOfDisplayBoardService.setSpinnerForRow(spinnerForRow);
+        sizeOfDisplayBoardService.setSpinnerForColumn(spinnerForColumn);
     }
 
     private void setInitialValues() {
         SIZE_ROW = spinnerForRow.getValue();
         SIZE_COLUMN = spinnerForColumn.getValue();
         BITS_PER_PIXEL = Integer.parseInt(String.valueOf(colorNum.getValue()).substring(0,1));
+        configService.setProperty("displayRowSize", String.valueOf(SIZE_ROW));
+        configService.setProperty("displayColumnSize", String.valueOf(SIZE_COLUMN));
     }
 
 
-    public void sendDisplaySize() {
+    public void sendDisplaySize() throws ExecutionException, InterruptedException, JsonProcessingException {
         if (IS_ASCII){
             displaySizeASC();
         }
@@ -71,9 +95,11 @@ public class SizeOfDisplayBoardController {
             displaySizeHEX();
         }
         setInitialValues();
+
+        hexMsgService.changeXY(SIZE_COLUMN,SIZE_ROW);
     }
 
-    private void displaySizeASC() {
+    private void displaySizeASC() throws ExecutionException, InterruptedException {
         String msg = "![0040";
         if (isRS){
             msg = "!["+convertRS485AddrASCii()+"040";
@@ -101,13 +127,16 @@ public class SizeOfDisplayBoardController {
                 break;
         }
         msg+="!]";
-        asciiMsgTransceiver.sendMessages(msg);
+        String finalMsg = msg;
+        CompletableFuture.supplyAsync(() -> asciiMsgTransceiver.sendMessages(finalMsg, false, commonProgressIndicator)).join();
+
     }
 
     private void displaySizeHEX() {
         String msg = "10 02 00 00 07 40";
         if (isRS){
-            msg = "10 02 "+String.format("02X ", RS485_ADDR_NUM)+"00 07 40";
+            msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 07 40";
+
         }
 
         switch (String.valueOf(colorNum.getValue()).charAt(0)){
@@ -121,8 +150,8 @@ public class SizeOfDisplayBoardController {
                 msg+=" 08";
                 break;
         }
-        msg += String.format(" %02d",spinnerForRow.getValue());
-        msg += String.format(" %02d",spinnerForColumn.getValue());
+        msg += " "+Integer.toHexString(spinnerForRow.getValue());
+        msg += " "+Integer.toHexString(spinnerForColumn.getValue());
         switch (howToArray.getValue()){
             case "가로형(default)":
                 msg+=" 00";
@@ -145,7 +174,7 @@ public class SizeOfDisplayBoardController {
         }
         msg+=" 00 F1 10 03";
 
-        hexMsgTransceiver.sendMessages(msg);
+        hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
 
     }
 }
