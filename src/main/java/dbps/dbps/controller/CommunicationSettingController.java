@@ -353,6 +353,8 @@ public class CommunicationSettingController {
         hostIP = serverIPAddress.getValue();
         serverTCPPort = Integer.parseInt(serverIPPort.getText());
 
+        new Thread(() -> serverTCPManager.connect(hostIP, serverTCPPort)).start();
+
         configService.setProperty("serverTCPPort", String.valueOf(serverTCPPort));
     }
 
@@ -559,7 +561,8 @@ public class CommunicationSettingController {
                         hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                     } else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)) {
                         CONNECT_TYPE = "serverTCP";
-                        connectServerTCP();
+                        hostIP = serverIPAddress.getValue();
+                        serverTCPPort = Integer.parseInt(serverIPPort.getText());
                         hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                     } else {
                         CONNECT_TYPE = "UDP";

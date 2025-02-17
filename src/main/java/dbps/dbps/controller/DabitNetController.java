@@ -516,7 +516,7 @@ public class DabitNetController {
 
     @FXML
     public void close(MouseEvent mouseEvent) {
-        if (thread.isAlive()){
+        if (thread!=null&&thread.isAlive()){
             thread.interrupt();
         }
         udpManager.disconnectNoLog();
