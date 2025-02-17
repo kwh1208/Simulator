@@ -48,7 +48,6 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:2.0.16'
 
     // MQTT (로컬 .jar)
-    implementation files('libs/mqttv3.jar')
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.34'

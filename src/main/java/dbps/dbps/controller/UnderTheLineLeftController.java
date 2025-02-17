@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -129,49 +130,60 @@ public class UnderTheLineLeftController {
             if (isRS) {
                 msg = "![" + convertRS485AddrASCii() + "030!]";
             }
-            SimpleDateFormat formatter = new SimpleDateFormat("yyMMddEHHmmss", Locale.KOREAN);
-            String time = formatter.format(System.currentTimeMillis());
-            char day = time.charAt(6);
-            char dayInt = switch (day) {
-                case '월' -> '1';
-                case '화' -> '2';
-                case '수' -> '3';
-                case '목' -> '4';
-                case '금' -> '5';
-                case '토' -> '6';
-                case '일' -> '0';
-                default -> day;
+
+            // ✅ 현재 날짜 가져오기
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyMMddHHmmss", Locale.KOREAN);
+            String time = formatter.format(calendar.getTime());
+
+            // ✅ 요일 숫자로 변환
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+            char dayInt = switch (dayOfWeek) {
+                case Calendar.MONDAY -> '1';
+                case Calendar.TUESDAY -> '2';
+                case Calendar.WEDNESDAY -> '3';
+                case Calendar.THURSDAY -> '4';
+                case Calendar.FRIDAY -> '5';
+                case Calendar.SATURDAY -> '6';
+                case Calendar.SUNDAY -> '0';
+                default -> 'X'; // 에러 방지
             };
-            msg += time.replace(day, dayInt);
+
+            msg += time.substring(0, 6) + dayInt + time.substring(6);
             msg += "!]";
 
             asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
-
             return;
         }
+
         String msg = "10 02 00 00 08 47 ";
         if (isRS) {
             msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 08 47 ";
         }
-        SimpleDateFormat formatter = new SimpleDateFormat("yy MM dd E HH mm ss ");
-        String time = formatter.format(System.currentTimeMillis());
-        String day = String.valueOf(time.charAt(9));
-        String dayStr = switch (day) {
-            case "월" -> "01";
-            case "화" -> "02";
-            case "수" -> "03";
-            case "목" -> "04";
-            case "금" -> "05";
-            case "토" -> "06";
-            case "일" -> "00";
-            default -> "에러";
+
+        // ✅ 현재 날짜 가져오기
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat formatter = new SimpleDateFormat("yy MM dd HH mm ss", Locale.KOREAN);
+        String time = formatter.format(calendar.getTime());
+
+        // ✅ 요일 변환 (2자리)
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        String dayStr = switch (dayOfWeek) {
+            case Calendar.MONDAY -> "01";
+            case Calendar.TUESDAY -> "02";
+            case Calendar.WEDNESDAY -> "03";
+            case Calendar.THURSDAY -> "04";
+            case Calendar.FRIDAY -> "05";
+            case Calendar.SATURDAY -> "06";
+            case Calendar.SUNDAY -> "00";
+            default -> "99"; // 에러 방지
         };
-        msg += time.replace(day, dayStr);
-        msg += "10 03";
+
+        msg += time + " " + dayStr + " 10 03";
 
         hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
-
     }
+
 
     public void resetController() throws InterruptedException {
         if (IS_ASCII) {

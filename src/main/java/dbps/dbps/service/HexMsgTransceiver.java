@@ -9,10 +9,7 @@ import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -246,10 +243,8 @@ public class HexMsgTransceiver {
 
     private void handleTimeRead(String receiveMsg, String[] splitMsg) {
         if (!splitMsg[6].equals("10") && !splitMsg[6].equals("20") && !splitMsg[6].equals("40") && !splitMsg[6].equals("80")) {
+            logService.updateInfoLog(receiveMsg);
             StringBuilder time = new StringBuilder();
-            for (int i = 6; i < 13; i++) {
-                time.append(splitMsg[i]);
-            }
 
             if (dayMap.isEmpty()){
                 dayMap.put("01", "월"); // 일요일
@@ -260,25 +255,15 @@ public class HexMsgTransceiver {
                 dayMap.put("06", "토"); // 금요일
                 dayMap.put("07", "일"); // 토요일
             }
+            String dayPart = splitMsg[9];
 
-
-            String datePart = time.substring(0, 6); // yyMMdd
-            String dayPart = time.substring(6, 8); // 요일 (숫자로 표현된 요일)
-            String timePart = time.substring(8);   // HHmmss
-
-            // 요일 변환
             String dayOfWeek = dayMap.getOrDefault(dayPart, "?");
 
-            // 날짜 변환
-            SimpleDateFormat inputFormat = new SimpleDateFormat("yyMMddHHmmss");
-            SimpleDateFormat outputFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss", Locale.KOREAN);
-
+            time.append(splitMsg[6]).append("-").append(splitMsg[7]).append("-").append(splitMsg[8]).append(" (").append(dayOfWeek).append(")")
+                    .append(splitMsg[10]).append(":").append(splitMsg[11]).append(":").append(splitMsg[12]);
             try {
-                Date date = inputFormat.parse(datePart + timePart);
-                String formattedDate = outputFormat.format(date);
-                String result = formattedDate.replace(" ", " (" + dayOfWeek + ") ");
-                underTheLineLeftService.setTime(result);
-                logService.updateInfoLog("컨트롤러 시간은 " + result + "입니다.");
+                underTheLineLeftService.setTime(time.toString());
+                logService.updateInfoLog("컨트롤러 시간은 " + time + "입니다.");
             } catch (Exception e) {
                 logService.warningLog("시간 변환에 실패했습니다: " + e.getMessage());
             }
