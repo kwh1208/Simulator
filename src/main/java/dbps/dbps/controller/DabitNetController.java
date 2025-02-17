@@ -267,8 +267,13 @@ public class DabitNetController {
         };
 
         dbNetProgressBar.progressProperty().bind(backgroundTask.progressProperty());
-        new Thread(backgroundTask).start(); // ✅ Task 실행
+        thread = new Thread(backgroundTask);
+        thread.setDaemon(true);
+
+        thread.start();
     }
+
+    Thread thread;
 
 
 
@@ -485,6 +490,9 @@ public class DabitNetController {
         else{
             communicationSettingController.addIPAndPort(clientIPTF.getText(), clientPortTF.getText(), isClient.isSelected());
         }
+        if (thread.isAlive()){
+            thread.interrupt();
+        }
         udpManager.disconnectNoLog();
 
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
@@ -507,6 +515,9 @@ public class DabitNetController {
 
     @FXML
     public void close(MouseEvent mouseEvent) {
+        if (thread.isAlive()){
+            thread.interrupt();
+        }
         udpManager.disconnectNoLog();
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();
@@ -578,7 +589,7 @@ public class DabitNetController {
                     + hexFirst.getText() + hexSecond.getText()
                     + String.format("%03d", Integer.parseInt(timeOut.getText())) + "      \r\n!]";
 
-            Task<Void> write = serialPortManager.send300ByteMsg(msg.getBytes("EUC-KR"),
+            Task<Void> write = serialPortManager.send300ByteMsg(msg.getBytes("MS949"),
                     serialPortComboBox.getValue(),
                     Integer.parseInt(baudRateChoiceBox.getValue()));
 

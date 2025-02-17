@@ -58,6 +58,20 @@ public class ServerTCPManager {
         }
     }
 
+    public void disconnectNoLog() {
+        if (socket == null) {
+            return;
+        }
+
+        try {
+            socket.close();
+            socket = null;
+            logService.updateInfoLog("서버 소켓이 닫혔습니다.");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Task<String> sendMsgAndGetMsgByte(byte[] msg) {
         return new Task<>() {
             @Override
@@ -148,7 +162,7 @@ public class ServerTCPManager {
                 try {
                     InputStream input = socket.getInputStream();
                     OutputStream output = socket.getOutputStream();
-                    byte[] sendData = msg.getBytes(Charset.forName("EUC-KR"));
+                    byte[] sendData = msg.getBytes(Charset.forName("MS949"));
                     if (utf8) sendData = msg.getBytes(StandardCharsets.UTF_8);
                     else if (ascUTF16) {
                         sendData = msg.getBytes(StandardCharsets.UTF_16BE);
@@ -177,7 +191,7 @@ public class ServerTCPManager {
                             Thread.sleep(50);
                         }
                     }
-                    String result = new String(buffer, 0, totalBytesRead, Charset.forName("EUC-KR"));
+                    String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
                     logService.updateInfoLog("받은 데이터 :"+result);
                     return result;
                 } catch (IOException | InterruptedException e) {

@@ -418,12 +418,12 @@ public class HEXMessageController {
             String resultHex;
 
             resultHex = String.format("%02X ", tmpValue + add);
-            if (String.valueOf(text.charAt(i)).getBytes(Charset.forName("EUC-KR")).length!=1){
+            if (String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length!=1){
                 resultHex += String.format("%02X ", 0);
             }
 
             msg.append(resultHex);
-            if (charCodes.getValue().equals(bundle.getString("UTF16"))&&String.valueOf(text.charAt(i)).getBytes(Charset.forName("EUC-KR")).length==1){
+            if (charCodes.getValue().equals(bundle.getString("UTF16"))&&String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length==1){
                 msg.append(String.format("%02X ", 0));
             }
         }

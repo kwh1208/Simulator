@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -270,7 +271,7 @@ public class HexMsgTransceiver {
 
             // 날짜 변환
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyMMddHHmmss");
-            SimpleDateFormat outputFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss", Locale.KOREAN);
 
             try {
                 Date date = inputFormat.parse(datePart + timePart);

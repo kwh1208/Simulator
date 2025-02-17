@@ -91,7 +91,7 @@ public class UnderTheLineRightController {
 
         Stage modalStage = new Stage();
         modalStage.setTitle("추가 기능");
-        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.png")));
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
         Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();

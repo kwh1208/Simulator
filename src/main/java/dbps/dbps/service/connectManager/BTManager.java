@@ -34,12 +34,12 @@ public class BTManager {
 
     public void set(String Id, String password) {
         String msg = "++SET++![BT SETT 31  ";
-        byte[] IdBytes = Id.getBytes(Charset.forName("EUC-KR"));
+        byte[] IdBytes = Id.getBytes(Charset.forName("MS949"));
         byte[] realId = new byte[20];
-        byte[] passwordBytes = password.getBytes(Charset.forName("EUC-KR"));
+        byte[] passwordBytes = password.getBytes(Charset.forName("MS949"));
         byte[] realPassword = new byte[20];
 
-        byte spaceByte = " ".getBytes(Charset.forName("EUC-KR"))[0];
+        byte spaceByte = " ".getBytes(Charset.forName("MS949"))[0];
 
         System.arraycopy(IdBytes, 0, realId, 0, Math.min(IdBytes.length, realId.length));
         if (IdBytes.length < realId.length) {
@@ -52,7 +52,7 @@ public class BTManager {
             Arrays.fill(realPassword, passwordBytes.length, realPassword.length, spaceByte);
         }
 
-        msg += new String(realId, Charset.forName("EUC-KR")) + "  " + new String(realPassword, Charset.forName("EUC-KR")) + "!]";
+        msg += new String(realId, Charset.forName("MS949")) + "  " + new String(realPassword, Charset.forName("MS949")) + "!]";
 
         asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }

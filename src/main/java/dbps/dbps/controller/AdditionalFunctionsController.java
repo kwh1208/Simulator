@@ -108,7 +108,7 @@ public class AdditionalFunctionsController {
 
         Stage modalStage = new Stage();
         modalStage.setTitle(title);
-        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.png")));
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
 

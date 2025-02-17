@@ -121,7 +121,7 @@ public class ASCiiMsgController {
         Stage modalStage = new Stage();
 
         modalStage.setTitle("기본값 설정");
-        modalStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
+        modalStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
         Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();

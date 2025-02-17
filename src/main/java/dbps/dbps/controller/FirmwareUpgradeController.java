@@ -4,6 +4,10 @@ import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.FirmwareService;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.LogService;
+import dbps.dbps.service.connectManager.SerialPortManager;
+import dbps.dbps.service.connectManager.ServerTCPManager;
+import dbps.dbps.service.connectManager.TCPManager;
+import dbps.dbps.service.connectManager.UDPManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -50,6 +54,11 @@ public class FirmwareUpgradeController {
     LogService logService;
     FirmwareService firmwareService;
 
+    TCPManager tcpManager;
+    UDPManager udpManager;
+    ServerTCPManager serverTCPManager;
+    SerialPortManager serialPortmanager;
+
     Stage progressStage;
     ProgressBar progressBar;
     Label progressLabel;
@@ -60,6 +69,11 @@ public class FirmwareUpgradeController {
         firmwareUpgradeAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/firmware.css").toExternalForm());
         firmwareInformation.setEditable(false);
         firmwareFileInformation.setEditable(false);
+
+        tcpManager = TCPManager.getManager();
+        udpManager = UDPManager.getUDPManager();
+        serverTCPManager = ServerTCPManager.getInstance();
+        serialPortmanager = SerialPortManager.getManager();
 
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
@@ -101,6 +115,27 @@ public class FirmwareUpgradeController {
         vbox.setStyle("-fx-padding: 20px;");
         Scene progressScene = new Scene(vbox, 300, 150);
         progressStage.setScene(progressScene);
+
+        vbox.setStyle("-fx-padding: 20px; -fx-background-color: #333333;");
+        cancelButton.setStyle(
+                "-fx-font-size: 16px;" +
+                        "-fx-background-color: linear-gradient(#444444, #222222);" +
+                        "-fx-text-fill: white;" +
+                        "-fx-border-color: #4A4A4A;" +
+                        "-fx-border-radius: 10;" +
+                        "-fx-padding: 5 10 5 10;" +
+                        "-fx-background-radius: 10;"
+        );
+        progressLabel.setStyle(
+                "-fx-font-size: 15px; " +
+                        "-fx-text-fill: white; " +
+                        "-fx-background-color: #222222; " +
+                        "-fx-padding: 5; " +
+                        "-fx-border-color: #4A4A4A; " +
+                        "-fx-background-radius: 5; " +
+                        "-fx-border-radius: 5;"
+        );
+
     }
 
 
@@ -177,7 +212,7 @@ public class FirmwareUpgradeController {
                 hexToDecimal = String.valueOf(extraByte);  // 10진수 문자열로 변환
 
                 // 기존 데이터 부분을 읽기 (1바이트 이후부터)
-                result = new String(buffer, 1, length, "EUC-KR"); // ASCII 호환 인코딩
+                result = new String(buffer, 1, length, "MS949"); // ASCII 호환 인코딩
 
 
             }
@@ -279,10 +314,20 @@ public class FirmwareUpgradeController {
             }
             Platform.runLater(stage::close);
         }).start();
+
+        end();
+    }
+
+    private void end(){
+        tcpManager.disconnectNoLog();
+        serverTCPManager.disconnectNoLog();
+        udpManager.disconnectNoLog();
+        serialPortmanager.closePortNoLog(OPEN_PORT_NAME);
     }
 
 
     public void close(MouseEvent mouseEvent) {
         ((Stage)(((Node) mouseEvent.getSource()).getScene().getWindow())).close();
+        end();
     }
 }

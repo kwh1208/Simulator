@@ -14,6 +14,9 @@ import javafx.scene.layout.Pane;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static dbps.dbps.Constants.*;
@@ -39,9 +42,23 @@ public class UnderTheLineLeftController {
         leftPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/underTheLineLeft.css").toExternalForm());
 
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd (E) HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd (E) HH:mm:ss", Locale.ENGLISH);
         String formattedTime = now.format(formatter);
 
+        // 요일을 한글로 변환하는 매핑
+        Map<String, String> dayMap = new HashMap<>();
+        dayMap.put("Mon", "월");
+        dayMap.put("Tue", "화");
+        dayMap.put("Wed", "수");
+        dayMap.put("Thu", "목");
+        dayMap.put("Fri", "금");
+        dayMap.put("Sat", "토");
+        dayMap.put("Sun", "일");
+
+        // 영어 요일을 한글로 변환
+        for (Map.Entry<String, String> entry : dayMap.entrySet()) {
+            formattedTime = formattedTime.replace(entry.getKey(), entry.getValue());
+        }
         timeBoard.setText(formattedTime);
         serialPortManager = SerialPortManager.getManager();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
@@ -112,7 +129,7 @@ public class UnderTheLineLeftController {
             if (isRS) {
                 msg = "![" + convertRS485AddrASCii() + "030!]";
             }
-            SimpleDateFormat formatter = new SimpleDateFormat("yyMMddEHHmmss");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyMMddEHHmmss", Locale.KOREAN);
             String time = formatter.format(System.currentTimeMillis());
             char day = time.charAt(6);
             char dayInt = switch (day) {
