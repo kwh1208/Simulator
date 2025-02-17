@@ -11,6 +11,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -185,6 +186,24 @@ public class MQTTManager {
                 System.out.println("Received message from topicR: " + receivedTopic);
                 logService.updateInfoLog(new String(message.getPayload()));
             });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void read() {
+        if (client == null || !client.isConnected()) {
+            connect();
+        }
+
+        topicR="/sch_r";
+        subscribe();
+
+        try {
+            MqttMessage message = new MqttMessage("{\"name\":\"DB300\"}".getBytes(StandardCharsets.UTF_8));
+            message.setQos(0);
+            client.publish("/sch", message);
+            System.out.println("Published: {name:DB300}" + " to topic: " + topic);
         } catch (MqttException e) {
             e.printStackTrace();
         }

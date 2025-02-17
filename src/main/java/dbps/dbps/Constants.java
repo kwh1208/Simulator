@@ -153,6 +153,9 @@ public class Constants {
 
     public static boolean dataReceivedIsComplete(byte[] buffer, int length) {
         String data = new String(buffer, 0, length);
+        if(data.contains("![")&&data.contains("!]")){
+            return true;
+        }
         if (data.contains("RX") && data.contains("![") && data.contains("!]")) {
             int indexTX = data.indexOf("TX");
             int indexStart = data.indexOf("![", indexTX); // "TX" 이후 검색

@@ -51,7 +51,7 @@ public class MqttController {
     }
 
     public void read(MouseEvent mouseEvent) {
-
+        mqttManager.read();
     }
 
     public void set(MouseEvent mouseEvent) {
