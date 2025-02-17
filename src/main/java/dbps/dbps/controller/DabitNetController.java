@@ -218,6 +218,7 @@ public class DabitNetController {
             protected Void call() throws Exception {
                 Task<String> sendTask;
                 if (isSerial.isSelected()) { // ✅ 시리얼 통신 Task 실행
+                    System.out.println(111);
                     sendTask = serialPortManager.send300MsgAndGetMsg(
                             "++SET++![SEARCHING DIBD  B\r\n!]",
                             serialPortComboBox.getValue(),
