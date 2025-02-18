@@ -184,6 +184,12 @@ public class FirmwareUpgradeController {
 
         String result = "";
         String hexToDecimal = "";
+        String filePath = fileLocation.getText();
+        String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
+        fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
+        if (fileName.contains("502")){
+            firmwareFileInformation.setText(fileName);
+        } else {
         try (RandomAccessFile file = new RandomAccessFile(selectedFile.getAbsolutePath(), "r")) {
             int startByte = 0;
             int length = 0;
@@ -220,7 +226,7 @@ public class FirmwareUpgradeController {
         }
 
         // UI에 표시
-        firmwareFileInformation.setText("<"+hexToDecimal+">"+result);
+        firmwareFileInformation.setText("<"+hexToDecimal+">"+result);}
     }
 
     public void send() {
