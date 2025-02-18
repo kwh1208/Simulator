@@ -1,5 +1,8 @@
 package dbps.dbps.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.ResourceManager;
@@ -9,9 +12,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class MQTTMsgController {
     public AnchorPane mqttMsgAP;
@@ -195,12 +198,16 @@ public class MQTTMsgController {
     private String makeMQTTMsg() {
         String msgType = ((RadioButton) msgTypeGroup.getSelectedToggle()).getText();
 
-//        if (msgType.equals("realTimeMsg")) {
-//            makeRealTimeMsg();
-//        }
-//        else {
-//            makePageMsg();
-//        }
+        if (msgType.equals("realTimeMsg")) {
+            try {
+                makeRealTimeMsg();
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            makePageMsg();
+        }
 
         String pageMsgCntValue = pageMsgCnt.getValue();
         String section = ((RadioButton) sectionGroup.getSelectedToggle()).getText();
@@ -223,8 +230,73 @@ public class MQTTMsgController {
         String textColorValue = textColor.getText();
         String bgColorValue = bgColor.getText();
         String text = msg.getText();
+
+        System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+
+//        pageMsgCntValue = 1
+//        section = 0
+//        displayControlValue = ON
+//        displayMethodValue = Clear
+//        charCodesValue = 한글 조합형
+//                fontSizeValue = 16(Standard)
+//                fontGroupValue = 폰트그룹1
+//        effectInValue = 정지효과
+//        inDirectionValue = 방향없음
+//        effectOutValue = 사용안함
+//        outDirectionValue = 사용안함
+//        effectSpeedValue = 5
+//        effectTimeValue = 2초
+//                xStartValue = 0
+//        yStartValue = 0
+//        xEndValue = 0
+//        yEndValue = 0
+//        bgImgValue = 사용안함
+//        textColorValue = 1
+//        bgColorValue = 0
+//        text = 1234
+
+
         return null;
     }
+
+    private String makeRealTimeMsg() throws JsonProcessingException {
+        String common = "\"2.RTE058.6.1."+((RadioButton) sectionGroup.getSelectedToggle()).getText()+".";
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        // 최상위 JSON 객체 (순서 보장)
+        Map<String, Object> jsonMessage = new LinkedHashMap<>();
+        jsonMessage.put("MSG_TYPE", "TEXT");
+        jsonMessage.put("MSG_VER", Integer.parseInt(java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"))));
+        jsonMessage.put("MSG_ID", System.currentTimeMillis() / 1000);
+
+        // MOID 객체 생성 (순서 보장)
+        Map<String, Object> moid = new LinkedHashMap<>();
+        moid.put("2.RTE058.6.1.1.1", Arrays.asList(displayMethod.getValue().equals("Clear") ? 1 : 0, "On".equals(displayMethod.getValue()) ? 99 : "Off".equals(displayMethod.getValue()) ? 0 : Integer.parseInt(displayMethod.getValue())));
+        moid.put("2.RTE058.6.1.1.2", Arrays.asList(30, 10, 15, 3));
+        moid.put("2.RTE058.6.1.1.3", Arrays.asList(Integer.parseInt(xStart.getValue()), Integer.parseInt(xEnd.getValue()), Integer.parseInt(yStart.getValue()), Integer.parseInt(yEnd.getValue())));
+        moid.put("2.RTE058.6.1.1.4", bgImg.getValue().equals("사용안함") ? 0 : Integer.parseInt(bgImg.getValue()));
+
+        // MOID 내부 리스트도 순서 보장
+        List<Object> customList = new ArrayList<>();
+        customList.add(Arrays.asList("안전", 2, 0, 0));  // 첫 번째 배열
+        customList.add(Arrays.asList("확인", 4));        // 두 번째 배열
+        customList.add(Collections.singletonList("부탁드립니다")); // 세 번째 배열
+
+        moid.put("2.RTE058.6.1.1.5", customList);
+
+        // 최종 JSON 메시지에 MOID 추가
+        jsonMessage.put("MOID", moid);
+
+        // JSON 문자열 변환 (순서 보장)
+        return objectMapper.writeValueAsString(jsonMessage);
+    }
+
+    private void makePageMsg() {
+    }
+
 
 
 
