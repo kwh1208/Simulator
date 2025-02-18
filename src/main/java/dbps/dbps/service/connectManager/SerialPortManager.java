@@ -226,7 +226,6 @@ public class SerialPortManager {
                         inputStream.skip(inputStream.available());
                         outputStream.write(msg);
                         outputStream.flush();
-
                         byte[] buffer = new byte[1024];
                         int totalBytesRead = 0;
                         while (true) {
@@ -243,7 +242,6 @@ public class SerialPortManager {
                                     break; // 스트림 종료
                                 }
                             } catch (SocketTimeoutException e) {
-
                                 logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
                                 throw e;
                             }
@@ -261,7 +259,6 @@ public class SerialPortManager {
                         }
                         logService.updateInfoLog("받은 메세지: " + result);
                         return result;
-
                     } catch (SerialPortTimeoutException | SerialPortIOException e) {
                         logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
                         throw e;
@@ -415,6 +412,7 @@ public class SerialPortManager {
                         // 212바이트를 읽었으면 결과 출력
                         String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
                         dabitNetService.updateUI(result);
+                        System.out.println("result = " + result);
                         return result;
                     } else {
                         throw new IOException("212 바이트를 읽는 데 실패했습니다. 총 읽은 바이트: " + totalBytesRead);
@@ -423,7 +421,7 @@ public class SerialPortManager {
                     String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
                     String[] lines = result.split("\r?\n"); // 윈도우(\r\n)와 유닉스(\n) 모두 대응 가능
                     int lineCount = lines.length;
-                    if (lineCount>=14){
+                    if (lineCount>=12){
                         dabitNetService.updateUI(result);
                     }
                     return new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));

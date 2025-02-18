@@ -1,13 +1,14 @@
 package dbps.dbps.service;
 
-import dbps.dbps.service.connectManager.*;
+import dbps.dbps.service.connectManager.SerialPortManager;
+import dbps.dbps.service.connectManager.ServerTCPManager;
+import dbps.dbps.service.connectManager.TCPManager;
+import dbps.dbps.service.connectManager.UDPManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
@@ -148,7 +149,7 @@ public class AsciiMsgTransceiver {
         String cmd = receiveMsg.substring(4, 6);
         char status = receiveMsg.charAt(6);
         if (cmd.equals("31")) {
-            //시간 바꿈.
+
             String time = receiveMsg.substring(6, 19);
             String[] koreanWeekdays = {"일", "월", "화", "수", "목", "금", "토"};
 
@@ -158,33 +159,12 @@ public class AsciiMsgTransceiver {
             String weekdayKorean = koreanWeekdays[weekdayIndex]; // 한글 요일로 변환
 
             // 숫자 요일을 한글 요일로 대체하여 새로운 시간 문자열 생성
-            String formattedTime = time.substring(0, 6) + weekdayKorean + time.substring(7);
+            StringBuilder sb = new StringBuilder();
+            sb.append(time, 0, 2).append("-").append(time, 2, 4).append("-").append(time, 4, 6).append("-")
+                    .append(" (").append(weekdayKorean).append(") ").append(time, 7, 9).append(":").append(time, 9, 11).append(":").append(time, 11, 13);
 
-            SimpleDateFormat inputFormat = new SimpleDateFormat("yyMMddEHHmmss");
-            SimpleDateFormat outputFormat = new SimpleDateFormat("yy년 MM월 dd일 E요일 HH시 mm분 ss초");
-
-            try {
-                // 문자열을 Date로 파싱
-                Date date = inputFormat.parse(formattedTime);
-
-                // 원하는 출력 형식으로 변환
-                String FormatedTime = outputFormat.format(date);
-
-                logService.updateInfoLog("컨트롤러 시간은 " + FormatedTime + "입니다.");
-
-            } catch (Exception e) {
-
-            }
-
-            SimpleDateFormat finalOutputFormat = new SimpleDateFormat("yy-MM-dd (E) HH:mm:ss");
-            try {
-                Date date = inputFormat.parse(formattedTime);
-                time = finalOutputFormat.format(date);
-                underTheLineLeftService.setTime(time);
-            } catch (Exception e) {
-
-            }
-
+            logService.updateInfoLog("컨트롤러 시간은 " + sb + "입니다.");
+                underTheLineLeftService.setTime(sb.toString());
             return;
         }
         if (cmd.equals("B3")) {

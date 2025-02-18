@@ -52,6 +52,8 @@ public class Simulator extends Application {
         instance = this;  // 인스턴스를 저장
         this.stage = stage;
 
+        System.out.println("현재 Locale: " + Locale.getDefault());
+
         // 기본 UI 로드
         loadUI();
     }
@@ -70,7 +72,6 @@ public class Simulator extends Application {
         scene.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/main.css").toExternalForm());
 
 
-        Locale.setDefault(Locale.KOREAN);
         // Stage 설정
         stage.setResizable(false);
         stage.setScene(scene);
@@ -82,6 +83,10 @@ public class Simulator extends Application {
 
     public static void main(String[] args) {
         System.setProperty("prism.lcdtext", "false"); // LCD 텍스트 렌더링 비활성화
+
+        Locale.setDefault(Locale.KOREAN);
+
+        System.out.println("초기 Locale: " + Locale.getDefault());
 
         launch();
     }
