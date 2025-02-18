@@ -1,6 +1,5 @@
 .label{
-    font-size: 15px;
-    -fx-text-fill: #E0E0E0;
+    -fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-font-weight: bold; -fx-text-fill: white;
 }
 
 .button {

@@ -131,7 +131,7 @@ public class MqttSettingController {
 
 
     public void getInfo() throws JsonProcessingException {
-        mqttManager.publishGet(Map.of("2.RTE058.2.4", 1));
+//        mqttManager.publishGet(Map.of("2.RTE058.2.4", 1));
     }
 
 
@@ -145,16 +145,16 @@ public class MqttSettingController {
         moidMap.put("2.RTE058.4.1", timestamp);
 
         // MQTT 메시지 발행
-        mqttManager.publishSet(moidMap);
+//        mqttManager.publishSet(moidMap);
     }
 
     public void sendDisplayOn() throws JsonProcessingException {
-        mqttManager.publishSet(new HashMap<>(Map.of("2.RTE058.4.4", 1)));
+//        mqttManager.publishSet(new HashMap<>(Map.of("2.RTE058.4.4", 1)));
     }
 
 
     public void sendDisplayOff() throws JsonProcessingException {
-        mqttManager.publishSet(new HashMap<>(Map.of("2.RTE058.4.4", 0)));
+//        mqttManager.publishSet(new HashMap<>(Map.of("2.RTE058.4.4", 0)));
     }
 
     public void sendDisplaySize() throws JsonProcessingException {
@@ -177,7 +177,7 @@ public class MqttSettingController {
             moid.add(0);
         }
 
-        mqttManager.publishSet(new HashMap<>(Map.of("2.RTE058.4.3", moid)));
+//        mqttManager.publishSet(new HashMap<>(Map.of("2.RTE058.4.3", moid)));
     }
 
     public void sendDisplayBright() throws JsonProcessingException {
@@ -189,15 +189,15 @@ public class MqttSettingController {
             case "5%"->5;
             default -> 0;
         };
-        mqttManager.publishSet(new HashMap<>(Map.of("2.RTE058.4.2", bright)));
+//        mqttManager.publishSet(new HashMap<>(Map.of("2.RTE058.4.2", bright)));
     }
 
     public void sendMsgInitialize() throws JsonProcessingException {
-        mqttManager.publishSet(new HashMap<>(Map.of("2.RTE058.4.6", new ArrayList<>(List.of(99, 1)))));
+//        mqttManager.publishSet(new HashMap<>(Map.of("2.RTE058.4.6", new ArrayList<>(List.of(99, 1)))));
     }
 
     public void sendPageCnt() throws JsonProcessingException {
-        mqttManager.publishSet(new HashMap<>(Map.of("2.RTE058.4.6", new ArrayList<>(List.of(Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", "")), 0)))));
+//        mqttManager.publishSet(new HashMap<>(Map.of("2.RTE058.4.6", new ArrayList<>(List.of(Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", "")), 0)))));
     }
 
     public void openMqtt(MouseEvent mouseEvent) throws IOException {

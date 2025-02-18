@@ -435,7 +435,6 @@ public class UDPManager {
 
         if (!socketList.isEmpty()){
             for (DatagramSocket datagramSocket : socketList) {
-                System.out.println(datagramSocket.getInetAddress());
                 datagramSocket.disconnect();
                 datagramSocket.close();
             }

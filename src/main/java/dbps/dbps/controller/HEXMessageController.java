@@ -106,7 +106,7 @@ public class HEXMessageController {
     private TextField bgColor;
 
     @FXML
-    private TextField msgPreview;
+    private TextField msg;
 
     ConfigService configService;
 
@@ -243,7 +243,7 @@ public class HEXMessageController {
         bgImg.setValue(configService.getProperty("bgImg"+msgNum));
         textColor.setText(configService.getProperty("textColor"+msgNum));
         bgColor.setText(configService.getProperty("bgColor"+msgNum));
-        msgPreview.setText(configService.getProperty("text"+msgNum));
+        msg.setText(configService.getProperty("text"+msgNum));
     }
 
     public void save() {
@@ -270,7 +270,7 @@ public class HEXMessageController {
         configService.setProperty("bgImg"+msgNum, bgImg.getValue());
         configService.setProperty("textColor"+msgNum, textColor.getText());
         configService.setProperty("bgColor"+msgNum, bgColor.getText());
-        configService.setProperty("text"+msgNum, msgPreview.getText());
+        configService.setProperty("text"+msgNum, msg.getText());
     }
 
     public void send() {
@@ -302,7 +302,7 @@ public class HEXMessageController {
         String bgImgValue = bgImg.getValue();
         String textColorValue = textColor.getText();
         String bgColorValue = bgColor.getText();
-        String text = msgPreview.getText();
+        String text = msg.getText();
 
 
         StringBuilder msg = new StringBuilder("10 02 ");

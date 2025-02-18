@@ -1,9 +1,6 @@
 package dbps.dbps.service;
 
-import dbps.dbps.service.connectManager.SerialPortManager;
-import dbps.dbps.service.connectManager.ServerTCPManager;
-import dbps.dbps.service.connectManager.TCPManager;
-import dbps.dbps.service.connectManager.UDPManager;
+import dbps.dbps.service.connectManager.*;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;

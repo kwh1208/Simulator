@@ -59,8 +59,6 @@ public class MainService {
             // 캐시에 아스키 탭 내용이 있는지 확인
             if (!cachedContent.containsKey("mqtt")) {
                 // 캐시가 없으면 로드하여 저장
-                System.out.println("FXML Path: " + Simulator.class.getResource("/dbps/dbps/fxmls/mqttMsg.fxml"));
-                System.out.println("FXML Path (ClassLoader): " + Simulator.class.getClassLoader().getResource("dbps/dbps/fxmls/mqttMsg.fxml"));
                 FXMLLoader loader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/mqttMsg.fxml"));
                 ResourceBundle bundle = ResourceManager.getInstance().getBundle();
                 loader.setResources(bundle);
@@ -106,8 +104,6 @@ public class MainService {
                     cachedContent.put("mqttSet", hexContent);  // 캐싱
                 }
                 settingTab.setContent(cachedContent.get("mqttSet"));
-                System.out.println(settingTab.getId());
-                System.out.println(messageTab.getId());
             } else {
                 if (!cachedContent.containsKey("set")) {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/dbps/dbps/fxmls/setting.fxml"));

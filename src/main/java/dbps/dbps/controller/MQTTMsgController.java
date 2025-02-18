@@ -1,321 +1,325 @@
 package dbps.dbps.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import dbps.dbps.Simulator;
+import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.ResourceManager;
 import dbps.dbps.service.connectManager.MQTTManager;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class MQTTMsgController {
     public AnchorPane mqttMsgAP;
-    public RadioButton realTimeMsg;
-    public RadioButton pageMsg;
-    public Label pageCntLabel;
-    public ChoiceBox<String> pageMsgCnt;
-    public RadioButton section1;
-    public RadioButton section2;
-    public RadioButton section4;
-    public RadioButton section3;
-    public ChoiceBox<String> displayControl;
-    public ChoiceBox<String> displayMethod;
-    public ChoiceBox<String> effectIn;
-    public ChoiceBox<String> inDirection;
-    public ChoiceBox<String> effectOut;
-    public ChoiceBox<String> outDirection;
-    public ChoiceBox<String> bgImg;
-    public Pane mqttMsgPane;
-    public ChoiceBox<String> xStart;
-    public ChoiceBox<String> yStart;
-    public ChoiceBox<String> xEnd;
-    public ChoiceBox<String> yEnd;
-    public ChoiceBox<String> effectTime;
-    public ChoiceBox<String> effectSpeed;
+    @FXML
+    private RadioButton realTimeMsg;
+    @FXML
+    private RadioButton pageMsg;
+    @FXML
+    private Label pageCntLabel;
+    @FXML
+    private ChoiceBox<String> pageMsgCnt;
+    @FXML
+    private RadioButton section0;
+    @FXML
+    private RadioButton section1;
+    @FXML
+    private RadioButton section2;
+    @FXML
+    private ChoiceBox<String> displayControl;
+    @FXML
+    private ChoiceBox<String> displayMethod;
+    @FXML
+    private ChoiceBox<String> charCodes;
+    @FXML
+    private ChoiceBox<String> fontSize;
+    @FXML
+    private ChoiceBox<String> fontGroup;
+    @FXML
+    private ChoiceBox<String> effectIn;
+    @FXML
+    private ChoiceBox<String> inDirection;
+    @FXML
+    private ChoiceBox<String> effectOut;
+    @FXML
+    private ChoiceBox<String> outDirection;
+    @FXML
+    private ChoiceBox<String> effectSpeed;
+    @FXML
+    private ChoiceBox<String> effectTime;
+    @FXML
+    private ChoiceBox<String> xStart;
+    @FXML
+    private ChoiceBox<String> yStart;
+    @FXML
+    private ChoiceBox<String> xEnd;
+    @FXML
+    private ChoiceBox<String> yEnd;
+    @FXML
+    private ChoiceBox<String> bgImg;
+    @FXML
+    private TextField textColor;
+    @FXML
+    private TextField bgColor;
+    @FXML
+    private TextField msg;
     MQTTManager mqttManager;
     ResourceBundle bundle;
 
     ToggleGroup msgTypeGroup = new ToggleGroup();
 
     ToggleGroup sectionGroup = new ToggleGroup();
-
-    private List<TextField> textFields;
-    private List<ChoiceBox<String>> textColorChoiceBoxes;
-    private List<ChoiceBox<String>> bgColorChoiceBoxes;
-    private List<ChoiceBox<String>> fontChoiceBoxes;
-    private List<ChoiceBox<String>> sizeChoiceBoxes;
+    ConfigService configService;
 
     Map<String, Integer> colorMap;
 
 
     @FXML
-    public void initialize(){
-        mqttMsgAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/mqttMsg.css").toExternalForm());
-        mqttManager=MQTTManager.getInstance();
+    public void initialize() {
+        mqttMsgAP.getStylesheets().add(Objects.requireNonNull(Simulator.class.getResource("/dbps/dbps/css/hexMessage.css")).toExternalForm());
+        configService = ConfigService.getInstance();
         bundle= ResourceManager.getInstance().getBundle();
+        mqttManager = MQTTManager.getInstance();
+        mqttManager.setMSG();
+
         realTimeMsg.setToggleGroup(msgTypeGroup);
         pageMsg.setToggleGroup(msgTypeGroup);
-        textFields = new ArrayList<>();
-        textColorChoiceBoxes = new ArrayList<>();
-        bgColorChoiceBoxes = new ArrayList<>();
-        fontChoiceBoxes = new ArrayList<>();
-        sizeChoiceBoxes = new ArrayList<>();
 
-        makeUI();
-
+        section0.setToggleGroup(sectionGroup);
         section1.setToggleGroup(sectionGroup);
         section2.setToggleGroup(sectionGroup);
-        section3.setToggleGroup(sectionGroup);
-        section4.setToggleGroup(sectionGroup);
 
-        effectIn.valueProperty().addListener((observable, oldValue, newValue)->{
-            selectEffect(newValue, inDirection);
+        realTimeMsg.setSelected(true);
+        if (configService.getProperty("isMQTTRealTime").equals("0")){
+            realTimeMsg.setSelected(true);
+        }
+        else{
+            pageMsg.setSelected(true);
+            pageMsgCnt.setVisible(true);
+            pageCntLabel.setVisible(true);
+            pageMsgCnt.setValue(configService.getProperty("isMQTTRealTime"));
+        }
+        section0.setSelected(true);
+
+        msgTypeGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                RadioButton selectedRadioButton = (RadioButton) newValue;
+                if (selectedRadioButton.getId().equals("realTimeMsg")) {
+                    pageMsgCnt.setVisible(false);
+                    pageCntLabel.setVisible(false);
+                } else {
+                    pageMsgCnt.setVisible(true);
+                    pageCntLabel.setVisible(true);
+                }
+                doMsgSettings();
+            }
         });
 
-        effectOut.valueProperty().addListener((observable, oldValue, newValue)->{
-            selectEffect(newValue, outDirection);
-        });
-
-        bgImg.getItems().add(bundle.getString("notUsed"));
         for (int i = 1; i < 11; i++) {
-            bgImg.getItems().add(String.valueOf(i));
+            bgImg.getItems().add(Integer.toString(i));
         }
 
-        for (int i = 0; i <= 4; i++) {
-            xStart.getItems().add(i * 25 + "%");
-            xEnd.getItems().add(i * 25 + "%");
-            yStart.getItems().add(i * 25 + "%");
-            yEnd.getItems().add(i * 25 + "%");
-        }
+        pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)-> doMsgSettings());
 
-        colorMap = Map.ofEntries(
-                Map.entry(bundle.getString("black"), 0),
-                Map.entry(bundle.getString("red"), 1),
-                Map.entry(bundle.getString("green"), 2),
-                Map.entry(bundle.getString("yellow"), 3),
-                Map.entry(bundle.getString("blue"), 4),
-                Map.entry(bundle.getString("pink"), 5),
-                Map.entry(bundle.getString("skyblue"), 6),
-                Map.entry(bundle.getString("white"), 7)
-        );
+        sectionGroup.selectedToggleProperty().addListener((observable, oldValue, newValue)-> doMsgSettings());
+
+        effectOut.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateOutDirections(newValue));
+        effectIn.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateInDirections(newValue));
+
+        doMsgSettings();
+
+        setXY();
     }
 
-    public void sendMqttMsg() throws JsonProcessingException {
-        Map<String, Object> moidDetail = new HashMap<>();
-        moidDetail.put("1", List.of((displayMethod.getValue()).equals("Clear") ? 1 : 0,
-                ((displayControl.getValue()).equals("On") ? 99 : Integer.parseInt(displayControl.getValue()))));
-
-        moidDetail.put("2", List.of(getEffect(effectIn.getValue(), inDirection.getValue()), getEffect(effectOut.getValue(), outDirection.getValue()), Integer.parseInt((effectSpeed.getValue().replaceAll("[^0-9]", ""))), Integer.parseInt((effectTime.getValue().replaceAll("초", "")))));
-
-        moidDetail.put("3", List.of(Integer.parseInt((xStart.getValue().replaceAll("%", ""))), Integer.parseInt((xEnd.getValue().replaceAll("%", ""))), Integer.parseInt((yStart.getValue().replaceAll("%", ""))), Integer.parseInt((yEnd.getValue().replaceAll("%", "")))));
-
-        moidDetail.put("4", (bgImg.getValue()).equals(bundle.getString("notUsed")) ? 0 : Integer.parseInt(bgImg.getValue()));
-
-        List<List<Object>> msg = new ArrayList<>();
-
-        for (int i = 0; i < textFields.size(); i++) {
-            if (textFields.get(i).getText()==null) {
-                continue;
-            }
-            List<Object> tmp = new ArrayList<>();
-            tmp.add(textFields.get(i).getText());
-            if(textColorChoiceBoxes.get(i).getValue().equals("default")) {
-                msg.add(tmp);
-                continue;
-            }
-            else {
-                tmp.add(colorMap.get(textColorChoiceBoxes.get(i).getValue()));
-            }
-
-            if(bgColorChoiceBoxes.get(i).getValue().equals("default")) {
-                msg.add(tmp);
-                continue;
-            }
-            else {
-                tmp.add(colorMap.get(bgColorChoiceBoxes.get(i).getValue()));
-            }
-
-            if(fontChoiceBoxes.get(i).getValue().equals("default")) {
-                msg.add(tmp);
-                continue;
-            }
-
-            else {
-                tmp.add(Character.getNumericValue(fontChoiceBoxes.get(i).getValue().charAt(fontChoiceBoxes.get(i).getValue().length() - 1)));
-            }
-
-            if (sizeChoiceBoxes.get(i).getValue().equals("default")) {
-                msg.add(tmp);
-            }
-            else {
-                tmp.add(Integer.parseInt(sizeChoiceBoxes.get(i).getValue()));
-                msg.add(tmp);
-            }
+    public void save() {
+        String msgNum = getMsgNum();
+        configService.setProperty("isMQTTRealTime", "0");
+        if (pageMsg.isSelected()) {
+            configService.setProperty("isMQTTRealTime", pageMsgCnt.getValue());
         }
-
-        moidDetail.put("5", msg);
-
-        Map<String, Object> moidMap = new HashMap<>();
-        moidMap.put(getMsgKey(), moidDetail);
-
-        mqttManager.publishSet(moidMap);
+        configService.setProperty("MQTTdisplayControl"+msgNum, displayControl.getValue());
+        configService.setProperty("MQTTdisplayMethod"+msgNum, displayMethod.getValue());
+        configService.setProperty("MQTTcharCode"+msgNum, charCodes.getValue());
+        configService.setProperty("MQTTfontSize"+msgNum, fontSize.getValue());
+        configService.setProperty("MQTTfontGroup"+msgNum, fontGroup.getValue());
+        configService.setProperty("MQTTeffectIn"+msgNum, effectIn.getValue());
+        configService.setProperty("MQTTeffectInDirection"+msgNum, inDirection.getValue());
+        configService.setProperty("MQTTeffectOut"+msgNum, effectOut.getValue());
+        configService.setProperty("MQTTeffectOutDirection"+msgNum, outDirection.getValue());
+        configService.setProperty("MQTTeffectSpeed"+msgNum, effectSpeed.getValue());
+        configService.setProperty("MQTTeffectTime"+msgNum, effectTime.getValue());
+        configService.setProperty("MQTTxStart"+msgNum, xStart.getValue());
+        configService.setProperty("MQTTyStart"+msgNum, yStart.getValue());
+        configService.setProperty("MQTTxEnd"+msgNum, xEnd.getValue());
+        configService.setProperty("MQTTyEnd"+msgNum, yEnd.getValue());
+        configService.setProperty("MQTTbgImg"+msgNum, bgImg.getValue());
+        configService.setProperty("MQTTtextColor"+msgNum, textColor.getText());
+        configService.setProperty("MQTTbgColor"+msgNum, bgColor.getText());
+        configService.setProperty("MQTTtext"+msgNum, msg.getText());
     }
 
-    private String getMsgKey() {
-        String tmp = "2.RTE058.2.";
-        if (realTimeMsg.isSelected()) {
-            tmp+="0.";
-        }
-        else tmp+=pageMsgCnt.getValue()+".";
+    public void send() {
+        String msg = makeMQTTMsg();
 
-        tmp+=((RadioButton) sectionGroup.getSelectedToggle()).getText();
+        save();
+    }
 
-        return tmp;
+    public void reset() {
+        String msgNum = getMsgNum();
+        configService.setProperty("MQTTdisplayControl"+msgNum, "ON");
+        configService.setProperty("MQTTdisplayMethod"+msgNum, "Clear");
+        configService.setProperty("MQTTcharCode"+msgNum, "한글 조합형");
+        configService.setProperty("MQTTfontSize"+msgNum, "16(Standard)");
+        configService.setProperty("MQTTfontGroup"+msgNum, "폰트그룹1");
+        configService.setProperty("MQTTeffectIn"+msgNum, "정지효과");
+        configService.setProperty("MQTTeffectInDirection"+msgNum, "방향없음");
+        configService.setProperty("MQTTeffectOut"+msgNum, "사용안함");
+        configService.setProperty("MQTTeffectOutDirection"+msgNum, "사용안함");
+        configService.setProperty("MQTTeffectSpeed"+msgNum, "5");
+        configService.setProperty("MQTTeffectTime"+msgNum, "2초");
+        configService.setProperty("MQTTxStart"+msgNum, "0");
+        configService.setProperty("MQTTxEnd"+msgNum, "0");
+        configService.setProperty("MQTTyStart"+msgNum, "0");
+        configService.setProperty("MQTTyEnd"+msgNum, "0");
+        configService.setProperty("MQTTbgImg"+msgNum, "사용안함");
+        configService.setProperty("MQTTtextColor"+msgNum, "1");
+        configService.setProperty("MQTTbgColor"+msgNum, "0");
+
+        doMsgSettings();
+    }
+
+    private String makeMQTTMsg() {
+        String msgType = ((RadioButton) msgTypeGroup.getSelectedToggle()).getText();
+
+//        if (msgType.equals("realTimeMsg")) {
+//            makeRealTimeMsg();
+//        }
+//        else {
+//            makePageMsg();
+//        }
+
+        String pageMsgCntValue = pageMsgCnt.getValue();
+        String section = ((RadioButton) sectionGroup.getSelectedToggle()).getText();
+        String displayControlValue = displayControl.getValue();
+        String displayMethodValue = displayMethod.getValue();
+        String charCodesValue = charCodes.getValue();
+        String fontSizeValue = fontSize.getValue();
+        String fontGroupValue = fontGroup.getValue();
+        String effectInValue = effectIn.getValue();
+        String inDirectionValue = inDirection.getValue();
+        String effectOutValue = effectOut.getValue();
+        String outDirectionValue = outDirection.getValue();
+        String effectSpeedValue = effectSpeed.getValue();
+        String effectTimeValue = effectTime.getValue();
+        String xStartValue = xStart.getValue();
+        String yStartValue = yStart.getValue();
+        String xEndValue = xEnd.getValue();
+        String yEndValue = yEnd.getValue();
+        String bgImgValue = bgImg.getValue();
+        String textColorValue = textColor.getText();
+        String bgColorValue = bgColor.getText();
+        String text = msg.getText();
+        return null;
     }
 
 
-    private void makeUI(){
-        int numberOfRows = 8; // 총 10행
-        double baseY = 27.0;   // 첫 번째 행의 Y 위치
-        double rowHeight = 32.0; // 각 행 간격
 
-        for (int i = 1; i <= numberOfRows; i++) {
-            double yOffset = baseY + (i - 1) * rowHeight;
+    private void setXY() {
+        xStart.getItems().clear();
+        xEnd.getItems().clear();
+        yStart.getItems().clear();
+        yEnd.getItems().clear();
 
-            // TextField 생성
-            TextField textField = new TextField();
-            textField.setLayoutX(271.0);
-            textField.setLayoutY(yOffset);
-            textField.setPrefHeight(21.0);
-            textField.setPrefWidth(352.0);
-            textField.setId("mqttMsgText" + i); // ID 설정
+        int xLimit = Integer.parseInt(configService.getProperty("displayColumnSize"));
+        int yLimit = Integer.parseInt(configService.getProperty("displayRowSize"));
 
-            // ChoiceBox 생성 (TextColor)
-            ChoiceBox<String> textColorChoiceBox = new ChoiceBox<>();
-            textColorChoiceBox.setLayoutX(-2.0);
-            textColorChoiceBox.setLayoutY(yOffset);
-            textColorChoiceBox.setPrefHeight(21.0);
-            textColorChoiceBox.setPrefWidth(55.0);
-            textColorChoiceBox.setId("mqttMsgTextColor" + i); // ID 설정
-            textColorChoiceBox.getItems().addAll(
-                    "default",
-                    bundle.getString("black"),
-                    bundle.getString("red"),
-                    bundle.getString("green"),
-                    bundle.getString("yellow"),
-                    bundle.getString("blue"),
-                    bundle.getString("pink"),
-                    bundle.getString("skyblue"),
-                    bundle.getString("white")
-                    );
-            textColorChoiceBox.setValue("default");
-
-            // ChoiceBox 생성 (BgColor)
-            ChoiceBox<String> bgColorChoiceBox = new ChoiceBox<>();
-            bgColorChoiceBox.setLayoutX(70.0);
-            bgColorChoiceBox.setLayoutY(yOffset);
-            bgColorChoiceBox.setPrefHeight(21.0);
-            bgColorChoiceBox.setPrefWidth(55.0);
-            bgColorChoiceBox.setId("mqttMsgBgColor" + i); // ID 설정
-            bgColorChoiceBox.getItems().addAll(
-                    "default",
-                    bundle.getString("black"),
-                    bundle.getString("red"),
-                    bundle.getString("green"),
-                    bundle.getString("yellow"),
-                    bundle.getString("blue"),
-                    bundle.getString("pink"),
-                    bundle.getString("skyblue"),
-                    bundle.getString("white")
-            );
-            bgColorChoiceBox.setValue("default");
-
-            // ChoiceBox 생성 (Font)
-            ChoiceBox<String> fontChoiceBox = new ChoiceBox<>();
-            fontChoiceBox.setLayoutX(139.0);
-            fontChoiceBox.setLayoutY(yOffset);
-            fontChoiceBox.setPrefHeight(21.0);
-            fontChoiceBox.setPrefWidth(55.0);
-            fontChoiceBox.setId("mqttMsgFont" + i); // ID 설정
-            fontChoiceBox.getItems().addAll(
-                    "default",
-                    bundle.getString("fontGroup1"),
-                    bundle.getString("fontGroup2"),
-                    bundle.getString("fontGroup3"),
-                    bundle.getString("fontGroup4")
-            );
-            fontChoiceBox.setValue("default");
-
-            // ChoiceBox 생성 (Size)
-            ChoiceBox<String> sizeChoiceBox = new ChoiceBox<>();
-            sizeChoiceBox.setLayoutX(208.0);
-            sizeChoiceBox.setLayoutY(yOffset);
-            sizeChoiceBox.setPrefHeight(21.0);
-            sizeChoiceBox.setPrefWidth(55.0);
-            sizeChoiceBox.setId("mqttMsgSize" + i); // ID 설정
-            sizeChoiceBox.getItems().add("default");
-            for (int j = 16; j <=64; j+=4) {
-                sizeChoiceBox.getItems().add(String.valueOf(j));
-            }
-            sizeChoiceBox.setValue("default");
-
-            mqttMsgPane.getChildren().addAll(textField, textColorChoiceBox, bgColorChoiceBox, fontChoiceBox, sizeChoiceBox);
-            textFields.add(textField);
-            textColorChoiceBoxes.add(textColorChoiceBox);
-            bgColorChoiceBoxes.add(bgColorChoiceBox);
-            fontChoiceBoxes.add(fontChoiceBox);
-            sizeChoiceBoxes.add(sizeChoiceBox);
+        for (int i = 0; i <= 4*xLimit; i++) {
+            xStart.getItems().add(String.valueOf(4*i));
+            xEnd.getItems().add(String.valueOf(4*i));
         }
+        for (int i = 0; i <= 4*yLimit; i++) {
+            yStart.getItems().add(String.valueOf(4*i));
+            yEnd.getItems().add(String.valueOf(4*i));
+        }
+
+        xStart.setValue("0");
+        yStart.setValue("0");
+        xEnd.setValue("0");
+        yEnd.setValue("0");
     }
 
     private void selectEffect(String effect, ChoiceBox<String> directionBox) {
         //배경.색상깜빡이기 작동되나 확인.
         switch (effect) {
             case "정지효과" ->
-                    directionBox.setItems(FXCollections.observableArrayList("방향없음"));
-            case "이동하기" ->
-                    directionBox.setItems(FXCollections.observableArrayList("왼쪽"));
-            case "색상깜빡이기" ->
-                    directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "노란색", "전체"));
-            case "점멸이동" ->
-                    directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "노란색", "전체"));
+                    directionBox.setItems(FXCollections.observableArrayList("방향없음", "밝아지기", "어두워지기", "수평 반사", "수직 반사"));
+            case "전체효과" -> directionBox.setItems(FXCollections.observableArrayList("무작위효과"));
+            case "이동하기", "닦아내기", "블라인드" ->
+                    directionBox.setItems(FXCollections.observableArrayList("왼쪽", "오른쪽", "위쪽", "아래"));
+            case "커튼효과" -> directionBox.setItems(FXCollections.observableArrayList("수평밖으로", "수평안으로", "수직밖으로", "수직안으로"));
+            case "확대효과" -> directionBox.setItems(FXCollections.observableArrayList("왼쪽", "오른쪽", "위쪽", "아래쪽", "오른쪽아래로"));
+            case "회전효과" -> directionBox.setItems(FXCollections.observableArrayList("시계반대1", "시계방향1", "시계반대2", "시계방향2"));
+            case "배경깜박이기" ->
+                    directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "노란색", "흰색", "전체(순차적)"));
+            case "색상깜박이기" ->
+                    directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "노란색", "흰색", "전체(순차적)", "전체(동시에)"));
+            case "3D 효과" -> directionBox.setItems(FXCollections.observableArrayList("왼쪽"));
+            case "효과없음" -> directionBox.setDisable(true);
         }
 
 
         directionBox.getSelectionModel().selectFirst();
     }
 
-    private int getEffect(String effect, String direction){
-        if (effect.equals("정지")){
-            return 10;
-        }
+    private void updateInDirections(String effect) {
+        selectEffect(effect, inDirection);
+    }
 
-        if (effect.equals("좌로 이동")){
-            return 20;
-        }
+    private void updateOutDirections(String effect) {
+        selectEffect(effect, outDirection);
+    }
 
-        if (effect.equals("색상깜빡이기")){
-            switch (direction){
-                case "빨간색": return 31;
-                case "초록색": return 32;
-                case "노란색": return 33;
-                case "전체": return 30;
-            }
-        }
+    //TODO : configService에 mqtt 메세지용 구분해서 하나 만들기.
+    private void doMsgSettings() {
+        String msgNum = getMsgNum();
+        displayControl.setValue(configService.getProperty("MQTTdisplayControl"+msgNum));
+        displayMethod.setValue(configService.getProperty("MQTTdisplayMethod"+msgNum));
+        charCodes.setValue(configService.getProperty("MQTTcharCode"+msgNum));
+        fontSize.setValue(configService.getProperty("MQTTfontSize"+msgNum));
+        fontGroup.setValue(configService.getProperty("MQTTfontGroup"+msgNum));
+        effectIn.setValue(configService.getProperty("MQTTeffectIn"+msgNum));
+        inDirection.setValue(configService.getProperty("MQTTeffectInDirection"+msgNum));
+        effectOut.setValue(configService.getProperty("MQTTeffectOut"+msgNum));
+        outDirection.setValue(configService.getProperty("MQTTeffectOutDirection"+msgNum));
+        effectSpeed.setValue(configService.getProperty("MQTTeffectSpeed"+msgNum));
+        effectTime.setValue(configService.getProperty("MQTTeffectTime"+msgNum));
+        xStart.setValue(configService.getProperty("MQTTxStart"+msgNum));
+        yStart.setValue(configService.getProperty("MQTTyStart"+msgNum));
+        xEnd.setValue(configService.getProperty("MQTTxEnd"+msgNum));
+        yEnd.setValue(configService.getProperty("MQTTyEnd"+msgNum));
+        bgImg.setValue(configService.getProperty("MQTTbgImg"+msgNum));
+        textColor.setText(configService.getProperty("MQTTtextColor"+msgNum));
+        bgColor.setText(configService.getProperty("MQTTbgColor"+msgNum));
+        msg.setText(configService.getProperty("MQTTtext"+msgNum));
+    }
 
-        if (effect.equals("점멸이동")){
-            switch (direction){
-                case "빨간색": return 41;
-                case "초록색": return 42;
-                case "노란색": return 43;
-                case "전체": return 40;
-            }
+    private String getMsgNum() {
+        String i = "0";
+        if (!realTimeMsg.isSelected()) {
+            i= pageMsgCnt.getValue();
         }
-
-        return 10;
+        String j;
+        if (section0.isSelected()){
+            j="0";
+        } else if (section1.isSelected()) {
+            j="1";
+        } else {
+            j="2";
+        }
+        return i+j;
     }
 }

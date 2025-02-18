@@ -135,7 +135,6 @@ public class FirmwareUpgradeController {
                         "-fx-background-radius: 5; " +
                         "-fx-border-radius: 5;"
         );
-
     }
 
 
@@ -192,7 +191,7 @@ public class FirmwareUpgradeController {
                 startByte = 516;
                 length = 38;
             } else {
-                startByte = 15796;
+                startByte = 15744;
                 length = 38;
             }
 
@@ -237,8 +236,10 @@ public class FirmwareUpgradeController {
 
         String result1;
         String result2;
+
         if (index1 != -1 && index1 + "DIBD".length() + 4 <= firmwareInformationText.length()) {
             result1 = firmwareInformationText.substring(index1 + "DIBD".length(), index1 + "DIBD".length() + 4);
+            System.out.println("result1 = " + result1);
         } else {
             logService.errorLog("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
             return;
@@ -246,6 +247,7 @@ public class FirmwareUpgradeController {
         if (index2 == -1) {
             index2 = firmwareFileInformationText.lastIndexOf("DB");
             result2 = firmwareFileInformationText.substring(index2 + "DB".length(), index2 + "DB".length() + 4);
+            System.out.println("result2 = " + result2);
         } else if (index2 != -1 && index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
             result2 = firmwareFileInformationText.substring(index2 + "DIBD".length(), index2 + "DIBD".length() + 4);
         } else {
