@@ -259,6 +259,7 @@ public class FontService {
                                     fontPackets.add(fontDatum);
                                 }
                             } catch (IOException e) {
+                                logService.warningLog(e.getMessage());
                                 throw new RuntimeException(e);
                             }
                         } else{

@@ -106,7 +106,7 @@ public class HEXMessageController {
     private TextField bgColor;
 
     @FXML
-    private TextField msg;
+    private TextField msgPreview;
 
     ConfigService configService;
 
@@ -243,7 +243,7 @@ public class HEXMessageController {
         bgImg.setValue(configService.getProperty("bgImg"+msgNum));
         textColor.setText(configService.getProperty("textColor"+msgNum));
         bgColor.setText(configService.getProperty("bgColor"+msgNum));
-        msg.setText(configService.getProperty("text"+msgNum));
+        msgPreview.setText(configService.getProperty("text"+msgNum));
     }
 
     public void save() {
@@ -270,7 +270,7 @@ public class HEXMessageController {
         configService.setProperty("bgImg"+msgNum, bgImg.getValue());
         configService.setProperty("textColor"+msgNum, textColor.getText());
         configService.setProperty("bgColor"+msgNum, bgColor.getText());
-        configService.setProperty("text"+msgNum, msg.getText());
+        configService.setProperty("text"+msgNum, msgPreview.getText());
     }
 
     public void send() {
@@ -302,7 +302,7 @@ public class HEXMessageController {
         String bgImgValue = bgImg.getValue();
         String textColorValue = textColor.getText();
         String bgColorValue = bgColor.getText();
-        String text = msg.getText();
+        String text = msgPreview.getText();
 
 
         StringBuilder msg = new StringBuilder("10 02 ");
@@ -316,17 +316,17 @@ public class HEXMessageController {
             msg.append(String.format("%02X ", RS485_ADDR_NUM));
         }
 
-        //msg 길이
-        byte[] textBytes;
-        try {
-            if (charCodesValue.equals(bundle.getString("CombinationType")))
-                textBytes = text.getBytes("KSC5601");
-            else textBytes = text.getBytes(StandardCharsets.UTF_16BE);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        msg.append("00 ").append(String.format("%02x", (textBytes.length * 2) + 17));
-        msg.append(" 94 ");
+            //msg 길이
+            byte[] textBytes;
+            try {
+                if (charCodesValue.equals(bundle.getString("CombinationType")))
+                    textBytes = text.getBytes("MS949");
+                else textBytes = text.getBytes(StandardCharsets.UTF_16BE);
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            msg.append("00 ").append(String.format("%02x", (textBytes.length * 2) + 17));
+            msg.append(" 94 ");
 
         //실시간메세지
         if (msgType.equals(bundle.getString("realTimeMsg"))) {

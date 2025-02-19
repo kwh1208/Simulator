@@ -157,7 +157,7 @@ public class AsciiMsgTransceiver {
 
             // 숫자 요일을 한글 요일로 대체하여 새로운 시간 문자열 생성
             StringBuilder sb = new StringBuilder();
-            sb.append(time, 0, 2).append("-").append(time, 2, 4).append("-").append(time, 4, 6).append("-")
+            sb.append(time, 0, 2).append("-").append(time, 2, 4).append("-").append(time, 4, 6)
                     .append(" (").append(weekdayKorean).append(") ").append(time, 7, 9).append(":").append(time, 9, 11).append(":").append(time, 11, 13);
 
             logService.updateInfoLog("컨트롤러 시간은 " + sb + "입니다.");

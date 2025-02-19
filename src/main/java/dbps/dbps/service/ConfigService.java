@@ -108,7 +108,7 @@ public class ConfigService {
 
             for (int i = 0; i <= 10; i++) {//페이지 개수(0은 실시간)
                 for (int j =0; j < 3; j++) {//섹션 개수
-                    defaultProperties.setProperty("displayControl"+i+j, "ON");
+                    defaultProperties.setProperty("displayControl"+i+j, "On");
                     defaultProperties.setProperty("displayMethod"+i+j, "Clear");
                     defaultProperties.setProperty("charCode"+i+j, "한글 조합형");
                     defaultProperties.setProperty("fontSize"+i+j, "16(Standard)");
@@ -135,7 +135,7 @@ public class ConfigService {
                 }
             }
 
-            defaultProperties.setProperty("displayControlDefault", "ON");
+            defaultProperties.setProperty("displayControlDefault", "On");
             defaultProperties.setProperty("displayMethodDefault", "Clear");
             defaultProperties.setProperty("charCodeDefault", "한글 조합형");
             defaultProperties.setProperty("fontSizeDefault", "16(Standard)");

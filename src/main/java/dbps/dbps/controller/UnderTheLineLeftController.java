@@ -172,17 +172,17 @@ public class UnderTheLineLeftController {
         // ✅ 요일 변환 (2자리)
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
         String dayStr = switch (dayOfWeek) {
-            case Calendar.MONDAY -> "01";
-            case Calendar.TUESDAY -> "02";
-            case Calendar.WEDNESDAY -> "03";
-            case Calendar.THURSDAY -> "04";
-            case Calendar.FRIDAY -> "05";
-            case Calendar.SATURDAY -> "06";
-            case Calendar.SUNDAY -> "00";
+            case Calendar.MONDAY -> "01 ";
+            case Calendar.TUESDAY -> "02 ";
+            case Calendar.WEDNESDAY -> "03 ";
+            case Calendar.THURSDAY -> "04 ";
+            case Calendar.FRIDAY -> "05 ";
+            case Calendar.SATURDAY -> "06 ";
+            case Calendar.SUNDAY -> "00 ";
             default -> "99"; // 에러 방지
         };
 
-        msg += time + " " + dayStr + " 10 03";
+        msg += time.substring(0,9) + dayStr + time.substring(9) + " 10 03";
 
         hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
     }

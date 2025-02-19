@@ -44,7 +44,7 @@ public class Constants {
 
     public static int SERIAL_BAUDRATE = 115200;
 
-    public static String OPEN_PORT_NAME = null;
+    public static String OPEN_PORT_NAME = "COM1";
 
     public static int RS485_ADDR_NUM = 0;
 
