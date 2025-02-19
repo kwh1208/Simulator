@@ -231,9 +231,6 @@ if (row != Integer.parseInt(msg.substring(6, 8)) || column != Integer.parseInt(m
             if (cmd.equals("50")) {
                 logService.updateInfoLog("밝기 조절에 성공했습니다.");
             }
-            if (cmd.equals("52")) {
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
-            }
             if (cmd.equals("54")) {
                 logService.updateInfoLog("표출 속도 변경에 성공했습니다.");
             }

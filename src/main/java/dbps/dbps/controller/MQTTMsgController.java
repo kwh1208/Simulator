@@ -13,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -87,7 +88,6 @@ public class MQTTMsgController {
         configService = ConfigService.getInstance();
         bundle= ResourceManager.getInstance().getBundle();
         mqttManager = MQTTManager.getInstance();
-        mqttManager.setMSG();
 
         realTimeMsg.setToggleGroup(msgTypeGroup);
         pageMsg.setToggleGroup(msgTypeGroup);
@@ -165,9 +165,9 @@ public class MQTTMsgController {
         configService.setProperty("MQTTtext"+msgNum, msg.getText());
     }
 
-    public void send() {
+    public void send() throws UnsupportedEncodingException {
         String msg = makeMQTTMsg();
-
+        mqttManager.sendMsg();
         save();
     }
 
@@ -195,12 +195,14 @@ public class MQTTMsgController {
         doMsgSettings();
     }
 
-    private String makeMQTTMsg() {
+    private String makeMQTTMsg() throws UnsupportedEncodingException {
         String msgType = ((RadioButton) msgTypeGroup.getSelectedToggle()).getText();
 
-        if (msgType.equals("realTimeMsg")) {
+        if (msgType.equals(bundle.getString("realTimeMsg"))) {
             try {
-                makeRealTimeMsg();
+                String s = makeRealTimeMsg();
+                System.out.println(s);
+                return s;
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
@@ -262,7 +264,6 @@ public class MQTTMsgController {
     private String makeRealTimeMsg() throws JsonProcessingException {
         String common = "\"2.RTE058.6.1."+((RadioButton) sectionGroup.getSelectedToggle()).getText()+".";
 
-
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
@@ -272,12 +273,13 @@ public class MQTTMsgController {
         jsonMessage.put("MSG_VER", Integer.parseInt(java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"))));
         jsonMessage.put("MSG_ID", System.currentTimeMillis() / 1000);
 
+
         // MOID 객체 생성 (순서 보장)
         Map<String, Object> moid = new LinkedHashMap<>();
-        moid.put("2.RTE058.6.1.1.1", Arrays.asList(displayMethod.getValue().equals("Clear") ? 1 : 0, "On".equals(displayMethod.getValue()) ? 99 : "Off".equals(displayMethod.getValue()) ? 0 : Integer.parseInt(displayMethod.getValue())));
-        moid.put("2.RTE058.6.1.1.2", Arrays.asList(30, 10, 15, 3));
-        moid.put("2.RTE058.6.1.1.3", Arrays.asList(Integer.parseInt(xStart.getValue()), Integer.parseInt(xEnd.getValue()), Integer.parseInt(yStart.getValue()), Integer.parseInt(yEnd.getValue())));
-        moid.put("2.RTE058.6.1.1.4", bgImg.getValue().equals("사용안함") ? 0 : Integer.parseInt(bgImg.getValue()));
+        moid.put(common+"1", Arrays.asList(displayMethod.getValue().equals("Clear") ? 1 : 0, "On".equals(displayControl.getValue()) ? 99 : "Off".equals(displayControl.getValue()) ? 0 : Integer.parseInt(displayControl.getValue())));
+        moid.put(common+"2", Arrays.asList(30, 10, 15, 3));
+        moid.put(common+"3", Arrays.asList(Integer.parseInt(xStart.getValue()), Integer.parseInt(xEnd.getValue()), Integer.parseInt(yStart.getValue()), Integer.parseInt(yEnd.getValue())));
+        moid.put(common+"4", bgImg.getValue().equals("사용안함") ? 0 : Integer.parseInt(bgImg.getValue()));
 
         // MOID 내부 리스트도 순서 보장
         List<Object> customList = new ArrayList<>();
@@ -285,7 +287,7 @@ public class MQTTMsgController {
         customList.add(Arrays.asList("확인", 4));        // 두 번째 배열
         customList.add(Collections.singletonList("부탁드립니다")); // 세 번째 배열
 
-        moid.put("2.RTE058.6.1.1.5", customList);
+        moid.put(common+"5", customList);
 
         // 최종 JSON 메시지에 MOID 추가
         jsonMessage.put("MOID", moid);

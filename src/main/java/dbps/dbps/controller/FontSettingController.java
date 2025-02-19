@@ -927,8 +927,4 @@ public class FontSettingController {
                 return 0; // 알 수 없는 타입 처리
         }
     }
-
-
-
-
 }
