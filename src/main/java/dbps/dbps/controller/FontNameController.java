@@ -154,13 +154,12 @@ public class FontNameController {
                             group2font3.setText(fontNames[5]);
                         });
                     } catch (Exception ex) {
-                        logService.errorLog("결과 처리 중 오류 발생: " + ex.getMessage());
+
                     }
                 });
 
                 // 작업 실패 시 처리
                 readTask.setOnFailed(e -> {
-                    logService.errorLog("메시지 송수신 실패: " + readTask.getException().getMessage());
                 });
 
                 // 작업 실행

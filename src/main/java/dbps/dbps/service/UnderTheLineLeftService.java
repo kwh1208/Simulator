@@ -18,7 +18,6 @@ public class UnderTheLineLeftService {
     public TextField timeBoard;
 
     public void setTime(String time){
-        System.out.println(time);
         timeBoard.setText(time);
     }
 

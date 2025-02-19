@@ -9,7 +9,7 @@
    <Pane layoutX="15.0" layoutY="14.0" prefHeight="161.0" prefWidth="373.0" style="-fx-border-color: black;">
       <RadioButton fx:id="serialRadioBtn" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="80.0" style="-fx-background-color: #333333;" text="Serial" />
       <Label layoutX="14.0" layoutY="20.0" prefHeight="13.0" text="%comPort" />
-      <ComboBox fx:id="serialPortComboBox" layoutX="235.0" layoutY="11.0" prefHeight="25.0" prefWidth="120.0" value="COM4">
+      <ComboBox fx:id="serialPortComboBox" layoutX="235.0" layoutY="11.0" prefHeight="25.0" prefWidth="120.0" value="COM1">
          <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>

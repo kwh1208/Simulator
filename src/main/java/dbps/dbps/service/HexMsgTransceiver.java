@@ -135,8 +135,9 @@ public class HexMsgTransceiver {
         return null;
     }
 
-    public String sendMessages(String msg, ProgressIndicator progressIndicator) {
-        return String.valueOf(sendByteMessages(hexStringToByteArray(msg), progressIndicator));
+    public void sendMessages(String msg, ProgressIndicator progressIndicator) {
+        byte[] bytes = hexStringToByteArray(msg);
+        sendByteMessages(bytes, progressIndicator);
     }
 
     private void msgReceive(String receiveMsg, byte[] msg) {
@@ -253,13 +254,13 @@ public class HexMsgTransceiver {
                 dayMap.put("04", "목"); // 수요일
                 dayMap.put("05", "금"); // 목요일
                 dayMap.put("06", "토"); // 금요일
-                dayMap.put("07", "일"); // 토요일
+                dayMap.put("00", "일"); // 토요일
             }
             String dayPart = splitMsg[9];
 
             String dayOfWeek = dayMap.getOrDefault(dayPart, "?");
 
-            time.append(splitMsg[6]).append("-").append(splitMsg[7]).append("-").append(splitMsg[8]).append(" (").append(dayOfWeek).append(")")
+            time.append(splitMsg[6]).append("-").append(splitMsg[7]).append("-").append(splitMsg[8]).append(" (").append(dayOfWeek).append(") ")
                     .append(splitMsg[10]).append(":").append(splitMsg[11]).append(":").append(splitMsg[12]);
             try {
                 underTheLineLeftService.setTime(time.toString());

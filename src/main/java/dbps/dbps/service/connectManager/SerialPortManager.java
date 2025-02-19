@@ -412,7 +412,6 @@ public class SerialPortManager {
                         // 212바이트를 읽었으면 결과 출력
                         String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
                         dabitNetService.updateUI(result);
-                        System.out.println("result = " + result);
                         return result;
                     } else {
                         throw new IOException("212 바이트를 읽는 데 실패했습니다. 총 읽은 바이트: " + totalBytesRead);

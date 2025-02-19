@@ -152,14 +152,7 @@ public class FirmwareUpgradeController {
             if (isRS){
                 msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+ "00 02 6F F1 10 03";
             }
-            String version = hexMsgTransceiver.sendMessages(msg, firmwareProgressIndicator);
-            String[] version_split = version.split(" ");
-            StringBuilder result = new StringBuilder();
-
-            for (int i = 7; i < version_split.length; i++) {
-                result.append((char) Integer.parseInt(version_split[i], 16));
-            }
-            firmwareInformation.setText(result.toString());
+            hexMsgTransceiver.sendMessages(msg, firmwareProgressIndicator);
         }
     }
 
