@@ -9,7 +9,7 @@
     <Label layoutX="14.0" layoutY="21.0" text="BoardList" />
     <ListView fx:id="dbList" layoutX="14.0" layoutY="54.0" prefHeight="521.0" prefWidth="200.0" />
     <TabPane layoutX="224.0" layoutY="14.0" prefHeight="521.0" prefWidth="380.0" tabClosingPolicy="UNAVAILABLE">
-        <Tab text="NetWork">
+        <Tab fx:id="networkTab" text="NetWork" style="-fx-padding: 10px">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="492.0" prefWidth="379.0">
                 <Label layoutX="30.0" layoutY="20.0" text="Board Name" />
                 <TextField fx:id="boardNameTF" layoutX="134.0" layoutY="15.0" />
@@ -40,7 +40,7 @@
             </AnchorPane>
         </Tab>
 
-        <Tab fx:id="wifiTab" text="Wifi">
+        <Tab fx:id="wifiTab" text="Wifi" style="-fx-padding: 25px">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <Label layoutX="22.0" layoutY="31.0" text="Mode" />
                 <Pane layoutX="74.0" layoutY="21.0" prefHeight="35.0" prefWidth="319.0">
@@ -55,7 +55,7 @@
             </AnchorPane>
         </Tab>
 
-        <Tab text="COMM">
+        <Tab fx:id="commTab" text="COMM" style="-fx-padding: 15px" >
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <Pane layoutX="14.0" layoutY="14.0" prefHeight="171.0" prefWidth="350.0" style="-fx-border-color: black;-fx-border-width: 1px">
                     <RadioButton fx:id="isUDP" layoutX="11.0" layoutY="-8.0" mnemonicParsing="false" selected="true" style="-fx-background-color: #333333" text="UDP" />
@@ -109,7 +109,7 @@
             </AnchorPane>
         </Tab>
 
-        <Tab text="DB300">
+        <Tab fx:id="db300Tab" text="DB300" style="-fx-padding: 15px">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="492.0" prefWidth="350.0">
                 <Pane layoutX="14.0" layoutY="20.0" prefHeight="70.0" prefWidth="350.0" style="-fx-border-color: black;-fx-border-width: 1px;">
                     <Label layoutX="14.0" layoutY="-6.0" prefHeight="13.0" style="-fx-background-color: #333333" text="Communication Type" />

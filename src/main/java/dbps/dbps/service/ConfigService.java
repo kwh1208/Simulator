@@ -83,20 +83,18 @@ public class ConfigService {
             defaultProperties.setProperty("lastDisplaySignal", "16D-P16D1S11");
             defaultProperties.setProperty("PROGRAM_LANGUAGE", "한국어");
 
-            defaultProperties.setProperty("fontGroup1Size", "8X16/16X16");
-            defaultProperties.setProperty("fontGroup1FontPath1", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
-            defaultProperties.setProperty("fontGroup1FontType1", "영어(ASCII)");
-            defaultProperties.setProperty("fontGroup1FontPath2", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
+            defaultProperties.setProperty("fontGroup1FontPath1", "ENG 08x16-DABIT(표준).fnt");
+            defaultProperties.setProperty("fontGroup1FontType1", "영어");
+            defaultProperties.setProperty("fontGroup1FontPath2", "KOR 16x16-DABIT(표준).fnt");
             defaultProperties.setProperty("fontGroup1FontType2", "한글조합형");
-            defaultProperties.setProperty("fontGroup1FontPath3", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
+            defaultProperties.setProperty("fontGroup1FontPath3", "USER 16x16-Special(표준).fnt");
             defaultProperties.setProperty("fontGroup1FontType3", "사용자폰트");
 
-            defaultProperties.setProperty("fontGroup2Size", "8X16/16X16");
-            defaultProperties.setProperty("fontGroup2FontPath1", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
-            defaultProperties.setProperty("fontGroup2FontType1", "영어(ASCII)");
-            defaultProperties.setProperty("fontGroup2FontPath2", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
+            defaultProperties.setProperty("fontGroup2FontPath1", "ENG 08x16-DABIT(표준).fnt");
+            defaultProperties.setProperty("fontGroup2FontType1", "영어");
+            defaultProperties.setProperty("fontGroup2FontPath2", "KOR 16x16-DABIT(표준).fnt");
             defaultProperties.setProperty("fontGroup2FontType2", "한글조합형");
-            defaultProperties.setProperty("fontGroup2FontPath3", new File(System.getProperty("user.dir")).getAbsolutePath()+File.separator+"font");
+            defaultProperties.setProperty("fontGroup2FontPath3", "USER 16x16-Special(표준).fnt");
             defaultProperties.setProperty("fontGroup2FontType3", "사용자폰트");
 
             defaultProperties.setProperty("fontGroup1selected", "True");

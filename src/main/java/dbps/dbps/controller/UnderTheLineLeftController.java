@@ -128,7 +128,7 @@ public class UnderTheLineLeftController {
         if (IS_ASCII) {
             String msg = "![0030";
             if (isRS) {
-                msg = "![" + convertRS485AddrASCii() + "030!]";
+                msg = "![" + convertRS485AddrASCii() + "030";
             }
 
             // ✅ 현재 날짜 가져오기

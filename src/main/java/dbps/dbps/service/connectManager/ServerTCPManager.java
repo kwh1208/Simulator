@@ -94,14 +94,16 @@ public class ServerTCPManager {
                     int totalBytesRead = input.read(buffer);
 
                     if (totalBytesRead > 0) {
-                        String response = bytesToHex(buffer, totalBytesRead);
-
-                        logService.updateInfoLog("받은 메세지 : "+response);
-                        if (response.isEmpty()) {
+                        String result = bytesToHex(buffer, totalBytesRead);
+                        if (result.contains("52 58 28")) {
+                            result = result.substring(result.indexOf("10 02"));
+                        }
+                        logService.updateInfoLog("받은 메세지 : "+result);
+                        if (result.isEmpty()) {
                             throw new IOException("서버 응답이 비어 있습니다.");
                         }
 
-                        return response;
+                        return result;
                     } else {
                         throw new IOException("서버에서 응답이 없습니다.");
                     }
@@ -132,13 +134,15 @@ public class ServerTCPManager {
             int totalBytesRead = input.read(buffer);
 
             if (totalBytesRead > 0) {
-                String response = bytesToHex(buffer, totalBytesRead);
-
-                if (response.isEmpty()) {
+                String result = bytesToHex(buffer, totalBytesRead);
+                if (result.contains("52 58 28")) {
+                    result = result.substring(result.indexOf("10 02"));
+                }
+                if (result.isEmpty()) {
                     throw new IOException("서버 응답이 비어 있습니다.");
                 }
 
-                return response;
+                return result;
             } else {
                 throw new IOException("서버에서 응답이 없습니다.");
             }

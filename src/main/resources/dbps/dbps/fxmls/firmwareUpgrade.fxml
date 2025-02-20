@@ -6,9 +6,9 @@
 <AnchorPane fx:id="firmwareUpgradeAP" prefHeight="615.0" prefWidth="500.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.FirmwareUpgradeController">
    <children>
       <Label layoutX="39.0" layoutY="30.0" text="%controllerFirmwareInfo" />
-      <TextArea fx:id="firmwareInformation" editable="false" layoutX="39.0" layoutY="65.0" prefHeight="216.0" prefWidth="431.0" style="-fx-font-size: 14px;-fx-text-fill: white;" />
+      <TextArea fx:id="firmwareInformation" editable="false" layoutX="39.0" layoutY="65.0" prefHeight="216.0" prefWidth="431.0" style="-fx-font-size: 13px;-fx-text-fill: white;" />
       <Label layoutX="39.0" layoutY="307.0" text="%uploadFirmwareInfo" />
-      <TextArea fx:id="firmwareFileInformation" editable="false" layoutX="39.0" layoutY="339.0" prefHeight="55.0" prefWidth="431.0" style="-fx-font-size: 14px;-fx-text-fill: white;" />
+      <TextArea fx:id="firmwareFileInformation" editable="false" layoutX="39.0" layoutY="339.0" prefHeight="55.0" prefWidth="431.0" style="-fx-font-size: 13px;-fx-text-fill: white;" />
       <Label layoutX="39.0" layoutY="416.0" text="%filePath" />
       <TextField fx:id="fileLocation" layoutX="39.0" layoutY="441.0" prefHeight="21.0" prefWidth="431.0" />
       <Button layoutX="39.0" layoutY="485.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="30.0" prefWidth="125.0" text="%read" />

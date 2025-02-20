@@ -16,6 +16,9 @@ import javafx.stage.Stage;
 
 import java.util.*;
 
+import static dbps.dbps.Constants.convertRS485AddrASCii;
+import static dbps.dbps.Constants.isRS;
+
 public class BGScheduleController {
 
     public ProgressIndicator progressIndicator;
@@ -137,6 +140,9 @@ public class BGScheduleController {
 
     public void send() {
         String sendMsg = "![0020";
+        if (isRS){
+            sendMsg = "!["+convertRS485AddrASCii()+"020";
+        }
         for (CheckBox value : tagMap.keySet()) {
             sendMsg += String.format("%03d", Integer.parseInt(value.getText().replaceAll("[^0-9]", "")))+" ";
         }

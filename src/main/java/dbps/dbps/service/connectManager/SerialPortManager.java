@@ -411,6 +411,9 @@ public class SerialPortManager {
                     if (totalBytesRead <= 230) {
                         // 212바이트를 읽었으면 결과 출력
                         String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+                        if (result.contains("TX")) {
+                            result = result.substring(0, result.indexOf("TX") + 2); // "TX" 포함하여 잘라냄
+                        }
                         dabitNetService.updateUI(result);
                         return result;
                     } else {
@@ -418,6 +421,9 @@ public class SerialPortManager {
                     }
                 } catch (SerialPortTimeoutException e){
                     String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+                    if (result.contains("TX")) {
+                        result = result.substring(0, result.indexOf("TX") + 2); // "TX" 포함하여 잘라냄
+                    }
                     String[] lines = result.split("\r?\n"); // 윈도우(\r\n)와 유닉스(\n) 모두 대응 가능
                     int lineCount = lines.length;
                     if (lineCount>=12){

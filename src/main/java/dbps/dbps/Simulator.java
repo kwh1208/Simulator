@@ -73,7 +73,7 @@ public class Simulator extends Application {
         // Stage 설정
         stage.setResizable(false);
         stage.setScene(scene);
-        stage.setTitle("dbProtocolSimulator");
+        stage.setTitle("dbProtocolSimulator V1.0.0");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         stage.show();
     }

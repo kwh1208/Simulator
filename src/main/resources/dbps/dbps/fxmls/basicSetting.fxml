@@ -10,17 +10,17 @@
       fx:controller="dbps.dbps.controller.BasicSettingController" layoutX="19.0" layoutY="57.0" prefHeight="95.0"
       prefWidth="310.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
     <Label alignment="CENTER" layoutX="85.0" layoutY="-12.0" prefHeight="18.0" prefWidth="140.0" text="%programSetting"
-           style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 17; -fx-origin: top;"/>
-    <Label layoutX="14.0" layoutY="30.0" text="%protocolFormat" style="-fx-font-size: 15"/>
+           style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 16; -fx-origin: top;"/>
+    <Label layoutX="14.0" layoutY="30.0" text="%protocolFormat" style="-fx-font-size: 14"/>
     <ComboBox fx:id="protocolFormat" layoutX="150.0" layoutY="24.0" prefHeight="25.0" prefWidth="150.0"
-               value="%ASCiiProtocol" style="-fx-font-size: 13px">
+               value="%ASCiiProtocol" style="-fx-font-size: 12px">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
     </ComboBox>
-    <Label layoutX="14.0" layoutY="66.0" text="%programLanguage" style="-fx-font-size: 15"/>
-    <ComboBox fx:id="programLanguage" layoutX="150.0" layoutY="60.0" prefHeight="25.0" prefWidth="150" value="한국어" style="-fx-font-size: 13px">
+    <Label layoutX="14.0" layoutY="66.0" text="%programLanguage" style="-fx-font-size: 14"/>
+    <ComboBox fx:id="programLanguage" layoutX="150.0" layoutY="60.0" prefHeight="25.0" prefWidth="150" value="한국어" style="-fx-font-size: 12px">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="한국어"/>
