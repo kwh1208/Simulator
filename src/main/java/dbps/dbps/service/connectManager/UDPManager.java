@@ -225,6 +225,7 @@ public class UDPManager {
                 if (socketList == null || socketList.isEmpty()) {
                     connect300All();
                 }
+
                 List<String> receivedMessages = new ArrayList<>();
                 InetAddress serverAddr = InetAddress.getByName(IP);
 
@@ -233,28 +234,37 @@ public class UDPManager {
                         if (socket == null || socket.isClosed()) {
                             continue;
                         }
+
                         InetAddress localAddr = socket.getLocalAddress();
                         NetworkInterface netInterface = NetworkInterface.getByInetAddress(localAddr);
-                        String interfaceName = (netInterface != null) ? netInterface.getDisplayName().toLowerCase() : "unknown";
+
+                        if (netInterface == null || !netInterface.isUp() || netInterface.isLoopback()) {
+                            continue; // 사용 불가능한 네트워크 인터페이스 제외
+                        }
+
+                        boolean hasIpAddress = false;
+                        Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
+                        while (addresses.hasMoreElements()) {
+                            InetAddress addr = addresses.nextElement();
+                            if (!(addr instanceof Inet6Address)) { // IPv6 제외 가능
+                                hasIpAddress = true;
+                                break;
+                            }
+                        }
+                        if (!hasIpAddress) {
+                            continue; // IP가 없는 경우 제외
+                        }
+
+                        String interfaceName = netInterface.getDisplayName().toLowerCase();
 
                         boolean isWifi = interfaceName.contains("wi-fi") || interfaceName.contains("wlan");
-                        boolean isEthernet = (interfaceName.contains("ethernet") || interfaceName.contains("eth") || interfaceName.contains("usb") || interfaceName.contains("thunderbolt"))
-                                && !interfaceName.contains("vmware")
-                                && !interfaceName.contains("virtualbox")
-                                && !interfaceName.contains("hyper-v");
-                        if (isWifi) {
-                            if (!WifiOnly) {
-                                continue;
-                            }
+
+                        if (isWifi && WifiOnly) {
                             socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5107));
                             socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
-                            System.out.println("msg = " + bytesToHex(msg, msg.length));
-                        } else if (isEthernet) {
-                            if (!etherNetOnly) {
-                                continue;
-                            }
+                        } else if (!isWifi && etherNetOnly) {
+                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5107));
                             socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
-                            System.out.println("msg = " + bytesToHex(msg, msg.length));
                         }
 
                         byte[] receiveBuffer = new byte[1024];
@@ -278,12 +288,10 @@ public class UDPManager {
                                     receivedMessages.add(message);
                                 }
                             } catch (SocketTimeoutException e) {
-                                System.out.println("receivePacket = " + bytesToHex(receivePacket.getData(), receivePacket.getLength()));
                                 break;
                             }
                         }
                     }
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -472,7 +480,6 @@ public class UDPManager {
     }
 
     public void disconnectNoLog() {
-        System.out.println("UDPManager.disconnectNoLog");
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
