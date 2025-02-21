@@ -83,6 +83,9 @@ public class SerialPortManager {
 
 
     public void closePort(String portName) {
+        if (KEEP_OPEN){
+            return;
+        }
         synchronized (portLock) {
             SerialPort port = serialPortMap.get(portName);
             if (port != null && port.isOpen()) {
@@ -94,6 +97,9 @@ public class SerialPortManager {
     }
 
     public void closePortNoLog(String portName) {
+        if (KEEP_OPEN){
+            return;
+        }
         synchronized (portLock) {
             SerialPort port = serialPortMap.get(portName);
             if (port != null && port.isOpen()) {
@@ -317,6 +323,50 @@ public class SerialPortManager {
         }
     }
 
+    public void sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
+        String portName = OPEN_PORT_NAME;
+        SerialPort port = serialPortMap.get(portName);
+
+        if (port == null || !isPortOpen(portName)) {
+            openPortNoLog(portName, SERIAL_BAUDRATE);
+            port = serialPortMap.get(portName);
+        }
+        try {
+            OutputStream outputStream = port.getOutputStream();
+            InputStream inputStream = port.getInputStream();
+
+            String log = bytesToHex(msg, 32);
+            log+=" ~ 10 03";
+            logService.updateInfoLog(log);
+
+            outputStream.write(msg);
+
+            // 읽기용 버퍼 초기화
+            byte[] buffer = new byte[1024];
+            int totalBytesRead = 0;
+
+            long startWait = System.currentTimeMillis();
+            long timeout = 150;
+
+            while ((System.currentTimeMillis() - startWait) < timeout) {
+                if (inputStream.available() > 0) {
+                    int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+
+                    if (bytesRead > 0) {
+                        totalBytesRead += bytesRead;
+                        if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                            break;
+                        }
+                    }
+                }
+            }
+            bytesToHex(buffer, totalBytesRead);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
 
     public Task<Integer> findSpeedTask() {
         return new Task<>() {
@@ -411,6 +461,9 @@ public class SerialPortManager {
                     if (totalBytesRead <= 230) {
                         // 212바이트를 읽었으면 결과 출력
                         String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+                        if (result.contains("TX")) {
+                            result = result.substring(0, result.indexOf("TX") + 2); // "TX" 포함하여 잘라냄
+                        }
                         dabitNetService.updateUI(result);
                         return result;
                     } else {
@@ -418,6 +471,9 @@ public class SerialPortManager {
                     }
                 } catch (SerialPortTimeoutException e){
                     String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+                    if (result.contains("TX")) {
+                        result = result.substring(0, result.indexOf("TX") + 2); // "TX" 포함하여 잘라냄
+                    }
                     String[] lines = result.split("\r?\n"); // 윈도우(\r\n)와 유닉스(\n) 모두 대응 가능
                     int lineCount = lines.length;
                     if (lineCount>=12){

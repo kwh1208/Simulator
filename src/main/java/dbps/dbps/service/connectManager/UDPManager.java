@@ -12,6 +12,8 @@ import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static dbps.dbps.Constants.*;
 
@@ -95,6 +97,9 @@ public class UDPManager {
                         result = result.substring(indexTX);
                         result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
                     }
+                    if (result.contains("init_rtcTimeDate Start")){
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                    }
                     logService.updateInfoLog("받은 메세지 :"+result);
                     return result;
                 }catch (IOException e){
@@ -143,7 +148,12 @@ public class UDPManager {
                     }
                     String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
                     if (result.contains("52 58 28")) {
-                        result = result.substring(result.indexOf("10 02"));
+                        Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                        Matcher matcher = pattern.matcher(result);
+
+                        if (matcher.find()) {
+                            result = matcher.group(0); // 전체 매칭된 부분을 추출
+                        }
                     }
                     logService.updateInfoLog("받은 메세지 :"+result);
                     return result;
@@ -188,7 +198,12 @@ public class UDPManager {
             }
             String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
             if (result.contains("52 58 28")) {
-                result = result.substring(result.indexOf("10 02"));
+                Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                Matcher matcher = pattern.matcher(result);
+
+                if (matcher.find()) {
+                    result = matcher.group(0); // 전체 매칭된 부분을 추출
+                }
             }
             return result;
         } catch (IOException e) {
@@ -198,7 +213,57 @@ public class UDPManager {
         }
     }
 
-    List<DatagramSocket> socketList = new ArrayList<>();
+    public String sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
+        if (socket == null||socket.isClosed()) {
+            connectNoLog(IP, PORT);
+        }
+        DatagramPacket receivePacket;
+        try {
+            InetAddress serverAddr = InetAddress.getByName(IP);
+            DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
+            socket.send(sendPacket);
+
+            String log = bytesToHex(msg, 32);
+            log+=" ~ 10 03";
+            logService.updateInfoLog(log);
+
+            byte[] receiveBuffer = new byte[1024];
+            int totalBytesRead = 0;
+            receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+            while (true) {
+                try {
+                    socket.receive(receivePacket);
+                    int bytesRead = receivePacket.getLength();
+                    if (bytesRead > 0) {
+                        totalBytesRead += bytesRead;
+                        // 데이터 처리 로직
+                        if (dataReceivedIsCompleteHex(receiveBuffer, totalBytesRead)) {
+                            break; // 수신 완료 조건 만족 시 루프 종료
+                        }
+                    }
+                } catch (SocketTimeoutException e) {
+                    logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                    throw new RuntimeException();
+                }
+            }
+            String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
+            if (result.contains("52 58 28")) {
+                Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                Matcher matcher = pattern.matcher(result);
+
+                if (matcher.find()) {
+                    result = matcher.group(0); // 전체 매칭된 부분을 추출
+                }
+            }
+            return result;
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            disconnectNoLog();
+        }
+    }
+
+    public static List<DatagramSocket> socketList = new ArrayList<>();
 
     boolean WifiOnly;
     boolean etherNetOnly;
@@ -208,12 +273,11 @@ public class UDPManager {
             @Override
             protected String call() throws IOException {
                 if (socketList == null || socketList.isEmpty()) {
-                    throw new IOException("연결된 소켓이 없습니다.");
+                    connect300All();
                 }
 
                 List<String> receivedMessages = new ArrayList<>();
                 InetAddress serverAddr = InetAddress.getByName(IP);
-
 
                 try {
                     for (DatagramSocket socket : socketList) {
@@ -223,27 +287,35 @@ public class UDPManager {
 
                         InetAddress localAddr = socket.getLocalAddress();
                         NetworkInterface netInterface = NetworkInterface.getByInetAddress(localAddr);
-                        String interfaceName = (netInterface != null) ? netInterface.getDisplayName().toLowerCase() : "unknown";
 
-                        boolean isWifi = interfaceName.contains("wi-fi") || interfaceName.contains("wlan");
-                        boolean isEthernet = (interfaceName.contains("ethernet") || interfaceName.contains("eth") || interfaceName.contains("usb") || interfaceName.contains("thunderbolt"))
-                                && !interfaceName.contains("vmware")
-                                && !interfaceName.contains("virtualbox")
-                                && !interfaceName.contains("hyper-v");
-
-                        if (isWifi) {
-                            if (!WifiOnly) {
-                                continue;
-                            }
-                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5107));
-                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
-                        } else if (isEthernet) {
-                            if (!etherNetOnly) {
-                                continue;
-                            }
-                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
+                        if (netInterface == null || !netInterface.isUp() || netInterface.isLoopback()) {
+                            continue; // 사용 불가능한 네트워크 인터페이스 제외
                         }
 
+                        boolean hasIpAddress = false;
+                        Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
+                        while (addresses.hasMoreElements()) {
+                            InetAddress addr = addresses.nextElement();
+                            if (!(addr instanceof Inet6Address)) { // IPv6 제외 가능
+                                hasIpAddress = true;
+                                break;
+                            }
+                        }
+                        if (!hasIpAddress) {
+                            continue; // IP가 없는 경우 제외
+                        }
+
+                        String interfaceName = netInterface.getDisplayName().toLowerCase();
+
+                        boolean isWifi = interfaceName.contains("wi-fi") || interfaceName.contains("wlan");
+
+                        if (isWifi && WifiOnly) {
+                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5107));
+                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
+                        } else if (!isWifi && etherNetOnly) {
+                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5107));
+                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
+                        }
 
                         byte[] receiveBuffer = new byte[1024];
                         while (true) {
@@ -253,7 +325,16 @@ public class UDPManager {
                                 int bytesRead = receivePacket.getLength();
                                 if (bytesRead > 0) {
                                     String message = new String(receivePacket.getData(), 0, bytesRead);
-                                    Platform.runLater(() -> dabitNetService.updateUI(message));
+                                    if (message.contains("52 58 28")) {
+                                        Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                                        Matcher matcher = pattern.matcher(message);
+
+                                        if (matcher.find()) {
+                                            message = matcher.group(0); // 전체 매칭된 부분을 추출
+                                        }
+                                    }
+                                    String finalMessage = message;
+                                    Platform.runLater(() -> dabitNetService.updateUI(finalMessage));
                                     receivedMessages.add(message);
                                 }
                             } catch (SocketTimeoutException e) {
@@ -261,7 +342,6 @@ public class UDPManager {
                             }
                         }
                     }
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -429,6 +509,9 @@ public class UDPManager {
 
     //접속끊기
     public void disconnect() {
+        if (KEEP_OPEN){
+            return;
+        }
         if (socket == null && socketList.isEmpty()){
             return;
         }
@@ -450,6 +533,9 @@ public class UDPManager {
     }
 
     public void disconnectNoLog() {
+        if (KEEP_OPEN){
+            return;
+        }
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
@@ -476,7 +562,7 @@ public class UDPManager {
         };
 
         Thread thread = new Thread(task);
-        thread.setDaemon(true); // UI 종료 시 자동 종료되도록 설정
+        thread.setDaemon(true);
         thread.start();
     }
 }

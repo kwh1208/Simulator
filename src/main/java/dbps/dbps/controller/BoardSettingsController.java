@@ -20,8 +20,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import static dbps.dbps.Constants.convertRS485AddrASCii;
-import static dbps.dbps.Constants.isRS;
+import static dbps.dbps.Constants.*;
 
 public class BoardSettingsController {
 
@@ -132,8 +131,12 @@ public class BoardSettingsController {
         }
     }
 
-    private void handleReadCommand() throws ExecutionException, InterruptedException {
-        asciiMsgTransceiver.sendMessages("![00B30!]", false, progressIndicator);
+    private void handleReadCommand() {
+        String msg = "![00B30!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"0B30!]";
+        }
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     private void handleSetCommand() {

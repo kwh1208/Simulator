@@ -21,6 +21,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -38,6 +39,7 @@ public class CommunicationSettingController {
 
     @FXML
     public Button shutConnect;
+    public Button keepOpenBtn;
     SerialPortManager serialPortManager;
     TCPManager tcpManager;
 
@@ -295,6 +297,14 @@ public class CommunicationSettingController {
 
         clientIPAddress.setText(configService.getProperty("clientTCPAddr"));
         clientIPPort.setText(configService.getProperty("clientTCPPort"));
+
+        Platform.runLater(() -> {
+            communicationSettingAP.getScene().setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.F10) {
+                     keepOpenBtn.setVisible(!keepOpenBtn.isVisible());
+                }
+            });
+        });
     }
 
     //사용가능한 포트 가져오기
@@ -659,4 +669,7 @@ public class CommunicationSettingController {
     }
 
 
+    public void keepOpen() {
+        KEEP_OPEN = !KEEP_OPEN;
+    }
 }

@@ -97,7 +97,11 @@ public class AdditionalFunctionsController {
 
     public void sendoffSet() {
         String value = offset.getValue().replaceAll("[^0-9]", "");
-        asciiMsgTransceiver.sendMessages("![0058 "+value+"!]", false, progressIndicator);
+        String msg = "![0058 "+value+"!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"058 "+value+"!]";
+        }
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     private void openModal(String fxmlPath, String title, MouseEvent mouseEvent) throws IOException {
@@ -198,8 +202,12 @@ public class AdditionalFunctionsController {
 
     public void sendBlinkCnt() {
         int cnt = Integer.parseInt(blinkCnt.getValue().replaceAll("[^0-9]", ""));
+        String msg = "![0055 "+String.format("%2d", cnt)+"!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"055 "+String.format("%2d", cnt)+"!]";
+        }
 
-        asciiMsgTransceiver.sendMessages("![0055 "+String.format("%2d", cnt)+"!]", false, progressIndicator);
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     public void sendDisplaySpeed() {
@@ -210,8 +218,11 @@ public class AdditionalFunctionsController {
         else{
             speed = Integer.parseInt(displaySpeed.getValue().replaceAll("[^0-9]", ""));
         }
-
-        asciiMsgTransceiver.sendMessages("![0054 "+String.format("%2d", speed)+"!]", false, progressIndicator);
+        String msg = "![0054 "+String.format("%2d", speed)+"!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"054 "+String.format("%2d", speed)+"!]";
+        }
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     public void fontName(MouseEvent mouseEvent) throws IOException {
@@ -220,6 +231,9 @@ public class AdditionalFunctionsController {
 
     public void sendFontWeight() {
         String sendMsg = "![0056 ";
+        if (isRS){
+            sendMsg = "!["+convertRS485AddrASCii()+"056 ";
+        }
         sendMsg+= (int) (fontWidth.getValue() * 10) +" ";
         sendMsg+= (int) (fontHeight.getValue() * 10) +"!]";
         asciiMsgTransceiver.sendMessages(sendMsg, false, progressIndicator);

@@ -9,7 +9,7 @@
       fx:controller="dbps.dbps.controller.SizeOfDisplayBoardController" layoutX="350.0" layoutY="15.0"
       prefHeight="178.0" prefWidth="330.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
     <Label alignment="CENTER" layoutX="95.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0"
-           style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white;-fx-font-size: 17; -fx-font-weight: bolder"
+           style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder"
            text="%displaySize" textFill="WHITE"/>
     <Label layoutX="20.0" layoutY="25.0" text="%height"/>
     <Spinner fx:id="spinnerForRow" layoutX="175.0" layoutY="18.0" prefHeight="25.0" prefWidth="64.0"/>

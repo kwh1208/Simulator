@@ -64,9 +64,13 @@ public class DabitNetController {
     public TextField keepAlive;
     public RadioButton DHCPRadio;
     public RadioButton wifiAP;
-    public Tab wifiTab;
     public Button searchBtn;
     public ProgressBar dbNetProgressBar;
+    public Tab wifiTab;
+    public Tab networkTab;
+    public Tab commTab;
+    public Tab db300Tab;
+
 
     ToggleGroup connectionToggleGroup = new ToggleGroup();
     ToggleGroup IPToggleGroup = new ToggleGroup();
@@ -165,6 +169,7 @@ public class DabitNetController {
                 AP.setText("AP-");
             }
         });
+
     }
 
     private void clearUI() {
@@ -245,6 +250,7 @@ public class DabitNetController {
                         dbNetProgressBar.setVisible(false);
                         logService.updateInfoLog("검색이 완료되었습니다.");
                         isSearching = false;
+                        udpManager.disconnectNoLog();
                         if (dbList.getSelectionModel().getSelectedItem()==null){
                             dbList.getSelectionModel().select(0);
                         }
@@ -257,6 +263,7 @@ public class DabitNetController {
                         dbNetProgressBar.setVisible(false);
                         logService.updateInfoLog("검색이 실패했습니다.");
                         isSearching = false;
+                        udpManager.disconnectNoLog();
                     });
                 });
                 new Thread(sendTask).start();
@@ -306,24 +313,24 @@ public class DabitNetController {
 
             Task<Void> set = serialPortManager.send300ByteMsg(sendByte, serialPortComboBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
 
-            new Thread(set).start();
-
             set.setOnSucceeded(event->{
                 Platform.runLater(() -> {
                     dbNetProgressBar.setVisible(false);
                     logService.updateInfoLog("설정이 완료되었습니다.");
+                    udpManager.disconnectNoLog();
                 });
             });
 
             set.setOnFailed(event->{
                 dbNetProgressBar.setVisible(false);
+                udpManager.disconnectNoLog();
             });
+
+            new Thread(set).start();
         } else {
             sendByte = getBytesUDP(newDB300);
 
             Task<String> set = udpManager.send300MsgAndGetMsgByte(sendByte);
-
-            new Thread(set).start();
 
             set.setOnSucceeded(event->{
                 Platform.runLater(() -> {
@@ -337,6 +344,8 @@ public class DabitNetController {
                     dbNetProgressBar.setVisible(false);
                 });
             });
+
+            new Thread(set).start();
         }
     }
 
@@ -501,10 +510,11 @@ public class DabitNetController {
 
     @FXML
     public void reboot() {
+        udpManager.disconnectNoLog();
         if (isSerial.isSelected()) {
             Task<String> reboot = serialPortManager.send300MsgAndGetMsg("++SET++![RESET  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortComboBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
 
-            new Thread(reboot).start();
+            new Thread(reboot);
         } else {
             Task<String> reboot = udpManager.send300MsgAndGetMsgByte(("RESET  " + dbList.getSelectionModel().getSelectedItem() + "\r\n").getBytes());
 
@@ -548,17 +558,21 @@ public class DabitNetController {
                     get300Info(read.getValue());
                     dbNetProgressBar.setVisible(false);
                     logService.updateInfoLog("정보 읽기를 완료했습니다.");
+                    udpManager.disconnectNoLog();
                 } catch (IOException e) {
                     dbNetProgressBar.setVisible(false);
+                    udpManager.disconnectNoLog();
                 }
             });
 
             read.setOnFailed(event ->{
                 dbNetProgressBar.setVisible(false);
+                udpManager.disconnectNoLog();
             });
 
 
         } else {
+
             Task<String> read = udpManager.send300MsgAndGetMsgByte(("INFO_R  " + dbList.getSelectionModel().getSelectedItem() + "\r\n").getBytes());
 
             Thread readTask = new Thread(read);
@@ -569,19 +583,22 @@ public class DabitNetController {
                     get300Info(read.getValue());
                     dbNetProgressBar.setVisible(false);
                     logService.updateInfoLog("정보 읽기를 완료했습니다.");
+                    udpManager.disconnectNoLog();
                 } catch (IOException e) {
                     dbNetProgressBar.setVisible(false);
+                    udpManager.disconnectNoLog();
                 }
             });
         }
     }
 
     public void write() throws UnsupportedEncodingException {
+        udpManager.disconnectNoLog();
         Platform.runLater(()->{
             dbNetProgressBar.setVisible(true);
         });
         if (isSerial.isSelected()) {
-            String msg = "++SET++![INFO_W " + dbList.getSelectionModel().getSelectedItem() + "  "
+            String msg = "++SET++![INFO_W  " + dbList.getSelectionModel().getSelectedItem() + "  "
                     + debugging.getItems().indexOf(debugging.getValue())
                     + connectPort.getItems().indexOf(connectPort.getValue())
                     + baudRate.getItems().indexOf(baudRate.getValue())

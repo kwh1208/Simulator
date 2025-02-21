@@ -146,6 +146,45 @@ public class HexMsgTransceiver {
         return null;
     }
 
+    public String sendByteMessagesShortLog(byte[] msg) {
+        switch (CONNECT_TYPE) {
+            case "serial", "bluetooth", "rs485" -> {
+                try {
+                    // Task 객체를 생성하여 비동기 작업 실행
+                    serialPortManager.sendMsgAndGetMsgByteShortLog(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+            }
+            case "UDP" -> //udp로 메세지 전송
+            {
+                try {
+                    udpManager.sendMsgAndGetMsgByteShortLog(msg);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case "clientTCP" -> //tcp로 메세지 전송
+            {
+                try {
+                    tcpManager.sendMsgAndGetMsgByteShortLog(msg);
+                } catch (Exception e) {
+
+                    throw new RuntimeException(e);
+                }
+            }
+            case "serverTCP" ->{
+                try {
+                    serverTCPManager.sendMsgAndGetMsgByteShortLog(msg);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
+    }
+
     public void sendMessages(String msg, ProgressIndicator progressIndicator) {
         byte[] bytes = hexStringToByteArray(msg);
         sendByteMessages(bytes, progressIndicator);

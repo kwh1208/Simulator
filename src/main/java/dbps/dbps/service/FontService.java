@@ -5,13 +5,14 @@ import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
 
 import static dbps.dbps.Constants.*;
-import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class FontService {
     private static FontService instance = null;
@@ -39,7 +40,11 @@ public class FontService {
             @Override
             protected Void call() throws Exception {
                 int progress = -1;
-                hexMsgTransceiver.sendMessages("10 02 00 00 02 45 00 10 03", commonProgressIndicator);
+                String msg = "10 02 00 00 02 45 00 10 03";
+                if (isRS){
+                    msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 00 10 03";
+                }
+                hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
 
                 int packetSize = 1024;
                 int totalPackets = 0;
@@ -336,27 +341,36 @@ public class FontService {
 
                         if (isCancelled()){
                             logService.updateInfoLog("전송을 취소했습니다.");
-                            hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
+                            msg = "10 02 00 00 02 45 01 10 03";
+                            if (isRS){
+                                msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
+                            }
+                            hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
                             return null;
                         }
 
                         boolean success = false;
                         int retryCount = 0;
-                        while (!success && retryCount < 3) {
+                        while (!success) {
 
                             try {
-                                hexMsgTransceiver.sendByteMessagesNoLog(sendPacket);
+                                hexMsgTransceiver.sendByteMessagesShortLog(sendPacket);
                                 success = true;
                             } catch (Exception e) {
                                 if (isCancelled()){
                                     logService.updateInfoLog("전송을 취소했습니다.");
-                                    hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
+                                    msg = "10 02 00 00 02 45 01 10 03";
+                                    if (isRS){
+                                        msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
+                                    }
+                                    hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
                                     return null;
                                 }
                                 retryCount++;
                                 logService.warningLog("패킷 전송 실패 "+retryCount+"번째 재시도, 1초 후 재시도합니다.");
                                 if (retryCount >= 3) {
                                     logService.errorLog("⚠️ 3번 재시도 후에도 패킷 전송 실패");
+                                    return null;
                                 }
                                 Thread.sleep(1000); // 재시도 전 대기 (1000ms)
                             }
@@ -382,11 +396,15 @@ public class FontService {
                 finalPacket[finalPacket.length-2] = 0x10;
                 finalPacket[finalPacket.length-1] = 0x03;
 
-                hexMsgTransceiver.sendByteMessages(finalPacket, commonProgressIndicator);
+                hexMsgTransceiver.sendByteMessagesNoLog(finalPacket);
 
                 Thread.sleep(500);
 
-                hexMsgTransceiver.sendMessages("10 02 00 00 02 45 01 10 03 ", commonProgressIndicator);
+                msg = "10 02 00 00 02 45 01 10 03";
+                if (isRS){
+                    msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
+                }
+                hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
 
                 return null;
             }

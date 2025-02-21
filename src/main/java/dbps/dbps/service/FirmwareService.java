@@ -116,7 +116,7 @@ public class FirmwareService {
                         packet[2 + headerData.length + currentPacketSize + 2] = 0x10;
                         packet[2 + headerData.length + currentPacketSize + 3] = 0x03;
 
-                        hexMsgTransceiver.sendByteMessagesNoLog(packet);
+                        hexMsgTransceiver.sendByteMessagesShortLog(packet);
 
                         int finalI = i;
                         Platform.runLater(() -> {
@@ -132,6 +132,7 @@ public class FirmwareService {
                 }
 
                 Thread.sleep(500);
+
                 return null;
             }
         };

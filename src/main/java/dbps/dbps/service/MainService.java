@@ -4,6 +4,7 @@ package dbps.dbps.service;
 import dbps.dbps.Simulator;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import lombok.Setter;
 
@@ -48,7 +49,10 @@ public class MainService {
             }
             // 캐시된 UI 노드를 사용
             messageTab.setContent(cachedContent.get("ascii"));
-            messageTab.setText(ResourceManager.getInstance().getBundle().getString("ASCiiProtocol"));
+            Label label = new Label(ResourceManager.getInstance().getBundle().getString("ASCiiProtocol"));
+            label.setStyle("-fx-alignment: center; -fx-padding: 12px;");
+            messageTab.setGraphic(label); // Label을 그래픽으로 설정
+            messageTab.setText("");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -87,7 +91,10 @@ public class MainService {
             }
             // 캐시된 UI 노드를 사용
             messageTab.setContent(cachedContent.get("hex"));
-            messageTab.setText(ResourceManager.getInstance().getBundle().getString("HexProtocol"));
+            Label label = new Label(ResourceManager.getInstance().getBundle().getString("HexProtocol"));
+            label.setStyle("-fx-alignment: center; -fx-padding: 15px;");
+            messageTab.setGraphic(label);
+            messageTab.setText("");
         } catch (IOException e) {
             e.printStackTrace();
         }

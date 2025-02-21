@@ -12,6 +12,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static dbps.dbps.Constants.*;
 
@@ -130,6 +132,9 @@ public class TCPManager {
 
     //접속끊기
     public void disconnect(){
+        if (KEEP_OPEN){
+            return;
+        }
         if (socket==null)
             return;
         try {
@@ -143,6 +148,9 @@ public class TCPManager {
     }
 
     public void disconnectNoLog(){
+        if (KEEP_OPEN){
+            return;
+        }
         if (socket==null)
             return;
         try {
@@ -188,7 +196,12 @@ public class TCPManager {
 
                     String result = bytesToHex(buffer, totalBytesRead);
                     if (result.contains("52 58 28")) {
-                            result = result.substring(result.indexOf("10 02"));
+                        Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                        Matcher matcher = pattern.matcher(result);
+
+                        if (matcher.find()) {
+                            result = matcher.group(0); // 전체 매칭된 부분을 추출
+                        }
                     }
                     logService.updateInfoLog("받은 메세지: " + result);
                     return result;
@@ -234,7 +247,60 @@ public class TCPManager {
 
             String result = bytesToHex(buffer, totalBytesRead);
             if (result.contains("52 58 28")) {
-                result = result.substring(result.indexOf("10 02"));
+                Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                Matcher matcher = pattern.matcher(result);
+
+                if (matcher.find()) {
+                    result = matcher.group(0); // 전체 매칭된 부분을 추출
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public void sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
+        if (socket == null || socket.isClosed()) {
+            connectNoLog(IP, PORT);
+        }
+        try {
+            InputStream input = socket.getInputStream();
+            OutputStream output = socket.getOutputStream();
+            input.skip(input.available()); // 기존에 남아있는 데이터 제거
+
+            output.write(msg);
+            output.flush();
+
+            String log = bytesToHex(msg, 32);
+            log+=" ~ 10 03";
+            logService.updateInfoLog(log);
+
+            byte[] buffer = new byte[1024];
+            int totalBytesRead = 0;
+
+            while (true) {
+                int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                if (bytesRead > 0) {
+                    totalBytesRead += bytesRead;
+
+                    // 데이터가 모두 수신되었는지 확인
+                    if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                        break;
+                    }
+                } else {
+                    break; // 타임아웃
+                }
+            }
+
+            String result = bytesToHex(buffer, totalBytesRead);
+            if (result.contains("52 58 28")) {
+                Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                Matcher matcher = pattern.matcher(result);
+
+                if (matcher.find()) {
+                    result = matcher.group(0); // 전체 매칭된 부분을 추출
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

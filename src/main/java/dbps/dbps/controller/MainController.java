@@ -7,11 +7,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import static dbps.dbps.Constants.IS_ASCII;
 
 public class MainController {
@@ -38,19 +33,5 @@ public class MainController {
             mainService.showHEXMsgTab();
         }
         mainService.changeSetTab();
-    }
-
-    public void handleHelpAction() {
-        String url = "https://publish.obsidian.md/dabitdocs"; // 여기에 원하는 URL 입력
-
-        if (Desktop.isDesktopSupported()) {
-            Desktop desktop = Desktop.getDesktop();
-            try {
-                desktop.browse(new URI(url));
-            } catch (IOException | URISyntaxException e) {
-                e.printStackTrace();
-            }
-        } else {
-        }
     }
 }

@@ -122,7 +122,7 @@ jlink {
         imageName = 'dbProtocolSimulator'
         installerName = 'dbProtocolSimulator'
         installerType = 'exe'
-        icon = 'src/main/resources/icon.ico'
+        icon = 'src/main/resources/icon-removebg.ico'
         installerOptions = [
                 '--win-menu',
                 '--win-shortcut'
