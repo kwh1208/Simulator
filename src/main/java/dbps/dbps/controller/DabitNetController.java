@@ -598,7 +598,7 @@ public class DabitNetController {
             dbNetProgressBar.setVisible(true);
         });
         if (isSerial.isSelected()) {
-            String msg = "++SET++![INFO_W " + dbList.getSelectionModel().getSelectedItem() + "  "
+            String msg = "++SET++![INFO_W  " + dbList.getSelectionModel().getSelectedItem() + "  "
                     + debugging.getItems().indexOf(debugging.getValue())
                     + connectPort.getItems().indexOf(connectPort.getValue())
                     + baudRate.getItems().indexOf(baudRate.getValue())

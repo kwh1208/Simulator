@@ -82,6 +82,7 @@ public class Simulator extends Application {
         System.setProperty("prism.subpixeltext", "false");
         System.setProperty("prism.text", "t2k");
 
+
         Locale.setDefault(Locale.KOREAN);
 
         launch();
@@ -96,7 +97,7 @@ public class Simulator extends Application {
                 serialPortManager.closePort(OPEN_PORT_NAME);
             }
         } catch (Exception e) {
-            throw new RuntimeException();
+            e.printStackTrace();
         }
 
         try {
@@ -105,7 +106,7 @@ public class Simulator extends Application {
                 serverTCPManager.disconnect();
             }
         } catch (Exception e) {
-            throw new RuntimeException();
+            e.printStackTrace();
         }
 
         try {
@@ -114,7 +115,7 @@ public class Simulator extends Application {
                 tcpManager.disconnect();
             }
         } catch (Exception e) {
-            throw new RuntimeException();
+            e.printStackTrace();
         }
 
         try {
@@ -123,7 +124,7 @@ public class Simulator extends Application {
                 udpManager.disconnect();
             }
         } catch (Exception e) {
-            throw new RuntimeException();
+            e.printStackTrace();
         }
     }
 }
