@@ -201,11 +201,11 @@ public class MQTTMsgController {
     private String makeMQTTMsg() {
         String msg = makeHexMsg();
 
+        System.out.println("msg = " + msg);
+
         byte[] sendByte = hexStringToByteArray(msg);
 
         String sendMsg = "{\"db_hex\":\""+ Base64.getEncoder().encodeToString(sendByte)+"\"}";
-
-        sendMsg = "{\"db_hex\":\"EAIAAAJBABAD\"}";
 
         System.out.println(sendMsg);
 
@@ -277,9 +277,11 @@ public class MQTTMsgController {
             case "Off":
                 msg.append("00 ");
                 break;
-            case "ON":
+            case "On":
                 msg.append("63 ");
                 break;
+            default:
+                msg.append(displayControlValue).append(" ");
         }
 
         //표시방법

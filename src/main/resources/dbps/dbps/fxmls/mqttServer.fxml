@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="277.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MqttServerController">
+    <Pane layoutX="14.0" layoutY="14.0" prefHeight="255.0" prefWidth="372.0">
+        <Label layoutX="25.0" layoutY="25.0" text="IP"/>
+        <TextField fx:id="IP" layoutX="113.0" layoutY="17.0" prefHeight="29.0" prefWidth="240.0"/>
+        <Label layoutX="25.0" layoutY="75.0" text="Port"/>
+        <TextField fx:id="port" layoutX="113.0" layoutY="67.0" prefHeight="29.0" prefWidth="240.0"/>
+        <Label layoutX="25.0" layoutY="125.0" text="userName"/>
+        <TextField fx:id="userName" layoutX="113.0" layoutY="117.0" prefHeight="29.0" prefWidth="240.0"/>
+        <Label layoutX="25.0" layoutY="175.0" text="password"/>
+        <TextField fx:id="password" layoutX="113.0" layoutY="167.0" prefHeight="29.0" prefWidth="240.0"/>
+        <Button layoutX="25.0" layoutY="219.0" mnemonicParsing="false" onMouseClicked="#set" prefHeight="21.0"
+                prefWidth="80.0" text="설정"/>
+        <Button layoutX="273.0" layoutY="219.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="21.0"
+                prefWidth="80.0" text="닫기"/>
+    </Pane>
+</AnchorPane>

@@ -343,9 +343,11 @@ public class HEXMessageController {
             case "Off":
                 msg.append("00 ");
                 break;
-            case "ON":
+            case "On":
                 msg.append("63 ");
                 break;
+            default:
+                msg.append(displayControlValue).append(" ");
         }
 
         //표시방법
