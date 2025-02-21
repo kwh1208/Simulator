@@ -202,7 +202,6 @@ public class DabitNetController {
 
     @FXML
     public void search() throws ExecutionException, InterruptedException, IOException {
-        System.out.println(UDPManager.socketList.size());
         if (isSearching) {
             logService.errorLog("검색이 이미 진행 중입니다.");
             return;
@@ -529,7 +528,6 @@ public class DabitNetController {
         if (thread!=null&&thread.isAlive()){
             thread.interrupt();
         }
-        System.out.println("DabitNetController.close");
         udpManager.disconnectNoLog();
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();
@@ -574,12 +572,7 @@ public class DabitNetController {
 
 
         } else {
-            System.out.println(111
 
-
-
-
-            );
             Task<String> read = udpManager.send300MsgAndGetMsgByte(("INFO_R  " + dbList.getSelectionModel().getSelectedItem() + "\r\n").getBytes());
 
             Thread readTask = new Thread(read);

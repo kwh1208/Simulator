@@ -30,6 +30,8 @@ public class Constants {
         configService = ConfigService.getInstance();
     }
 
+    public static boolean KEEP_OPEN = false;
+
     public static int RESPONSE_LATENCY = 3;
 
     public static boolean IS_ASCII = false;
@@ -151,8 +153,6 @@ public class Constants {
 
     public static boolean dataReceivedIsComplete(byte[] buffer, int length) {
         String data = new String(buffer, 0, length);
-        System.out.println("data = " + data);
-
         if (data.contains("RX")&&!data.contains("TX")){
             return false;
         }

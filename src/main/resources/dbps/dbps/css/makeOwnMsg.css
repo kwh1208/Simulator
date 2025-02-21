@@ -54,8 +54,6 @@
 
 .label{
     -fx-text-fill: #E0E0E0;
-    -fx-font-size: 15px;
-
 }
 
 #defaultSetting{
@@ -69,7 +67,6 @@
     -fx-background-color: #1C1F26;
     -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
     -fx-text-fill: white;
-    -fx-font-size: 15px;
 }
 .combo-box .context-menu{
     -fx-background-color: #1C1F26;

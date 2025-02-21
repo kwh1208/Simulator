@@ -354,7 +354,7 @@ public class FontService {
                         while (!success) {
 
                             try {
-                                hexMsgTransceiver.sendByteMessagesNoLog(sendPacket);
+                                hexMsgTransceiver.sendByteMessagesShortLog(sendPacket);
                                 success = true;
                             } catch (Exception e) {
                                 if (isCancelled()){

@@ -83,6 +83,9 @@ public class SerialPortManager {
 
 
     public void closePort(String portName) {
+        if (KEEP_OPEN){
+            return;
+        }
         synchronized (portLock) {
             SerialPort port = serialPortMap.get(portName);
             if (port != null && port.isOpen()) {
@@ -94,6 +97,9 @@ public class SerialPortManager {
     }
 
     public void closePortNoLog(String portName) {
+        if (KEEP_OPEN){
+            return;
+        }
         synchronized (portLock) {
             SerialPort port = serialPortMap.get(portName);
             if (port != null && port.isOpen()) {
@@ -288,6 +294,50 @@ public class SerialPortManager {
         try {
             OutputStream outputStream = port.getOutputStream();
             InputStream inputStream = port.getInputStream();
+
+            outputStream.write(msg);
+
+            // 읽기용 버퍼 초기화
+            byte[] buffer = new byte[1024];
+            int totalBytesRead = 0;
+
+            long startWait = System.currentTimeMillis();
+            long timeout = 150;
+
+            while ((System.currentTimeMillis() - startWait) < timeout) {
+                if (inputStream.available() > 0) {
+                    int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+
+                    if (bytesRead > 0) {
+                        totalBytesRead += bytesRead;
+                        if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                            break;
+                        }
+                    }
+                }
+            }
+            bytesToHex(buffer, totalBytesRead);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public void sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
+        String portName = OPEN_PORT_NAME;
+        SerialPort port = serialPortMap.get(portName);
+
+        if (port == null || !isPortOpen(portName)) {
+            openPortNoLog(portName, SERIAL_BAUDRATE);
+            port = serialPortMap.get(portName);
+        }
+        try {
+            OutputStream outputStream = port.getOutputStream();
+            InputStream inputStream = port.getInputStream();
+
+            String log = bytesToHex(msg, 32);
+            log+=" ~ 10 03";
+            logService.updateInfoLog(log);
 
             outputStream.write(msg);
 

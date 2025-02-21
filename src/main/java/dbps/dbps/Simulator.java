@@ -11,7 +11,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import lombok.Getter;
 
@@ -66,7 +65,6 @@ public class Simulator extends Application {
         Scene scene = new Scene(root, 700, 800);
 
         // 스타일시트 적용
-        Font ttcFont = Font.loadFont(Simulator.class.getResource("/dbps/dbps/gulim.ttc").toExternalForm(), 14);
         scene.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/main.css").toExternalForm());
 
 
@@ -80,7 +78,10 @@ public class Simulator extends Application {
 
 
     public static void main(String[] args) {
-        System.setProperty("prism.lcdtext", "false"); // LCD 텍스트 렌더링 비활성화
+        System.setProperty("prism.lcdtext", "false");
+        System.setProperty("prism.subpixeltext", "false");
+        System.setProperty("prism.text", "t2k");
+        System.setProperty("javafx.autosize.text", "true");
 
         Locale.setDefault(Locale.KOREAN);
 

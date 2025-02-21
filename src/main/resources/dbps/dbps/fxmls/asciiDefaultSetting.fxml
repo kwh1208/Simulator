@@ -76,7 +76,7 @@
            </items>
        </ChoiceBox>
        <Label layoutX="321.0" layoutY="110.0" text="%fontGroup" />
-       <ChoiceBox fx:id="fontGroup" layoutX="405.0" layoutY="106.0" prefHeight="21.0" prefWidth="139.0" value="FontGroup1">
+       <ChoiceBox fx:id="fontGroup" layoutX="405.0" layoutY="106.0" prefHeight="21.0" prefWidth="139.0" value="폰트그룹1">
            <items>
                <FXCollections fx:factory="observableArrayList">
                    <String fx:value="폰트그룹1" />
