@@ -118,7 +118,7 @@ public class FirmwareUpgradeController {
 
         vbox.setStyle("-fx-padding: 20px; -fx-background-color: #333333;");
         cancelButton.setStyle(
-                "-fx-font-size: 15px;" +
+                "" +
                         "-fx-background-color: linear-gradient(#444444, #222222);" +
                         "-fx-text-fill: white;" +
                         "-fx-border-color: #4A4A4A;" +
@@ -127,7 +127,7 @@ public class FirmwareUpgradeController {
                         "-fx-background-radius: 10;"
         );
         progressLabel.setStyle(
-                "-fx-font-size: 14px; " +
+                " " +
                         "-fx-text-fill: white; " +
                         "-fx-background-color: #222222; " +
                         "-fx-padding: 5; " +
