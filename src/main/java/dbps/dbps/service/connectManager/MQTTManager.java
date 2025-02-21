@@ -39,6 +39,9 @@ public class MQTTManager {
     private String password;
     private MqttClient client;
 
+    String sendTopic = "/msg";
+    String receiveTopic = "/msg_r";
+
     List<String> subscribedTopics = new ArrayList<>();
 
 
@@ -134,7 +137,43 @@ public class MQTTManager {
         }
     }
 
-    public void sendMsg() {
+    public String sendMsg(String payload) {
+        chkConnect();
+        try {
+            MqttMessage message = new MqttMessage(payload.getBytes(StandardCharsets.UTF_8));
+            message.setQos(0);
+            client.publish(sendTopic, message);
+            logService.updateInfoLog("전송 메세지 : " + payload);
+            String result = receivedMsg();
+            logService.updateInfoLog("받은 메세지 : " + result);
+            return result;
 
+        } catch (MqttException e) {
+            e.printStackTrace();
+            return "Error: " + e.getMessage();
+        }
+    }
+
+    private String receivedMsg() {
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        try {
+            client.subscribe(receiveTopic, (receivedTopic, message) -> {
+                String receivedMessage = new String(message.getPayload(), StandardCharsets.UTF_8);
+
+                future.complete(receivedMessage);
+            });
+
+            // 최대 5초 동안 응답을 기다림
+            return future.get(5, TimeUnit.SECONDS);
+
+        } catch (MqttException e) {
+            e.printStackTrace();
+            return "Error: " + e.getMessage();
+        } catch (TimeoutException e) {
+            return "Error: Timeout waiting for response";
+        } catch (InterruptedException | ExecutionException e) {
+            return "Error: " + e.getMessage();
+        }
     }
 }

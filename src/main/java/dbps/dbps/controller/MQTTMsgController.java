@@ -1,8 +1,5 @@
 package dbps.dbps.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.ResourceManager;
@@ -12,10 +9,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Base64;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
+
+import static dbps.dbps.Constants.*;
 
 public class MQTTMsgController {
     public AnchorPane mqttMsgAP;
@@ -167,7 +169,8 @@ public class MQTTMsgController {
 
     public void send() throws UnsupportedEncodingException {
         String msg = makeMQTTMsg();
-        mqttManager.sendMsg();
+        String result = mqttManager.sendMsg(msg);
+
         save();
     }
 
@@ -195,22 +198,24 @@ public class MQTTMsgController {
         doMsgSettings();
     }
 
-    private String makeMQTTMsg() throws UnsupportedEncodingException {
+    private String makeMQTTMsg() {
+        String msg = makeHexMsg();
+
+        byte[] sendByte = hexStringToByteArray(msg);
+
+        String sendMsg = "{\"db_hex\":\""+ Base64.getEncoder().encodeToString(sendByte)+"\"}";
+
+        sendMsg = "{\"db_hex\":\"EAIAAAJBABAD\"}";
+
+        System.out.println(sendMsg);
+
+        mqttManager.sendMsg(sendMsg);
+
+        return null;
+    }
+
+    private String makeHexMsg(){
         String msgType = ((RadioButton) msgTypeGroup.getSelectedToggle()).getText();
-
-        if (msgType.equals(bundle.getString("realTimeMsg"))) {
-            try {
-                String s = makeRealTimeMsg();
-                System.out.println(s);
-                return s;
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        else {
-            makePageMsg();
-        }
-
         String pageMsgCntValue = pageMsgCnt.getValue();
         String section = ((RadioButton) sectionGroup.getSelectedToggle()).getText();
         String displayControlValue = displayControl.getValue();
@@ -233,71 +238,318 @@ public class MQTTMsgController {
         String bgColorValue = bgColor.getText();
         String text = msg.getText();
 
-        System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
 
-//        pageMsgCntValue = 1
-//        section = 0
-//        displayControlValue = ON
-//        displayMethodValue = Clear
-//        charCodesValue = 한글 조합형
-//                fontSizeValue = 16(Standard)
-//                fontGroupValue = 폰트그룹1
-//        effectInValue = 정지효과
-//        inDirectionValue = 방향없음
-//        effectOutValue = 사용안함
-//        outDirectionValue = 사용안함
-//        effectSpeedValue = 5
-//        effectTimeValue = 2초
-//                xStartValue = 0
-//        yStartValue = 0
-//        xEndValue = 0
-//        yEndValue = 0
-//        bgImgValue = 사용안함
-//        textColorValue = 1
-//        bgColorValue = 0
-//        text = 1234
+        StringBuilder msg = new StringBuilder("10 02 ");
 
 
-        return null;
+        //rs485인 경우 변경
+        if (!isRS) {
+            msg.append("00 ");
+        } else {
+            //rs485면 주소
+            msg.append(String.format("%02X ", RS485_ADDR_NUM));
+        }
+
+        //msg 길이
+        byte[] textBytes;
+        try {
+            if (charCodesValue.equals(bundle.getString("CombinationType")))
+                textBytes = text.getBytes("MS949");
+            else textBytes = text.getBytes(StandardCharsets.UTF_16BE);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        msg.append("00 ").append(String.format("%02x", (textBytes.length * 2) + 17));
+        msg.append(" 94 ");
+
+        //실시간메세지
+        if (msgType.equals(bundle.getString("realTimeMsg"))) {
+            msg.append("00 ");
+        } else {
+            msg.append(Integer.toHexString(Integer.parseInt(pageMsgCntValue))).append(" ");
+        }
+
+        //섹션번호
+        msg.append("0").append(Integer.parseInt(section)).append(" ");
+
+        //표시제어
+        switch (displayControlValue) {
+            case "Off":
+                msg.append("00 ");
+                break;
+            case "ON":
+                msg.append("63 ");
+                break;
+        }
+
+        //표시방법
+        msg.append(displayMethodValue.equals("Normal") ? "00 " : "01 ");
+
+        //문자코드
+        msg.append(charCodesValue.equals(bundle.getString("CombinationType")) ? "00 " : "01 ");
+
+        //폰트크기
+        fontSizeValue = fontSizeValue.replaceAll("[^0-9]", "");
+        if (fontSizeValue.equals("14")){
+            msg.append("01 ");
+        }
+        else msg.append("0").append((Integer.parseInt(fontSizeValue) / 4) - 1).append(" ");
+
+        //입장효과
+        msg.append(makeEffect(effectInValue, inDirectionValue));
+
+        //퇴장효과
+        msg.append(makeEffect(effectOutValue, outDirectionValue));
+
+        //예비
+        msg.append("00 ");
+
+        //효과속도**
+        msg.append(String.format("%02x", Integer.parseInt(effectSpeedValue.replaceAll("[^0-9]", "")))).append(" ");
+
+        //유지시간
+        msg.append(makeEffectTime(effectTimeValue));
+
+        //x축 시작**
+        msg.append(String.format("%02X", (Integer.parseInt(xStartValue) / 4))).append(" ");
+
+        //y축 시작
+        msg.append(String.format("%02X", (Integer.parseInt(yStartValue) / 4))).append(" ");
+
+        //x축 끝
+        msg.append(String.format("%02X", (Integer.parseInt(xEndValue) / 4))).append(" ");
+
+        //y축 끝
+        msg.append(String.format("%02X", (Integer.parseInt(yEndValue) / 4))).append(" ");
+
+        //배경이미지
+        msg.append(bgImgValue.equals(bundle.getString("notUsed")) ? "00 " : String.format("%02d ", Integer.parseInt(bgImgValue)));
+
+        //글자
+        for (int i = 0; i < text.length(); i++) {
+            String tmp = "";
+            if (bgColorValue.length()>i){
+                tmp+=String.valueOf(bgColorValue.charAt(i));
+            }else {
+                tmp+=String.valueOf(bgColorValue.charAt(bgColorValue.length()-1));
+            }
+
+            if (textColorValue.length()>i) {
+                tmp += String.valueOf(textColorValue.charAt(i));
+            } else{
+                tmp += String.valueOf(textColorValue.charAt(textColorValue.length()-1));
+            }
+
+            int add;
+            switch (fontGroupValue){
+                case "폰트그룹1"-> add = 0;
+                case "폰트그룹2"-> add = 8;
+                case "폰트그룹3"-> add = 128;
+                default -> add = 136;
+            }
+
+            int tmpValue = Integer.parseInt(tmp, 16);
+            String resultHex;
+
+            resultHex = String.format("%02X ", tmpValue + add);
+            if (String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length!=1){
+                resultHex += String.format("%02X ", 0);
+            }
+
+            msg.append(resultHex);
+            if (charCodes.getValue().equals(bundle.getString("UTF16"))&&String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length==1){
+                msg.append(String.format("%02X ", 0));
+            }
+        }
+
+
+
+        msg.append(bytesToHex(textBytes, textBytes.length));
+
+        msg.append("10 03");
+
+        return msg.toString();
     }
 
-    private String makeRealTimeMsg() throws JsonProcessingException {
-        String common = "\"2.RTE058.6.1."+((RadioButton) sectionGroup.getSelectedToggle()).getText()+".";
+    private String makeEffect(String effect, String direction){
+        if (effect.equals(bundle.getString("noEffect")) || effect.equals(bundle.getString("notUsed"))) {
+            return "00 ";
+        } else if (effect.equals(bundle.getString("staticEffect"))) {
+            if (direction.equals(bundle.getString("noDirection"))) {
+                return "01 ";
+            } else if (direction.equals(bundle.getString("brighten"))) {
+                return "02 ";
+            } else if (direction.equals(bundle.getString("darken"))) {
+                return "03 ";
+            } else if (direction.equals(bundle.getString("horizontalReflection"))) {
+                return "04 ";
+            } else {
+                return "05 ";
+            }
+        } else if (effect.equals(bundle.getString("move"))) {
+            if (direction.equals(bundle.getString("left"))) {
+                return "06 ";
+            } else if (direction.equals(bundle.getString("right"))) {
+                return "07 ";
+            } else if (direction.equals(bundle.getString("up"))) {
+                return "08 ";
+            } else {
+                return "09 ";
+            }
+        } else if (effect.equals(bundle.getString("wipe"))) {
+            if (direction.equals(bundle.getString("left"))) {
+                return "0C ";
+            } else if (direction.equals(bundle.getString("right"))) {
+                return "0D ";
+            } else if (direction.equals(bundle.getString("up"))) {
+                return "0E ";
+            } else {
+                return "0F ";
+            }
+        } else if(effect.equals(bundle.getString("blind"))){
+            if (direction.equals(bundle.getString("left"))) {
+                return "12 ";
+            } else if (direction.equals(bundle.getString("right"))) {
+                return "13 ";
+            } else if (direction.equals(bundle.getString("up"))) {
+                return "14 ";
+            } else {
+                return "15 ";
+            }
+        }
+        else if (effect.equals(bundle.getString("curtainEffect"))) {
+            if (direction.equals(bundle.getString("horizontalOutward"))) {
+                return "18 ";
+            } else if (direction.equals(bundle.getString("horizontalInward"))) {
+                return "19 ";
+            } else if (direction.equals(bundle.getString("verticalOutward"))) {
+                return "1A ";
+            } else {
+                return "1B ";
+            }
+        } else if (effect.equals(bundle.getString("zoomEffect"))) {
+            if (direction.equals(bundle.getString("left"))) {
+                return "23 ";
+            } else if (direction.equals(bundle.getString("right"))) {
+                return "24 ";
+            } else if (direction.equals(bundle.getString("up"))) {
+                return "25 ";
+            } else if (direction.equals(bundle.getString("down"))) {
+                return "26 ";
+            } else {
+                return "27 ";
+            }
+        } else if (effect.equals(bundle.getString("rotateEffect"))) {
+            if (direction.equals(bundle.getString("counterclockwise1"))) {
+                return "29 ";
+            } else if (direction.equals(bundle.getString("clockwise1"))) {
+                return "28 ";
+            } else if (direction.equals(bundle.getString("counterclockwise2"))) {
+                return "2B ";
+            } else {
+                return "2A ";
+            }
+        } else if (effect.equals(bundle.getString("backgroundFlash"))) {
+            if (direction.equals(bundle.getString("red"))) {
+                return "2C ";
+            } else if (direction.equals(bundle.getString("green"))) {
+                return "2D ";
+            } else if (direction.equals(bundle.getString("blue"))) {
+                return "2E ";
+            } else if (direction.equals(bundle.getString("white"))) {
+                return "2F ";
+            } else {
+                return "30 ";
+            }
+        } else if (effect.equals(bundle.getString("textFlash"))){
+            if (direction.equals(bundle.getString("red"))) {
+                return "31 ";
+            } else if (direction.equals(bundle.getString("green"))) {
+                return "32 ";
+            } else if (direction.equals(bundle.getString("blue"))) {
+                return "33 ";
+            } else if (direction.equals(bundle.getString("white"))) {
+                return "34 ";
+            } else if (direction.equals(bundle.getString("allSequential"))) {
+                return "35 ";
+            } else {
+                return "37 ";
+            }
+        }
+        else if (effect.equals(bundle.getString("3DEffect"))) {
+            return "36 ";
+        } else {
+            return "7A ";
+        }
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-        // 최상위 JSON 객체 (순서 보장)
-        Map<String, Object> jsonMessage = new LinkedHashMap<>();
-        jsonMessage.put("MSG_TYPE", "TEXT");
-        jsonMessage.put("MSG_VER", Integer.parseInt(java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"))));
-        jsonMessage.put("MSG_ID", System.currentTimeMillis() / 1000);
-
-
-        // MOID 객체 생성 (순서 보장)
-        Map<String, Object> moid = new LinkedHashMap<>();
-        moid.put(common+"1", Arrays.asList(displayMethod.getValue().equals("Clear") ? 1 : 0, "On".equals(displayControl.getValue()) ? 99 : "Off".equals(displayControl.getValue()) ? 0 : Integer.parseInt(displayControl.getValue())));
-        moid.put(common+"2", Arrays.asList(30, 10, 15, 3));
-        moid.put(common+"3", Arrays.asList(Integer.parseInt(xStart.getValue()), Integer.parseInt(xEnd.getValue()), Integer.parseInt(yStart.getValue()), Integer.parseInt(yEnd.getValue())));
-        moid.put(common+"4", bgImg.getValue().equals("사용안함") ? 0 : Integer.parseInt(bgImg.getValue()));
-
-        // MOID 내부 리스트도 순서 보장
-        List<Object> customList = new ArrayList<>();
-        customList.add(Arrays.asList("안전", 2, 0, 0));  // 첫 번째 배열
-        customList.add(Arrays.asList("확인", 4));        // 두 번째 배열
-        customList.add(Collections.singletonList("부탁드립니다")); // 세 번째 배열
-
-        moid.put(common+"5", customList);
-
-        // 최종 JSON 메시지에 MOID 추가
-        jsonMessage.put("MOID", moid);
-
-        // JSON 문자열 변환 (순서 보장)
-        return objectMapper.writeValueAsString(jsonMessage);
     }
 
-    private void makePageMsg() {
+    private String makeEffectTime(String effectTimeValue) {
+        if (effectTimeValue.contains(bundle.getString("sec"))) {
+            return String.format("%02x ", Integer.parseInt(effectTimeValue.replaceAll("[^0-9]", "")));
+        }
+        if (effectTimeValue.equals(bundle.getString("2min"))) {
+            return "5A ";
+        } else if (effectTimeValue.equals(bundle.getString("3min"))) {
+            return "5B ";
+        } else if (effectTimeValue.equals(bundle.getString("5min"))) {
+            return "5C ";
+        } else if (effectTimeValue.equals(bundle.getString("10min"))) {
+            return "5D ";
+        } else if (effectTimeValue.equals(bundle.getString("30min"))) {
+            return "5E ";
+        } else if (effectTimeValue.equals(bundle.getString("1hr"))) {
+            return "5F ";
+        } else if (effectTimeValue.equals(bundle.getString("3hr"))) {
+            return "60 ";
+        } else if (effectTimeValue.equals(bundle.getString("5hr"))) {
+            return "61 ";
+        } else if (effectTimeValue.equals(bundle.getString("9hr"))) {
+            return "62 ";
+        } else {
+            return "00 ";
+        }
+
     }
+
+
+
+
+    //Todo 도로교통공단 버전
+//    String common = "\"2.RTE058.6.1."+((RadioButton) sectionGroup.getSelectedToggle()).getText()+".";
+//
+//    ObjectMapper objectMapper = new ObjectMapper();
+//        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+//
+//    // 최상위 JSON 객체 (순서 보장)
+//    Map<String, Object> jsonMessage = new LinkedHashMap<>();
+//        jsonMessage.put("MSG_TYPE", "TEXT");
+//        jsonMessage.put("MSG_VER", Integer.parseInt(java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"))));
+//        jsonMessage.put("MSG_ID", System.currentTimeMillis() / 1000);
+//
+//
+//    // MOID 객체 생성 (순서 보장)
+//    Map<String, Object> moid = new LinkedHashMap<>();
+//        moid.put(common+"1", Arrays.asList(displayMethod.getValue().equals("Clear") ? 1 : 0, "On".equals(displayControl.getValue()) ? 99 : "Off".equals(displayControl.getValue()) ? 0 : Integer.parseInt(displayControl.getValue())));
+//        moid.put(common+"2", Arrays.asList(30, 10, 15, 3));
+//        moid.put(common+"3", Arrays.asList(Integer.parseInt(xStart.getValue()), Integer.parseInt(xEnd.getValue()), Integer.parseInt(yStart.getValue()), Integer.parseInt(yEnd.getValue())));
+//        moid.put(common+"4", bgImg.getValue().equals("사용안함") ? 0 : Integer.parseInt(bgImg.getValue()));
+//
+//    // MOID 내부 리스트도 순서 보장
+//    List<Object> customList = new ArrayList<>();
+//        customList.add(Arrays.asList("안전", 2, 0, 0));  // 첫 번째 배열
+//        customList.add(Arrays.asList("확인", 4));        // 두 번째 배열
+//        customList.add(Collections.singletonList("부탁드립니다")); // 세 번째 배열
+//        customList.add(Collections.singletonList("부탁드립니다")); // 세 번째 배열
+//        customList.add(Collections.singletonList("부탁드립니다")); // 세 번째 배열
+//        customList.add(Collections.singletonList("부탁드립니다")); // 세 번째 배열
+//        customList.add(Collections.singletonList("부탁드립니다")); // 세 번째 배열
+//        customList.add(Collections.singletonList("부탁드립니다")); // 세 번째 배열
+//
+//        moid.put(common+"5", customList);
+//
+//    // 최종 JSON 메시지에 MOID 추가
+//        jsonMessage.put("MOID", moid);
 
 
 
