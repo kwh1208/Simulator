@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
+import static java.lang.Integer.parseInt;
 
 public class HEXMessageController {
 
@@ -693,5 +694,242 @@ public class HEXMessageController {
         bgImg.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> configService.setProperty("bgImg"+getMsgNum(), newValue)
         );
+    }
+
+    //Todo 나중에 asc랑 합치면서 사용할 함수
+    private String makeASCMsg() {
+        StringBuilder sendMsg = new StringBuilder("![00");
+        if (realTimeMsg.isSelected()) sendMsg.append("0/P00");
+        else sendMsg.append("1/P").append(String.format("%02d", Integer.parseInt(pageMsgCnt.getValue())-1));
+
+        sendMsg.append(String.format("%02d", Integer.parseInt(((RadioButton) sectionGroup.getSelectedToggle()).getText())));
+
+        sendMsg.append("/D").append(setDText(displayControl.getValue(), displayMethod.getValue()));
+        sendMsg.append("/F").append(setFText(charCodes.getValue(), fontSize.getValue()));
+        sendMsg.append("/E").append(setEText(effectIn.getValue(), inDirection.getValue()));
+        sendMsg.append(setEText(effectOut.getValue(), outDirection.getValue()));
+        sendMsg.append("/S").append(setSText(effectSpeed.getValue(), effectTime.getValue()));
+        sendMsg.append("/X").append(String.format("%02d", parseInt(xStart.getValue()) / 4)).append(String.format("%02d", parseInt(xEnd.getValue()) / 4));
+        sendMsg.append("/Y").append(String.format("%02d", parseInt(yStart.getValue()) / 4)).append(String.format("%02d", parseInt(yEnd.getValue()) / 4));
+        sendMsg.append("/B").append(bgImg.getValue().equals("사용안함") ? "000" : String.format("%03d", parseInt(bgImg.getValue())));
+        sendMsg.append("/T").append(Integer.parseInt(fontGroup.getValue().replaceAll("[^\\d]", "")) - 1);
+
+        int length = msgPreview.getText().length();
+        String text = msgPreview.getText();
+        String fgColors = textColor.getText();
+        String bgColors = bgColor.getText();
+
+        int currentColor = fgColors.charAt(0) - '0';
+        int currentBg = bgColors.charAt(0) - '0';
+
+        sendMsg.append("/C").append(currentColor).append("/G").append(currentBg);
+
+        for (int i = 0; i < length; i++) {
+            int nextColor = (i < fgColors.length()) ? fgColors.charAt(i) - '0' : currentColor;
+            int nextBg = (i < bgColors.length()) ? bgColors.charAt(i) - '0' : currentBg;
+
+            if (i > 0 && (nextColor != currentColor || nextBg != currentBg)) {
+                // 색상이 변경되면 새로운 C/G 추가
+                sendMsg.append("/C").append(nextColor).append("/G").append(nextBg);
+                currentColor = nextColor;
+                currentBg = nextBg;
+            }
+
+            // 문자 추가
+            sendMsg.append(text.charAt(i));
+        }
+
+        sendMsg.append("!]");
+
+        return sendMsg.toString();
+
+    }
+
+    private String setDText(String value1, String value2) {
+        String result = "";
+        switch (value1) {
+            case "Off":
+                result += "00";
+                break;
+            case "On":
+                result += "99";
+                break;
+            default:
+                int num = Integer.parseInt(value1);
+                if (num >= 1 && num <= 9) {
+                    result += String.format("0%d", num);
+                } else if (num >= 10 && num <= 90 && num % 10 == 0) {
+                    result += String.format("%d", num / 10 + 9);
+                }
+                break;
+        }
+        if (value2.equals("Normal")) {
+            result += "00";
+        } else result += "01";
+        return result;
+    }
+
+    private String setFText(String value1, String value2) {
+        String result = "";
+        if (value1.equals(bundle.getString("CombinationType"))) {
+            result += "00";
+        } else {
+            result += "01";
+        }
+
+        if (value2.equals("16(Standard)")) {
+            result += "03";
+        } else if (value2.equals("14")) {
+            result += "01";
+        } else {
+            result += String.format("%02d", (Integer.parseInt(value2) -4) / 4);
+        }
+
+        return result;
+    }
+
+    private String setEText(String value1, String value2) {
+        if (value1.equals(bundle.getString("noEffect"))) {
+            return "00";
+        } else if (value1.equals(bundle.getString("staticEffect"))) {
+            if (value2.equals(bundle.getString("noDirection"))) {
+                return "01";
+            } else if (value2.equals(bundle.getString("brighten"))) {
+                return "02";
+            } else if (value2.equals(bundle.getString("darken"))) {
+                return "03";
+            } else if (value2.equals(bundle.getString("horizontalReflection"))) {
+                return "04";
+            } else if (value2.equals(bundle.getString("verticalReflection"))) {
+                return "05";
+            }
+        } else if (value1.equals(bundle.getString("move"))) {
+            if (value2.equals(bundle.getString("left"))) {
+                return "06";
+            } else if (value2.equals(bundle.getString("right"))) {
+                return "07";
+            } else if (value2.equals(bundle.getString("up"))) {
+                return "08";
+            } else if (value2.equals(bundle.getString("down"))) {
+                return "09";
+            }
+
+        } else if (value1.equals(bundle.getString("wipe"))) {
+            if (value2.equals(bundle.getString("left"))) {
+                return "12";
+            } else if (value2.equals(bundle.getString("right"))) {
+                return "13";
+            } else if (value2.equals(bundle.getString("up"))) {
+                return "14";
+            } else if (value2.equals(bundle.getString("down"))) {
+                return "15";
+            }
+
+        } else if (value1.equals(bundle.getString("blind"))) {
+            if (value2.equals(bundle.getString("left"))) {
+                return "18";
+            } else if (value2.equals(bundle.getString("right"))) {
+                return "19";
+            } else if (value2.equals(bundle.getString("up"))) {
+                return "20";
+            } else if (value2.equals(bundle.getString("down"))) {
+                return "21";
+            }
+
+        } else if (value1.equals(bundle.getString("curtainEffect"))) {
+            if (value2.equals(bundle.getString("horizontalOutward"))) {
+                return "24";
+            } else if (value2.equals(bundle.getString("horizontalInward"))) {
+                return "25";
+            } else if (value2.equals(bundle.getString("verticalOutward"))) {
+                return "26";
+            } else if (value2.equals(bundle.getString("verticalInward"))) {
+                return "27";
+            }
+
+        } else if (value1.equals(bundle.getString("zoomEffect"))) {
+            if (value2.equals(bundle.getString("left"))) {
+                return "35";
+            } else if (value2.equals(bundle.getString("right"))) {
+                return "36";
+            } else if (value2.equals(bundle.getString("up"))) {
+                return "37";
+            } else if (value2.equals(bundle.getString("down"))) {
+                return "38";
+            } else if (value2.equals(bundle.getString("Bottom-Right"))) {
+                return "39";
+            }
+            //네오시스코리아 자석거치대 주문을 못해서 추가 주문원함
+
+        } else if (value1.equals(bundle.getString("rotateEffect"))) {
+            if (value2.equals(bundle.getString("counterclockwise1"))) {
+                return "40";
+            } else if (value2.equals(bundle.getString("clockwise1"))) {
+                return "41";
+            } else if (value2.equals(bundle.getString("counterclockwise2"))) {
+                return "42";
+            } else if (value2.equals(bundle.getString("clockwise2"))) {
+                return "43";
+            }
+
+        } else if (value1.equals(bundle.getString("backgroundFlash"))) {
+            if (value2.equals(bundle.getString("red"))) {
+                return "44";
+            } else if (value2.equals(bundle.getString("green"))) {
+                return "45";
+            } else if (value2.equals(bundle.getString("blue"))) {
+                return "46";
+            } else if (value2.equals(bundle.getString("white"))) {
+                return "47";
+            } else if (value2.equals(bundle.getString("allSequential"))) {
+                return "48";
+            }
+        } else if (value1.equals(bundle.getString("textFlash"))) {
+            if (value2.equals(bundle.getString("red"))) {
+                return "49";
+            } else if (value2.equals(bundle.getString("green"))) {
+                return "50";
+            } else if (value2.equals(bundle.getString("blue"))) {
+                return "51";
+            } else if (value2.equals(bundle.getString("white"))) {
+                return "52";
+            } else if (value2.equals(bundle.getString("allSequential"))) {
+                return "53";
+            } else if (value2.equals(bundle.getString("allSimultaneous"))) {
+                return "55";
+            }
+        } else if (value1.equals(bundle.getString("randomEffect"))) return "122";
+        return "54";//3D 효과, 왼쪽
+    }
+
+    private String setSText(String value1, String value2) {
+        String result = "";
+        result += String.format("%02d", Integer.parseInt(value1.replaceAll("[^\\d]", "")));
+
+
+        if (value2.contains(bundle.getString("sec"))) {
+            result += String.format("%02d", (int) (Double.parseDouble(value2.replaceAll("[^\\d.]", "")) * 2));
+        } else {
+            if (value2.equals(bundle.getString("2min"))) {
+                result += "90";
+            } else if (value2.equals(bundle.getString("3min"))) {
+                result += "91";
+            } else if (value2.equals(bundle.getString("5min"))) {
+                result += "92";
+            } else if (value2.equals(bundle.getString("10min"))) {
+                result += "93";
+            } else if (value2.equals(bundle.getString("30min"))) {
+                result += "94";
+            } else if (value2.equals(bundle.getString("1hr"))) {
+                result += "95";
+            } else if (value2.equals(bundle.getString("3hr"))) {
+                result += "96";
+            } else if (value2.equals(bundle.getString("5hr"))) {
+                result += "97";
+            } else if (value2.equals(bundle.getString("9hr"))) {
+                result += "98";
+            }
+        }
+        return result;
     }
 }
