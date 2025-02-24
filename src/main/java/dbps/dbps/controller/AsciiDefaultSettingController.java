@@ -565,7 +565,7 @@ public class AsciiDefaultSettingController {
 
     private String setSText(String value1, String value2) {
         String result = "";
-        result += value1.replaceAll("[^\\d]", "");
+        result += String.format("%02d", Integer.parseInt(value1.replaceAll("[^\\d]", "")));
 
 
         if (value2.contains(bundle.getString("sec"))) {

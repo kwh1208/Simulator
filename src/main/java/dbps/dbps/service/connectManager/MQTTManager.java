@@ -9,6 +9,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -140,7 +141,7 @@ public class MQTTManager {
     public String sendMsg(String payload) {
         chkConnect();
         try {
-            MqttMessage message = new MqttMessage(payload.getBytes(StandardCharsets.UTF_8));
+            MqttMessage message = new MqttMessage(payload.getBytes(Charset.forName("MS949")));
             message.setQos(0);
             client.publish(sendTopic, message);
             logService.updateInfoLog("전송 메세지 : " + payload);
