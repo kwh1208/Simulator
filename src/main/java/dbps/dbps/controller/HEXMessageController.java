@@ -614,7 +614,7 @@ public class HEXMessageController {
 
     public void reset() {
         String msgNum = getMsgNum();
-        configService.setProperty("displayControl"+msgNum, "ON");
+        configService.setProperty("displayControl"+msgNum, "On");
         configService.setProperty("displayMethod"+msgNum, "Clear");
         configService.setProperty("charCode"+msgNum, "한글 조합형");
         configService.setProperty("fontSize"+msgNum, "16(Standard)");
