@@ -14,7 +14,7 @@
     <!--통신설정 버튼-->
     <Button layoutX="85.0" layoutY="10.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="176.0"
             text="%communicationSetting" onMouseClicked="#communicationSettingClicked"
-            style="-fx-font-weight: bolder; -fx-font-size: 16"/>
+            style="-fx-font-weight: bolder;"/>
     <!--프로그램 설정-->
     <fx:include source="basicSetting.fxml"/>
 

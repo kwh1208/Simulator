@@ -58,7 +58,3 @@
 .scroll-bar:hover .thumb {
     -fx-background-color: #FF9800; /* 썸 색상 */
 }
-
-#logArea Text {
-    -fx-font-size: 15px; /* 글씨 크기 설정 */
-}

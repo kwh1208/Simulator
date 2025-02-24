@@ -76,7 +76,7 @@ public class LogService {
 
         // 텍스트 추가 및 스타일 적용
         Platform.runLater(()->{
-            logTextArea.append(logMessage + "\n", "-fx-fill: white; -fx-font-size:16px");
+            logTextArea.append(logMessage + "\n", "-fx-fill: white;");
             scrollToBottom();
         });
 

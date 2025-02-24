@@ -12,7 +12,7 @@
 <Pane layoutX="284.0" layoutY="539.0" prefHeight="67.0" prefWidth="288.0">
     <children>
         <Label layoutX="18.0" layoutY="5.0" text="%bgSelection" />
-        <ComboBox fx:id="BGImgSelection" layoutX="140.0"  prefHeight="28.0" prefWidth="109.0" value="사용안함" style="-fx-font-size: 13px">
+        <ComboBox fx:id="BGImgSelection" layoutX="140.0"  prefHeight="28.0" prefWidth="109.0" value="사용안함" style="">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>

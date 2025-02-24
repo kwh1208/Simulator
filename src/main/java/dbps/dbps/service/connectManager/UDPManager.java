@@ -213,6 +213,55 @@ public class UDPManager {
         }
     }
 
+    public void sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
+        if (socket == null||socket.isClosed()) {
+            connectNoLog(IP, PORT);
+        }
+        DatagramPacket receivePacket;
+        try {
+            InetAddress serverAddr = InetAddress.getByName(IP);
+            DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
+            socket.send(sendPacket);
+
+            String log = bytesToHex(msg, 32);
+            log+=" ~ 10 03";
+            logService.updateInfoLog(log);
+
+            byte[] receiveBuffer = new byte[1024];
+            int totalBytesRead = 0;
+            receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+            while (true) {
+                try {
+                    socket.receive(receivePacket);
+                    int bytesRead = receivePacket.getLength();
+                    if (bytesRead > 0) {
+                        totalBytesRead += bytesRead;
+                        // 데이터 처리 로직
+                        if (dataReceivedIsCompleteHex(receiveBuffer, totalBytesRead)) {
+                            break; // 수신 완료 조건 만족 시 루프 종료
+                        }
+                    }
+                } catch (SocketTimeoutException e) {
+                    logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                    throw new RuntimeException();
+                }
+            }
+            String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
+            if (result.contains("52 58 28")) {
+                Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                Matcher matcher = pattern.matcher(result);
+
+                if (matcher.find()) {
+                    result = matcher.group(0); // 전체 매칭된 부분을 추출
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+        }
+    }
+
     public static List<DatagramSocket> socketList = new ArrayList<>();
 
     boolean WifiOnly;
@@ -459,6 +508,9 @@ public class UDPManager {
 
     //접속끊기
     public void disconnect() {
+        if (KEEP_OPEN){
+            return;
+        }
         if (socket == null && socketList.isEmpty()){
             return;
         }
@@ -480,6 +532,9 @@ public class UDPManager {
     }
 
     public void disconnectNoLog() {
+        if (KEEP_OPEN){
+            return;
+        }
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
