@@ -87,9 +87,7 @@ public class ServerTCPManager {
                 if (socket == null) {
                     connect(hostIP, serverTCPPort);
                 }
-
                 try {
-                    socket.setSoTimeout(RESPONSE_LATENCY * 1000); // 시간 초과 설정
                     InputStream input = socket.getInputStream();
                     OutputStream output = socket.getOutputStream();
 
@@ -99,7 +97,7 @@ public class ServerTCPManager {
                     output.flush();
 
                     byte[] buffer = new byte[1024];
-                    int totalBytesRead = input.read(buffer);
+                    int totalBytesRead = 0;
 
                     while (true) {
                         int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
@@ -265,7 +263,7 @@ public class ServerTCPManager {
                     logService.errorLog(msg + " 전송에 실패했습니다.");
                     throw e;
                 } finally {
-                    socket.close();
+                    disconnect();
                 }
             }
         };
