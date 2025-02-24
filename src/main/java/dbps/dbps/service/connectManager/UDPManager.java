@@ -213,7 +213,7 @@ public class UDPManager {
         }
     }
 
-    public String sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
+    public void sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
         if (socket == null||socket.isClosed()) {
             connectNoLog(IP, PORT);
         }
@@ -255,11 +255,10 @@ public class UDPManager {
                     result = matcher.group(0); // 전체 매칭된 부분을 추출
                 }
             }
-            return result;
         } catch (IOException e) {
+            e.printStackTrace();
             throw e;
         } finally {
-            disconnectNoLog();
         }
     }
 

@@ -12,6 +12,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static dbps.dbps.Constants.*;
 
@@ -34,7 +36,7 @@ public class ServerTCPManager {
     public void connect(String host, int port) {
         try {
             hostIP = host;
-            serverTCPPort=port;
+            serverTCPPort = port;
             InetAddress bindAddr = InetAddress.getByName(host);
             try (ServerSocket serverSocket = new ServerSocket(port, 50, bindAddr)) {
                 serverSocket.setSoTimeout(RESPONSE_LATENCY * 1000);
@@ -49,7 +51,7 @@ public class ServerTCPManager {
     }
 
     public void disconnect() {
-        if (KEEP_OPEN){
+        if (KEEP_OPEN) {
             return;
         }
         try {
@@ -62,7 +64,7 @@ public class ServerTCPManager {
     }
 
     public void disconnectNoLog() {
-        if (KEEP_OPEN){
+        if (KEEP_OPEN) {
             return;
         }
         if (socket == null) {
@@ -85,37 +87,47 @@ public class ServerTCPManager {
                 if (socket == null) {
                     connect(hostIP, serverTCPPort);
                 }
-
                 try {
-                    socket.setSoTimeout(RESPONSE_LATENCY * 1000); // 시간 초과 설정
                     InputStream input = socket.getInputStream();
                     OutputStream output = socket.getOutputStream();
 
-                    logService.updateInfoLog("전송 메세지 : "+bytesToHex(msg, msg.length));
+                    logService.updateInfoLog("전송 메세지 : " + bytesToHex(msg, msg.length));
 
                     output.write(msg);
                     output.flush();
 
                     byte[] buffer = new byte[1024];
-                    int totalBytesRead = input.read(buffer);
+                    int totalBytesRead = 0;
 
-                    if (totalBytesRead > 0) {
-                        String result = bytesToHex(buffer, totalBytesRead);
-                        if (result.contains("52 58 28")) {
-                            result = result.substring(result.indexOf("10 02"));
-                        }
-                        logService.updateInfoLog("받은 메세지 : "+result);
-                        if (result.isEmpty()) {
-                            throw new IOException("서버 응답이 비어 있습니다.");
-                        }
+                    while (true) {
+                        int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                        if (bytesRead > 0) {
+                            totalBytesRead += bytesRead;
 
-                        return result;
-                    } else {
-                        throw new IOException("서버에서 응답이 없습니다.");
+                            // 데이터가 모두 수신되었는지 확인
+                            if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                                break;
+                            }
+                        } else {
+                            break; // 타임아웃
+                        }
                     }
+
+                    String result = bytesToHex(buffer, totalBytesRead);
+                    if (result.contains("52 58 28")) {
+                        Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                        Matcher matcher = pattern.matcher(result);
+
+                        if (matcher.find()) {
+                            result = matcher.group(0); // 전체 매칭된 부분을 추출
+                        }
+                    }
+                    logService.updateInfoLog("받은 메세지: " + result);
+                    return result;
                 } catch (IOException e) {
-                    logService.errorLog(msg + " 전송에 실패했습니다: " + e.getMessage());
-                    throw new IOException("메시지 전송 실패", e);
+                    logService.errorLog("전송에 실패했습니다.");
+                    e.printStackTrace();
+                    throw e;
                 } finally {
                     disconnect();
                 }
@@ -173,7 +185,7 @@ public class ServerTCPManager {
             output.flush();
 
             String log = bytesToHex(msg, 32);
-            log+=" ~ 10 03";
+            log += " ~ 10 03";
             logService.updateInfoLog(log);
 
             byte[] buffer = new byte[1024];
@@ -200,8 +212,7 @@ public class ServerTCPManager {
     }
 
 
-
-    public Task<String> sendASCMsg(String msg, boolean utf8){
+    public Task<String> sendASCMsg(String msg, boolean utf8) {
         return new Task<>() {
 
             @Override
@@ -217,42 +228,44 @@ public class ServerTCPManager {
                     else if (ascUTF16) {
                         sendData = msg.getBytes(StandardCharsets.UTF_16BE);
                     }
-                    logService.updateInfoLog("전송 데이터 :"+msg);
+                    logService.updateInfoLog("전송 데이터 :" + msg);
                     output.write(sendData);
                     output.flush();
 
-                    long startTime = System.currentTimeMillis();
                     byte[] buffer = new byte[1024];
                     int totalBytesRead = 0;
 
-                    while (System.currentTimeMillis() - startTime < RESPONSE_LATENCY * 1000L) {
-                        if (input.available() > 0) {
-                            int bytesRead = input.read(buffer);
-                            if (bytesRead > 0) {
-                                totalBytesRead += bytesRead;
-
-                                startTime = System.currentTimeMillis();
-
-                                if (dataReceivedIsComplete(buffer, totalBytesRead)) {
-                                    break;
-                                }
+                    while (true) {
+                        int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                        if (bytesRead > 0) {
+                            totalBytesRead += bytesRead;
+                            if (dataReceivedIsComplete(buffer, totalBytesRead)) {
+                                break;
                             }
                         } else {
-                            Thread.sleep(50);
+                            break; // 타임아웃
                         }
                     }
                     String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
-                    logService.updateInfoLog("받은 데이터 :"+result);
+                    if (result.contains("RX") && result.contains("![") && result.contains("!]")) {
+                        int indexTX = result.indexOf("TX");
+                        result = result.substring(indexTX);
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]") + 2);
+                    }
+                    if (result.contains("init_rtcTimeDate Start")) {
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]") + 2);
+                    }
+                    logService.updateInfoLog("받은 메세지: " + result);
                     return result;
-                } catch (IOException | InterruptedException e) {
+                } catch (IOException e) {
                     e.getMessage();
+
                     logService.errorLog(msg + " 전송에 실패했습니다.");
                     throw e;
-                }finally {
+                } finally {
                     disconnect();
                 }
             }
         };
     }
-
 }
