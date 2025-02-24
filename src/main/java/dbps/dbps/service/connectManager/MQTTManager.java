@@ -138,7 +138,7 @@ public class MQTTManager {
         }
     }
 
-    public String sendMsg(String payload) {
+    public void sendMsg(String payload) {
         chkConnect();
         try {
             MqttMessage message = new MqttMessage(payload.getBytes(Charset.forName("MS949")));
@@ -147,11 +147,10 @@ public class MQTTManager {
             logService.updateInfoLog("전송 메세지 : " + payload);
             String result = receivedMsg();
             logService.updateInfoLog("받은 메세지 : " + result);
-            return result;
 
         } catch (MqttException e) {
             e.printStackTrace();
-            return "Error: " + e.getMessage();
+            e.getMessage();
         }
     }
 

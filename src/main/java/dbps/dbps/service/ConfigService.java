@@ -171,7 +171,7 @@ public class ConfigService {
             defaultProperties.setProperty("isMQTTRealTime", "0");
         for (int i = 0; i <= 10; i++) {//페이지 개수(0은 실시간)
             for (int j =0; j < 3; j++) {//섹션 개수
-                defaultProperties.setProperty("MQTTdisplayControl"+i+j, "ON");
+                defaultProperties.setProperty("MQTTdisplayControl"+i+j, "On");
                 defaultProperties.setProperty("MQTTdisplayMethod"+i+j, "Clear");
                 defaultProperties.setProperty("MQTTcharCode"+i+j, "한글 조합형");
                 defaultProperties.setProperty("MQTTfontSize"+i+j, "16(Standard)");

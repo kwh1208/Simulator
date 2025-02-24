@@ -20,6 +20,10 @@ import static java.lang.Integer.parseInt;
 public class MQTTMsgController {
     public AnchorPane mqttMsgAP;
     @FXML
+    public RadioButton ascChkBox;
+    @FXML
+    public RadioButton hexChkBox;
+    @FXML
     private RadioButton realTimeMsg;
     @FXML
     private RadioButton pageMsg;
@@ -79,7 +83,7 @@ public class MQTTMsgController {
     ToggleGroup sectionGroup = new ToggleGroup();
     ConfigService configService;
 
-    Map<String, Integer> colorMap;
+    ToggleGroup msgType = new ToggleGroup();
 
 
     @FXML
@@ -91,6 +95,11 @@ public class MQTTMsgController {
 
         realTimeMsg.setToggleGroup(msgTypeGroup);
         pageMsg.setToggleGroup(msgTypeGroup);
+
+        hexChkBox.setToggleGroup(msgType);
+        ascChkBox.setToggleGroup(msgType);
+
+        hexChkBox.setSelected(true);
 
         section0.setToggleGroup(sectionGroup);
         section1.setToggleGroup(sectionGroup);
@@ -167,14 +176,14 @@ public class MQTTMsgController {
 
     public void send() throws UnsupportedEncodingException {
         String msg = makeMQTTMsg();
-        String result = mqttManager.sendMsg(msg);
+        mqttManager.sendMsg(msg);
 
         save();
     }
 
     public void reset() {
         String msgNum = getMsgNum();
-        configService.setProperty("MQTTdisplayControl"+msgNum, "ON");
+        configService.setProperty("MQTTdisplayControl"+msgNum, "On");
         configService.setProperty("MQTTdisplayMethod"+msgNum, "Clear");
         configService.setProperty("MQTTcharCode"+msgNum, "한글 조합형");
         configService.setProperty("MQTTfontSize"+msgNum, "16(Standard)");
@@ -197,7 +206,7 @@ public class MQTTMsgController {
     }
 
     private String makeMQTTMsg() throws UnsupportedEncodingException {
-        if (false){
+        if (hexChkBox.isSelected()){
             String msg = makeHexMsg();
 
             byte[] sendByte = hexStringToByteArray(msg);
@@ -215,10 +224,10 @@ public class MQTTMsgController {
         return null;
     }
 
-    private String makeASCMsg() throws UnsupportedEncodingException {
+    private String makeASCMsg() {
         StringBuilder sendMsg = new StringBuilder("![00");
         if (realTimeMsg.isSelected()) sendMsg.append("0/P00");
-        else sendMsg.append("1/P").append(String.format("%02d", Integer.parseInt(pageMsgCnt.getValue())));
+        else sendMsg.append("1/P").append(String.format("%02d", Integer.parseInt(pageMsgCnt.getValue())-1));
 
         sendMsg.append(String.format("%02d", Integer.parseInt(((RadioButton) sectionGroup.getSelectedToggle()).getText())));
 
@@ -233,27 +242,28 @@ public class MQTTMsgController {
         sendMsg.append("/T").append(Integer.parseInt(fontGroup.getValue().replaceAll("[^\\d]", "")) - 1);
 
         int length = msg.getText().length();
+        String text = msg.getText();
+        String fgColors = textColor.getText();
+        String bgColors = bgColor.getText();
 
-        int[] color = new int[length];
-        Arrays.fill(color, textColor.getText().charAt(textColor.getText().length() - 1) - '0');
-        int[] bg = new int[length];
-        Arrays.fill(bg, bgColor.getText().charAt(bgColor.getText().length() - 1) - '0');
-        String[] txt = new String[length];
+        int currentColor = fgColors.charAt(0) - '0';
+        int currentBg = bgColors.charAt(0) - '0';
 
-        for (int i = 0; i < textColor.getText().length(); i++) {
-            color[i] = textColor.getText().charAt(i) - '0';
-        }
-        for (int i = 0; i < bgColor.getText().length(); i++) {
-            bg[i] = bgColor.getText().charAt(i) - '0';
-        }
-        for (int i = 0; i < msg.getText().length(); i++) {
-            txt[i] = String.valueOf(msg.getText().charAt(i));
-        }
+        sendMsg.append("/C").append(currentColor).append("/G").append(currentBg);
 
         for (int i = 0; i < length; i++) {
-            sendMsg.append("/C").append(color[i]);
-            sendMsg.append("/G").append(bg[i]);
-            sendMsg.append(txt[i]);
+            int nextColor = (i < fgColors.length()) ? fgColors.charAt(i) - '0' : currentColor;
+            int nextBg = (i < bgColors.length()) ? bgColors.charAt(i) - '0' : currentBg;
+
+            if (i > 0 && (nextColor != currentColor || nextBg != currentBg)) {
+                // 색상이 변경되면 새로운 C/G 추가
+                sendMsg.append("/C").append(nextColor).append("/G").append(nextBg);
+                currentColor = nextColor;
+                currentBg = nextBg;
+            }
+
+            // 문자 추가
+            sendMsg.append(text.charAt(i));
         }
 
         sendMsg.append("!]");
