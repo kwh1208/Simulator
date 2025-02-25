@@ -116,6 +116,8 @@ public class DisplaySignalSettingController {
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         configService = ConfigService.getInstance();
+
+        signalList.getSelectionModel().select(0);
     }
 
     private void handleDoubleClick(MouseEvent event, ListView<String> listView) {
@@ -357,7 +359,10 @@ public class DisplaySignalSettingController {
 
         modalStage.setOnHiding(event -> {
             int targetIndex = signalList.getItems().indexOf(SELECTED_SIGNAL);
-            signalList.getSelectionModel().select(targetIndex);
+            if (targetIndex != -1) { // 유효한 인덱스인지 확인
+                signalList.getSelectionModel().select(targetIndex);
+                signalList.scrollTo(targetIndex); // 선택한 항목으로 스크롤 이동
+            }
         });
 
         modalStage.setOnShown(event -> {

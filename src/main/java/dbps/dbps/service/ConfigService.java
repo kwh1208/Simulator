@@ -48,11 +48,40 @@ public class ConfigService {
         TCPManager.getManager().setPORT(TCP_PORT);
     }
 
+    public void reloadConfigProperties() {
+        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(configFilePath), StandardCharsets.UTF_8)) {
+            properties.clear(); // 기존 값 초기화
+            properties.load(reader);
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
     private void createFileIfNotExists(String filePath) {
         if (new File(filePath).exists()) {
             return;
         }
         Properties defaultProperties = new Properties();
+        if (filePath.equals(displayFilePath)){
+            defaultProperties.setProperty("08D-P16D2S21", "04N008P2H1200A1");
+            defaultProperties.setProperty("04D-P32D2S71", "DABIT_P10_1R2C_4S_4500cd");
+            defaultProperties.setProperty("04D-P32D2S51", "DABIT_P10_1R2C_4S_4500cd(BGR)");
+            defaultProperties.setProperty("16D-P16D1S21", "DABIT_P3_1R4C_16S_900cd");
+            defaultProperties.setProperty("16D-P16D1S11", "DABIT_P3_2R6C_16S_2700cd\nDABIT_P4_2R2C_16S_2200cd\nDABIT_P4_2R2C_16S_900cd");
+            defaultProperties.setProperty("32D-P16D1S11", "DABIT_P3_4R4C_16S_900cd\nP2.5-2121-64X64-32S-8H-M1.1(BRG)");
+            defaultProperties.setProperty("08D-P32D1S31", "DABIT_P4_2R4C_8S_6000cd");
+            defaultProperties.setProperty("08D-P64D1S61", "DABIT_P6_2R2C_8S_6500cd\nP6-1921-32x32-8S-GC-M1");
+            defaultProperties.setProperty("08D-P64D1S21", "DABIT_P6_2R2C_8S_6500cd(BGR)");
+            defaultProperties.setProperty("04D-P32D2S61", "DABIT_P8_1R2C_4S_6500cd\nECO_T10_1R2C_4S_8000cd\nL800-32X16-4S-V3.0(L800)\nYS-P10-320x160-4S-2735-V2\n户外P8-4 16*32-V4.1");
+            defaultProperties.setProperty("04D-P16D4S11-1^5^9^13", "GMSFCM4_240_111 GP22LED_81210");
+            defaultProperties.setProperty("08D-P64D1S71", "HS-64W1-CFN-0801");
+            defaultProperties.setProperty("16D-P16D1S41", "HS-P3-192-CFH-1601");
+            defaultProperties.setProperty("04D-P32D2S41", "OKR P10 3535 32X16-4S-V2.0");
+            defaultProperties.setProperty("16D-P16D1S31", "P3-1415-16S-64X64-S31\nP3-1415-16S-64X64-S3.1(실외용)");
+            defaultProperties.setProperty("01D-P64D4S21-4^8^12^16", "VL160T110-1\nVL200T110-1\nVL240T110-1\nVL250F111-1\nVL300-T110-1\nVL300F110-1\nVL320T210-1");
+            defaultProperties.setProperty("16D-P16D1S10-1", "VS040T110-0\nVS048T110-0\nVS064T110-0\nVS064T110-0(CE3.00)\nVS096T110-0\nVS128T110-0");
+        }
+        else {
             for (int i = 1; i < 10; i++) {
                 if (i==1){
                     defaultProperties.setProperty("ASCMsg"+i, "![000Hello world!]");
@@ -82,6 +111,11 @@ public class ConfigService {
             defaultProperties.setProperty("latency", "3");
             defaultProperties.setProperty("lastDisplaySignal", "16D-P16D1S11");
             defaultProperties.setProperty("PROGRAM_LANGUAGE", "한국어");
+
+            defaultProperties.setProperty("dbNetIP", "192.168.0.201");
+            defaultProperties.setProperty("dbNetPort", "5000");
+            defaultProperties.setProperty("dbNetGateway", "192.168.0.1");
+            defaultProperties.setProperty("dbNetSubnet", "255.255.255.0");
 
             defaultProperties.setProperty("fontGroup1FontPath1", "ENG 08x16-DABIT(표준).fnt");
             defaultProperties.setProperty("fontGroup1FontType1", "영어");
@@ -196,6 +230,8 @@ public class ConfigService {
                     defaultProperties.setProperty("MQTTtext"+i+j, "page "+i+"-section "+j);
                 }
             }
+        }
+
         }
 
         File configFile = new File(filePath);

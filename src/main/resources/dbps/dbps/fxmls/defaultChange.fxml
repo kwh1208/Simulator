@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="defaultChangeAP" prefHeight="290.0" prefWidth="386.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" style="-fx-background-color: #333333" fx:controller="dbps.dbps.controller.DefaultChangeController">
+    <Label layoutX="30.0" layoutY="18.0" text="Local IP" />
+    <TextField fx:id="clientIPTF" layoutX="30.0" layoutY="45.0" prefHeight="21.0" prefWidth="150.0" />
+    <Label layoutX="200.0" layoutY="18.0" text="Port" />
+    <TextField fx:id="clientPortTF" layoutX="200.0" layoutY="45.0" prefHeight="21.0" prefWidth="150.0" />
+    <Label layoutX="30.0" layoutY="85.0" text="Subnet Mask" />
+    <TextField fx:id="clientSubnetMaskTF" layoutX="30.0" layoutY="112.0" prefHeight="21.0" prefWidth="150.0" />
+    <Label layoutX="30.0" layoutY="152.0" text="Gateway" />
+    <TextField fx:id="clientGatewayTF" layoutX="30.0" layoutY="179.0" prefHeight="21.0" prefWidth="150.0" />
+    <Button layoutX="30.0" layoutY="239.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="28.0" prefWidth="92.0" text="confirm" />
+   <Button layoutX="256.0" layoutY="239.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="28.0" prefWidth="92.0" text="%close" />
+</AnchorPane>

@@ -12,6 +12,8 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -26,6 +28,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+
+import static dbps.dbps.Constants.openModal;
 
 public class DabitNetController {
 
@@ -70,6 +74,7 @@ public class DabitNetController {
     public Tab networkTab;
     public Tab commTab;
     public Tab db300Tab;
+    public Button defaultChange;
 
 
     ToggleGroup connectionToggleGroup = new ToggleGroup();
@@ -170,6 +175,11 @@ public class DabitNetController {
             }
         });
 
+        dabitNetAP.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode()== KeyCode.F10){
+                defaultChange.setVisible(true);
+            }
+        });
     }
 
     private void clearUI() {
@@ -534,11 +544,11 @@ public class DabitNetController {
     }
 
     @FXML
-    public void setDefault(MouseEvent mouseEvent) {
-        clientIPTF.setText("192.168.0.201");
-        clientGatewayTF.setText("192.168.0.1");
-        clientPortTF.setText("5000");
-        clientSubnetMaskTF.setText("255.255.255.0");
+    public void setDefault() {
+        clientIPTF.setText(configService.getProperty("dbNetIP"));
+        clientGatewayTF.setText(configService.getProperty("dbNetPort"));
+        clientPortTF.setText(configService.getProperty("dbNetGateway"));
+        clientSubnetMaskTF.setText(configService.getProperty("dbNetSubnet"));
     }
 
 
@@ -746,6 +756,10 @@ public class DabitNetController {
         else {
             wifiTab.setDisable(false);
         }
+    }
+
+    public void changeDefault(MouseEvent mouseEvent) throws IOException {
+        openModal("/dbps/dbps/fxmls/defaultChange.fxml", "기본 설정 변경", mouseEvent);
     }
 
     @Setter
