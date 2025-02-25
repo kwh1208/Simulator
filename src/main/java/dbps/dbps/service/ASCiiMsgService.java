@@ -1,6 +1,7 @@
 package dbps.dbps.service;
 
 
+import dbps.dbps.Simulator;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
@@ -37,6 +38,11 @@ public class ASCiiMsgService {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("메세지 초기화");
         alert.setHeaderText("메세지를 초기화하시겠습니까?");
+
+        alert.getDialogPane().setStyle("-fx-background-color: #333333");
+        alert.getDialogPane().getStyleClass().add("custom-alert");
+        alert.getDialogPane().getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/alert.css").toExternalForm());
+
         ButtonType result = alert.showAndWait().orElse(ButtonType.CANCEL);
 
         if (result == ButtonType.OK) {

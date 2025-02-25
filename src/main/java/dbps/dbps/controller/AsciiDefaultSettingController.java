@@ -258,7 +258,7 @@ public class AsciiDefaultSettingController {
     }
 
     //미리보기
-    //완성필요
+    //Todo 완성필요
     @FXML
     public void send() {
         String text = defaultSetting.getText();

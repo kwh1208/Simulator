@@ -265,47 +265,47 @@ public class FontSettingController {
         moveCursorRight(fontGroup4fontPath3);
 
         fontGroup1fontSelected2.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            configService.setProperty("fontGroup1FontType2", newValue.replaceAll(defaultPath, ""));
+            configService.setProperty("fontGroup1FontType2", newValue);
             updateFontSize();
         });
         fontGroup1fontSelected3.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            configService.setProperty("fontGroup1FontType3", newValue.replaceAll(defaultPath, ""));
+            configService.setProperty("fontGroup1FontType3", newValue);
             updateFontSize();
         });
         fontGroup2fontSelected1.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            configService.setProperty("fontGroup2FontType1", newValue.replaceAll(defaultPath, ""));
+            configService.setProperty("fontGroup2FontType1", newValue);
             updateFontSize();
         });
         fontGroup2fontSelected2.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            configService.setProperty("fontGroup2FontType2", newValue.replaceAll(defaultPath, ""));
+            configService.setProperty("fontGroup2FontType2", newValue);
             updateFontSize();
         });
         fontGroup2fontSelected3.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            configService.setProperty("fontGroup2FontType3", newValue.replaceAll(defaultPath, ""));
+            configService.setProperty("fontGroup2FontType3", newValue);
             updateFontSize();
         });
         fontGroup3fontSelected1.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            configService.setProperty("fontGroup3FontType1", newValue.replaceAll(defaultPath, ""));
+            configService.setProperty("fontGroup3FontType1", newValue);
             updateFontSize();
         });
         fontGroup3fontSelected2.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            configService.setProperty("fontGroup3FontType2", newValue.replaceAll(defaultPath, ""));
+            configService.setProperty("fontGroup3FontType2", newValue);
             updateFontSize();
         });
         fontGroup3fontSelected3.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            configService.setProperty("fontGroup3FontType3", newValue.replaceAll(defaultPath, ""));
+            configService.setProperty("fontGroup3FontType3", newValue);
             updateFontSize();
         });
         fontGroup4fontSelected1.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            configService.setProperty("fontGroup4FontType1", newValue.replaceAll(defaultPath, ""));
+            configService.setProperty("fontGroup4FontType1", newValue);
             updateFontSize();
         });
         fontGroup4fontSelected2.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            configService.setProperty("fontGroup4FontType2", newValue.replaceAll(defaultPath, ""));
+            configService.setProperty("fontGroup4FontType2", newValue);
             updateFontSize();
         });
         fontGroup4fontSelected3.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            configService.setProperty("fontGroup4FontType3", newValue.replaceAll(defaultPath, ""));
+            configService.setProperty("fontGroup4FontType3", newValue);
             updateFontSize();
         });
 
