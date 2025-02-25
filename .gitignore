@@ -40,6 +40,8 @@ bin/
 *.txt
 .idea/**
 
+Font/**
+
 ### VS Code ###
 .vscode/
 

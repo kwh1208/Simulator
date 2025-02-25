@@ -29,7 +29,7 @@
          </items>
       </ComboBox>
       <Label disable="true" layoutX="-1.0" layoutY="47.0" text="BH1(TTL/RS485) Function" />
-      <ComboBox fx:id="BH1_Func" disable="true" layoutX="198.0" layoutY="43.0" prefHeight="21.0" prefWidth="158.0" value="8Pin Input(BCD)">
+      <ComboBox fx:id="BH1_Func" disable="true" layoutX="198.0" layoutY="43.0" prefHeight="21.0" prefWidth="158.0" value="TTL/RS485">
          <items>
             <FXCollections fx:factory="observableArrayList">
                <String fx:value="TTL/RS485" />

@@ -253,11 +253,11 @@ public class CommunicationSettingController {
             }
         });
 
-        serialPortComboBox.setValue(configService.getProperty("openPortName"));
-
         if (!serialPortComboBox.getItems().isEmpty()) {
             serialPortComboBox.setValue(serialPortComboBox.getItems().get(0));
         }
+
+        serialPortComboBox.setValue(configService.getProperty("openPortName"));
 
         serialPortComboBox.valueProperty().addListener((observableValue, oldValue, newValue) -> {
             serialPortComboBox.setValue(newValue);
