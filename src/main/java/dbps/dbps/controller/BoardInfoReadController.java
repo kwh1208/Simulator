@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import static dbps.dbps.Constants.convertRS485AddrASCii;
@@ -18,6 +19,7 @@ public class BoardInfoReadController {
     public TextField array;
     public TextField firmware;
     public TextField cpu;
+    public AnchorPane brAp;
     AsciiMsgTransceiver asciiMsgTransceiver;
     BoardInfoReadService boardInfoReadService;
     @FXML
@@ -31,6 +33,8 @@ public class BoardInfoReadController {
         boardInfoReadService.setArray(array);
         boardInfoReadService.setFirmware(firmware);
         boardInfoReadService.setCpu(cpu);
+
+        brAp.getStylesheets().add(getClass().getResource("/dbps/dbps/css/additionalFunction.css").toExternalForm());
     }
 
 
