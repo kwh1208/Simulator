@@ -152,6 +152,34 @@ public class MQTTManager {
 
                     String result = receivedMsg();
                     logService.updateInfoLog("받은 메세지 : " + result);
+                    result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                    return result;
+
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                    return "Error: " + e.getMessage();
+                }
+            }
+        };
+    }
+
+    public Task<String> sendByteMsg(byte[] payload) {
+        return new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                chkConnect();
+                try {
+                    MqttMessage message = new MqttMessage(payload);
+                    message.setQos(0);
+                    client.publish(sendTopic, message);
+
+                    logService.updateInfoLog("전송 메세지 : " + bytesToHex(payload, payload.length));
+
+                    String result = receivedMsg();
+                    result = result.substring(result.indexOf(":\"")+2, result.indexOf("\"}"));
+                    byte[] bytes = Base64.getDecoder().decode(result);
+                    bytesToHex(bytes, bytes.length);
+                    logService.updateInfoLog("받은 메세지 : \"db_hex\" : " + result);
                     return result;
 
                 } catch (MqttException e) {

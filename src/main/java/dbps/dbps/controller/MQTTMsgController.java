@@ -3,6 +3,7 @@ package dbps.dbps.controller;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.ConfigService;
+import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.ResourceManager;
 import dbps.dbps.service.connectManager.MQTTManager;
 import javafx.collections.FXCollections;
@@ -79,6 +80,7 @@ public class MQTTMsgController {
     MQTTManager mqttManager;
     ResourceBundle bundle;
     AsciiMsgTransceiver asciiMsgTransceiver;
+    HexMsgTransceiver hexMsgTransceiver;
 
     ToggleGroup msgTypeGroup = new ToggleGroup();
 
@@ -95,6 +97,7 @@ public class MQTTMsgController {
         bundle= ResourceManager.getInstance().getBundle();
         mqttManager = MQTTManager.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+        hexMsgTransceiver = HexMsgTransceiver.getInstance();
 
         realTimeMsg.setToggleGroup(msgTypeGroup);
         pageMsg.setToggleGroup(msgTypeGroup);
@@ -178,8 +181,7 @@ public class MQTTMsgController {
     }
 
     public void send() throws UnsupportedEncodingException {
-        String msg = makeMQTTMsg();
-
+        makeMQTTMsg();
 
         save();
     }
@@ -208,23 +210,18 @@ public class MQTTMsgController {
         doMsgSettings();
     }
 
-    private String makeMQTTMsg() throws UnsupportedEncodingException {
+    private void makeMQTTMsg() throws UnsupportedEncodingException {
         if (hexChkBox.isSelected()){
             String msg = makeHexMsg();
+            String base64String = Base64.getEncoder().encodeToString(hexStringToByteArray(msg));
 
-            byte[] sendByte = hexStringToByteArray(msg);
-
-            String sendMsg = "{\"db_hex\":\""+ Base64.getEncoder().encodeToString(sendByte)+"\"}";
-
-            mqttManager.sendMsg(sendMsg);
+            hexMsgTransceiver.sendByteMessages(("{\"db_hex\":\""+base64String+"\"}").getBytes(Charset.forName("MS949")), null);
         }
         else {
             String sendMsg = makeASCMsg();
 
-            mqttManager.sendMsg("{\"db_asc\":\""+sendMsg+"\"}");
+            asciiMsgTransceiver.sendMessages("{\"db_asc\":\""+sendMsg+"\"}", false, null);
         }
-
-        return null;
     }
 
     private String makeASCMsg() {
