@@ -25,6 +25,7 @@ public class AsciiMsgTransceiver {
     private final BoardSettingService boardSettingService;
     private final ASCiiDefaultSettingService asciiDefaultSettingService;
     private final BTService btService;
+    private final BoardInfoReadService boardInfoReadService;
 
 
     private AsciiMsgTransceiver() {
@@ -40,6 +41,7 @@ public class AsciiMsgTransceiver {
         firmwareService = FirmwareService.getFirmwareService();
         boardSettingService = BoardSettingService.getInstance();
         asciiDefaultSettingService = ASCiiDefaultSettingService.getInstance();
+        boardInfoReadService = BoardInfoReadService.getInstance();
     }
 
     public static AsciiMsgTransceiver getInstance() {
@@ -95,7 +97,7 @@ public class AsciiMsgTransceiver {
 
             try {
                 new Thread(sendTask).start();
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
@@ -104,7 +106,6 @@ public class AsciiMsgTransceiver {
 
         return resultFuture;
     }
-
 
 
 //
@@ -129,8 +130,8 @@ public class AsciiMsgTransceiver {
     }
 
     private void chkSpecificCmdCode(String msg, String receiveMsg) {
-        if (receiveMsg.contains("BT DIBD")){
-            Platform.runLater(()->{
+        if (receiveMsg.contains("BT DIBD")) {
+            Platform.runLater(() -> {
                 TextField bleId = btService.getBle_id();
                 TextField blePassword = btService.getBle_password();
                 String[] split = receiveMsg.split("\n");
@@ -139,7 +140,7 @@ public class AsciiMsgTransceiver {
             });
             return;
         }
-        if (receiveMsg.contains("![DIBD BLE OK!]")){
+        if (receiveMsg.contains("![DIBD BLE OK!]")) {
             return;
         }
 
@@ -161,11 +162,52 @@ public class AsciiMsgTransceiver {
                     .append(" (").append(weekdayKorean).append(") ").append(time, 7, 9).append(":").append(time, 9, 11).append(":").append(time, 11, 13);
 
             logService.updateInfoLog("컨트롤러 시간은 " + sb + "입니다.");
-                underTheLineLeftService.setTime(sb.toString());
+            underTheLineLeftService.setTime(sb.toString());
             return;
         }
+        if (cmd.equals("51")) {
+            boardInfoReadService.getBrightness().setText(receiveMsg.substring(7, 9));
+            return;
+        }
+
+        if (cmd.equals("43")) {
+            boardInfoReadService.getHorizontal().setText(receiveMsg.substring(7, 9));
+            boardInfoReadService.getVertical().setText(receiveMsg.substring(10, 12));
+            TextField array = boardInfoReadService.getArray();
+
+            int arrayInt = Integer.parseInt(receiveMsg.substring(13, 14));
+            switch (arrayInt) {
+                case 0:
+                    array.setText("가로형");
+                    break;
+                case 1:
+                    array.setText("1줄 세로형");
+                    break;
+                case 2:
+                    array.setText("2줄 세로형");
+                    break;
+                case 3:
+                    array.setText("가로형 양면");
+                    break;
+                case 4:
+                    array.setText("1줄 세로형 양면");
+                    break;
+                case 5:
+                    array.setText("2줄 가로형");
+                    break;
+            }
+            return;
+        }
+
+        if (cmd.equals("97")){
+            boardInfoReadService.getFirmware().setText(receiveMsg.split(" ")[1]);
+            boardInfoReadService.getCpu().setText(receiveMsg.split(" ")[2]);
+
+            return;
+        }
+
         if (cmd.equals("B3")) {
-            boardSettingService.setUI(receiveMsg.substring(7,21));
+            boardSettingService.setUI(receiveMsg.substring(7, 21));
             return;
         }
         if (cmd.equals("B2")) {
@@ -198,11 +240,9 @@ public class AsciiMsgTransceiver {
             } catch (NumberFormatException e) {
                 row = Integer.parseInt(msg.substring(6, 8));
                 column = Integer.parseInt(msg.substring(8, 10));
-            }
-
-            finally {
+            } finally {
                 sizeOfDisplayBoardService.setDisplaySize(row, column);
-if (row != Integer.parseInt(msg.substring(6, 8)) || column != Integer.parseInt(msg.substring(8, 10))) {
+                if (row != Integer.parseInt(msg.substring(6, 8)) || column != Integer.parseInt(msg.substring(8, 10))) {
                     logService.warningLog("화면 크기 설정에 실패했습니다.");
                     logService.warningLog(row + "단, " + column + "열까지만 가능합니다.");
                 }
