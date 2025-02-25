@@ -37,7 +37,7 @@
                 </Pane>
                 <Label layoutX="34.0" layoutY="455.0" text="Heartbeat" />
                 <TextField fx:id="keepAlive" layoutX="170.0" layoutY="451.0" prefWidth="150.0" />
-            <Button layoutX="200.0" layoutY="269.0" mnemonicParsing="false" onMouseClicked="#setDefault" prefHeight="21.0" prefWidth="150.0" text="Load Default IP" />
+            <Button fx:id="defaultLoad" layoutX="200.0" layoutY="269.0" mnemonicParsing="false" onMouseClicked="#setDefault" prefHeight="21.0" prefWidth="150.0" text="Load Default IP" visible="false"/>
             </AnchorPane>
         </Tab>
 

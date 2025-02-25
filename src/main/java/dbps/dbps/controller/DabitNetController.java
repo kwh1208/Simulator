@@ -75,6 +75,7 @@ public class DabitNetController {
     public Tab commTab;
     public Tab db300Tab;
     public Button defaultChange;
+    public Button defaultLoad;
 
 
     ToggleGroup connectionToggleGroup = new ToggleGroup();
@@ -178,6 +179,7 @@ public class DabitNetController {
         dabitNetAP.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode()== KeyCode.F10){
                 defaultChange.setVisible(true);
+                defaultLoad.setVisible(true);
             }
         });
     }
