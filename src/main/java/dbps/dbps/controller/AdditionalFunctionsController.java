@@ -243,4 +243,9 @@ public class AdditionalFunctionsController {
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();
     }
+
+    public void boardInfoRead(MouseEvent mouseEvent) throws IOException {
+        openModal("/dbps/dbps/fxmls/fontName.fxml", "보드 정보 읽기", mouseEvent);
+
+    }
 }
