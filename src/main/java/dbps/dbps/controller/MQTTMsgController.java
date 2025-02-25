@@ -1,6 +1,7 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
+import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.ResourceManager;
 import dbps.dbps.service.connectManager.MQTTManager;
@@ -77,6 +78,7 @@ public class MQTTMsgController {
     private TextField msg;
     MQTTManager mqttManager;
     ResourceBundle bundle;
+    AsciiMsgTransceiver asciiMsgTransceiver;
 
     ToggleGroup msgTypeGroup = new ToggleGroup();
 
@@ -92,6 +94,7 @@ public class MQTTMsgController {
         configService = ConfigService.getInstance();
         bundle= ResourceManager.getInstance().getBundle();
         mqttManager = MQTTManager.getInstance();
+        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
 
         realTimeMsg.setToggleGroup(msgTypeGroup);
         pageMsg.setToggleGroup(msgTypeGroup);
@@ -176,7 +179,7 @@ public class MQTTMsgController {
 
     public void send() throws UnsupportedEncodingException {
         String msg = makeMQTTMsg();
-        mqttManager.sendMsg(msg);
+
 
         save();
     }

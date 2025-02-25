@@ -2,6 +2,7 @@ package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.LogService;
 import dbps.dbps.service.MQTTUIService;
+import javafx.concurrent.Task;
 import lombok.Setter;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -138,20 +139,27 @@ public class MQTTManager {
         }
     }
 
-    public void sendMsg(String payload) {
-        chkConnect();
-        try {
-            MqttMessage message = new MqttMessage(payload.getBytes(Charset.forName("MS949")));
-            message.setQos(0);
-            client.publish(sendTopic, message);
-            logService.updateInfoLog("전송 메세지 : " + payload);
-            String result = receivedMsg();
-            logService.updateInfoLog("받은 메세지 : " + result);
+    public Task<String> sendMsg(String payload) {
+        return new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                chkConnect();
+                try {
+                    MqttMessage message = new MqttMessage(payload.getBytes(Charset.forName("MS949")));
+                    message.setQos(0);
+                    client.publish(sendTopic, message);
+                    logService.updateInfoLog("전송 메세지 : " + payload);
 
-        } catch (MqttException e) {
-            e.printStackTrace();
-            e.getMessage();
-        }
+                    String result = receivedMsg();
+                    logService.updateInfoLog("받은 메세지 : " + result);
+                    return result;
+
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                    return "Error: " + e.getMessage();
+                }
+            }
+        };
     }
 
     private String receivedMsg() {
