@@ -48,6 +48,15 @@ public class ConfigService {
         TCPManager.getManager().setPORT(TCP_PORT);
     }
 
+    public void reloadConfigProperties() {
+        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(configFilePath), StandardCharsets.UTF_8)) {
+            properties.clear(); // 기존 값 초기화
+            properties.load(reader);
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
     private void createFileIfNotExists(String filePath) {
         if (new File(filePath).exists()) {
             return;
@@ -102,6 +111,11 @@ public class ConfigService {
             defaultProperties.setProperty("latency", "3");
             defaultProperties.setProperty("lastDisplaySignal", "16D-P16D1S11");
             defaultProperties.setProperty("PROGRAM_LANGUAGE", "한국어");
+
+            defaultProperties.setProperty("dbNetIP", "192.168.0.201");
+            defaultProperties.setProperty("dbNetPort", "5000");
+            defaultProperties.setProperty("dbNetGateway", "192.168.0.1");
+            defaultProperties.setProperty("dbNetSubnet", "255.255.255.0");
 
             defaultProperties.setProperty("fontGroup1FontPath1", "ENG 08x16-DABIT(표준).fnt");
             defaultProperties.setProperty("fontGroup1FontType1", "영어");
