@@ -245,7 +245,6 @@ public class AdditionalFunctionsController {
     }
 
     public void boardInfoRead(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/fontName.fxml", "보드 정보 읽기", mouseEvent);
-
+        openModal("/dbps/dbps/fxmls/boardInfoRead.fxml", "보드 정보 읽기", mouseEvent);
     }
 }

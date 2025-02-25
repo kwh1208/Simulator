@@ -201,7 +201,7 @@ public class AsciiMsgTransceiver {
 
         if (cmd.equals("97")){
             boardInfoReadService.getFirmware().setText(receiveMsg.split(" ")[1]);
-            boardInfoReadService.getCpu().setText(receiveMsg.split(" ")[2]);
+            boardInfoReadService.getCpu().setText((receiveMsg.split(" ")[2]).replaceAll("!]", ""));
 
             return;
         }
