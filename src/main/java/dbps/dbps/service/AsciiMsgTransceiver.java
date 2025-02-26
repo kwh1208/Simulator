@@ -114,8 +114,6 @@ public class AsciiMsgTransceiver {
 //
 
     private void msgReceive(String receiveMsg, String msg) {
-        System.out.println("receiveMsg = " + receiveMsg);
-        System.out.println("msg = " + msg);
         //실시간 메세지, 페이지 메세지
         if (receiveMsg.equals(msg)) {
             return;
@@ -213,6 +211,7 @@ public class AsciiMsgTransceiver {
 
         if (cmd.equals("B3")) {
             boardSettingService.setUI(receiveMsg.substring(7, 21));
+            logService.updateInfoLog("보드기능 설정에 성공했습니다.");
             return;
         }
         if (cmd.equals("B2")) {
@@ -220,6 +219,7 @@ public class AsciiMsgTransceiver {
         }
         if (cmd.equals("33")) {
             asciiDefaultSettingService.setProperties(receiveMsg);
+            logService.updateInfoLog("기본값 설정에 성공했습니다.");
             return;
         }
         if (cmd.equals("81")) {
@@ -242,12 +242,12 @@ public class AsciiMsgTransceiver {
             try {
                 row = Integer.parseInt(receiveMsg.substring(6, 8));
                 column = Integer.parseInt(receiveMsg.substring(8, 10));
+                logService.updateInfoLog("화면 크기 설정에 성공했습니다.");
             } catch (NumberFormatException e) {
                 row = Integer.parseInt(msg.substring(6, 8));
                 column = Integer.parseInt(msg.substring(8, 10));
             } finally {
                 sizeOfDisplayBoardService.setDisplaySize(row, column);
-                System.out.println("msg = " + msg);
                 if (row != Integer.parseInt(msg.substring(6, 8)) || column != Integer.parseInt(msg.substring(8, 10))) {
                     logService.warningLog("화면 크기 설정에 실패했습니다.");
                     logService.warningLog(row + "단, " + column + "열까지만 가능합니다.");
@@ -276,6 +276,9 @@ public class AsciiMsgTransceiver {
             }
             if (cmd.equals("50")) {
                 logService.updateInfoLog("밝기 조절에 성공했습니다.");
+            }
+            if (cmd.equals("52")) {
+                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
             }
             if (cmd.equals("54")) {
                 logService.updateInfoLog("표출 속도 변경에 성공했습니다.");
