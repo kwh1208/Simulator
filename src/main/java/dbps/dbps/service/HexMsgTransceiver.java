@@ -128,17 +128,14 @@ public class HexMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
-//            case "mqtt" -> {
-//                try {
-//                    Task<String> sendTask = mqttManager.sendMsgAndGetMsgByte(msg);
-//                    Thread taskThread = new Thread(sendTask);
-//                    taskThread.start();
-//
-//                    return sendTask.get();
-//                } catch (Exception e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
+            case "mqtt" ->{
+                try {
+                    String sendMsg = "{\"db_hex\":\""+Base64.getEncoder().encodeToString(msg)+"\"}";
+                    mqttManager.sendByteMsgNoLog(sendMsg.getBytes(Charset.forName("MS949")));
+                } catch (Exception e){
+                    throw new RuntimeException(e);
+                }
+            }
             case "serverTCP" ->{
                 try {
                     serverTCPManager.sendMsgAndGetMsgByteNoLog(msg);
@@ -182,6 +179,14 @@ public class HexMsgTransceiver {
                 try {
                     serverTCPManager.sendMsgAndGetMsgByteShortLog(msg);
                 } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case "mqtt" ->{
+                try {
+                    String sendMsg = "{\"db_hex\":\""+Base64.getEncoder().encodeToString(msg)+"\"}";
+                    mqttManager.sendByteMsgShortLog(sendMsg.getBytes(Charset.forName("MS949")));
+                } catch (Exception e){
                     throw new RuntimeException(e);
                 }
             }

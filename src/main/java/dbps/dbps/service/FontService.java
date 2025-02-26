@@ -40,12 +40,12 @@ public class FontService {
             @Override
             protected Void call() throws Exception {
                 int progress = -1;
-                String msg = "10 02 00 00 02 45 00 10 03";
+                String msg = "10 02 00 00 02 41 00 10 03";
                 if (isRS){
-                    msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 00 10 03";
+                    msg = "10 02 "+RS485_ADDR_NUM+" 00 02 41 00 10 03";
                 }
                 hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
-
+                System.out.println(111);
                 int packetSize = 1024;
                 int totalPackets = 0;
                 byte[] combinedData;

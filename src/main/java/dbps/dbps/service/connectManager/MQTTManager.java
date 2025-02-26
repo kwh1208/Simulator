@@ -192,6 +192,37 @@ public class MQTTManager {
         };
     }
 
+    public void sendByteMsgNoLog(byte[] payload) {
+        chkConnect();
+        try {
+            MqttMessage message = new MqttMessage(payload);
+            message.setQos(0);
+            client.publish(sendTopic, message);
+            String result = receivedMsg();
+            result = result.substring(result.indexOf(":\"")+2, result.indexOf("\"}"));
+            byte[] bytes = Base64.getDecoder().decode(result);
+            bytesToHex(bytes, bytes.length);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendByteMsgShortLog(byte[] payload) {
+        chkConnect();
+        try {
+            MqttMessage message = new MqttMessage(payload);
+            message.setQos(0);
+
+            client.publish(sendTopic, message);
+            String result = receivedMsg();
+            result = result.substring(result.indexOf(":\"")+2, result.indexOf("\"}"));
+            byte[] bytes = Base64.getDecoder().decode(result);
+            bytesToHex(bytes, bytes.length);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
     private String receivedMsg() {
         CompletableFuture<String> future = new CompletableFuture<>();
 
