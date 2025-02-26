@@ -18,6 +18,7 @@ import lombok.Setter;
 
 import java.io.IOException;
 
+import static dbps.dbps.Constants.CONNECT_TYPE;
 import static dbps.dbps.Constants.openModal;
 
 public class MqttController {
@@ -57,6 +58,7 @@ public class MqttController {
     }
 
     public void read() {
+        CONNECT_TYPE = "mqtt";
         String result = mqttManager.sendReadMsg("{\"name\":\"DB300\"}");
         mqttUIService.changeUIRead(result);
     }

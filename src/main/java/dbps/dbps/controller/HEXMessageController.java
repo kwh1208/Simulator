@@ -1,10 +1,7 @@
 package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
-import dbps.dbps.service.ConfigService;
-import dbps.dbps.service.HexMsgService;
-import dbps.dbps.service.HexMsgTransceiver;
-import dbps.dbps.service.ResourceManager;
+import dbps.dbps.service.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -23,8 +20,11 @@ import static java.lang.Integer.parseInt;
 public class HEXMessageController {
 
     public ProgressIndicator progressIndicator;
+    public RadioButton hexChkBox;
+    public RadioButton ascChkBox;
     HexMsgTransceiver hexMsgTransceiver;
     HexMsgService hexMsgService;
+    AsciiMsgTransceiver ascMsgTransceiver;
 
     @FXML
     private AnchorPane HEXMsgAP;
@@ -115,6 +115,8 @@ public class HEXMessageController {
 
     ToggleGroup sectionGroup = new ToggleGroup();
 
+    ToggleGroup msgType = new ToggleGroup();
+
     ResourceBundle bundle;
 
     @FXML
@@ -128,6 +130,12 @@ public class HEXMessageController {
         hexMsgService.setYStart(yStart);
         hexMsgService.setXEnd(xEnd);
         hexMsgService.setYEnd(yEnd);
+
+        hexChkBox.setToggleGroup(msgType);
+        ascChkBox.setToggleGroup(msgType);
+
+        ascChkBox.setSelected(true);
+        ascMsgTransceiver = AsciiMsgTransceiver.getInstance();
 
 
         realTimeMsg.setToggleGroup(msgTypeGroup);
@@ -275,9 +283,16 @@ public class HEXMessageController {
     }
 
     public void send() {
-        String msg = makeHexMsg();
+        if (hexChkBox.isSelected()){
+            String msg = makeHexMsg();
 
-        hexMsgTransceiver.sendMessages(msg, progressIndicator);
+            hexMsgTransceiver.sendMessages(msg, progressIndicator);
+
+        }
+        else {
+            String sendMsg = makeASCMsg();
+            ascMsgTransceiver.sendMessages(sendMsg, false, progressIndicator);
+        }
         save();
     }
 

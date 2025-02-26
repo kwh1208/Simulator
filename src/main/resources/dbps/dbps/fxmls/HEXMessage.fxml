@@ -371,4 +371,6 @@
     <Button layoutX="500.0" layoutY="572.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="%initButton" />
     <Button layoutX="600.0" layoutY="572.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="81.0" text="%sendButton" />
     <ProgressIndicator fx:id="progressIndicator" layoutX="320.0" layoutY="200.0" visible="false" />
+    <RadioButton fx:id="hexChkBox" layoutX="29.0" layoutY="572.0" mnemonicParsing="false" text="hexChkBox" />
+    <RadioButton fx:id="ascChkBox" layoutX="142.0" layoutY="572.0" mnemonicParsing="false" text="ascChkBox" />
 </AnchorPane>

@@ -40,6 +40,7 @@ public class CommunicationSettingController {
     @FXML
     public Button shutConnect;
     public Button keepOpenBtn;
+    public RadioButton mqttRadio;
     SerialPortManager serialPortManager;
     TCPManager tcpManager;
 
@@ -156,6 +157,7 @@ public class CommunicationSettingController {
         clientTCPRadioBtn.setToggleGroup(communicationGroup);
         serverTCPRadioBtn.setToggleGroup(communicationGroup);
         UDPRadioBtn.setToggleGroup(communicationGroup);
+        mqttRadio.setToggleGroup(communicationGroup);
         serverIPPort.setText(configService.getProperty("serverTCPPort"));
 
         switch (CONNECT_TYPE) {
@@ -202,6 +204,13 @@ public class CommunicationSettingController {
                 RS485ChoiceBox.setValue("Dabit "+String.format("%02d", RS485_ADDR_NUM));
                 isRS=true;
                 break;
+            case "mqtt":
+                communicationGroup.selectToggle(mqttRadio);
+                serialRadioToggle(false);
+                clientTCPRadioToggle(false);
+                serverTCPRadioToggle(false);
+                UDPRadioToggle(false);
+                break;
             default:
                 communicationGroup.selectToggle(null);
                 serialRadioToggle(false);
@@ -242,7 +251,7 @@ public class CommunicationSettingController {
                 RS485ChkBox.setSelected(false);
                 RS485ChoiceBox.setVisible(false);
                 CONNECT_TYPE = "serverTCP";
-            } else  {
+            } else if(selectedRadioButton.equals(UDPRadioBtn)) {
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(false);
@@ -250,6 +259,15 @@ public class CommunicationSettingController {
                 RS485ChkBox.setSelected(false);
                 RS485ChoiceBox.setVisible(false);
                 CONNECT_TYPE = "UDP";
+            } else if (selectedRadioButton.equals(mqttRadio)) {
+                serialRadioToggle(false);
+                clientTCPRadioToggle(false);
+                serverTCPRadioToggle(false);
+                UDPRadioToggle(false);
+                mqttRadio.setSelected(true);
+                RS485ChkBox.setSelected(false);
+                RS485ChoiceBox.setVisible(false);
+                CONNECT_TYPE = "mqtt";
             }
         });
 
@@ -574,7 +592,7 @@ public class CommunicationSettingController {
                         hostIP = serverIPAddress.getValue();
                         serverTCPPort = Integer.parseInt(serverIPPort.getText());
                         hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
-                    } else {
+                    } else if (communicationGroup.getSelectedToggle().equals(UDPRadioBtn)) {
                         CONNECT_TYPE = "UDP";
                         String IPAddress = UDPIPAddress.getText();
                         int port = Integer.parseInt(UDPIPPort.getText());
@@ -583,6 +601,9 @@ public class CommunicationSettingController {
                         udpManager.setPORT(port);
                         configService.setProperty("UDPAddr", IPAddress);
                         configService.setProperty("UDPPort", String.valueOf(port));
+                        hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
+                    } else{
+                        CONNECT_TYPE = "mqtt";
                         hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                     }
                     configService.setProperty("connectType", CONNECT_TYPE);
@@ -678,5 +699,13 @@ public class CommunicationSettingController {
             logService.updateInfoLog("포트를 필요할 때만 사용할 수 있도록 설정되었습니다.");
             closeSerialPort();
         }
+    }
+
+    public void openMqttSetting(MouseEvent mouseEvent) throws IOException {
+        openModal("/dbps/dbps/fxmls/mqtt.fxml", "mqtt 설정", mouseEvent);
+    }
+
+    public void openMqttServer(MouseEvent mouseEvent) throws IOException {
+        openModal("/dbps/dbps/fxmls/mqttServer.fxml", "mqtt 서버", mouseEvent);
     }
 }

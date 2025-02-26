@@ -6,6 +6,8 @@ import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -27,7 +29,7 @@ public class HexMsgTransceiver {
     private final SizeOfDisplayBoardService sizeOfDisplayBoardService;
     private final HexMsgService hexMsgService;
     private final FontNameService fontNameService;
-
+    private final MQTTManager mqttManager;
 
     private HexMsgTransceiver() {
         serialPortManager = SerialPortManager.getManager();
@@ -39,6 +41,7 @@ public class HexMsgTransceiver {
         sizeOfDisplayBoardService = SizeOfDisplayBoardService.getInstance();
         hexMsgService=HexMsgService.getInstance();
         fontNameService = FontNameService.getInstance();
+        mqttManager = MQTTManager.getInstance();
     }
 
     public static HexMsgTransceiver getInstance() {
@@ -54,6 +57,10 @@ public class HexMsgTransceiver {
             case "serial", "bluetooth", "rs485" -> serialPortManager.sendMsgAndGetMsgByte(msg);
             case "UDP" -> udpManager.sendMsgAndGetMsgByte(msg);
             case "clientTCP" -> tcpManager.sendMsgAndGetMsgByte(msg);
+            case "mqtt" -> {
+                String sendMsg = "{\"db_hex\":\""+Base64.getEncoder().encodeToString(msg)+"\"}";
+                yield mqttManager.sendByteMsg(sendMsg.getBytes(Charset.forName("MS949")));
+            }
             case "serverTCP" -> serverTCPManager.sendMsgAndGetMsgByte(msg);
             default -> throw new IllegalStateException("Unexpected value: " + CONNECT_TYPE);
         };

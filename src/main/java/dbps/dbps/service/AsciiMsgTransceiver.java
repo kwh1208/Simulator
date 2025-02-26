@@ -64,7 +64,10 @@ public class AsciiMsgTransceiver {
             case "serial", "bluetooth", "rs485" -> serialPortManager.sendMsgAndGetMsg(msg, utf8);
             case "UDP" -> udpManager.sendASCMsg(msg, utf8);
             case "clientTCP" -> tcpManager.sendASCMsg(msg, utf8);
-            case "mqtt" -> mqttManager.sendMsg(msg);
+            case "mqtt" -> {
+                String sendMsg = "{\"db_asc\":\""+msg+"\"}";
+                yield mqttManager.sendMsg(sendMsg);
+            }
             case "serverTCP" -> serverTCPManager.sendASCMsg(msg, utf8);
             default -> {
                 resultFuture.completeExceptionally(new IllegalStateException("Unexpected value: " + CONNECT_TYPE));
@@ -111,6 +114,8 @@ public class AsciiMsgTransceiver {
 //
 
     private void msgReceive(String receiveMsg, String msg) {
+        System.out.println("receiveMsg = " + receiveMsg);
+        System.out.println("msg = " + msg);
         //실시간 메세지, 페이지 메세지
         if (receiveMsg.equals(msg)) {
             return;
@@ -242,6 +247,7 @@ public class AsciiMsgTransceiver {
                 column = Integer.parseInt(msg.substring(8, 10));
             } finally {
                 sizeOfDisplayBoardService.setDisplaySize(row, column);
+                System.out.println("msg = " + msg);
                 if (row != Integer.parseInt(msg.substring(6, 8)) || column != Integer.parseInt(msg.substring(8, 10))) {
                     logService.warningLog("화면 크기 설정에 실패했습니다.");
                     logService.warningLog(row + "단, " + column + "열까지만 가능합니다.");

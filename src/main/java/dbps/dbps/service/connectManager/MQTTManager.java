@@ -176,15 +176,14 @@ public class MQTTManager {
                     message.setQos(0);
                     client.publish(sendTopic, message);
 
-                    logService.updateInfoLog("전송 메세지 : " + bytesToHex(payload, payload.length));
+                    logService.updateInfoLog("전송 메세지 : " + new String(payload, Charset.forName("MS949")));
 
                     String result = receivedMsg();
                     result = result.substring(result.indexOf(":\"")+2, result.indexOf("\"}"));
                     byte[] bytes = Base64.getDecoder().decode(result);
-                    bytesToHex(bytes, bytes.length);
-                    logService.updateInfoLog("받은 메세지 : \"db_hex\" : " + result);
+                    result = bytesToHex(bytes, bytes.length);
+                    logService.updateInfoLog("받은 메세지 : "+result);
                     return result;
-
                 } catch (MqttException e) {
                     e.printStackTrace();
                     return "Error: " + e.getMessage();
