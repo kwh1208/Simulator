@@ -4,6 +4,8 @@ package dbps.dbps.service;
 import dbps.dbps.Simulator;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +44,15 @@ public class ASCiiMsgService {
         alert.getDialogPane().setStyle("-fx-background-color: #333333");
         alert.getDialogPane().getStyleClass().add("custom-alert");
         alert.getDialogPane().getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/alert.css").toExternalForm());
+
+        Stage parentStage = (Stage) Window.getWindows().stream()
+                .filter(Window::isShowing)
+                .findFirst()
+                .orElse(null);
+
+        if (parentStage != null) {
+            alert.initOwner(parentStage); // 부모 창 설정
+        }
 
         ButtonType result = alert.showAndWait().orElse(ButtonType.CANCEL);
 

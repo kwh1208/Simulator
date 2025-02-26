@@ -372,6 +372,57 @@ public class FontSettingController {
                         "-fx-padding: 5 10 5 10;" +
                         "-fx-background-radius: 10;"
         );
+        cancelButton.setOnMousePressed(e -> {
+            cancelButton.setStyle(
+                    "-fx-background-color: linear-gradient(#222222, #000000);" + // 눌린 효과 (어두운 색)
+                            "-fx-text-fill: white;" +
+                            "-fx-border-color: orange;" + // 눌렀을 때 테두리 주황색
+                            "-fx-border-radius: 10;" +
+                            "-fx-padding: 5 10 5 10;" +
+                            "-fx-background-radius: 10;" +
+                            "-fx-effect: innershadow(gaussian, rgba(255, 165, 0, 0.8), 5, 0, 0, 0);"// 안쪽 그림자 효과 추가
+            );
+        });
+
+        cancelButton.setOnMouseEntered(e -> {
+            cancelButton.setStyle(
+                    "-fx-background-color: linear-gradient(#444444, #222222);" +
+                            "-fx-text-fill: white;" +
+                            "-fx-border-color: orange;" + // 🔹 테두리 주황색 변경
+                            "-fx-border-radius: 10;" +
+                            "-fx-padding: 5 10 5 10;" +
+                            "-fx-background-radius: 10;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(255, 165, 0, 0.8), 5, 0, 1, 1);" + // 밝은 그림자 효과
+                            "-fx-cursor: hand;" // 🔹 손가락 커서로 변경
+            );
+        });
+
+// 🔹 마우스를 벗어나면 원래 스타일로 복구
+        cancelButton.setOnMouseExited(e -> {
+            cancelButton.setStyle(
+                    "-fx-background-color: linear-gradient(#444444, #222222);" +
+                            "-fx-text-fill: white;" +
+                            "-fx-border-color: #4A4A4A;" + // 원래 테두리 색상으로 복귀
+                            "-fx-border-radius: 10;" +
+                            "-fx-padding: 5 10 5 10;" +
+                            "-fx-background-radius: 10;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 1, 1);" + // 기본 그림자 효과
+                            "-fx-cursor: default;" // 기본 커서로 변경
+            );
+        });
+
+// 버튼에서 손을 뗄 때 원래 스타일로 복구
+        cancelButton.setOnMouseReleased(e -> {
+            cancelButton.setStyle(
+                    "-fx-background-color: linear-gradient(#444444, #222222);" +
+                            "-fx-text-fill: white;" +
+                            "-fx-border-color: #4A4A4A;" +
+                            "-fx-border-radius: 10;" +
+                            "-fx-padding: 5 10 5 10;" +
+                            "-fx-background-radius: 10;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 1, 1);"
+            );
+        });
         progressLabel.setStyle(
                 " " +
                         "-fx-text-fill: white; " +
@@ -381,6 +432,20 @@ public class FontSettingController {
                         "-fx-background-radius: 5; " +
                         "-fx-border-radius: 5;"
         );
+
+        Platform.runLater(() -> {
+            Stage parentStage = (Stage) fontSettingAnchorPane.getScene().getWindow();
+
+            double parentX = parentStage.getX();
+            double parentY = parentStage.getY();
+            double parentWidth = parentStage.getWidth();
+            double parentHeight = parentStage.getHeight();
+
+            // 진행 창 위치 설정 (세로는 부모와 동일, 가로는 절반 위치)
+            progressStage.setX(parentX + parentWidth / 2 - 150); // 300px 창 기준 중앙 정렬
+            progressStage.setY(parentY + (parentHeight / 2) - 75); // 150px 창 기준 중앙 정렬
+        });
+
     }
 
     private void addItem() {

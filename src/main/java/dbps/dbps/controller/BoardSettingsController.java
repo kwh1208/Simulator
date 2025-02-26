@@ -3,22 +3,15 @@ package dbps.dbps.controller;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.BoardSettingService;
-import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.*;
 
@@ -98,23 +91,7 @@ public class BoardSettingsController {
 
     @FXML
     public void openCommunicationSetting(MouseEvent mouseEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource(COMM_SETTING_FXML));
-        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
-        Parent root = fxmlLoader.load();
-
-        Stage modalStage = new Stage();
-        modalStage.setTitle("통신 설정");
-        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
-        modalStage.initModality(Modality.APPLICATION_MODAL);
-
-        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-        modalStage.initOwner(parentStage);
-
-        Scene scene = new Scene(root);
-        modalStage.setScene(scene);
-        modalStage.setResizable(false);
-
-        modalStage.showAndWait();
+        openModal(COMM_SETTING_FXML, "통신 설정", mouseEvent);
     }
 
     @FXML
@@ -123,7 +100,7 @@ public class BoardSettingsController {
         stage.close();
     }
 
-    public void Transfer() throws ExecutionException, InterruptedException {
+    public void Transfer() {
         if (group.getSelectedToggle().equals(readRadio)) {
             handleReadCommand();
         } else {
