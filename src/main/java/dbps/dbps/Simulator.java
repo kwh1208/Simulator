@@ -14,7 +14,10 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import lombok.Getter;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
 import java.util.Locale;
 
 import static dbps.dbps.Constants.OPEN_PORT_NAME;
@@ -52,7 +55,12 @@ public class Simulator extends Application {
         this.stage = stage;
 
         // 기본 UI 로드
-        loadUI();
+        try {
+            loadUI();
+        } catch (Exception e) {
+            e.printStackTrace();
+            logErrorToFile(e);
+        }
     }
 
     public void loadUI() throws IOException {
@@ -74,6 +82,17 @@ public class Simulator extends Application {
         stage.setTitle("dbProtocolSimulator V1.0.0");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         stage.show();
+    }
+
+    private void logErrorToFile(Exception e) {
+        // "error_log.txt" 파일에 에러를 append 모드로 기록합니다.
+        try (PrintWriter pw = new PrintWriter(new FileWriter("error_log.txt", true))) {
+            pw.println("Error occurred at: " + new Date());
+            e.printStackTrace(pw);
+            pw.println("=========================================");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
 

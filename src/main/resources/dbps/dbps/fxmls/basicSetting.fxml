@@ -13,14 +13,14 @@
            style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-font-weight: bold; -fx-text-fill: white;  -fx-origin: top;"/>
     <Label layoutX="14.0" layoutY="30.0" text="%protocolFormat" style=""/>
     <ComboBox fx:id="protocolFormat" layoutX="150.0" layoutY="24.0" prefHeight="25.0" prefWidth="150.0"
-               value="%ASCiiProtocol" >
+               value="%ASCiiProtocol" style="">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
     </ComboBox>
     <Label layoutX="14.0" layoutY="66.0" text="%programLanguage" style=""/>
-    <ComboBox fx:id="programLanguage" layoutX="150.0" layoutY="60.0" prefHeight="25.0" prefWidth="150" value="한국어" style="">
+    <ComboBox fx:id="programLanguage" layoutX="150.0" layoutY="60.0" prefHeight="25.0" prefWidth="150" value="한국어">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="한국어"/>

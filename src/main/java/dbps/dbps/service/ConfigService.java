@@ -92,7 +92,8 @@ public class ConfigService {
                 }
                 else defaultProperties.setProperty("ASCMsg"+i, "");
             }
-
+            defaultProperties.setProperty("mqtt_IP", "192.168.1.96");
+            defaultProperties.setProperty("mqtt_Port", "1883");
             defaultProperties.setProperty("IS_ASCII", "true");
             defaultProperties.setProperty("connectType", "serial");
             defaultProperties.setProperty("serialSpeed", "115200");
@@ -201,36 +202,6 @@ public class ConfigService {
             defaultProperties.setProperty("relay4", "None");
             defaultProperties.setProperty("bgImg", "사용안함");
             defaultProperties.setProperty("displayCover", "검은색");
-
-            defaultProperties.setProperty("isMQTTRealTime", "0");
-        for (int i = 0; i <= 10; i++) {//페이지 개수(0은 실시간)
-            for (int j =0; j < 3; j++) {//섹션 개수
-                defaultProperties.setProperty("MQTTdisplayControl"+i+j, "On");
-                defaultProperties.setProperty("MQTTdisplayMethod"+i+j, "Clear");
-                defaultProperties.setProperty("MQTTcharCode"+i+j, "한글 조합형");
-                defaultProperties.setProperty("MQTTfontSize"+i+j, "16(Standard)");
-                defaultProperties.setProperty("MQTTfontGroup"+i+j, "폰트그룹1");
-                defaultProperties.setProperty("MQTTeffectIn"+i+j, "정지효과");
-                defaultProperties.setProperty("MQTTeffectInDirection"+i+j, "방향없음");
-                defaultProperties.setProperty("MQTTeffectOut"+i+j, "사용안함");
-                defaultProperties.setProperty("MQTTeffectOutDirection"+i+j, "사용안함");
-                defaultProperties.setProperty("MQTTeffectSpeed"+i+j, "5");
-                defaultProperties.setProperty("MQTTeffectTime"+i+j, "2초");
-                defaultProperties.setProperty("MQTTxStart"+i+j, "0");
-                defaultProperties.setProperty("MQTTxEnd"+i+j, "0");
-                defaultProperties.setProperty("MQTTyStart"+i+j, "0");
-                defaultProperties.setProperty("MQTTyEnd"+i+j, "0");
-                defaultProperties.setProperty("MQTTbgImg"+i+j, "사용안함");
-                defaultProperties.setProperty("MQTTtextColor"+i+j, "1");
-                defaultProperties.setProperty("MQTTbgColor"+i+j, "0");
-                if (i==0) {
-                    defaultProperties.setProperty("MQTTtext"+i+j, "realTime 메세지 "+j);
-                }
-                else {
-                    defaultProperties.setProperty("MQTTtext"+i+j, "page "+i+"-section "+j);
-                }
-            }
-        }
 
         }
 

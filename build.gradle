@@ -1,10 +1,10 @@
 plugins {
     id 'java'
-    // 🔹 run 태스크와 jpackage에 필요한 application 플러그인
+    // run 태스크와 jpackage에 필요한 application 플러그인
     id 'application'
-    // 🔹 모듈 관련 보조 플러그인
+    // 모듈 관련 보조 플러그인
     id 'org.javamodularity.moduleplugin' version '1.8.12'
-    // 🔹 jlink / jpackage 플러그인
+    // jlink / jpackage 플러그인
     id 'org.beryx.jlink' version '2.26.0'
 }
 
@@ -14,6 +14,7 @@ version = '1.0.0'
 repositories {
     mavenCentral()
 }
+
 sourceSets {
     main {
         resources {
@@ -21,6 +22,7 @@ sourceSets {
         }
     }
 }
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
@@ -31,8 +33,7 @@ java {
 // application 플러그인 설정
 // -----------------------------------
 application {
-    // 🔹 모듈 이름 & 메인 클래스 지정
-    //    module-info.java에 선언된 이름과 정확히 일치해야 합니다.
+    // module-info.java에 선언된 모듈명과 동일해야 합니다.
     mainModule = 'DBPS.main'
     mainClass = 'dbps.dbps.Simulator'
 }
@@ -65,13 +66,24 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.16'
     implementation 'org.slf4j:slf4j-simple:2.0.16'
 
-    // Paho MQTT
+    // Paho MQTT (모듈 이름 문제 해결을 위해)
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
 }
 
 // UTF-8 컴파일 옵션
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+}
+
+// ---------------------------------------------------------------------
+// Paho MQTT 라이브러리의 모듈 이름 문제 해결
+// (자동 모듈 이름이 끝에 숫자를 포함하는 문제를 피하기 위해 재정의)
+// ---------------------------------------------------------------------
+jar {
+    manifest {
+        // 이 속성으로 Paho MQTT 라이브러리가 "org.eclipse.paho.client.mqtt"라는 모듈명으로 인식되게 합니다.
+        attributes('Automatic-Module-Name': 'org.eclipse.paho.client.mqtt')
+    }
 }
 
 // -----------------------------------
@@ -81,7 +93,7 @@ tasks.named("run", JavaExec).configure {
     // (1) Gradle 기본 classpath 제거 -> 모듈 패스만 사용
     classpath = files()
 
-    // (2) 빌드된 클래스 + 런타임 의존성 JAR 경로
+    // (2) 빌드된 클래스 + 런타임 의존성 JAR 경로 설정
     def mainOutput = sourceSets.main.output.classesDirs.asPath
     def runtimeDeps = configurations.runtimeClasspath.asPath
     def modulePath = mainOutput + File.pathSeparator + runtimeDeps
@@ -94,12 +106,12 @@ tasks.named("run", JavaExec).configure {
             "--module", "DBPS.main/dbps.dbps.Simulator"
     ]
 
-    // 🔹 "No main class specified" 방지용
+    // "No main class specified" 방지용
     mainClass.set("dbps.dbps.Simulator")
 }
 
 // -----------------------------------
-// jlink + jpackage => Windows EXE
+// jlink + jpackage 플러그인 설정 (Windows MSI 생성)
 // -----------------------------------
 jlink {
     options = [
@@ -121,17 +133,20 @@ jlink {
     jpackage {
         imageName = 'dbProtocolSimulator'
         installerName = 'dbProtocolSimulator'
-        installerType = 'exe'
+        // installerType을 exe 대신 msi로 변경하여 콘솔 옵션 사용 가능
+        installerType = 'msi'
         icon = 'src/main/resources/icon-removebg.ico'
         installerOptions = [
                 '--win-menu',
-                '--win-shortcut'
+                '--win-shortcut',
+                '--win-console'
         ]
         jvmArgs = [
                 '--enable-preview'
         ]
     }
 }
+
 tasks.named("prepareMergedJarsDir") {
     doNotTrackState("Disabling state tracking due to non-regular files in merged jars")
 }

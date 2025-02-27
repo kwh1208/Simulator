@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="communicationSettingAP" prefHeight="708.0" prefWidth="400.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.CommunicationSettingController">
+<AnchorPane fx:id="communicationSettingAP" prefHeight="687.0" prefWidth="400.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.CommunicationSettingController">
    <Pane layoutX="15.0" layoutY="14.0" prefHeight="161.0" prefWidth="373.0" style="-fx-border-color: black;">
       <RadioButton fx:id="serialRadioBtn" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="80.0" style="-fx-background-color: #333333;" text="Serial" />
       <Label layoutX="14.0" layoutY="20.0" prefHeight="13.0" text="%comPort" />
@@ -104,19 +104,19 @@
       <Label layoutX="16.0" layoutY="47.0" text="IP Port" />
       <TextField fx:id="UDPIPPort" layoutX="210.0" layoutY="50.0" prefWidth="145.0" text="5108" />
    </Pane>
-   <Pane layoutX="15.0" layoutY="503.0" prefHeight="87.0" prefWidth="373.0" style="-fx-border-color: black;">
+   <Pane layoutX="15.0" layoutY="503.0" prefHeight="67.0" prefWidth="373.0" style="-fx-border-color: black;">
       <RadioButton fx:id="mqttRadio" layoutX="18.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" style="-fx-background-color: #333333;" text="mqtt" />
-      <Button layoutX="9.0" layoutY="53.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="104.0" onMouseClicked="#openMqttSetting" text="MqttSetting" />
-      <Button layoutX="259.0" layoutY="53.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="104.0" onMouseClicked="#openMqttServer" text="MqttServer" />
+      <Button layoutX="19.0" layoutY="17.0" mnemonicParsing="false" onMouseClicked="#openMqttSetting" prefHeight="37.0" prefWidth="151.0" text="MqttSetting" />
+      <Button layoutX="198.0" layoutY="17.0" mnemonicParsing="false" onMouseClicked="#openMqttServer" prefHeight="37.0" prefWidth="151.0" text="MqttServer" />
    </Pane>
-   <Button fx:id="connect" layoutX="17.0" layoutY="597.0" mnemonicParsing="false" onMouseClicked="#openSerialPort" prefHeight="27.0" prefWidth="115.0" text="%openPort" />
-   <Button fx:id="shutConnect" layoutX="269.0" layoutY="597.0" mnemonicParsing="false" onMouseClicked="#closeSerialPort" prefHeight="27.0" prefWidth="115.0" text="%closePort" />
-   <Button layoutX="17.0" layoutY="629.0" mnemonicParsing="false" onMouseClicked="#openDabitNet" prefHeight="27.0" prefWidth="115.0" text="dbNet" />
-   <Button fx:id="keepOpenBtn" layoutX="143.0" layoutY="597.0" mnemonicParsing="false" onMouseClicked="#keepOpen" prefHeight="27.0" prefWidth="115.0" text="포트 유지" visible="false" />
-   <Button layoutX="142.0" layoutY="629.0" mnemonicParsing="false" onMouseClicked="#openBluetooth" prefHeight="27.0" prefWidth="115.0" text="dbBle" />
-   <Button layoutX="269.0" layoutY="629.0" minWidth="115.0" mnemonicParsing="false" onMouseClicked="#controllerConnect" prefHeight="27.0" text="%connect" />
-   <Label layoutX="19.0" layoutY="669.0" text="%responseTime" />
-   <ChoiceBox fx:id="delayTime" layoutX="156.0" layoutY="662.0" prefHeight="27.0" prefWidth="54.0" value="3">
+   <Button fx:id="connect" layoutX="17.0" layoutY="577.0" mnemonicParsing="false" onMouseClicked="#openSerialPort" prefHeight="27.0" prefWidth="115.0" text="%openPort" />
+   <Button fx:id="keepOpenBtn" layoutX="143.0" layoutY="577.0" mnemonicParsing="false" onMouseClicked="#keepOpen" prefHeight="27.0" prefWidth="115.0" text="포트 유지" visible="false" />
+   <Button fx:id="shutConnect" layoutX="269.0" layoutY="577.0" mnemonicParsing="false" onMouseClicked="#closeSerialPort" prefHeight="27.0" prefWidth="115.0" text="%closePort" />
+   <Button layoutX="17.0" layoutY="609.0" mnemonicParsing="false" onMouseClicked="#openDabitNet" prefHeight="27.0" prefWidth="115.0" text="dbNet" />
+   <Button layoutX="142.0" layoutY="609.0" mnemonicParsing="false" onMouseClicked="#openBluetooth" prefHeight="27.0" prefWidth="115.0" text="dbBle" />
+   <Button layoutX="269.0" layoutY="609.0" minWidth="115.0" mnemonicParsing="false" onMouseClicked="#controllerConnect" prefHeight="27.0" text="%connect" />
+   <Label layoutX="19.0" layoutY="649.0" text="%responseTime" />
+   <ChoiceBox fx:id="delayTime" layoutX="156.0" layoutY="642.0" prefHeight="27.0" prefWidth="54.0" value="3">
       <items>
          <FXCollections fx:factory="observableArrayList">
             <String fx:value="1" />
@@ -128,6 +128,6 @@
          </FXCollections>
       </items>
    </ChoiceBox>
-   <Button layoutX="310.0" layoutY="662.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClose" prefHeight="27.0" prefWidth="70.0" text="%close" />
+   <Button layoutX="310.0" layoutY="642.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClose" prefHeight="27.0" prefWidth="70.0" text="%close" />
    <ProgressIndicator fx:id="progressIndicator" layoutX="170.0" layoutY="240.0" visible="false" />
 </AnchorPane>

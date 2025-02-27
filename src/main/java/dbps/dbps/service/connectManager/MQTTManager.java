@@ -1,5 +1,6 @@
 package dbps.dbps.service.connectManager;
 
+import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.LogService;
 import dbps.dbps.service.MQTTUIService;
 import javafx.concurrent.Task;
@@ -12,9 +13,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +26,7 @@ public class MQTTManager {
     static MQTTManager instance = null;
     LogService logService;
     MQTTUIService mqttUIService;
+    ConfigService configService;
 
     public static MQTTManager getInstance(){
         if (instance == null){
@@ -47,21 +47,28 @@ public class MQTTManager {
     String sendTopic = "/msg";
     String receiveTopic = "/msg_r";
 
-    List<String> subscribedTopics = new ArrayList<>();
-
 
 
     private MQTTManager() {
         logService = LogService.getLogService();
         mqttUIService = MQTTUIService.getMqttUIService();
+        configService = ConfigService.getInstance();
     }
 
     public void connect(){
+        logService.updateInfoLog("MQTT 브로커 서버에 연결 시도중입니다.");
+        if (brokerIp == null || brokerIp.isEmpty()){
+            brokerIp = configService.getProperty("mqtt_IP");
+        }
+
+        if (brokerPort == null || brokerPort.isEmpty()){
+            brokerPort = configService.getProperty("mqtt_Port");
+        }
+
         String brokerUrl = "tcp://" + brokerIp + ":" + brokerPort;
 
         try {
             client = new MqttClient(brokerUrl, MqttClient.generateClientId(), new MemoryPersistence());
-
             MqttConnectOptions options = new MqttConnectOptions();
             options.setCleanSession(true);
             if (username != null){
@@ -71,8 +78,9 @@ public class MQTTManager {
                 options.setPassword(password.toCharArray());
             }
             client.connect(options);
-
+            logService.updateInfoLog("MQTT 브로커 서버 연결에 성공했습니다.");
         } catch (MqttException e) {
+            logService.updateInfoLog("MQTT 브로커 서버 연결에 실패했습니다.");
             throw new RuntimeException(e);
         }
     }

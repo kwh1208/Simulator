@@ -4,21 +4,21 @@
 <?import javafx.scene.layout.*?>
 
 <AnchorPane fx:id="mqttAP" minHeight="384.0" minWidth="400.0" prefHeight="452.0" prefWidth="400.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MqttController">
-    <Label layoutX="36.0" layoutY="30.0" prefHeight="29.0" text="MAC 주소" />
+    <Label layoutX="36.0" layoutY="34.0" prefHeight="29.0" text="MAC 주소" />
     <TextField fx:id="mqttMac" layoutX="126.0" layoutY="34.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
-    <Label layoutX="36.0" layoutY="74.0" prefHeight="29.0" text="Name" />
+    <Label layoutX="36.0" layoutY="75.0" prefHeight="29.0" text="Name" />
     <TextField fx:id="name" layoutX="126.0" layoutY="75.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" editable="false"/>
-    <Label layoutX="36.0" layoutY="114.0" prefHeight="29.0" text="API URL" />
+    <Label layoutX="36.0" layoutY="115.0" prefHeight="29.0" text="API URL" />
     <TextField fx:id="API" layoutX="126.0" layoutY="115.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
-    <Label layoutX="36.0" layoutY="150.0" prefHeight="29.0" text="broker IP" />
+    <Label layoutX="36.0" layoutY="154.0" prefHeight="29.0" text="broker IP" />
     <TextField fx:id="brokerIP" layoutX="126.0" layoutY="154.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
-    <Label layoutX="36.0" layoutY="190.0" prefHeight="29.0" text="broker Port" />
+    <Label layoutX="36.0" layoutY="194.0" prefHeight="29.0" text="broker Port" />
     <TextField fx:id="brokerPort" layoutX="126.0" layoutY="194.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
     <Pane layoutX="25.0" layoutY="240.0" prefHeight="153.0" prefWidth="346.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
         <Label layoutX="10.0" layoutY="-11.0" text="인증정보" />
-        <Label layoutX="25.0" layoutY="41.0" prefHeight="29.0" text="User" />
+        <Label layoutX="25.0" layoutY="40.0" prefHeight="29.0" text="User" />
         <TextField fx:id="userName" layoutX="94.0" layoutY="40.0" prefHeight="29.0" prefWidth="240.0" />
-      <Label layoutX="25.0" layoutY="91.0" prefHeight="29.0" text="Password" />
+      <Label layoutX="25.0" layoutY="90.0" prefHeight="29.0" text="Password" />
       <TextField fx:id="password" layoutX="94.0" layoutY="90.0" prefHeight="29.0" prefWidth="240.0" />
     </Pane>
     <Button layoutX="5.0" layoutY="405.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="21.0" prefWidth="90.0" text="읽기" />
