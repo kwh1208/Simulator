@@ -20,8 +20,11 @@ import static java.lang.Integer.parseInt;
 public class HEXMessageController {
 
     public ProgressIndicator progressIndicator;
+    public RadioButton asciiChkBox;
+    public RadioButton hexChkBox;
     HexMsgTransceiver hexMsgTransceiver;
     HexMsgService hexMsgService;
+    AsciiMsgTransceiver asciiMsgTransceiver;
 
     @FXML
     private AnchorPane HEXMsgAP;
@@ -112,6 +115,8 @@ public class HEXMessageController {
 
     ToggleGroup sectionGroup = new ToggleGroup();
 
+    ToggleGroup msgProtocol = new ToggleGroup();
+
     ResourceBundle bundle;
 
     @FXML
@@ -125,7 +130,12 @@ public class HEXMessageController {
         hexMsgService.setYStart(yStart);
         hexMsgService.setXEnd(xEnd);
         hexMsgService.setYEnd(yEnd);
+        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
 
+        hexChkBox.setToggleGroup(msgProtocol);
+        asciiChkBox.setToggleGroup(msgProtocol);
+
+        hexChkBox.setSelected(true);
 
         realTimeMsg.setToggleGroup(msgTypeGroup);
         pageMsg.setToggleGroup(msgTypeGroup);
@@ -272,8 +282,13 @@ public class HEXMessageController {
     }
 
     public void send() {
-        String msg = makeHexMsg();
-        hexMsgTransceiver.sendMessages(msg, progressIndicator);
+        if (hexChkBox.isSelected()){
+            String msg = makeHexMsg();
+            hexMsgTransceiver.sendMessages(msg, progressIndicator);
+        } else if (asciiChkBox.isSelected()) {
+            String msg = makeASCMsg();
+            asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
+        }
         save();
     }
 
