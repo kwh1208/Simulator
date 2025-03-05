@@ -9,8 +9,7 @@ module DBPS.main {
     requires javafx.graphics;
     requires static lombok;
     requires org.fxmisc.richtext;
-    requires org.slf4j;
-    requires org.eclipse.paho.client.mqttv3;
+    requires com.hivemq.client.mqtt;
 
     // ✅ 명시적으로 패키지 exports
     exports dbps.dbps;

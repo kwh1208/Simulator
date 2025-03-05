@@ -1,39 +1,39 @@
 package dbps.dbps.service.connectManager;
 
+import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.client.mqtt.MqttClientBuilder;
+import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
+import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.LogService;
-import dbps.dbps.service.MQTTUIService;
 import javafx.concurrent.Task;
 import lombok.Setter;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static dbps.dbps.Constants.bytesToHex;
 
 public class MQTTManager {
 
-    static MQTTManager instance = null;
-    LogService logService;
-    MQTTUIService mqttUIService;
-    ConfigService configService;
+    private static MQTTManager instance = null;
+    private final LogService logService;
+    private final ConfigService configService;
 
-    public static MQTTManager getInstance(){
-        if (instance == null){
+    public static MQTTManager getInstance() {
+        if (instance == null) {
             instance = new MQTTManager();
         }
         return instance;
     }
+
+    // 설정값들
     @Setter
     private String brokerIp;
     @Setter
@@ -42,131 +42,126 @@ public class MQTTManager {
     private String username;
     @Setter
     private String password;
-    private MqttClient client;
+
+    // HiveMQ Blocking Client (MQTT 5)
+    private Mqtt5BlockingClient client;
 
     String sendTopic = "/msg";
     String receiveTopic = "/msg_r";
 
-
-
     private MQTTManager() {
         logService = LogService.getLogService();
-        mqttUIService = MQTTUIService.getMqttUIService();
         configService = ConfigService.getInstance();
-    }
-
-    public void connect(){
+    }// MQTT 브로커에 연결
+    public void connect() {
         logService.updateInfoLog("MQTT 브로커 서버에 연결 시도중입니다.");
-        if (brokerIp == null || brokerIp.isEmpty()){
+        if (brokerIp == null || brokerIp.isEmpty()) {
             brokerIp = configService.getProperty("mqtt_IP");
         }
-
-        if (brokerPort == null || brokerPort.isEmpty()){
+        if (brokerPort == null || brokerPort.isEmpty()) {
             brokerPort = configService.getProperty("mqtt_Port");
         }
 
-        String brokerUrl = "tcp://" + brokerIp + ":" + brokerPort;
-
+        int port = Integer.parseInt(brokerPort);
         try {
-            client = new MqttClient(brokerUrl, MqttClient.generateClientId(), new MemoryPersistence());
-            MqttConnectOptions options = new MqttConnectOptions();
-            options.setCleanSession(true);
-            if (username != null){
-                options.setUserName(username);
+            // HiveMQ client 빌더 사용 (MQTT 5 Blocking Client)
+            MqttClientBuilder builder = MqttClient.builder()
+                    .serverHost(brokerIp)
+                    .serverPort(port);
+
+            if (username != null && !username.isEmpty()) {
+                builder = (MqttClientBuilder) builder.useMqttVersion3().simpleAuth()
+                        .username(username)
+                        .password(password != null ? password.getBytes(StandardCharsets.UTF_8) : null);
             }
-            if (password != null){
-                options.setPassword(password.toCharArray());
-            }
-            client.connect(options);
+
+            client = builder.useMqttVersion5().buildBlocking();
+            client.connect();
             logService.updateInfoLog("MQTT 브로커 서버 연결에 성공했습니다.");
-        } catch (MqttException e) {
+        } catch (Exception e) {
             logService.updateInfoLog("MQTT 브로커 서버 연결에 실패했습니다.");
             throw new RuntimeException(e);
         }
     }
 
-    private void chkConnect(){
-        if (client == null || !client.isConnected()) {
+    // 연결 상태 확인 후 연결
+    private void chkConnect() {
+        if (client == null || !client.getState().isConnected()) {
             connect();
         }
     }
 
+    // 단순 메시지 전송 (/set 토픽)
     public void sendSetMsg(String payload) {
         chkConnect();
-
         try {
-            // 메시지 전송
-            MqttMessage message = new MqttMessage(payload.getBytes(StandardCharsets.UTF_8));
-            message.setQos(0);
-            client.publish("/set", message);
-
-            return;
-
-        } catch (MqttException e) {
+            client.publishWith()
+                    .topic("/set")
+                    .payload(payload.getBytes(StandardCharsets.UTF_8))
+                    .qos(MqttQos.AT_MOST_ONCE)
+                    .send();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    // 요청 메시지 전송 후 응답 읽기 (/sch 토픽에 발행, /sch_r 토픽으로 응답)
     public String sendReadMsg(String payload) {
         chkConnect();
-
         try {
-            // 메시지 전송
-            MqttMessage message = new MqttMessage(payload.getBytes(StandardCharsets.UTF_8));
-            message.setQos(0);
-            client.publish("/sch", message);
-
-
-            // 응답을 기다림
+            client.publishWith()
+                    .topic("/sch")
+                    .payload(payload.getBytes(StandardCharsets.UTF_8))
+                    .qos(MqttQos.AT_MOST_ONCE)
+                    .send();
             return receiveReadMsg();
-
-        } catch (MqttException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "Error: " + e.getMessage();
         }
     }
 
-    // 응답을 기다리는 subscribe (동기 반환)
+    // 응답 대기 (최대 5초)
     private String receiveReadMsg() {
         CompletableFuture<String> future = new CompletableFuture<>();
-
         try {
-            client.subscribe("/sch_r", (receivedTopic, message) -> {
-                String receivedMessage = new String(message.getPayload(), StandardCharsets.UTF_8);
-
-                future.complete(receivedMessage);
-            });
-
-            // 최대 5초 동안 응답을 기다림
-            return future.get(5, TimeUnit.SECONDS);
-
-        } catch (MqttException e) {
-            e.printStackTrace();
+            client.subscribeWith()
+                    .topicFilter("/sch_r")
+                    .send();
+            Optional<Mqtt5Publish> optionalPublish = client.publishes(MqttGlobalPublishFilter.SUBSCRIBED)
+                    .receive(5, TimeUnit.SECONDS);
+            if (optionalPublish.isEmpty()) {
+                return "Error: Timeout waiting for response";
+            }
+            Mqtt5Publish publish = optionalPublish.get();
+            return new String(publish.getPayloadAsBytes(), StandardCharsets.UTF_8);
+        } catch (InterruptedException e) {
             return "Error: " + e.getMessage();
-        } catch (TimeoutException e) {
-            return "Error: Timeout waiting for response";
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             return "Error: " + e.getMessage();
         }
     }
 
+    // 비동기 Task로 메시지 전송 및 응답 처리 (/msg, /msg_r 사용)
     public Task<String> sendMsg(String payload) {
         return new Task<>() {
             @Override
-            protected String call() throws Exception {
+            protected String call() {
                 chkConnect();
                 try {
-                    MqttMessage message = new MqttMessage(payload.getBytes(Charset.forName("MS949")));
-                    message.setQos(0);
-                    client.publish(sendTopic, message);
+                    client.publishWith()
+                            .topic(sendTopic)
+                            .payload(payload.getBytes(Charset.forName("MS949")))
+                            .qos(MqttQos.AT_MOST_ONCE)
+                            .send();
                     logService.updateInfoLog("전송 메세지 : " + payload);
 
                     String result = receivedMsg();
                     logService.updateInfoLog("받은 메세지 : " + result);
-                    result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                    result = result.substring(result.indexOf("!["), result.indexOf("!]") + 2);
                     return result;
-
-                } catch (MqttException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     return "Error: " + e.getMessage();
                 }
@@ -177,22 +172,24 @@ public class MQTTManager {
     public Task<String> sendByteMsg(byte[] payload) {
         return new Task<>() {
             @Override
-            protected String call() throws Exception {
+            protected String call() {
                 chkConnect();
                 try {
-                    MqttMessage message = new MqttMessage(payload);
-                    message.setQos(0);
-                    client.publish(sendTopic, message);
+                    client.publishWith()
+                            .topic(sendTopic)
+                            .payload(payload)
+                            .qos(MqttQos.AT_MOST_ONCE)
+                            .send();
 
                     logService.updateInfoLog("전송 메세지 : " + new String(payload, Charset.forName("MS949")));
 
                     String result = receivedMsg();
-                    result = result.substring(result.indexOf(":\"")+2, result.indexOf("\"}"));
+                    result = result.substring(result.indexOf(":\"") + 2, result.indexOf("\"}"));
                     byte[] bytes = Base64.getDecoder().decode(result);
                     result = bytesToHex(bytes, bytes.length);
-                    logService.updateInfoLog("받은 메세지 : "+result);
+                    logService.updateInfoLog("받은 메세지 : " + result);
                     return result;
-                } catch (MqttException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     return "Error: " + e.getMessage();
                 }
@@ -203,14 +200,16 @@ public class MQTTManager {
     public void sendByteMsgNoLog(byte[] payload) {
         chkConnect();
         try {
-            MqttMessage message = new MqttMessage(payload);
-            message.setQos(0);
-            client.publish(sendTopic, message);
+            client.publishWith()
+                    .topic(sendTopic)
+                    .payload(payload)
+                    .qos(MqttQos.AT_MOST_ONCE)
+                    .send();
             String result = receivedMsg();
-            result = result.substring(result.indexOf(":\"")+2, result.indexOf("\"}"));
+            result = result.substring(result.indexOf(":\"") + 2, result.indexOf("\"}"));
             byte[] bytes = Base64.getDecoder().decode(result);
             bytesToHex(bytes, bytes.length);
-        } catch (MqttException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -218,38 +217,39 @@ public class MQTTManager {
     public void sendByteMsgShortLog(byte[] payload) {
         chkConnect();
         try {
-            MqttMessage message = new MqttMessage(payload);
-            message.setQos(0);
-
-            client.publish(sendTopic, message);
+            client.publishWith()
+                    .topic(sendTopic)
+                    .payload(payload)
+                    .qos(MqttQos.AT_MOST_ONCE)
+                    .send();
             String result = receivedMsg();
-            result = result.substring(result.indexOf(":\"")+2, result.indexOf("\"}"));
+            result = result.substring(result.indexOf(":\"") + 2, result.indexOf("\"}"));
             byte[] bytes = Base64.getDecoder().decode(result);
             bytesToHex(bytes, bytes.length);
-        } catch (MqttException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    // 응답 메시지 수신 (최대 5초 대기)
     private String receivedMsg() {
-        CompletableFuture<String> future = new CompletableFuture<>();
-
         try {
-            client.subscribe(receiveTopic, (receivedTopic, message) -> {
-                String receivedMessage = new String(message.getPayload(), StandardCharsets.UTF_8);
+            // 구독 요청: receiveTopic에 대해 구독을 요청합니다.
+            client.subscribeWith()
+                    .topicFilter(receiveTopic)
+                    .send();
 
-                future.complete(receivedMessage);
-            });
-
-            // 최대 5초 동안 응답을 기다림
-            return future.get(5, TimeUnit.SECONDS);
-
-        } catch (MqttException e) {
-            e.printStackTrace();
+            Optional<Mqtt5Publish> optionalPublish = client.publishes(MqttGlobalPublishFilter.SUBSCRIBED)
+                    .receive(5, TimeUnit.SECONDS);
+            if (optionalPublish.isEmpty()) {
+                return "Error: Timeout waiting for response";
+            }
+            Mqtt5Publish publish = optionalPublish.get();
+            return new String(publish.getPayloadAsBytes(), StandardCharsets.UTF_8);
+        } catch (InterruptedException e) {
             return "Error: " + e.getMessage();
-        } catch (TimeoutException e) {
-            return "Error: Timeout waiting for response";
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             return "Error: " + e.getMessage();
         }
     }
