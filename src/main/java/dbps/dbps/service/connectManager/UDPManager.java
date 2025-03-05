@@ -306,7 +306,12 @@ public class UDPManager {
 
                         String interfaceName = netInterface.getDisplayName().toLowerCase();
 
-                        boolean isWifi = interfaceName.contains("wi-fi") || interfaceName.contains("wlan");
+                        boolean isWifi = interfaceName.contains("wi-fi") ||
+                                interfaceName.contains("wifi") ||
+                                interfaceName.contains("wlan") ||
+                                interfaceName.contains("wireless") ||
+                                interfaceName.contains("airport") ||
+                                interfaceName.startsWith("wlp");
 
                         if (isWifi && WifiOnly) {
                             socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5107));

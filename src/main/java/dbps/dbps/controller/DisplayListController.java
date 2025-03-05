@@ -100,6 +100,13 @@ public class DisplayListController {
         displayModuleMap.put("VS128T110-0", "16D-P16D1S10-1");
         displayModuleMap.put("YS-P10-320x160-4S-2735-V2", "04D-P32D2S61");
         displayModuleMap.put("户外P8-4 16*32-V4.1", "04D-P32D2S61");
+        displayModuleMap.put("CM80-D43N-B", "04D-P32D2S31-2<1^4<3");
+        displayModuleMap.put("SEOUL JUNKWANG 70614 3COLOR_1/4DUTY DRIVER", "04D-P32D2S31-2<1^4<3");
+        displayModuleMap.put("GMS3CD8-91209", "08D-P16D2S23-1^2");
+        displayModuleMap.put("SD-83N11(8D)", "08D-P16D2S23-1^2");
+        displayModuleMap.put("CM8D-D83N-A", "08D-P16D2S23-1^2");
+        displayModuleMap.put("GMSFCD4-80102", "04D-P16D4S11-1^5^9^13");
+        displayModuleMap.put("CM80-M8FN-320B-2014.11.05", "04D-P16D4S11-1^5^9^13");
     }
 
     public void confirm(MouseEvent mouseEvent) {

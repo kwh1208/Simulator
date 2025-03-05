@@ -20,11 +20,11 @@ import static java.lang.Integer.parseInt;
 public class HEXMessageController {
 
     public ProgressIndicator progressIndicator;
+    public RadioButton asciiChkBox;
     public RadioButton hexChkBox;
-    public RadioButton ascChkBox;
     HexMsgTransceiver hexMsgTransceiver;
     HexMsgService hexMsgService;
-    AsciiMsgTransceiver ascMsgTransceiver;
+    AsciiMsgTransceiver asciiMsgTransceiver;
 
     @FXML
     private AnchorPane HEXMsgAP;
@@ -115,7 +115,7 @@ public class HEXMessageController {
 
     ToggleGroup sectionGroup = new ToggleGroup();
 
-    ToggleGroup msgType = new ToggleGroup();
+    ToggleGroup msgProtocol = new ToggleGroup();
 
     ResourceBundle bundle;
 
@@ -130,13 +130,12 @@ public class HEXMessageController {
         hexMsgService.setYStart(yStart);
         hexMsgService.setXEnd(xEnd);
         hexMsgService.setYEnd(yEnd);
+        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
 
-        hexChkBox.setToggleGroup(msgType);
-        ascChkBox.setToggleGroup(msgType);
+        hexChkBox.setToggleGroup(msgProtocol);
+        asciiChkBox.setToggleGroup(msgProtocol);
 
-        ascChkBox.setSelected(true);
-        ascMsgTransceiver = AsciiMsgTransceiver.getInstance();
-
+        hexChkBox.setSelected(true);
 
         realTimeMsg.setToggleGroup(msgTypeGroup);
         pageMsg.setToggleGroup(msgTypeGroup);
@@ -285,52 +284,50 @@ public class HEXMessageController {
     public void send() {
         if (hexChkBox.isSelected()){
             String msg = makeHexMsg();
-
             hexMsgTransceiver.sendMessages(msg, progressIndicator);
-
-        }
-        else {
-            String sendMsg = makeASCMsg();
-            ascMsgTransceiver.sendMessages(sendMsg, false, progressIndicator);
+        } else if (asciiChkBox.isSelected()) {
+            String msg = makeASCMsg();
+            asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
         }
         save();
     }
 
     private String makeHexMsg(){
-        String msgType = ((RadioButton) msgTypeGroup.getSelectedToggle()).getText();
-        String pageMsgCntValue = pageMsgCnt.getValue();
-        String section = ((RadioButton) sectionGroup.getSelectedToggle()).getText();
-        String displayControlValue = displayControl.getValue();
-        String displayMethodValue = displayMethod.getValue();
-        String charCodesValue = charCodes.getValue();
-        String fontSizeValue = fontSize.getValue();
-        String fontGroupValue = fontGroup.getValue();
-        String effectInValue = effectIn.getValue();
-        String inDirectionValue = inDirection.getValue();
-        String effectOutValue = effectOut.getValue();
-        String outDirectionValue = outDirection.getValue();
-        String effectSpeedValue = effectSpeed.getValue();
-        String effectTimeValue = effectTime.getValue();
-        String xStartValue = xStart.getValue();
-        String yStartValue = yStart.getValue();
-        String xEndValue = xEnd.getValue();
-        String yEndValue = yEnd.getValue();
-        String bgImgValue = bgImg.getValue();
-        String textColorValue = textColor.getText();
-        String bgColorValue = bgColor.getText();
-        String text = msgPreview.getText();
+        try {
+            String msgType = ((RadioButton) msgTypeGroup.getSelectedToggle()).getText();
+            String pageMsgCntValue = pageMsgCnt.getValue();
+            String section = ((RadioButton) sectionGroup.getSelectedToggle()).getText();
+            String displayControlValue = displayControl.getValue();
+            String displayMethodValue = displayMethod.getValue();
+            String charCodesValue = charCodes.getValue();
+            String fontSizeValue = fontSize.getValue();
+            String fontGroupValue = fontGroup.getValue();
+            String effectInValue = effectIn.getValue();
+            String inDirectionValue = inDirection.getValue();
+            String effectOutValue = effectOut.getValue();
+            String outDirectionValue = outDirection.getValue();
+            String effectSpeedValue = effectSpeed.getValue();
+            String effectTimeValue = effectTime.getValue();
+            String xStartValue = xStart.getValue();
+            String yStartValue = yStart.getValue();
+            String xEndValue = xEnd.getValue();
+            String yEndValue = yEnd.getValue();
+            String bgImgValue = bgImg.getValue();
+            String textColorValue = textColor.getText();
+            String bgColorValue = bgColor.getText();
+            String text = msgPreview.getText();
 
 
-        StringBuilder msg = new StringBuilder("10 02 ");
+            StringBuilder msg = new StringBuilder("10 02 ");
 
 
-        //rs485인 경우 변경
-        if (!isRS) {
-            msg.append("00 ");
-        } else {
-            //rs485면 주소
-            msg.append(String.format("%02X ", RS485_ADDR_NUM));
-        }
+            //rs485인 경우 변경
+            if (!isRS) {
+                msg.append("00 ");
+            } else {
+                //rs485면 주소
+                msg.append(String.format("%02X ", RS485_ADDR_NUM));
+            }
 
             //msg 길이
             byte[] textBytes;
@@ -344,120 +341,124 @@ public class HEXMessageController {
             msg.append("00 ").append(String.format("%02x", (textBytes.length * 2) + 17));
             msg.append(" 94 ");
 
-        //실시간메세지
-        if (msgType.equals(bundle.getString("realTimeMsg"))) {
-            msg.append("00 ");
-        } else {
-            msg.append(Integer.toHexString(Integer.parseInt(pageMsgCntValue))).append(" ");
-        }
-
-        //섹션번호
-        msg.append("0").append(Integer.parseInt(section)).append(" ");
-
-        //표시제어
-        switch (displayControlValue) {
-            case "Off":
+            //실시간메세지
+            if (msgType.equals(bundle.getString("realTimeMsg"))) {
                 msg.append("00 ");
-                break;
-            case "On":
-                msg.append("63 ");
-                break;
-            default:
-                msg.append(displayControlValue).append(" ");
+            } else {
+                msg.append(Integer.toHexString(Integer.parseInt(pageMsgCntValue))).append(" ");
+            }
+
+            //섹션번호
+            msg.append("0").append(Integer.parseInt(section)).append(" ");
+
+            //표시제어
+            switch (displayControlValue) {
+                case "Off":
+                    msg.append("00 ");
+                    break;
+                case "On":
+                    msg.append("63 ");
+                    break;
+                default:
+                    msg.append(displayControlValue).append(" ");
+            }
+
+            //표시방법
+            msg.append(displayMethodValue.equals("Normal") ? "00 " : "01 ");
+
+            //문자코드
+            msg.append(charCodesValue.equals(bundle.getString("CombinationType")) ? "00 " : "01 ");
+
+            //폰트크기
+            fontSizeValue = fontSizeValue.replaceAll("[^0-9]", "");
+            if (fontSizeValue.equals("14")){
+                msg.append("01 ");
+            }
+            else msg.append("0").append((Integer.parseInt(fontSizeValue) / 4) - 1).append(" ");
+
+            //입장효과
+            msg.append(makeEffect(effectInValue, inDirectionValue));
+
+            //퇴장효과
+            msg.append(makeEffect(effectOutValue, outDirectionValue));
+
+            //예비
+            msg.append("00 ");
+
+            //효과속도**
+            msg.append(String.format("%02x", Integer.parseInt(effectSpeedValue.replaceAll("[^0-9]", "")))).append(" ");
+
+            //유지시간
+            msg.append(makeEffectTime(effectTimeValue));
+
+            //x축 시작**
+            msg.append(String.format("%02X", (Integer.parseInt(xStartValue) / 4))).append(" ");
+
+            //y축 시작
+            msg.append(String.format("%02X", (Integer.parseInt(yStartValue) / 4))).append(" ");
+
+            //x축 끝
+            msg.append(String.format("%02X", (Integer.parseInt(xEndValue) / 4))).append(" ");
+
+            //y축 끝
+            msg.append(String.format("%02X", (Integer.parseInt(yEndValue) / 4))).append(" ");
+
+            //배경이미지
+            msg.append(bgImgValue.equals(bundle.getString("notUsed")) ? "00 " : String.format("%02d ", Integer.parseInt(bgImgValue)));
+
+            //글자
+            for (int i = 0; i < text.length(); i++) {
+                String tmp = "";
+                if (bgColorValue.length()>i){
+                    tmp+=String.valueOf(bgColorValue.charAt(i));
+                }else {
+                    tmp+=String.valueOf(bgColorValue.charAt(bgColorValue.length()-1));
+                }
+
+                if (textColorValue.length()>i) {
+                    tmp += String.valueOf(textColorValue.charAt(i));
+                } else{
+                    tmp += String.valueOf(textColorValue.charAt(textColorValue.length()-1));
+                }
+
+                int add;
+                switch (fontGroupValue){
+                    case "폰트그룹1"-> add = 0;
+                    case "폰트그룹2"-> add = 8;
+                    case "폰트그룹3"-> add = 128;
+                    default -> add = 136;
+                }
+
+                int tmpValue = Integer.parseInt(tmp, 16);
+                String resultHex;
+
+                resultHex = String.format("%02X ", tmpValue + add);
+                if (String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length!=1){
+                    resultHex += String.format("%02X ", 0);
+                }
+
+                msg.append(resultHex);
+                if (charCodes.getValue().equals(bundle.getString("UTF16"))&&String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length==1){
+                    msg.append(String.format("%02X ", 0));
+                }
+            }
+
+
+
+            msg.append(bytesToHex(textBytes, textBytes.length));
+
+            msg.append("10 03");
+
+            return msg.toString();
+        } catch (Exception e){
+            LogService.getLogService().warningLog(e.getMessage());
         }
-
-        //표시방법
-        msg.append(displayMethodValue.equals("Normal") ? "00 " : "01 ");
-
-        //문자코드
-        msg.append(charCodesValue.equals(bundle.getString("CombinationType")) ? "00 " : "01 ");
-
-        //폰트크기
-        fontSizeValue = fontSizeValue.replaceAll("[^0-9]", "");
-        if (fontSizeValue.equals("14")){
-            msg.append("01 ");
-        }
-        else msg.append("0").append((Integer.parseInt(fontSizeValue) / 4) - 1).append(" ");
-
-        //입장효과
-        msg.append(makeEffect(effectInValue, inDirectionValue));
-
-        //퇴장효과
-        msg.append(makeEffect(effectOutValue, outDirectionValue));
-
-        //예비
-        msg.append("00 ");
-
-        //효과속도**
-        msg.append(String.format("%02x", Integer.parseInt(effectSpeedValue.replaceAll("[^0-9]", "")))).append(" ");
-
-        //유지시간
-        msg.append(makeEffectTime(effectTimeValue));
-
-        //x축 시작**
-        msg.append(String.format("%02X", (Integer.parseInt(xStartValue) / 4))).append(" ");
-
-        //y축 시작
-        msg.append(String.format("%02X", (Integer.parseInt(yStartValue) / 4))).append(" ");
-
-        //x축 끝
-        msg.append(String.format("%02X", (Integer.parseInt(xEndValue) / 4))).append(" ");
-
-        //y축 끝
-        msg.append(String.format("%02X", (Integer.parseInt(yEndValue) / 4))).append(" ");
-
-        //배경이미지
-        msg.append(bgImgValue.equals(bundle.getString("notUsed")) ? "00 " : String.format("%02d ", Integer.parseInt(bgImgValue)));
-
-        //글자
-        for (int i = 0; i < text.length(); i++) {
-            String tmp = "";
-            if (bgColorValue.length()>i){
-                tmp+=String.valueOf(bgColorValue.charAt(i));
-            }else {
-                tmp+=String.valueOf(bgColorValue.charAt(bgColorValue.length()-1));
-            }
-
-            if (textColorValue.length()>i) {
-                tmp += String.valueOf(textColorValue.charAt(i));
-            } else{
-                tmp += String.valueOf(textColorValue.charAt(textColorValue.length()-1));
-            }
-
-            int add;
-            switch (fontGroupValue){
-                case "폰트그룹1"-> add = 0;
-                case "폰트그룹2"-> add = 8;
-                case "폰트그룹3"-> add = 128;
-                default -> add = 136;
-            }
-
-            int tmpValue = Integer.parseInt(tmp, 16);
-            String resultHex;
-
-            resultHex = String.format("%02X ", tmpValue + add);
-            if (String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length!=1){
-                resultHex += String.format("%02X ", 0);
-            }
-
-            msg.append(resultHex);
-            if (charCodes.getValue().equals(bundle.getString("UTF16"))&&String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length==1){
-                msg.append(String.format("%02X ", 0));
-            }
-        }
-
-
-
-        msg.append(bytesToHex(textBytes, textBytes.length));
-
-        msg.append("10 03");
-
-        return msg.toString();
+        return null;
     }
 
     private String makeEffectTime(String effectTimeValue) {
         if (effectTimeValue.contains(bundle.getString("sec"))) {
-            return String.format("%02x ", Integer.parseInt(effectTimeValue.replaceAll("[^0-9]", "")));
+            return String.format("%02x ", Integer.parseInt(effectTimeValue.replaceAll("[^0-9]", ""))*2);
         }
         if (effectTimeValue.equals(bundle.getString("2min"))) {
             return "5A ";
@@ -710,7 +711,6 @@ public class HEXMessageController {
         );
     }
 
-    //Todo 나중에 asc랑 합치면서 사용할 함수
     private String makeASCMsg() {
         StringBuilder sendMsg = new StringBuilder("![00");
         if (realTimeMsg.isSelected()) sendMsg.append("0/P00");
