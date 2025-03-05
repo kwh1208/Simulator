@@ -57,33 +57,33 @@ public class HEXMessageController {
     private ChoiceBox<String> displayMethod;
 
     @FXML
-    private ChoiceBox<String> charCodes;
+    private ChoiceBox<ComboItem> charCodes;
 
     @FXML
     private ChoiceBox<String> fontSize;
 
     @FXML
-    private ChoiceBox<String> fontGroup;
+    private ChoiceBox<ComboItem> fontGroup;
 
     @FXML
-    private ChoiceBox<String> effectIn;
+    private ChoiceBox<ComboItem> effectIn;
 
     @FXML
-    private ChoiceBox<String> inDirection;
-
-
-    @FXML
-    private ChoiceBox<String> effectOut;
-
-    @FXML
-    private ChoiceBox<String> outDirection;
+    private ChoiceBox<ComboItem> inDirection;
 
 
     @FXML
-    private ChoiceBox<String> effectSpeed;
+    private ChoiceBox<ComboItem> effectOut;
 
     @FXML
-    private ChoiceBox<String> effectTime;
+    private ChoiceBox<ComboItem> outDirection;
+
+
+    @FXML
+    private ChoiceBox<ComboItem> effectSpeed;
+
+    @FXML
+    private ChoiceBox<ComboItem> effectTime;
 
     @FXML
     private ChoiceBox<String> xStart;
@@ -98,7 +98,7 @@ public class HEXMessageController {
     private ChoiceBox<String> yEnd;
 
     @FXML
-    private ChoiceBox<String> bgImg;
+    private ChoiceBox<ComboItem> bgImg;
 
     @FXML
     private TextField textColor;
@@ -123,7 +123,7 @@ public class HEXMessageController {
     private void initialize() {
         configService = ConfigService.getInstance();
         HEXMsgAP.getStylesheets().add(Objects.requireNonNull(Simulator.class.getResource("/dbps/dbps/css/hexMessage.css")).toExternalForm());
-        bundle= ResourceManager.getInstance().getBundle();
+        bundle = ResourceManager.getInstance().getBundle();
         hexMsgService = HexMsgService.getInstance();
         hexMsgService.setPageMsgCnt(pageMsgCnt);
         hexMsgService.setXStart(xStart);
@@ -145,10 +145,9 @@ public class HEXMessageController {
         section2.setToggleGroup(sectionGroup);
 
         realTimeMsg.setSelected(true);
-        if (configService.getProperty("isHexRealTime").equals("0")){
+        if (configService.getProperty("isHexRealTime").equals("0")) {
             realTimeMsg.setSelected(true);
-        }
-        else{
+        } else {
             pageMsg.setSelected(true);
             pageMsgCnt.setVisible(true);
             pageCntLabel.setVisible(true);
@@ -170,16 +169,17 @@ public class HEXMessageController {
             }
         });
 
+        bgImg.getItems().add(new ComboItem("notUsed", bundle.getString("notUsed")));
         for (int i = 1; i < 11; i++) {
-            bgImg.getItems().add(Integer.toString(i));
+            bgImg.getItems().add(new ComboItem(String.valueOf(i), String.valueOf(i)));
         }
 
-        pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)-> doMsgSettings());
+        pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> doMsgSettings());
 
-        sectionGroup.selectedToggleProperty().addListener((observable, oldValue, newValue)-> doMsgSettings());
+        sectionGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> doMsgSettings());
 
-        effectOut.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateOutDirections(newValue));
-        effectIn.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateInDirections(newValue));
+        effectOut.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateOutDirections(newValue.displayText()));
+        effectIn.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateInDirections(newValue.displayText()));
 
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         doMsgSettings();
@@ -187,6 +187,85 @@ public class HEXMessageController {
         saveConfig();
 
         setXY();
+
+        setUI();
+    }
+
+    private void setUI() {
+        charCodes.getItems().clear();
+        charCodes.getItems().addAll(new ComboItem("CombinationType", bundle.getString("CombinationType")));
+
+        fontGroup.getItems().clear();
+        fontGroup.getItems().addAll(
+                new ComboItem("fontGroup1", bundle.getString("fontGroup1")),
+                new ComboItem("fontGroup2", bundle.getString("fontGroup2")),
+                new ComboItem("fontGroup3", bundle.getString("fontGroup3")),
+                new ComboItem("fontGroup4", bundle.getString("fontGroup4")));
+
+        effectIn.getItems().addAll(
+                new ComboItem("staticEffect", bundle.getString("staticEffect")),
+                new ComboItem("randomEffect", bundle.getString("randomEffect")),
+                new ComboItem("move", bundle.getString("move")),
+                new ComboItem("wipe", bundle.getString("wipe")),
+                new ComboItem("blind", bundle.getString("blind")),
+                new ComboItem("curtainEffect", bundle.getString("curtainEffect")),
+                new ComboItem("zoomEffect", bundle.getString("zoomEffect")),
+                new ComboItem("rotateEffect", bundle.getString("rotateEffect")),
+                new ComboItem("backgroundFlash", bundle.getString("backgroundFlash")),
+                new ComboItem("textFlash", bundle.getString("textFlash")),
+                new ComboItem("3DEffect", bundle.getString("3DEffect"))
+        );
+        selectEffect(effectIn.getValue().displayText(), inDirection);
+
+        effectOut.getItems().addAll(
+                new ComboItem("staticEffect", bundle.getString("staticEffect")),
+                new ComboItem("randomEffect", bundle.getString("randomEffect")),
+                new ComboItem("move", bundle.getString("move")),
+                new ComboItem("wipe", bundle.getString("wipe")),
+                new ComboItem("blind", bundle.getString("blind")),
+                new ComboItem("curtainEffect", bundle.getString("curtainEffect")),
+                new ComboItem("zoomEffect", bundle.getString("zoomEffect")),
+                new ComboItem("rotateEffect", bundle.getString("rotateEffect")),
+                new ComboItem("backgroundFlash", bundle.getString("backgroundFlash")),
+                new ComboItem("textFlash", bundle.getString("textFlash")),
+                new ComboItem("3DEffect", bundle.getString("3DEffect"))
+        );
+        selectEffect(effectOut.getValue().displayText(), outDirection);
+
+        effectSpeed.getItems().add(new ComboItem("slowest", bundle.getString("slowest")));
+        for (int i = 5; i <= 95; i += 5) {
+            effectSpeed.getItems().add(new ComboItem(String.valueOf(i), String.valueOf(i)));
+        }
+        effectSpeed.getItems().add(new ComboItem("fastest", bundle.getString("fastest")));
+// 초 단위
+        effectTime.getItems().add(new ComboItem("0sec", "0" + bundle.getString("sec")));
+        effectTime.getItems().add(new ComboItem("1sec", "1" + bundle.getString("sec")));
+        effectTime.getItems().add(new ComboItem("2sec", "2" + bundle.getString("sec")));
+        effectTime.getItems().add(new ComboItem("4sec", "4" + bundle.getString("sec")));
+        effectTime.getItems().add(new ComboItem("5sec", "5" + bundle.getString("sec")));
+        effectTime.getItems().add(new ComboItem("7.5sec", "7.5" + bundle.getString("sec")));
+        effectTime.getItems().add(new ComboItem("10sec", "10" + bundle.getString("sec")));
+        effectTime.getItems().add(new ComboItem("15sec", "15" + bundle.getString("sec")));
+        effectTime.getItems().add(new ComboItem("20sec", "20" + bundle.getString("sec")));
+        effectTime.getItems().add(new ComboItem("30sec", "30" + bundle.getString("sec")));
+        effectTime.getItems().add(new ComboItem("40sec", "40" + bundle.getString("sec")));
+
+// 분 단위
+        effectTime.getItems().add(new ComboItem("2min", "2" + bundle.getString("min")));
+        effectTime.getItems().add(new ComboItem("3min", "3" + bundle.getString("min")));
+        effectTime.getItems().add(new ComboItem("5min", "5" + bundle.getString("min")));
+        effectTime.getItems().add(new ComboItem("10min", "10" + bundle.getString("min")));
+        effectTime.getItems().add(new ComboItem("30min", "30" + bundle.getString("min")));
+
+// 시간 단위
+        effectTime.getItems().add(new ComboItem("1hr", "1" + bundle.getString("hr")));
+        effectTime.getItems().add(new ComboItem("3hr", "3" + bundle.getString("hr")));
+        effectTime.getItems().add(new ComboItem("5hr", "5" + bundle.getString("hr")));
+        effectTime.getItems().add(new ComboItem("9hr", "9" + bundle.getString("hr")));
+
+// 기본 선택
+        effectTime.setValue(new ComboItem("2sec", "2" + bundle.getString("sec")));
+
     }
 
     private void setXY() {
@@ -198,13 +277,13 @@ public class HEXMessageController {
         int xLimit = Integer.parseInt(configService.getProperty("displayColumnSize"));
         int yLimit = Integer.parseInt(configService.getProperty("displayRowSize"));
 
-        for (int i = 0; i <= 4*xLimit; i++) {
-            xStart.getItems().add(String.valueOf(4*i));
-            xEnd.getItems().add(String.valueOf(4*i));
+        for (int i = 0; i <= 4 * xLimit; i++) {
+            xStart.getItems().add(String.valueOf(4 * i));
+            xEnd.getItems().add(String.valueOf(4 * i));
         }
-        for (int i = 0; i <= 4*yLimit; i++) {
-            yStart.getItems().add(String.valueOf(4*i));
-            yEnd.getItems().add(String.valueOf(4*i));
+        for (int i = 0; i <= 4 * yLimit; i++) {
+            yStart.getItems().add(String.valueOf(4 * i));
+            yEnd.getItems().add(String.valueOf(4 * i));
         }
 
         xStart.setValue("0");
@@ -217,41 +296,56 @@ public class HEXMessageController {
     private String getMsgNum() {
         String i = "0";
         if (!realTimeMsg.isSelected()) {
-            i= pageMsgCnt.getValue();
+            i = pageMsgCnt.getValue();
         }
         String j;
-        if (section0.isSelected()){
-            j="0";
+        if (section0.isSelected()) {
+            j = "0";
         } else if (section1.isSelected()) {
-            j="1";
+            j = "1";
         } else {
-            j="2";
+            j = "2";
         }
-        return i+j;
+        return i + j;
     }
 
     private void doMsgSettings() {
         String msgNum = getMsgNum();
 
-        displayControl.setValue(configService.getProperty("displayControl"+msgNum));
-        displayMethod.setValue(configService.getProperty("displayMethod"+msgNum));
-        charCodes.setValue(configService.getProperty("charCode"+msgNum));
-        fontSize.setValue(configService.getProperty("fontSize"+msgNum));
-        fontGroup.setValue(configService.getProperty("fontGroup"+msgNum));
-        effectIn.setValue(configService.getProperty("effectIn"+msgNum));
-        inDirection.setValue(configService.getProperty("effectInDirection"+msgNum));
-        effectOut.setValue(configService.getProperty("effectOut"+msgNum));
-        outDirection.setValue(configService.getProperty("effectOutDirection"+msgNum));
-        effectSpeed.setValue(configService.getProperty("effectSpeed"+msgNum));
-        effectTime.setValue(configService.getProperty("effectTime"+msgNum));
-        xStart.setValue(configService.getProperty("xStart"+msgNum));
-        yStart.setValue(configService.getProperty("yStart"+msgNum));
-        xEnd.setValue(configService.getProperty("xEnd"+msgNum));
-        yEnd.setValue(configService.getProperty("yEnd"+msgNum));
-        bgImg.setValue(configService.getProperty("bgImg"+msgNum));
-        textColor.setText(configService.getProperty("textColor"+msgNum));
-        bgColor.setText(configService.getProperty("bgColor"+msgNum));
-        msgPreview.setText(configService.getProperty("text"+msgNum));
+        displayControl.setValue(configService.getProperty("displayControl" + msgNum));
+        displayMethod.setValue(configService.getProperty("displayMethod" + msgNum));
+        charCodes.setValue(new ComboItem(configService.getProperty("charCode" + msgNum), bundle.getString(configService.getProperty("charCode" + msgNum))));
+        fontSize.setValue(configService.getProperty("fontSize" + msgNum));
+        fontGroup.setValue(new ComboItem(configService.getProperty("fontGroup" + msgNum), bundle.getString(configService.getProperty("fontGroup" + msgNum))));
+        effectIn.setValue(new ComboItem(configService.getProperty("effectIn" + msgNum), bundle.getString(configService.getProperty("effectIn" + msgNum))));
+        inDirection.setValue(new ComboItem(configService.getProperty("effectInDirection" + msgNum), bundle.getString(configService.getProperty("effectInDirection" + msgNum))));
+        effectOut.setValue(new ComboItem(configService.getProperty("effectOut" + msgNum), bundle.getString(configService.getProperty("effectOut" + msgNum))));
+        outDirection.setValue(new ComboItem(configService.getProperty("effectOutDirection" + msgNum), bundle.getString(configService.getProperty("effectOutDirection" + msgNum))));
+        String speedKey = configService.getProperty("effectSpeed" + msgNum);
+        String displayText;
+        if (isNumeric(speedKey)) {
+            displayText = speedKey;
+        } else {
+            displayText = bundle.getString(speedKey);
+        }
+        effectSpeed.setValue(new ComboItem(speedKey, displayText));
+        String effectTimeKey = configService.getProperty("effectTime" + msgNum); // 예: "2min"
+// 숫자 부분과 단위 부분을 분리
+        String numberPart = effectTimeKey.replaceAll("[^0-9.]", "");  // "2"
+        String unitPart = effectTimeKey.replaceAll("[0-9.]", "");      // "min"
+// 번들에서 단위 번역을 가져옴 (예: bundle.getString("min") → "분")
+        String translatedUnit = bundle.getString(unitPart);
+        displayText = numberPart + translatedUnit; // "2분"
+
+        effectTime.setValue(new ComboItem(effectTimeKey, displayText));
+        xStart.setValue(configService.getProperty("xStart" + msgNum));
+        yStart.setValue(configService.getProperty("yStart" + msgNum));
+        xEnd.setValue(configService.getProperty("xEnd" + msgNum));
+        yEnd.setValue(configService.getProperty("yEnd" + msgNum));
+        bgImg.setValue(new ComboItem(configService.getProperty("bgImg" + msgNum), bundle.getString(configService.getProperty("bgImg" + msgNum))));
+        textColor.setText(configService.getProperty("textColor" + msgNum));
+        bgColor.setText(configService.getProperty("bgColor" + msgNum));
+        msgPreview.setText(configService.getProperty("text" + msgNum));
     }
 
     public void save() {
@@ -260,29 +354,29 @@ public class HEXMessageController {
         if (pageMsg.isSelected()) {
             configService.setProperty("isHexRealTime", pageMsgCnt.getValue());
         }
-        configService.setProperty("displayControl"+msgNum, displayControl.getValue());
-        configService.setProperty("displayMethod"+msgNum, displayMethod.getValue());
-        configService.setProperty("charCode"+msgNum, charCodes.getValue());
-        configService.setProperty("fontSize"+msgNum, fontSize.getValue());
-        configService.setProperty("fontGroup"+msgNum, fontGroup.getValue());
-        configService.setProperty("effectIn"+msgNum, effectIn.getValue());
-        configService.setProperty("effectInDirection"+msgNum, inDirection.getValue());
-        configService.setProperty("effectOut"+msgNum, effectOut.getValue());
-        configService.setProperty("effectOutDirection"+msgNum, outDirection.getValue());
-        configService.setProperty("effectSpeed"+msgNum, effectSpeed.getValue());
-        configService.setProperty("effectTime"+msgNum, effectTime.getValue());
-        configService.setProperty("xStart"+msgNum, xStart.getValue());
-        configService.setProperty("yStart"+msgNum, yStart.getValue());
-        configService.setProperty("xEnd"+msgNum, xEnd.getValue());
-        configService.setProperty("yEnd"+msgNum, yEnd.getValue());
-        configService.setProperty("bgImg"+msgNum, bgImg.getValue());
-        configService.setProperty("textColor"+msgNum, textColor.getText());
-        configService.setProperty("bgColor"+msgNum, bgColor.getText());
-        configService.setProperty("text"+msgNum, msgPreview.getText());
+        configService.setProperty("displayControl" + msgNum, displayControl.getValue());
+        configService.setProperty("displayMethod" + msgNum, displayMethod.getValue());
+        configService.setProperty("charCode" + msgNum, charCodes.getValue().key());
+        configService.setProperty("fontSize" + msgNum, fontSize.getValue());
+        configService.setProperty("fontGroup" + msgNum, fontGroup.getValue().key());
+        configService.setProperty("effectIn" + msgNum, effectIn.getValue().key());
+        configService.setProperty("effectInDirection" + msgNum, inDirection.getValue().key());
+        configService.setProperty("effectOut" + msgNum, effectOut.getValue().key());
+        configService.setProperty("effectOutDirection" + msgNum, outDirection.getValue().key());
+        configService.setProperty("effectSpeed" + msgNum, effectSpeed.getValue().key());
+        configService.setProperty("effectTime" + msgNum, effectTime.getValue().key());
+        configService.setProperty("xStart" + msgNum, xStart.getValue());
+        configService.setProperty("yStart" + msgNum, yStart.getValue());
+        configService.setProperty("xEnd" + msgNum, xEnd.getValue());
+        configService.setProperty("yEnd" + msgNum, yEnd.getValue());
+        configService.setProperty("bgImg" + msgNum, bgImg.getValue().key());
+        configService.setProperty("textColor" + msgNum, textColor.getText());
+        configService.setProperty("bgColor" + msgNum, bgColor.getText());
+        configService.setProperty("text" + msgNum, msgPreview.getText());
     }
 
     public void send() {
-        if (hexChkBox.isSelected()){
+        if (hexChkBox.isSelected()) {
             String msg = makeHexMsg();
             hexMsgTransceiver.sendMessages(msg, progressIndicator);
         } else if (asciiChkBox.isSelected()) {
@@ -292,27 +386,27 @@ public class HEXMessageController {
         save();
     }
 
-    private String makeHexMsg(){
+    private String makeHexMsg() {
         try {
             String msgType = ((RadioButton) msgTypeGroup.getSelectedToggle()).getText();
             String pageMsgCntValue = pageMsgCnt.getValue();
             String section = ((RadioButton) sectionGroup.getSelectedToggle()).getText();
             String displayControlValue = displayControl.getValue();
             String displayMethodValue = displayMethod.getValue();
-            String charCodesValue = charCodes.getValue();
+            String charCodesValue = charCodes.getValue().displayText();
             String fontSizeValue = fontSize.getValue();
-            String fontGroupValue = fontGroup.getValue();
-            String effectInValue = effectIn.getValue();
-            String inDirectionValue = inDirection.getValue();
-            String effectOutValue = effectOut.getValue();
-            String outDirectionValue = outDirection.getValue();
-            String effectSpeedValue = effectSpeed.getValue();
-            String effectTimeValue = effectTime.getValue();
+            String fontGroupValue = fontGroup.getValue().displayText();
+            String effectInValue = effectIn.getValue().displayText();
+            String inDirectionValue = inDirection.getValue().displayText();
+            String effectOutValue = effectOut.getValue().displayText();
+            String outDirectionValue = outDirection.getValue().displayText();
+            String effectSpeedValue = effectSpeed.getValue().displayText();
+            String effectTimeValue = effectTime.getValue().displayText();
             String xStartValue = xStart.getValue();
             String yStartValue = yStart.getValue();
             String xEndValue = xEnd.getValue();
             String yEndValue = yEnd.getValue();
-            String bgImgValue = bgImg.getValue();
+            String bgImgValue = bgImg.getValue().displayText();
             String textColorValue = textColor.getText();
             String bgColorValue = bgColor.getText();
             String text = msgPreview.getText();
@@ -371,10 +465,9 @@ public class HEXMessageController {
 
             //폰트크기
             fontSizeValue = fontSizeValue.replaceAll("[^0-9]", "");
-            if (fontSizeValue.equals("14")){
+            if (fontSizeValue.equals("14")) {
                 msg.append("01 ");
-            }
-            else msg.append("0").append((Integer.parseInt(fontSizeValue) / 4) - 1).append(" ");
+            } else msg.append("0").append((Integer.parseInt(fontSizeValue) / 4) - 1).append(" ");
 
             //입장효과
             msg.append(makeEffect(effectInValue, inDirectionValue));
@@ -409,40 +502,43 @@ public class HEXMessageController {
             //글자
             for (int i = 0; i < text.length(); i++) {
                 String tmp = "";
-                if (bgColorValue.length()>i){
-                    tmp+=String.valueOf(bgColorValue.charAt(i));
-                }else {
-                    tmp+=String.valueOf(bgColorValue.charAt(bgColorValue.length()-1));
+                if (bgColorValue.length() > i) {
+                    tmp += String.valueOf(bgColorValue.charAt(i));
+                } else {
+                    tmp += String.valueOf(bgColorValue.charAt(bgColorValue.length() - 1));
                 }
 
-                if (textColorValue.length()>i) {
+                if (textColorValue.length() > i) {
                     tmp += String.valueOf(textColorValue.charAt(i));
-                } else{
-                    tmp += String.valueOf(textColorValue.charAt(textColorValue.length()-1));
+                } else {
+                    tmp += String.valueOf(textColorValue.charAt(textColorValue.length() - 1));
                 }
 
-                int add;
-                switch (fontGroupValue){
-                    case "폰트그룹1"-> add = 0;
-                    case "폰트그룹2"-> add = 8;
-                    case "폰트그룹3"-> add = 128;
-                    default -> add = 136;
+                int add = 0;
+                if (fontGroupValue.equals(bundle.getString("fontGroup1"))) {
+                    add += 0;
+                } else if (fontGroupValue.equals(bundle.getString("fontGroup2"))) {
+                    add += 8;
+                } else if (fontGroupValue.equals(bundle.getString("fontGroup3"))) {
+                    add += 128;
+                } else if (fontGroupValue.equals(bundle.getString("fontGroup4"))) {
+                    add += 136;
                 }
+
 
                 int tmpValue = Integer.parseInt(tmp, 16);
                 String resultHex;
 
                 resultHex = String.format("%02X ", tmpValue + add);
-                if (String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length!=1){
+                if (String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length != 1) {
                     resultHex += String.format("%02X ", 0);
                 }
 
                 msg.append(resultHex);
-                if (charCodes.getValue().equals(bundle.getString("UTF16"))&&String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length==1){
+                if (charCodes.getValue().equals(bundle.getString("UTF16")) && String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length == 1) {
                     msg.append(String.format("%02X ", 0));
                 }
             }
-
 
 
             msg.append(bytesToHex(textBytes, textBytes.length));
@@ -450,7 +546,7 @@ public class HEXMessageController {
             msg.append("10 03");
 
             return msg.toString();
-        } catch (Exception e){
+        } catch (Exception e) {
             LogService.getLogService().warningLog(e.getMessage());
         }
         return null;
@@ -458,7 +554,7 @@ public class HEXMessageController {
 
     private String makeEffectTime(String effectTimeValue) {
         if (effectTimeValue.contains(bundle.getString("sec"))) {
-            return String.format("%02x ", Integer.parseInt(effectTimeValue.replaceAll("[^0-9]", ""))*2);
+            return String.format("%02x ", Integer.parseInt(effectTimeValue.replaceAll("[^0-9]", "")) * 2);
         }
         if (effectTimeValue.equals(bundle.getString("2min"))) {
             return "5A ";
@@ -484,7 +580,7 @@ public class HEXMessageController {
 
     }
 
-    private String makeEffect(String effect, String direction){
+    private String makeEffect(String effect, String direction) {
         if (effect.equals(bundle.getString("noEffect")) || effect.equals(bundle.getString("notUsed"))) {
             return "00 ";
         } else if (effect.equals(bundle.getString("staticEffect"))) {
@@ -519,7 +615,7 @@ public class HEXMessageController {
             } else {
                 return "0F ";
             }
-        } else if(effect.equals(bundle.getString("blind"))){
+        } else if (effect.equals(bundle.getString("blind"))) {
             if (direction.equals(bundle.getString("left"))) {
                 return "12 ";
             } else if (direction.equals(bundle.getString("right"))) {
@@ -529,8 +625,7 @@ public class HEXMessageController {
             } else {
                 return "15 ";
             }
-        }
-        else if (effect.equals(bundle.getString("curtainEffect"))) {
+        } else if (effect.equals(bundle.getString("curtainEffect"))) {
             if (direction.equals(bundle.getString("horizontalOutward"))) {
                 return "18 ";
             } else if (direction.equals(bundle.getString("horizontalInward"))) {
@@ -574,7 +669,7 @@ public class HEXMessageController {
             } else {
                 return "30 ";
             }
-        } else if (effect.equals(bundle.getString("textFlash"))){
+        } else if (effect.equals(bundle.getString("textFlash"))) {
             if (direction.equals(bundle.getString("red"))) {
                 return "31 ";
             } else if (direction.equals(bundle.getString("green"))) {
@@ -588,8 +683,7 @@ public class HEXMessageController {
             } else {
                 return "37 ";
             }
-        }
-        else if (effect.equals(bundle.getString("3DEffect"))) {
+        } else if (effect.equals(bundle.getString("3DEffect"))) {
             return "36 ";
         } else {
             return "7A ";
@@ -597,28 +691,76 @@ public class HEXMessageController {
 
     }
 
-    private void selectEffect(String effect, ChoiceBox<String> directionBox) {
-        //배경.색상깜빡이기 작동되나 확인.
-        switch (effect) {
-            case "정지효과" ->
-                    directionBox.setItems(FXCollections.observableArrayList("방향없음", "밝아지기", "어두워지기", "수평 반사", "수직 반사"));
-            case "전체효과" -> directionBox.setItems(FXCollections.observableArrayList("무작위효과"));
-            case "이동하기", "닦아내기", "블라인드" ->
-                    directionBox.setItems(FXCollections.observableArrayList("왼쪽", "오른쪽", "위쪽", "아래"));
-            case "커튼효과" -> directionBox.setItems(FXCollections.observableArrayList("수평밖으로", "수평안으로", "수직밖으로", "수직안으로"));
-            case "확대효과" -> directionBox.setItems(FXCollections.observableArrayList("왼쪽", "오른쪽", "위쪽", "아래쪽", "오른쪽아래로"));
-            case "회전효과" -> directionBox.setItems(FXCollections.observableArrayList("시계반대1", "시계방향1", "시계반대2", "시계방향2"));
-            case "배경깜박이기" ->
-                    directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "노란색", "흰색", "전체(순차적)"));
-            case "색상깜박이기" ->
-                    directionBox.setItems(FXCollections.observableArrayList("빨간색", "초록색", "노란색", "흰색", "전체(순차적)", "전체(동시에)"));
-            case "3D 효과" -> directionBox.setItems(FXCollections.observableArrayList("왼쪽"));
-            case "효과없음" -> directionBox.setDisable(true);
+    private void selectEffect(String effect, ChoiceBox<ComboItem> directionBox) {
+        directionBox.setDisable(false);
+        if (effect.equals(bundle.getString("staticEffect"))) {
+            directionBox.setItems(FXCollections.observableArrayList(
+                    new ComboItem("noDirection", bundle.getString("noDirection")),
+                    new ComboItem("brighten", bundle.getString("brighten")),
+                    new ComboItem("darken", bundle.getString("darken")),
+                    new ComboItem("horizontalReflection", bundle.getString("horizontalReflection")),
+                    new ComboItem("verticalReflection", bundle.getString("verticalReflection"))
+            ));
+        } else if (effect.equals(bundle.getString("randomEffect"))) {
+            directionBox.setItems(FXCollections.observableArrayList(
+                    new ComboItem("randomEffect", bundle.getString("randomEffect"))
+            ));
+        } else if (effect.equals(bundle.getString("move")) || effect.equals(bundle.getString("wipe")) || effect.equals(bundle.getString("blind"))) {
+            directionBox.setItems(FXCollections.observableArrayList(
+                    new ComboItem("left", bundle.getString("left")),
+                    new ComboItem("right", bundle.getString("right")),
+                    new ComboItem("up", bundle.getString("up")),
+                    new ComboItem("down", bundle.getString("down"))
+            ));
+        } else if (effect.equals(bundle.getString("curtainEffect"))) {
+            directionBox.setItems(FXCollections.observableArrayList(
+                    new ComboItem("horizontalOutward", bundle.getString("horizontalOutward")),
+                    new ComboItem("horizontalInward", bundle.getString("horizontalInward")),
+                    new ComboItem("verticalOutward", bundle.getString("verticalOutward")),
+                    new ComboItem("verticalInward", bundle.getString("verticalInward"))
+            ));
+        } else if (effect.equals(bundle.getString("zoomEffect"))) {
+            directionBox.setItems(FXCollections.observableArrayList(
+                    new ComboItem("left", bundle.getString("left")),
+                    new ComboItem("right", bundle.getString("right")),
+                    new ComboItem("up", bundle.getString("up")),
+                    new ComboItem("down", bundle.getString("down")),
+                    new ComboItem("bottomRight", bundle.getString("bottomRight"))
+            ));
+        } else if (effect.equals(bundle.getString("rotateEffect"))) {
+            directionBox.setItems(FXCollections.observableArrayList(
+                    new ComboItem("counterclockwise1", bundle.getString("counterclockwise1")),
+                    new ComboItem("clockwise1", bundle.getString("clockwise1")),
+                    new ComboItem("counterclockwise2", bundle.getString("counterclockwise2")),
+                    new ComboItem("clockwise2", bundle.getString("clockwise2"))
+            ));
+        } else if (effect.equals(bundle.getString("backgroundFlash"))) {
+            directionBox.setItems(FXCollections.observableArrayList(
+                    new ComboItem("red", bundle.getString("red")),
+                    new ComboItem("green", bundle.getString("green")),
+                    new ComboItem("yellow", bundle.getString("yellow")),
+                    new ComboItem("white", bundle.getString("white")),
+                    new ComboItem("allSequential", bundle.getString("allSequential"))
+            ));
+        } else if (effect.equals(bundle.getString("textFlash"))) {
+            directionBox.setItems(FXCollections.observableArrayList(
+                    new ComboItem("red", bundle.getString("red")),
+                    new ComboItem("green", bundle.getString("green")),
+                    new ComboItem("yellow", bundle.getString("yellow")),
+                    new ComboItem("white", bundle.getString("white")),
+                    new ComboItem("allSequential", bundle.getString("allSequential")),
+                    new ComboItem("allSimultaneous", bundle.getString("allSimultaneous"))
+            ));
+        } else if (effect.equals(bundle.getString("3DEffect"))) {
+            directionBox.setItems(FXCollections.observableArrayList(
+                    new ComboItem("left", bundle.getString("left"))
+            ));
+        } else if (effect.equals(bundle.getString("noEffect"))) {
+            directionBox.setDisable(true);
         }
-
-
         directionBox.getSelectionModel().selectFirst();
     }
+
 
     private void updateInDirections(String effect) {
         selectEffect(effect, inDirection);
@@ -630,24 +772,24 @@ public class HEXMessageController {
 
     public void reset() {
         String msgNum = getMsgNum();
-        configService.setProperty("displayControl"+msgNum, "On");
-        configService.setProperty("displayMethod"+msgNum, "Clear");
-        configService.setProperty("charCode"+msgNum, "한글 조합형");
-        configService.setProperty("fontSize"+msgNum, "16(Standard)");
-        configService.setProperty("fontGroup"+msgNum, "폰트그룹1");
-        configService.setProperty("effectIn"+msgNum, "정지효과");
-        configService.setProperty("effectInDirection"+msgNum, "방향없음");
-        configService.setProperty("effectOut"+msgNum, "사용안함");
-        configService.setProperty("effectOutDirection"+msgNum, "사용안함");
-        configService.setProperty("effectSpeed"+msgNum, "5");
-        configService.setProperty("effectTime"+msgNum, "2초");
-        configService.setProperty("xStart"+msgNum, "0");
-        configService.setProperty("xEnd"+msgNum, "0");
-        configService.setProperty("yStart"+msgNum, "0");
-        configService.setProperty("yEnd"+msgNum, "0");
-        configService.setProperty("bgImg"+msgNum, "사용안함");
-        configService.setProperty("textColor"+msgNum, "1");
-        configService.setProperty("bgColor"+msgNum, "0");
+        configService.setProperty("displayControl" + msgNum, "On");
+        configService.setProperty("displayMethod" + msgNum, "Clear");
+        configService.setProperty("charCode" + msgNum, "한글 조합형");
+        configService.setProperty("fontSize" + msgNum, "16(Standard)");
+        configService.setProperty("fontGroup" + msgNum, "폰트그룹1");
+        configService.setProperty("effectIn" + msgNum, "정지효과");
+        configService.setProperty("effectInDirection" + msgNum, "방향없음");
+        configService.setProperty("effectOut" + msgNum, "사용안함");
+        configService.setProperty("effectOutDirection" + msgNum, "사용안함");
+        configService.setProperty("effectSpeed" + msgNum, "5");
+        configService.setProperty("effectTime" + msgNum, "2초");
+        configService.setProperty("xStart" + msgNum, "0");
+        configService.setProperty("xEnd" + msgNum, "0");
+        configService.setProperty("yStart" + msgNum, "0");
+        configService.setProperty("yEnd" + msgNum, "0");
+        configService.setProperty("bgImg" + msgNum, "사용안함");
+        configService.setProperty("textColor" + msgNum, "1");
+        configService.setProperty("bgColor" + msgNum, "0");
 
         doMsgSettings();
     }
@@ -657,57 +799,60 @@ public class HEXMessageController {
 
     private void saveConfig() {
         displayControl.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("displayControl"+getMsgNum(), newValue));
+                (observable, oldValue, newValue) -> configService.setProperty("displayControl" + getMsgNum(), newValue));
 
         displayMethod.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("displayMethod"+getMsgNum(), newValue)
+                (observable, oldValue, newValue) -> configService.setProperty("displayMethod" + getMsgNum(), newValue)
         );
         charCodes.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("charCodes"+getMsgNum(), newValue)
+                (observable, oldValue, newValue) -> configService.setProperty("charCodes" + getMsgNum(), newValue.key())
         );
         fontSize.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("fontSize"+getMsgNum(), newValue)
+                (observable, oldValue, newValue) -> configService.setProperty("fontSize" + getMsgNum(), newValue)
         );
         fontGroup.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("fontGroup"+getMsgNum(), newValue)
+                (observable, oldValue, newValue) -> configService.setProperty("fontGroup" + getMsgNum(), newValue.key())
         );
         effectIn.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("effectIn"+getMsgNum(), newValue)
+                (observable, oldValue, newValue) -> configService.setProperty("effectIn" + getMsgNum(), newValue.key())
+        );
+        inDirection.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> configService.setProperty("inDirection" + getMsgNum(), newValue.key())
         );
         effectOut.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("effectOut"+getMsgNum(), newValue)
+                (observable, oldValue, newValue) -> configService.setProperty("effectOut" + getMsgNum(), newValue.key())
         );
         outDirection.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("outDirection"+getMsgNum(), newValue)
+                (observable, oldValue, newValue) -> configService.setProperty("outDirection" + getMsgNum(), newValue.key())
         );
         effectSpeed.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("effectSpeed"+getMsgNum(), newValue)
+                (observable, oldValue, newValue) -> configService.setProperty("effectSpeed" + getMsgNum(), newValue.key())
         );
         effectTime.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("effectTime"+getMsgNum(), newValue)
+                (observable, oldValue, newValue) -> configService.setProperty("effectTime" + getMsgNum(), newValue.key())
         );
         xStart.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                    if (newValue!=null) configService.setProperty("xStart"+getMsgNum(), newValue);
+                    if (newValue != null) configService.setProperty("xStart" + getMsgNum(), newValue);
                 }
         );
         yStart.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                    if (newValue!=null) configService.setProperty("yStart"+getMsgNum(), newValue);
+                    if (newValue != null) configService.setProperty("yStart" + getMsgNum(), newValue);
                 }
         );
         xEnd.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                    if (newValue!=null) configService.setProperty("xEnd"+getMsgNum(), newValue);
+                    if (newValue != null) configService.setProperty("xEnd" + getMsgNum(), newValue);
                 }
         );
         yEnd.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                    if (newValue!=null) configService.setProperty("yEnd"+getMsgNum(), newValue);
+                    if (newValue != null) configService.setProperty("yEnd" + getMsgNum(), newValue);
                 }
         );
         bgImg.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("bgImg"+getMsgNum(), newValue)
+                (observable, oldValue, newValue) -> configService.setProperty("bgImg" + getMsgNum(), newValue.key())
         );
     }
 
@@ -715,19 +860,19 @@ public class HEXMessageController {
     private String makeASCMsg() {
         StringBuilder sendMsg = new StringBuilder("![00");
         if (realTimeMsg.isSelected()) sendMsg.append("0/P00");
-        else sendMsg.append("1/P").append(String.format("%02d", Integer.parseInt(pageMsgCnt.getValue())-1));
+        else sendMsg.append("1/P").append(String.format("%02d", Integer.parseInt(pageMsgCnt.getValue()) - 1));
 
         sendMsg.append(String.format("%02d", Integer.parseInt(((RadioButton) sectionGroup.getSelectedToggle()).getText())));
 
         sendMsg.append("/D").append(setDText(displayControl.getValue(), displayMethod.getValue()));
-        sendMsg.append("/F").append(setFText(charCodes.getValue(), fontSize.getValue()));
-        sendMsg.append("/E").append(setEText(effectIn.getValue(), inDirection.getValue()));
-        sendMsg.append(setEText(effectOut.getValue(), outDirection.getValue()));
-        sendMsg.append("/S").append(setSText(effectSpeed.getValue(), effectTime.getValue()));
+        sendMsg.append("/F").append(setFText(charCodes.getValue().displayText(), fontSize.getValue()));
+        sendMsg.append("/E").append(setEText(effectIn.getValue().displayText(), inDirection.getValue().displayText()));
+        sendMsg.append(setEText(effectOut.getValue().displayText(), outDirection.getValue().displayText()));
+        sendMsg.append("/S").append(setSText(effectSpeed.getValue().displayText(), effectTime.getValue().displayText()));
         sendMsg.append("/X").append(String.format("%02d", parseInt(xStart.getValue()) / 4)).append(String.format("%02d", parseInt(xEnd.getValue()) / 4));
         sendMsg.append("/Y").append(String.format("%02d", parseInt(yStart.getValue()) / 4)).append(String.format("%02d", parseInt(yEnd.getValue()) / 4));
-        sendMsg.append("/B").append(bgImg.getValue().equals("사용안함") ? "000" : String.format("%03d", parseInt(bgImg.getValue())));
-        sendMsg.append("/T").append(Integer.parseInt(fontGroup.getValue().replaceAll("[^\\d]", "")) - 1);
+        sendMsg.append("/B").append(bgImg.getValue().displayText().equals(bundle.getString("notUsed")) ? "000" : String.format("%03d", parseInt(bgImg.getValue().displayText())));
+        sendMsg.append("/T").append(Integer.parseInt(fontGroup.getValue().displayText().replaceAll("\\D", "")) - 1);
 
         int length = msgPreview.getText().length();
         String text = msgPreview.getText();
@@ -797,7 +942,7 @@ public class HEXMessageController {
         } else if (value2.equals("14")) {
             result += "01";
         } else {
-            result += String.format("%02d", (Integer.parseInt(value2) -4) / 4);
+            result += String.format("%02d", (Integer.parseInt(value2) - 4) / 4);
         }
 
         return result;
@@ -946,5 +1091,13 @@ public class HEXMessageController {
             }
         }
         return result;
+    }
+
+    private boolean isNumeric(String str) {
+        if (str == null || str.isEmpty()) return false;
+        for (char c : str.toCharArray()) {
+            if (!Character.isDigit(c)) return false;
+        }
+        return true;
     }
 }

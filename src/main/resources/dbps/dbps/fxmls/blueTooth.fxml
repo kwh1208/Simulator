@@ -7,7 +7,7 @@
 <AnchorPane fx:id="bluetoothAP" prefHeight="274.0" prefWidth="451.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BlueToothController">
    <children>
       <Pane layoutX="25.0" layoutY="15.0" prefHeight="246.0" prefWidth="404.0" style="-fx-border-color: black">
-         <Label layoutX="7.0" layoutY="33.0" text="통신포트설정" />
+         <Label layoutX="7.0" layoutY="33.0" text="%comPort" />
          <ComboBox fx:id="serialPortComboBox" layoutX="240.0" layoutY="36.0" prefWidth="120.0" >
             <items>
                <FXCollections fx:factory="observableArrayList">

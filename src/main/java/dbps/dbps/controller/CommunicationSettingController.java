@@ -672,10 +672,10 @@ public class CommunicationSettingController {
     public void keepOpen() {
         KEEP_OPEN = !KEEP_OPEN;
         if (KEEP_OPEN) {
-            logService.updateInfoLog("포트를 닫지 않고 유지하도록 설정되었습니다.");
+            logService.updateInfoLog(bundle.getString("portAlwaysOpen"));
             openSerialPort();
         } else {
-            logService.updateInfoLog("포트를 필요할 때만 사용할 수 있도록 설정되었습니다.");
+            logService.updateInfoLog(bundle.getString("portOpenClose"));
             closeSerialPort();
         }
     }

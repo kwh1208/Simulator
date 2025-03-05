@@ -1,6 +1,7 @@
 package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.LogService;
+import dbps.dbps.service.ResourceManager;
 import javafx.concurrent.Task;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,10 +22,12 @@ import static dbps.dbps.Constants.*;
 public class ServerTCPManager {
     Socket socket;
     LogService logService;
+    ResourceBundle bundle;
     static ServerTCPManager instance;
 
     private ServerTCPManager() {
         logService = LogService.getLogService();
+        bundle = ResourceManager.getInstance().getBundle();
     }
 
     public static ServerTCPManager getInstance() {
@@ -40,13 +44,13 @@ public class ServerTCPManager {
             InetAddress bindAddr = InetAddress.getByName(host);
             try (ServerSocket serverSocket = new ServerSocket(port, 50, bindAddr)) {
                 serverSocket.setSoTimeout(RESPONSE_LATENCY * 1000);
-                logService.updateInfoLog("서버 소켓이 " + host + ":" + port + " 에서 열렸습니다. 클라이언트 연결 대기 중...");
+                logService.updateInfoLog(bundle.getString("serverSocketOpen") + host + ":" + port + bundle.getString("clientWaiting"));
                 socket = serverSocket.accept();
             }
         } catch (SocketTimeoutException e) {
-            logService.errorLog("클라이언트 연결 시간 초과");
+            logService.errorLog(bundle.getString("clientConnectionTimeout"));
         } catch (IOException e) {
-            logService.errorLog("서버 소켓 오류: " + e.getMessage());
+            logService.errorLog(bundle.getString("serverSocketError") + e.getMessage());
         }
     }
 
@@ -57,7 +61,7 @@ public class ServerTCPManager {
         try {
             socket.close();
             socket = null;
-            logService.updateInfoLog("서버 소켓이 닫혔습니다.");
+            logService.updateInfoLog(bundle.getString("serverSocketClosed"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -74,7 +78,7 @@ public class ServerTCPManager {
         try {
             socket.close();
             socket = null;
-            logService.updateInfoLog("서버 소켓이 닫혔습니다.");
+            logService.updateInfoLog(bundle.getString("serverSocketClosed"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -91,7 +95,7 @@ public class ServerTCPManager {
                     InputStream input = socket.getInputStream();
                     OutputStream output = socket.getOutputStream();
 
-                    logService.updateInfoLog("전송 메세지 : " + bytesToHex(msg, msg.length));
+                    logService.updateInfoLog(bundle.getString("sendMsg") + bytesToHex(msg, msg.length));
 
                     output.write(msg);
                     output.flush();
@@ -122,10 +126,10 @@ public class ServerTCPManager {
                             result = matcher.group(0); // 전체 매칭된 부분을 추출
                         }
                     }
-                    logService.updateInfoLog("받은 메세지: " + result);
+                    logService.updateInfoLog(bundle.getString("receivedMsg") + result);
                     return result;
                 } catch (IOException e) {
-                    logService.errorLog("전송에 실패했습니다.");
+                    logService.errorLog(bundle.getString("connectionFail"));
                     e.printStackTrace();
                     throw e;
                 } finally {
@@ -171,7 +175,7 @@ public class ServerTCPManager {
         }
     }
 
-    public String sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
+    public void sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
         if (socket == null) {
             connect(hostIP, serverTCPPort);
         }
@@ -200,7 +204,6 @@ public class ServerTCPManager {
                     throw new IOException("서버 응답이 비어 있습니다.");
                 }
 
-                return result;
             } else {
                 throw new IOException("서버에서 응답이 없습니다.");
             }
@@ -228,7 +231,7 @@ public class ServerTCPManager {
                     else if (ascUTF16) {
                         sendData = msg.getBytes(StandardCharsets.UTF_16BE);
                     }
-                    logService.updateInfoLog("전송 데이터 :" + msg);
+                    logService.updateInfoLog(bundle.getString("sendMsg") + msg);
                     output.write(sendData);
                     output.flush();
 
@@ -255,12 +258,11 @@ public class ServerTCPManager {
                     if (result.contains("init_rtcTimeDate Start")) {
                         result = result.substring(result.indexOf("!["), result.indexOf("!]") + 2);
                     }
-                    logService.updateInfoLog("받은 메세지: " + result);
+                    logService.updateInfoLog(bundle.getString("receivedMsg") + result);
                     return result;
                 } catch (IOException e) {
                     e.getMessage();
-
-                    logService.errorLog(msg + " 전송에 실패했습니다.");
+                    logService.errorLog(bundle.getString("connectionFail"));
                     throw e;
                 } finally {
                     disconnect();

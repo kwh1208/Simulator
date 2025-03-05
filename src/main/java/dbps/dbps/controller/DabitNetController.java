@@ -5,6 +5,7 @@ import dbps.dbps.Simulator;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.DabitNetService;
 import dbps.dbps.service.LogService;
+import dbps.dbps.service.ResourceManager;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.UDPManager;
 import javafx.application.Platform;
@@ -63,7 +64,7 @@ public class DabitNetController {
     public Label versionInfo;
     public Label DBCommunication;
     public Label AP;
-
+    ResourceBundle bundle;
     public AnchorPane dabitNetAP;
     public TextField keepAlive;
     public RadioButton DHCPRadio;
@@ -104,6 +105,7 @@ public class DabitNetController {
         configService = ConfigService.getInstance();
         logService = LogService.getLogService();
         dabitNetService = DabitNetService.getInstance();
+        bundle= ResourceManager.getInstance().getBundle();
         if (!serialPortComboBox.getItems().isEmpty()) {
             serialPortComboBox.setValue(serialPortComboBox.getItems().get(0));
         }
@@ -215,7 +217,7 @@ public class DabitNetController {
     @FXML
     public void search() throws ExecutionException, InterruptedException, IOException {
         if (isSearching) {
-            logService.errorLog("검색이 이미 진행 중입니다.");
+            logService.errorLog(bundle.getString("searchAlready"));
             return;
         }
         isSearching = true;
@@ -228,7 +230,7 @@ public class DabitNetController {
             db300InfoList.clear();
         });
 
-        logService.updateInfoLog("검색을 시작합니다.");
+        logService.updateInfoLog(bundle.getString("searchStart"));
 
         Task<Void> backgroundTask = new Task<>() {
             @Override
@@ -260,7 +262,7 @@ public class DabitNetController {
                     Platform.runLater(() -> {
                         searchBtn.setDisable(false);
                         dbNetProgressBar.setVisible(false);
-                        logService.updateInfoLog("검색이 완료되었습니다.");
+                        logService.updateInfoLog(bundle.getString("searchCompleted"));
                         isSearching = false;
                         udpManager.disconnectNoLog();
                         if (dbList.getSelectionModel().getSelectedItem()==null){
@@ -273,7 +275,7 @@ public class DabitNetController {
                     Platform.runLater(() -> {
                         searchBtn.setDisable(false);
                         dbNetProgressBar.setVisible(false);
-                        logService.updateInfoLog("검색이 실패했습니다.");
+                        logService.updateInfoLog(bundle.getString("searchFailed"));
                         isSearching = false;
                         udpManager.disconnectNoLog();
                     });
@@ -328,7 +330,7 @@ public class DabitNetController {
             set.setOnSucceeded(event->{
                 Platform.runLater(() -> {
                     dbNetProgressBar.setVisible(false);
-                    logService.updateInfoLog("설정이 완료되었습니다.");
+                    logService.updateInfoLog(bundle.getString("setupCompleted"));
                     udpManager.disconnectNoLog();
                 });
             });
@@ -347,7 +349,7 @@ public class DabitNetController {
             set.setOnSucceeded(event->{
                 Platform.runLater(() -> {
                     dbNetProgressBar.setVisible(false);
-                    logService.updateInfoLog("설정이 완료되었습니다.");
+                    logService.updateInfoLog(bundle.getString("setupCompleted"));
                 });
             });
 
@@ -569,7 +571,7 @@ public class DabitNetController {
                 try {
                     get300Info(read.getValue());
                     dbNetProgressBar.setVisible(false);
-                    logService.updateInfoLog("정보 읽기를 완료했습니다.");
+                    logService.updateInfoLog(bundle.getString("infoReadCompleted"));
                     udpManager.disconnectNoLog();
                 } catch (IOException e) {
                     dbNetProgressBar.setVisible(false);
@@ -594,7 +596,7 @@ public class DabitNetController {
                 try {
                     get300Info(read.getValue());
                     dbNetProgressBar.setVisible(false);
-                    logService.updateInfoLog("정보 읽기를 완료했습니다.");
+                    logService.updateInfoLog(bundle.getString("infoReadCompleted"));
                     udpManager.disconnectNoLog();
                 } catch (IOException e) {
                     dbNetProgressBar.setVisible(false);
@@ -642,7 +644,7 @@ public class DabitNetController {
         Platform.runLater(()->{
             dbNetProgressBar.setVisible(false);
         });
-        logService.updateInfoLog("정보 쓰기를 완료했습니다.");
+        logService.updateInfoLog(bundle.getString("infoWriteCompleted"));
     }
 
 

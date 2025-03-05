@@ -3,7 +3,6 @@ package dbps.dbps.controller;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.FontNameService;
 import dbps.dbps.service.HexMsgTransceiver;
-import dbps.dbps.service.LogService;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -49,7 +48,6 @@ public class FontNameController {
 
     AsciiMsgTransceiver asciiMsgTransceiver;
     HexMsgTransceiver hexMsgTransceiver;
-    LogService logService;
     FontNameService fontNameService;
 
     @FXML
@@ -67,7 +65,6 @@ public class FontNameController {
         fontNameService.setGroup2font3(group2font3);
 
         readRadio.setSelected(true);
-        logService = LogService.getLogService();
 
         sendRadio.setSelected(false);
 

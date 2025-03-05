@@ -1,9 +1,6 @@
 package dbps.dbps.controller;
 
-import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.FirmwareService;
-import dbps.dbps.service.HexMsgTransceiver;
-import dbps.dbps.service.LogService;
+import dbps.dbps.service.*;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.ServerTCPManager;
 import dbps.dbps.service.connectManager.TCPManager;
@@ -25,6 +22,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.*;
@@ -48,6 +46,7 @@ public class FirmwareUpgradeController {
 
     @FXML
     public Label firmwareProgressLabel;
+    ResourceBundle bundle;
 
     AsciiMsgTransceiver asciiMsgTransceiver;
     HexMsgTransceiver hexMsgTransceiver;
@@ -74,6 +73,7 @@ public class FirmwareUpgradeController {
         udpManager = UDPManager.getUDPManager();
         serverTCPManager = ServerTCPManager.getInstance();
         serialPortmanager = SerialPortManager.getManager();
+        bundle = ResourceManager.getInstance().getBundle();
 
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
@@ -297,7 +297,7 @@ public class FirmwareUpgradeController {
 
     public void send() {
         if (firmwareInformation.getText().isEmpty()) {
-            logService.warningLog("컨트롤러의 펌웨어 버전을 먼저 읽어주세요.");
+            logService.warningLog(bundle.getString("readFirmwareFirst"));
             return;
         }
 
@@ -311,7 +311,7 @@ public class FirmwareUpgradeController {
         if (index1 != -1 && index1 + "DIBD".length() + 4 <= firmwareInformationText.length()) {
             result1 = firmwareInformationText.substring(index1 + "DIBD".length(), index1 + "DIBD".length() + 4);
         } else {
-            logService.errorLog("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
+            logService.errorLog(bundle.getString("errorDIBD"));
             return;
         }
         if (index2 == -1) {
@@ -320,17 +320,17 @@ public class FirmwareUpgradeController {
         } else if (index2 != -1 && index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
             result2 = firmwareFileInformationText.substring(index2 + "DIBD".length(), index2 + "DIBD".length() + 4);
         } else {
-            logService.errorLog("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
+            logService.errorLog(bundle.getString("errorDIBD"));
             return;
         }
 
         if (!result1.equals(result2)) {
-            logService.errorLog("업로드할 수 없습니다. 컨트롤러의 펌웨어와 동일한 펌웨어를 업로드해주세요.");
+            logService.errorLog(bundle.getString("errorFirmwareMismatch"));
             return;
         }
 
         if (!Files.exists(Path.of(uploadFirmwarePath))) {
-            logService.errorLog("파일을 찾을 수 없습니다.");
+            logService.errorLog(bundle.getString("errorFileNotFound"));
             return;
         }
 

@@ -1,6 +1,7 @@
 package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.LogService;
+import dbps.dbps.service.ResourceManager;
 import javafx.concurrent.Task;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +34,7 @@ public class TCPManager {
 
     private static TCPManager tcpManager = null;
     private static LogService logService;
+    ResourceBundle bundle;
 
     private TCPManager() {
         logService = LogService.getLogService();
@@ -59,7 +63,7 @@ public class TCPManager {
                         sendBytes = msg.getBytes(StandardCharsets.UTF_16BE);
                     }
                     input.skip(input.available());
-                    logService.updateInfoLog("전송 메세지: "+msg);
+                    logService.updateInfoLog(bundle.getString("sendMsg") + msg);
                     output.write(sendBytes);
                     output.flush();
 
@@ -87,12 +91,11 @@ public class TCPManager {
                     if (result.contains("init_rtcTimeDate Start")){
                         result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
                     }
-                    logService.updateInfoLog("받은 메세지: " + result);
+                    logService.updateInfoLog(bundle.getString("receivedMsg") + result);
                     return result;
                 } catch (IOException e) {
                     e.getMessage();
-
-                    logService.errorLog(msg + " 전송에 실패했습니다.");
+                    logService.errorLog(bundle.getString("connectionFail"));
                     throw e;
                 }finally {
                     socket.close();
@@ -103,7 +106,10 @@ public class TCPManager {
 
     //접속하기
     public void connect(String IP, int PORT) {
-        logService.updateInfoLog("TCP 서버에 연결합니다. IP: " + IP + ", PORT: " + PORT);
+        if (bundle==null){
+            bundle = ResourceManager.getInstance().getBundle();
+        }
+        logService.updateInfoLog(MessageFormat.format(bundle.getString("tcpServerConnect"), IP, PORT));
         this.IP = IP;
         this.PORT = PORT;
         try {
@@ -112,7 +118,7 @@ public class TCPManager {
             socket.connect(new InetSocketAddress(IP, PORT), RESPONSE_LATENCY*1000);
             socket.setSoTimeout(RESPONSE_LATENCY * 1000);
         } catch (IOException e) {
-            logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
+            logService.errorLog(MessageFormat.format(bundle.getString("tcpServerConnectionFailed"), IP, PORT));
         }
     }
 
@@ -125,7 +131,7 @@ public class TCPManager {
             socket.connect(new InetSocketAddress(IP, PORT), RESPONSE_LATENCY*1000);
             socket.setSoTimeout(RESPONSE_LATENCY * 1000);
         } catch (IOException e) {
-            logService.errorLog("TCP 서버 연결에 실패했습니다. IP: " + IP + ", PORT: " + PORT);
+            logService.errorLog(MessageFormat.format(bundle.getString("tcpServerConnectionFailed"), IP, PORT));
         }
     }
 
@@ -144,7 +150,7 @@ public class TCPManager {
             e.getStackTrace();
         }
 
-        logService.updateInfoLog("TCP 서버 연결이 종료되었습니다. IP: " + IP + ", PORT: " + PORT);
+        logService.updateInfoLog(MessageFormat.format(bundle.getString("tcpServerConnectionClosed"), IP, PORT));
     }
 
     public void disconnectNoLog(){
@@ -173,7 +179,7 @@ public class TCPManager {
                     OutputStream output = socket.getOutputStream();
                     input.skip(input.available());
 
-                    logService.updateInfoLog("전송 메세지 :"+bytesToHex(msg, msg.length));
+                    logService.updateInfoLog(bundle.getString("sendMsg")+bytesToHex(msg, msg.length));
                     output.write(msg);
                     output.flush();
 
@@ -203,10 +209,10 @@ public class TCPManager {
                             result = matcher.group(0); // 전체 매칭된 부분을 추출
                         }
                     }
-                    logService.updateInfoLog("받은 메세지: " + result);
+                    logService.updateInfoLog(bundle.getString("receivedMsg")+ result);
                     return result;
                 } catch (IOException e) {
-                    logService.errorLog("전송에 실패했습니다.");
+                    logService.errorLog(bundle.getString("connectionFail"));
                     e.printStackTrace();
                     throw e;
                 }finally {

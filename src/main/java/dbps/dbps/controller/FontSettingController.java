@@ -625,7 +625,7 @@ public class FontSettingController {
 
         //첫번째 그룹
         if (chkFont(fontGroup1fontPath1.getText(), "영어")) {
-            logService.warningLog("폰트그룹 1 영어 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+            logService.warningLog(bundle.getString("fontGroup1")+bundle.getString("fontMismatch"));
             return;
         }
         fontGroup1Path[0] = fontGroup1fontPath1.getText();
@@ -633,7 +633,7 @@ public class FontSettingController {
         fontType[0] = "영어";
 
         if (chkFont(fontGroup1fontPath2.getText(), fontGroup1fontSelected2.getValue())) {
-            logService.warningLog("폰트그룹 1 " + fontGroup1fontSelected2.getValue() + " 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+            logService.warningLog(bundle.getString("fontGroup1")+bundle.getString("fontMismatch"));
             return;
         }
         if (!fontGroup1fontSelected2.getValue().equals(bundle.getString("notUsed"))) {
@@ -643,7 +643,7 @@ public class FontSettingController {
         }
 
         if (chkFont(fontGroup1fontPath3.getText(), fontGroup1fontSelected3.getValue())) {
-            logService.warningLog("폰트그룹 1 " + fontGroup1fontSelected3.getValue() + " 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+            logService.warningLog(bundle.getString("fontGroup1")+bundle.getString("fontMismatch"));
             return;
         }
         if (!fontGroup1fontSelected3.getValue().equals(bundle.getString("notUsed"))) {
@@ -657,7 +657,7 @@ public class FontSettingController {
             fontGroup2Path = new String[3];
 
             if (chkFont(fontGroup2fontPath1.getText(), fontGroup2fontSelected1.getValue())) {
-                logService.warningLog("폰트그룹 2 " + fontGroup2fontSelected1.getValue() + " 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                logService.warningLog(bundle.getString("fontGroup2")+bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup2fontSelected1.getValue().equals(bundle.getString("notUsed"))) {
@@ -667,7 +667,7 @@ public class FontSettingController {
             }
 
             if (chkFont(fontGroup2fontPath2.getText(), fontGroup2fontSelected2.getValue())) {
-                logService.warningLog("폰트그룹 2 " + fontGroup2fontSelected2.getValue() + " 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                logService.warningLog(bundle.getString("fontGroup2")+bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup2fontSelected2.getValue().equals(bundle.getString("notUsed"))) {
@@ -677,7 +677,7 @@ public class FontSettingController {
             }
 
             if (chkFont(fontGroup2fontPath3.getText(), fontGroup2fontSelected3.getValue())) {
-                logService.warningLog("폰트그룹 2 " + fontGroup2fontSelected3.getValue() + " 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                logService.warningLog(bundle.getString("fontGroup2")+bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup2fontSelected3.getValue().equals(bundle.getString("notUsed"))) {
@@ -692,7 +692,7 @@ public class FontSettingController {
             fontGroup3Path = new String[3];
 
             if (chkFont(fontGroup3fontPath1.getText(), fontGroup3fontSelected1.getValue())) {
-                logService.warningLog("폰트그룹 3 " + fontGroup3fontSelected1.getValue() + " 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                logService.warningLog(bundle.getString("fontGroup3")+bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup3fontSelected1.getValue().equals(bundle.getString("notUsed"))) {
@@ -702,7 +702,7 @@ public class FontSettingController {
             }
 
             if (chkFont(fontGroup3fontPath2.getText(), fontGroup3fontSelected2.getValue())) {
-                logService.warningLog("폰트그룹 3 " + fontGroup3fontSelected2.getValue() + " 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                logService.warningLog(bundle.getString("fontGroup3")+bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup3fontSelected2.getValue().equals(bundle.getString("notUsed"))) {
@@ -712,7 +712,7 @@ public class FontSettingController {
             }
 
             if (chkFont(fontGroup3fontPath3.getText(), fontGroup3fontSelected3.getValue())) {
-                logService.warningLog("폰트그룹 3 " + fontGroup3fontSelected3.getValue() + " 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                logService.warningLog(bundle.getString("fontGroup3")+bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup3fontSelected3.getValue().equals(bundle.getString("notUsed"))) {
@@ -727,7 +727,7 @@ public class FontSettingController {
             fontGroup4Path = new String[3];
 
             if (chkFont(fontGroup4fontPath1.getText(), fontGroup4fontSelected1.getValue())) {
-                logService.warningLog("폰트그룹 4 " + fontGroup4fontSelected1.getValue() + " 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                logService.warningLog(bundle.getString("fontGroup4")+bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup4fontSelected1.getValue().equals(bundle.getString("notUsed"))) {
@@ -737,7 +737,7 @@ public class FontSettingController {
             }
 
             if (chkFont(fontGroup4fontPath2.getText(), fontGroup4fontSelected2.getValue())) {
-                logService.warningLog("폰트그룹 4 " + fontGroup4fontSelected2.getValue() + " 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                logService.warningLog(bundle.getString("fontGroup4")+bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup4fontSelected2.getValue().equals(bundle.getString("notUsed"))) {
@@ -747,7 +747,7 @@ public class FontSettingController {
             }
 
             if (chkFont(fontGroup4fontPath3.getText(), fontGroup4fontSelected3.getValue())) {
-                logService.warningLog("폰트그룹 4 " + fontGroup4fontSelected3.getValue() + " 폰트의 폰트종류와 폰트파일이 맞지 않습니다.");
+                logService.warningLog(bundle.getString("fontGroup4")+bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup4fontSelected3.getValue().equals(bundle.getString("notUsed"))) {

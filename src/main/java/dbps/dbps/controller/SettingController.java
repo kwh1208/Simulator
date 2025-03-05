@@ -17,8 +17,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 import static dbps.dbps.Constants.*;
 
@@ -86,15 +84,6 @@ public class SettingController {
 
             modalStage.showAndWait();
         } catch (IOException e) {
-            e.printStackTrace();
-            // 사용자에게 오류 메시지 표시 (선택 사항)
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw); // 스택 트레이스를 StringWriter에 출력
-            String stackTrace = sw.toString(); // 전체 스택 트레이스를 문자열로 변환
-
-            logService.errorLog("오류 발생:\n" + stackTrace);
-            showAlert("오류", e.getMessage());
         }
     }
 

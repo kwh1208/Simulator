@@ -6,6 +6,7 @@ import com.fazecast.jSerialComm.SerialPortTimeoutException;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.DabitNetService;
 import dbps.dbps.service.LogService;
+import dbps.dbps.service.ResourceManager;
 import javafx.concurrent.Task;
 
 import java.io.*;
@@ -14,6 +15,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
@@ -26,6 +28,7 @@ public class SerialPortManager {
     private static SerialPortManager instance = null;
     private final LogService logService;
     ConfigService configService;
+    ResourceBundle bundle;
     private static final Object portLock = new Object();
     private final BlockingQueue<Task<?>> taskQueue = new LinkedBlockingQueue<>();
     DabitNetService dabitNetService;
@@ -34,6 +37,7 @@ public class SerialPortManager {
         logService = LogService.getLogService();
         configService = ConfigService.getInstance();
         dabitNetService = DabitNetService.getInstance();
+        bundle = ResourceManager.getInstance().getBundle();
     }
 
     public static SerialPortManager getManager() {
@@ -53,12 +57,12 @@ public class SerialPortManager {
             port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000, RESPONSE_LATENCY * 1000);
 
             if (!port.openPort()) {
-                logService.errorLog(portName + " 포트를 열 수 없습니다.");
+                logService.errorLog(portName + bundle.getString("portCantOpen"));
                 return;
             }
 
             serialPortMap.put(portName, port);
-            logService.updateInfoLog(portName + " 포트가 열렸습니다.");
+            logService.updateInfoLog(portName + bundle.getString("portOpen"));
         }
     }
 
@@ -74,7 +78,7 @@ public class SerialPortManager {
 
 
             if (!port.openPort()) {
-                throw new IllegalStateException(portName + " 포트를 열 수 없습니다.");
+                throw new IllegalStateException(portName + bundle.getString("portCantOpen"));
             }
 
             serialPortMap.put(portName, port);
@@ -90,7 +94,7 @@ public class SerialPortManager {
             SerialPort port = serialPortMap.get(portName);
             if (port != null && port.isOpen()) {
                 port.closePort();
-                logService.updateInfoLog(portName + " 포트가 닫혔습니다.");
+                logService.updateInfoLog(portName + bundle.getString("portClose"));
             }
             serialPortMap.remove(portName);
         }
@@ -129,12 +133,12 @@ public class SerialPortManager {
                     }
 
                     if(!isBT &&port.getPortDescription().toLowerCase().contains("bluetooth")){
-                        logService.warningLog("해당 포트는 블루투스 포트입니다.");
+                        logService.warningLog(bundle.getString("bluetoothPort"));
                         closePort(portName);
                         throw new RuntimeException();
                     }
 
-                    logService.updateInfoLog("전송 메세지: " + msg);
+                    logService.updateInfoLog(bundle.getString("sendMsg") + msg);
 
                     try (InputStream inputStream = new BufferedInputStream(port.getInputStream());
                          OutputStream outputStream = new BufferedOutputStream(port.getOutputStream())) {
@@ -165,14 +169,14 @@ public class SerialPortManager {
                             result = result.substring(indexTX);
                             result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
                         }
-                        logService.updateInfoLog("받은 메세지: " + result);
+                        logService.updateInfoLog(bundle.getString("receivedMsg") + result);
                         return result;
                     } catch (SerialPortTimeoutException | SerialPortIOException e) {
-                        logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
+                        logService.errorLog(bundle.getString("connectionFail"));
                         throw e;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        logService.errorLog("기타 예외 발생: " + e.getMessage());
+                        logService.errorLog(bundle.getString("Error") + e.getMessage());
                         throw e;
                     } finally {
                         closePort(portName); // 작업 후 포트 닫기
@@ -182,20 +186,6 @@ public class SerialPortManager {
         };
         taskQueue.add(task);
         return task;
-    }
-
-
-    private int extractNumberAfterTXBeforeByte(String input) {
-        // "TX" 뒤의 "byte" 앞 숫자를 찾는 정규식
-        Pattern pattern = Pattern.compile("TX.*?(\\d+)\\s*byte");
-        Matcher matcher = pattern.matcher(input);
-
-        if (matcher.find()) {
-            String number = matcher.group(1); // 첫 번째 그룹에서 숫자 추출
-            return Integer.parseInt(number); // 숫자를 Integer로 변환하여 반환
-        }
-
-        return -1;
     }
 
     private int extractNumberAfterTXBeforeByteHex(String input) {
@@ -225,7 +215,7 @@ public class SerialPortManager {
                         throw new IllegalStateException("포트를 열 수 없습니다: " + portName);
                     }
 
-                    logService.updateInfoLog("전송 메세지: " + bytesToHex(msg, msg.length));
+                    logService.updateInfoLog(bundle.getString("sendMsg") + bytesToHex(msg, msg.length));
 
                     try (OutputStream outputStream = new BufferedOutputStream(port.getOutputStream());
                          InputStream inputStream = new BufferedInputStream(port.getInputStream())) {
@@ -248,7 +238,7 @@ public class SerialPortManager {
                                     break; // 스트림 종료
                                 }
                             } catch (SocketTimeoutException e) {
-                                logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
+                                logService.errorLog(bundle.getString("connectionFail"));
                                 throw e;
                             }
                         }
@@ -263,13 +253,13 @@ public class SerialPortManager {
                                 throw new IllegalArgumentException("유효하지 않은 offset 또는 tmp 값입니다.");
                             }
                         }
-                        logService.updateInfoLog("받은 메세지: " + result);
+                        logService.updateInfoLog(bundle.getString("receivedMsg") + result);
                         return result;
                     } catch (SerialPortTimeoutException | SerialPortIOException e) {
-                        logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
+                        logService.errorLog(bundle.getString("connectionFail"));
                         throw e;
                     } catch (Exception e) {
-                        logService.errorLog("기타 예외 발생: " + e.getMessage());
+                        logService.errorLog(bundle.getString("Error")+ e.getMessage());
                         throw e;
                     } finally {
                         closePort(portName); // 작업 후 포트 닫기
@@ -383,11 +373,11 @@ public class SerialPortManager {
                         InputStream inputStream = port.getInputStream();
 
                         if (!port.isOpen()) {
-                            logService.warningLog("포트를 열 수 없습니다.");
+                            logService.warningLog(bundle.getString("portCantOpen"));
                             continue;
                         }
 
-                        logService.updateInfoLog("현재 속도 " + baudRate + "에서 응답을 대기 중...");
+                        logService.updateInfoLog(bundle.getString("responseSpeed1") + baudRate + bundle.getString("responseSpeed2"));
                         String msg = "10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
                         if (isRS) {
                             msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
@@ -411,17 +401,17 @@ public class SerialPortManager {
 
                         String response = bytesToHex(buffer, totalBytesRead);
                         if (!response.isBlank()) {
-                            logService.updateInfoLog(OPEN_PORT_NAME + "의 적정 통신 속도는 " + baudRate + "입니다.");
+                            logService.updateInfoLog(OPEN_PORT_NAME + bundle.getString("rightSpeed1") + baudRate + bundle.getString("rightSpeed2"));
                             return baudRate;
                         }
 
                         closePortNoLog(OPEN_PORT_NAME);
                     } catch (IOException e) {
-                        logService.warningLog("응답 대기 시간 초과");
+                        logService.warningLog(bundle.getString("timeout"));
                     }
                 }
 
-                logService.warningLog("적정 통신 속도를 찾지 못했습니다.");
+                logService.warningLog(bundle.getString("noSpeed"));
                 return 0;
             }
         };
@@ -482,7 +472,7 @@ public class SerialPortManager {
                     return new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
                 }
                 catch (Exception e) {
-                    logService.errorLog("통신에 실패했습니다. 연결상태를 확인해주세요.");
+                    logService.errorLog(bundle.getString("connectionFail"));
                     e.printStackTrace();
                     throw e;
                 } finally {

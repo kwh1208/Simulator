@@ -78,7 +78,7 @@ public class BasicSettingController {
                 alert.showAndWait();
             } else if (newValue.equals("English")) {
                 programLanguage.setValue("English");
-                configService.setProperty("PROGRAM_LANGUAGE", "english");
+                configService.setProperty("PROGRAM_LANGUAGE", "English");
                 Alert alert = new Alert(AlertType.INFORMATION);
                 alert.setTitle("alert");
                 alert.setHeaderText(null);

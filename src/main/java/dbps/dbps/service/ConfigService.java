@@ -142,20 +142,20 @@ public class ConfigService {
                 for (int j =0; j < 3; j++) {//섹션 개수
                     defaultProperties.setProperty("displayControl"+i+j, "On");
                     defaultProperties.setProperty("displayMethod"+i+j, "Clear");
-                    defaultProperties.setProperty("charCode"+i+j, "한글 조합형");
+                    defaultProperties.setProperty("charCode"+i+j, "CombinationType");
                     defaultProperties.setProperty("fontSize"+i+j, "16(Standard)");
-                    defaultProperties.setProperty("fontGroup"+i+j, "폰트그룹1");
-                    defaultProperties.setProperty("effectIn"+i+j, "정지효과");
-                    defaultProperties.setProperty("effectInDirection"+i+j, "방향없음");
-                    defaultProperties.setProperty("effectOut"+i+j, "사용안함");
-                    defaultProperties.setProperty("effectOutDirection"+i+j, "사용안함");
+                    defaultProperties.setProperty("fontGroup"+i+j, "fontGroup1");
+                    defaultProperties.setProperty("effectIn"+i+j, "staticEffect");
+                    defaultProperties.setProperty("effectInDirection"+i+j, "noDirection");
+                    defaultProperties.setProperty("effectOut"+i+j, "notUsed");
+                    defaultProperties.setProperty("effectOutDirection"+i+j, "notUsed");
                     defaultProperties.setProperty("effectSpeed"+i+j, "5");
-                    defaultProperties.setProperty("effectTime"+i+j, "2초");
+                    defaultProperties.setProperty("effectTime"+i+j, "2sec");
                     defaultProperties.setProperty("xStart"+i+j, "0");
                     defaultProperties.setProperty("xEnd"+i+j, "0");
                     defaultProperties.setProperty("yStart"+i+j, "0");
                     defaultProperties.setProperty("yEnd"+i+j, "0");
-                    defaultProperties.setProperty("bgImg"+i+j, "사용안함");
+                    defaultProperties.setProperty("bgImg"+i+j, "notUsed");
                     defaultProperties.setProperty("textColor"+i+j, "1");
                     defaultProperties.setProperty("bgColor"+i+j, "0");
                     if (i==0) {

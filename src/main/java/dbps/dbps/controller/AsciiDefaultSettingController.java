@@ -196,7 +196,7 @@ public class AsciiDefaultSettingController {
             yEnd.getItems().add(String.valueOf(4*i));
         }
 
-        bgImg.getItems().add("사용안함");
+        bgImg.getItems().add(bundle.getString("notUsed"));
         for (int i = 1; i <= 30; i++) {
             bgImg.getItems().add(String.valueOf(i));
         }
