@@ -17,6 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
 
@@ -29,6 +30,7 @@ public class SettingController {
     AsciiMsgTransceiver asciiMsgTransceiver;
     LogService logService;
     SettingService settingService;
+    ResourceBundle bundle;
 
     @FXML
     public ChoiceBox<String> displayBright;
@@ -38,10 +40,15 @@ public class SettingController {
 
     @FXML
     public void initialize(){
+        bundle=ResourceManager.getInstance().getBundle();
         settingService = SettingService.getInstance(commonProgressIndicator);
         logService = LogService.getLogService();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+        pageMsgType.getItems().add(bundle.getString("individualEffectDisplay"));
+        pageMsgType.getItems().add(bundle.getString("simultaneousEffectDisplay"));
+
+        pageMsgType.setValue(bundle.getString("simultaneousEffectDisplay"));
     }
 
     @FXML
@@ -103,7 +110,7 @@ public class SettingController {
                 msg = "!["+convertRS485AddrASCii()+"050";
             }
             switch (displayBright.getValue()){
-                case "100%(기본)": msg += "99"; break;
+                case "100%": msg += "99"; break;
                 case "75%": msg += "75"; break;
                 case "50%": msg += "50"; break;
                 case "25%": msg += "25"; break;
@@ -119,7 +126,7 @@ public class SettingController {
                 msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 02 44 ";
             }
             switch (displayBright.getValue()){
-                case "100%(기본)": msg += "64"; break;
+                case "100%": msg += "64"; break;
                 case "75%": msg += "48"; break;
                 case "50%": msg += "32"; break;
                 case "25%": msg += "19"; break;
@@ -136,7 +143,7 @@ public class SettingController {
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"062";
             }
-            if (pageMsgType.getValue().contains("동시")){
+            if (pageMsgType.getValue().equals(bundle.getString("simultaneousEffectDisplay"))){
                 msg += "N";
             } else{
                 msg += "Y";

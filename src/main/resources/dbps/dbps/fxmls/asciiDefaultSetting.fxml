@@ -76,13 +76,9 @@
            </items>
        </ChoiceBox>
        <Label layoutX="321.0" layoutY="110.0" text="%fontGroup" />
-       <ChoiceBox fx:id="fontGroup" layoutX="405.0" layoutY="106.0" prefHeight="21.0" prefWidth="139.0" value="폰트그룹1">
+       <ChoiceBox fx:id="fontGroup" layoutX="405.0" layoutY="106.0" prefHeight="21.0" prefWidth="139.0">
            <items>
                <FXCollections fx:factory="observableArrayList">
-                   <String fx:value="폰트그룹1" />
-                   <String fx:value="폰트그룹2" />
-                   <String fx:value="폰트그룹3" />
-                   <String fx:value="폰트그룹4" />
                </FXCollections>
            </items>
        </ChoiceBox>
@@ -131,26 +127,6 @@
        <ChoiceBox fx:id="effectSpeed" layoutX="177.0" layoutY="226.0" prefHeight="21.0" prefWidth="139.0" value="15">
            <items>
                <FXCollections fx:factory="observableArrayList">
-                   <String fx:value="5(fast)" />
-                   <String fx:value="10" />
-                   <String fx:value="15" />
-                   <String fx:value="20" />
-                   <String fx:value="25" />
-                   <String fx:value="30" />
-                   <String fx:value="35" />
-                   <String fx:value="40" />
-                   <String fx:value="45" />
-                   <String fx:value="50" />
-                   <String fx:value="55" />
-                   <String fx:value="60" />
-                   <String fx:value="65" />
-                   <String fx:value="70" />
-                   <String fx:value="75" />
-                   <String fx:value="80" />
-                   <String fx:value="85" />
-                   <String fx:value="90" />
-                   <String fx:value="95" />
-                   <String fx:value="99(slow)" />
                </FXCollections>
            </items>
        </ChoiceBox>
@@ -159,26 +135,6 @@
        <ComboBox fx:id="effectTime" layoutX="177.0" layoutY="256.0" prefHeight="21.0" prefWidth="139.0">
            <items>
                <FXCollections fx:factory="observableArrayList">
-                   <String fx:value="0초" />
-                   <String fx:value="1초" />
-                   <String fx:value="2초" />
-                   <String fx:value="4초" />
-                   <String fx:value="5초" />
-                   <String fx:value="7.5초" />
-                   <String fx:value="10초" />
-                   <String fx:value="15초" />
-                   <String fx:value="20초" />
-                   <String fx:value="30초" />
-                   <String fx:value="40초" />
-                   <String fx:value="2분" />
-                   <String fx:value="3분" />
-                   <String fx:value="5분" />
-                   <String fx:value="10분" />
-                   <String fx:value="30분" />
-                   <String fx:value="1시간" />
-                   <String fx:value="3시간" />
-                   <String fx:value="5시간" />
-                   <String fx:value="9시간" />
                </FXCollections>
            </items>
        </ComboBox>

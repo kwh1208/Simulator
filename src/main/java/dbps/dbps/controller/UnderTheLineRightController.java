@@ -20,6 +20,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
 import static dbps.dbps.service.SettingService.commonProgressIndicator;
@@ -34,16 +35,20 @@ public class UnderTheLineRightController {
     AsciiMsgTransceiver asciiMsgTransceiver;
 
     HexMsgTransceiver hexMsgTransceiver;
+    ResourceBundle bundle;
 
 
     @FXML
     public void initialize(){
-        BGImgSelection.getItems().add("사용안함");
+        bundle=ResourceManager.getInstance().getBundle();
+        BGImgSelection.getItems().add(bundle.getString("notUsed"));
         for (int i = 1; i < 256; i++) {
             BGImgSelection.getItems().add(String.valueOf(i));
         }
 
         BGImgSelection.setVisibleRowCount(10);
+        BGImgSelection.setValue(bundle.getString("notUsed"));
+
 
         rightVbox.getStylesheets().add(getClass().getResource("/dbps/dbps/css/underTheLineRight.css").toExternalForm());
 
@@ -57,7 +62,7 @@ public class UnderTheLineRightController {
         String value = BGImgSelection.getValue();
         if (IS_ASCII){
             String result = "";
-            if (value.equals("사용안함"))
+            if (value.equals(bundle.getString("notUsed")))
             {
                 result = "000";
             }
@@ -72,7 +77,7 @@ public class UnderTheLineRightController {
         }
         else {
             int result = 0;
-            if (!value.equals("사용안함")){
+            if (!value.equals(bundle.getString("notUsed"))){
                 result = Integer.parseInt(value);
             }
             String msg = "10 02 00 00 02 4F "+String.format("%02X ", result)+"10 03";

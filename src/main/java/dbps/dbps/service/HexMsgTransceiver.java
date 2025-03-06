@@ -9,8 +9,10 @@ import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 
 import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
@@ -30,6 +32,7 @@ public class HexMsgTransceiver {
     private final SizeOfDisplayBoardService sizeOfDisplayBoardService;
     private final HexMsgService hexMsgService;
     private final FontNameService fontNameService;
+    private final ResourceBundle bundle;
 
 
     private HexMsgTransceiver() {
@@ -42,6 +45,7 @@ public class HexMsgTransceiver {
         sizeOfDisplayBoardService = SizeOfDisplayBoardService.getInstance();
         hexMsgService=HexMsgService.getInstance();
         fontNameService = FontNameService.getInstance();
+        bundle=ResourceManager.getInstance().getBundle();
     }
 
     public static HexMsgTransceiver getInstance() {
@@ -184,7 +188,7 @@ public class HexMsgTransceiver {
             return;
         }
         if (receiveMsg.equals("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03 ")){
-            logService.updateInfoLog("성공적으로 연결되었습니다.");
+            logService.updateInfoLog(bundle.getString("connectionSuccess"));
         }
         String[] splitMsg = receiveMsg.split(" ");
         if (splitMsg[5].equals("94")) {
@@ -194,7 +198,7 @@ public class HexMsgTransceiver {
             //특수 메세지
             for (int i = 6; i < 16; i++) {
                 if (splitMsg[i].equals("3" + i)) {
-                    logService.errorLog("커맨드가 없습니다.");
+                    logService.errorLog(bundle.getString("unknownStatusCode"));
                     return;
                 }
             }
@@ -271,10 +275,10 @@ public class HexMsgTransceiver {
 
     private void handleScreenSizeSetting(String[] splitMsg, byte[] msg) {
         if (!splitMsg[7].equals(String.format("%02X", msg[7])) || !splitMsg[8].equals(String.format("%02X", msg[8]))) {
-            logService.warningLog("화면 크기 설정에 실패했습니다.");
-            logService.warningLog(Integer.parseInt(splitMsg[7]) + "단, " + Integer.parseInt(splitMsg[8]) + "열까지만 가능합니다.");
+            logService.warningLog(bundle.getString("displaySizeSettingFailed"));
+            logService.warningLog(MessageFormat.format(bundle.getString("displaySizeLimit"), Integer.parseInt(splitMsg[7]), Integer.parseInt(splitMsg[8])));
         } else {
-            logService.updateInfoLog("화면 크기 설정에 성공했습니다.");
+            logService.updateInfoLog(bundle.getString("displaySizeSettingSuccess"));
         }
         sizeOfDisplayBoardService.setDisplaySize(Integer.parseInt(splitMsg[7], 16), Integer.parseInt(splitMsg[8], 16));
     }
@@ -286,26 +290,43 @@ public class HexMsgTransceiver {
             logService.updateInfoLog(receiveMsg);
             StringBuilder time = new StringBuilder();
 
-            if (dayMap.isEmpty()){
-                dayMap.put("01", "월"); // 일요일
-                dayMap.put("02", "화"); // 월요일
-                dayMap.put("03", "수"); // 화요일
-                dayMap.put("04", "목"); // 수요일
-                dayMap.put("05", "금"); // 목요일
-                dayMap.put("06", "토"); // 금요일
-                dayMap.put("00", "일"); // 토요일
-            }
-            String dayPart = splitMsg[9];
+            // 현재 언어 설정 확인
+            boolean isKorean = bundle.getLocale().getLanguage().equals("ko");
 
+            // 요일 변환을 위한 매핑
+            if (dayMap.isEmpty()) {
+                if (isKorean) {
+                    dayMap.put("01", "월"); // 일요일
+                    dayMap.put("02", "화"); // 월요일
+                    dayMap.put("03", "수"); // 화요일
+                    dayMap.put("04", "목"); // 수요일
+                    dayMap.put("05", "금"); // 목요일
+                    dayMap.put("06", "토"); // 금요일
+                    dayMap.put("00", "일"); // 토요일
+                } else {
+                    dayMap.put("01", "Mon"); // Sunday
+                    dayMap.put("02", "Tue"); // Monday
+                    dayMap.put("03", "Wed"); // Tuesday
+                    dayMap.put("04", "Thu"); // Wednesday
+                    dayMap.put("05", "Fri"); // Thursday
+                    dayMap.put("06", "Sat"); // Friday
+                    dayMap.put("00", "Sun"); // Saturday
+                }
+            }
+
+            String dayPart = splitMsg[9];
             String dayOfWeek = dayMap.getOrDefault(dayPart, "?");
 
-            time.append(splitMsg[6]).append("-").append(splitMsg[7]).append("-").append(splitMsg[8]).append(" (").append(dayOfWeek).append(") ")
+            // 날짜 및 시간 포맷 구성
+            time.append(splitMsg[6]).append("-").append(splitMsg[7]).append("-").append(splitMsg[8])
+                    .append(" (").append(dayOfWeek).append(") ")
                     .append(splitMsg[10]).append(":").append(splitMsg[11]).append(":").append(splitMsg[12]);
+
             try {
                 underTheLineLeftService.setTime(time.toString());
-                logService.updateInfoLog("컨트롤러 시간은 " + time + "입니다.");
+                logService.updateInfoLog(MessageFormat.format(bundle.getString("controllerTimeInfo"), time));
             } catch (Exception e) {
-                logService.warningLog("시간 변환에 실패했습니다: " + e.getMessage());
+                logService.warningLog(bundle.getString("controllerTimeReadFailed"));
             }
         } else {
             chkErrorCode(receiveMsg, splitMsg);
@@ -323,10 +344,10 @@ public class HexMsgTransceiver {
 
     private void chkErrorCode(String receiveMsg, String[] splitMsg) {
         switch (splitMsg[6]) {
-            case "10" -> logService.errorLog("커맨드가 없습니다. " + receiveMsg);
-            case "20" -> logService.warningLog("No Function(커맨드 비활성) " + receiveMsg);
-            case "40" -> logService.updateInfoLog("데이터가 허용 범위를 벗어났습니다. " + receiveMsg);
-            case "80" -> logService.updateInfoLog("알 수 없는 에러가 발생했습니다." + receiveMsg);
+            case "10" -> logService.errorLog(bundle.getString("noCommand") + receiveMsg);
+            case "20" -> logService.warningLog(bundle.getString("noFunction") + receiveMsg);
+            case "40" -> logService.updateInfoLog(bundle.getString("dataOutOfRange")+ receiveMsg);
+            case "80" -> logService.updateInfoLog(bundle.getString("unknownError") + receiveMsg);
         }
     }
 }

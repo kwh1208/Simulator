@@ -4,6 +4,7 @@ package dbps.dbps.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.ResourceManager;
 import dbps.dbps.service.UnderTheLineLeftService;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.TCPManager;
@@ -14,10 +15,7 @@ import javafx.scene.layout.Pane;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import static dbps.dbps.Constants.*;
@@ -30,6 +28,7 @@ public class UnderTheLineLeftController {
     SerialPortManager serialPortManager;
     TCPManager tcpManager;
     UnderTheLineLeftService underTheLineLeftService;
+    ResourceBundle bundle;
 
 
     @FXML
@@ -41,25 +40,35 @@ public class UnderTheLineLeftController {
     @FXML
     public void initialize() {
         leftPane.getStylesheets().add(getClass().getResource("/dbps/dbps/css/underTheLineLeft.css").toExternalForm());
+        bundle= ResourceManager.getInstance().getBundle();
 
+        boolean isKorean = bundle.getLocale().getLanguage().equals("ko");
+
+        // 날짜 및 시간 포맷 설정 (언어에 따라 변경)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd (E) HH:mm:ss",
+                isKorean ? Locale.KOREAN : Locale.ENGLISH);
+
+        // 현재 시간 가져오기 및 포맷 적용
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd (E) HH:mm:ss", Locale.ENGLISH);
         String formattedTime = now.format(formatter);
 
-        // 요일을 한글로 변환하는 매핑
-        Map<String, String> dayMap = new HashMap<>();
-        dayMap.put("Mon", "월");
-        dayMap.put("Tue", "화");
-        dayMap.put("Wed", "수");
-        dayMap.put("Thu", "목");
-        dayMap.put("Fri", "금");
-        dayMap.put("Sat", "토");
-        dayMap.put("Sun", "일");
+        // 한글 요일 변환 (영어에서 한국어로 변환할 필요가 있을 경우)
+        if (isKorean) {
+            Map<String, String> dayMap = new HashMap<>();
+            dayMap.put("Mon", "월");
+            dayMap.put("Tue", "화");
+            dayMap.put("Wed", "수");
+            dayMap.put("Thu", "목");
+            dayMap.put("Fri", "금");
+            dayMap.put("Sat", "토");
+            dayMap.put("Sun", "일");
 
-        // 영어 요일을 한글로 변환
-        for (Map.Entry<String, String> entry : dayMap.entrySet()) {
-            formattedTime = formattedTime.replace(entry.getKey(), entry.getValue());
+            for (Map.Entry<String, String> entry : dayMap.entrySet()) {
+                formattedTime = formattedTime.replace(entry.getKey(), entry.getValue());
+            }
         }
+
+        // 화면에 표시
         timeBoard.setText(formattedTime);
         serialPortManager = SerialPortManager.getManager();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
@@ -67,7 +76,6 @@ public class UnderTheLineLeftController {
         tcpManager = TCPManager.getManager();
         underTheLineLeftService = UnderTheLineLeftService.getInstance();
         underTheLineLeftService.setTimeBoard(timeBoard);
-
     }
 
     @FXML

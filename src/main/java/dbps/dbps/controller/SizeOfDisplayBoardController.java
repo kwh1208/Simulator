@@ -9,6 +9,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.Pane;
 
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -26,6 +27,7 @@ public class SizeOfDisplayBoardController {
     ConfigService configService;
 
     HexMsgService hexMsgService;
+    ResourceBundle bundle;
 
 
     @FXML
@@ -48,6 +50,7 @@ public class SizeOfDisplayBoardController {
     public void initialize(){
         configService = ConfigService.getInstance();
         hexMsgService = HexMsgService.getInstance();
+        bundle = ResourceManager.getInstance().getBundle();
 
         dpPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/sizeOfDisplayBoard.css").toExternalForm());
 
@@ -76,6 +79,15 @@ public class SizeOfDisplayBoardController {
         sizeOfDisplayBoardService.setHowToArray(howToArray);
         sizeOfDisplayBoardService.setSpinnerForRow(spinnerForRow);
         sizeOfDisplayBoardService.setSpinnerForColumn(spinnerForColumn);
+
+        howToArray.getItems().addAll(
+                bundle.getString("horizontalDefault"),
+                bundle.getString("singleVertical"),
+                bundle.getString("doubleVertical"),
+                bundle.getString("horizontalTwin"),
+                bundle.getString("singleVerticalTwin"),
+                bundle.getString("doubleHorizontal"));
+        howToArray.setValue(bundle.getString("horizontalDefault"));
     }
 
     private void setInitialValues() {
@@ -106,26 +118,22 @@ public class SizeOfDisplayBoardController {
         }
         msg+=String.format("%02d",spinnerForRow.getValue());
         msg+=String.format("%02d",spinnerForColumn.getValue());
-        switch (howToArray.getValue()){
-            case "가로형(default)":
-                msg+="0";
-                break;
-            case "1줄 세로형":
-                msg+="1";
-                break;
-            case "2줄 세로형":
-                msg+="2";
-                break;
-            case "가로형 양면":
-                msg+="3";
-                break;
-            case "1줄 세로형 양면":
-                msg+="4";
-                break;
-            case "2줄 가로형":
-                msg+="5";
-                break;
+        if (howToArray.getValue().equals(bundle.getString("horizontalDefault"))) {
+            msg += "0";
+        } else if (howToArray.getValue().equals(bundle.getString("singleVertical"))) {
+            msg += "1";
+        } else if (howToArray.getValue().equals(bundle.getString("doubleVertical"))) {
+            msg += "2";
+        } else if (howToArray.getValue().equals(bundle.getString("horizontalTwin"))) {
+            msg += "3";
+        } else if (howToArray.getValue().equals(bundle.getString("singleVerticalTwin"))) {
+            msg += "4";
+        } else if (howToArray.getValue().equals(bundle.getString("doubleHorizontal"))) {
+            msg += "5";
         }
+
+
+
         msg+="!]";
         String finalMsg = msg;
         CompletableFuture.supplyAsync(() -> asciiMsgTransceiver.sendMessages(finalMsg, false, commonProgressIndicator)).join();
@@ -152,25 +160,18 @@ public class SizeOfDisplayBoardController {
         }
         msg += " "+Integer.toHexString(spinnerForRow.getValue());
         msg += " "+Integer.toHexString(spinnerForColumn.getValue());
-        switch (howToArray.getValue()){
-            case "가로형(default)":
-                msg+=" 00";
-                break;
-            case "1줄 세로형":
-                msg+=" 01";
-                break;
-            case "2줄 세로형":
-                msg+=" 02";
-                break;
-            case "가로형 양면":
-                msg+=" 03";
-                break;
-            case "1줄 세로형 양면":
-                msg+=" 04";
-                break;
-            case "2줄 가로형":
-                msg+=" 05";
-                break;
+        if (howToArray.getValue().equals(bundle.getString("horizontalDefault"))) {
+            msg += " 00";
+        } else if (howToArray.getValue().equals(bundle.getString("singleVertical"))) {
+            msg += " 01";
+        } else if (howToArray.getValue().equals(bundle.getString("doubleVertical"))) {
+            msg += " 02";
+        } else if (howToArray.getValue().equals(bundle.getString("horizontalTwin"))) {
+            msg += " 03";
+        } else if (howToArray.getValue().equals(bundle.getString("singleVerticalTwin"))) {
+            msg += " 04";
+        } else if (howToArray.getValue().equals(bundle.getString("doubleHorizontal"))) {
+            msg += " 05";
         }
         msg+=" 00 F1 10 03";
 

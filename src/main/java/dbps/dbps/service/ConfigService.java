@@ -14,10 +14,8 @@ public class ConfigService {
     public final Properties displayProperties;
     public static String configFilePath;
     private final String displayFilePath;
-    LogService logService;
 
     private ConfigService() {
-        logService = LogService.getLogService();
         configFilePath = System.getProperty("user.dir") + File.separator + "config" + File.separator + "config.properties";
         displayFilePath = System.getProperty("user.dir") + File.separator + "config" + File.separator + "display.properties";
         properties = new Properties();
@@ -118,18 +116,26 @@ public class ConfigService {
             defaultProperties.setProperty("dbNetSubnet", "255.255.255.0");
 
             defaultProperties.setProperty("fontGroup1FontPath1", "ENG 08x16-DABIT(표준).fnt");
-            defaultProperties.setProperty("fontGroup1FontType1", "영어");
+            defaultProperties.setProperty("fontGroup1FontType1", "english");
             defaultProperties.setProperty("fontGroup1FontPath2", "KOR 16x16-DABIT(표준).fnt");
-            defaultProperties.setProperty("fontGroup1FontType2", "한글조합형");
+            defaultProperties.setProperty("fontGroup1FontType2", "CombinationType");
             defaultProperties.setProperty("fontGroup1FontPath3", "USER 16x16-Special(표준).fnt");
-            defaultProperties.setProperty("fontGroup1FontType3", "사용자폰트");
+            defaultProperties.setProperty("fontGroup1FontType3", "userFont");
 
             defaultProperties.setProperty("fontGroup2FontPath1", "ENG 08x16-DABIT(표준).fnt");
-            defaultProperties.setProperty("fontGroup2FontType1", "영어");
+            defaultProperties.setProperty("fontGroup2FontType1", "english");
             defaultProperties.setProperty("fontGroup2FontPath2", "KOR 16x16-DABIT(표준).fnt");
-            defaultProperties.setProperty("fontGroup2FontType2", "한글조합형");
+            defaultProperties.setProperty("fontGroup2FontType2", "CombinationType");
             defaultProperties.setProperty("fontGroup2FontPath3", "USER 16x16-Special(표준).fnt");
-            defaultProperties.setProperty("fontGroup2FontType3", "사용자폰트");
+            defaultProperties.setProperty("fontGroup2FontType3", "userFont");
+
+            defaultProperties.setProperty("fontGroup3FontType1", "english");
+            defaultProperties.setProperty("fontGroup3FontType2", "CombinationType");
+            defaultProperties.setProperty("fontGroup3FontType3", "userFont");
+
+            defaultProperties.setProperty("fontGroup4FontType1", "english");
+            defaultProperties.setProperty("fontGroup4FontType2", "CombinationType");
+            defaultProperties.setProperty("fontGroup4FontType3", "userFont");
 
             defaultProperties.setProperty("fontGroup1selected", "True");
             defaultProperties.setProperty("fontGroup2selected", "True");

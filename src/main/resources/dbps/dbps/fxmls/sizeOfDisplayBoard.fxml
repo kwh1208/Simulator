@@ -31,16 +31,9 @@
     </ChoiceBox>
 
     <Label layoutX="20.0" layoutY="116.0" text="%moduleArrangementMethod"/>
-    <ChoiceBox fx:id="howToArray" layoutX="175.0" layoutY="113.0" prefHeight="25.0" prefWidth="145.0"
-               value="가로형(default)">
+    <ChoiceBox fx:id="howToArray" layoutX="175.0" layoutY="113.0" prefHeight="25.0" prefWidth="145.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="가로형(default)"/>
-                <String fx:value="1줄 세로형"/>
-                <String fx:value="2줄 세로형"/>
-                <String fx:value="가로형 양면"/>
-                <String fx:value="1줄 세로형 양면"/>
-                <String fx:value="2줄 가로형"/>
             </FXCollections>
         </items>
     </ChoiceBox>

@@ -143,6 +143,14 @@ public class AsciiDefaultSettingController {
                 bundle.getString("3DEffect")
         );
 
+        fontGroup.getItems().addAll(
+                bundle.getString("fontGroup1"),
+                bundle.getString("fontGroup2"),
+                bundle.getString("fontGroup3"),
+                bundle.getString("fontGroup4")
+        );
+        fontGroup.setValue(bundle.getString("fontGroup1"));
+
         inDirection.getItems().addAll(
                 bundle.getString("noDirection"),
                 bundle.getString("brighten"),
@@ -158,6 +166,14 @@ public class AsciiDefaultSettingController {
                 bundle.getString("horizontalReflection"),
                 bundle.getString("verticalReflection")
         );
+
+        effectSpeed.getItems().clear();
+        effectSpeed.getItems().add(5 +bundle.getString("fast"));
+        for (int i = 10; i < 96; i+=5) {
+            effectSpeed.getItems().add(String.valueOf(i));
+        }
+        effectSpeed.getItems().add(99+bundle.getString("slow"));
+        effectSpeed.setValue(5 +bundle.getString("fast"));
 
         effectTime.getItems().addAll(
                 0+bundle.getString("sec"),
@@ -397,7 +413,7 @@ public class AsciiDefaultSettingController {
         text += "/S" + setSText(effectSpeed.getValue(), effectTime.getValue());
         text += "/X" + String.format("%02d", parseInt(xStart.getValue()) / 4) + String.format("%02d", parseInt(xEnd.getValue()) / 4);
         text += "/Y" + String.format("%02d", parseInt(yStart.getValue()) / 4) + String.format("%02d", parseInt(yEnd.getValue()) / 4);
-        text += "/B" + (bgImg.getValue().equals("사용안함") ? "000" : String.format("%03d", parseInt(bgImg.getValue())));
+        text += "/B" + (bgImg.getValue().equals(bundle.getString("notUsed")) ? "000" : String.format("%03d", parseInt(bgImg.getValue())));
         text += "/C" + setColorText(fontColor.getValue());
         text += "/G" + setColorText(fontBgColor.getValue());
         text += "/T" + (Integer.parseInt(fontGroup.getValue().replaceAll("[^\\d]", ""))-1) + "!]";

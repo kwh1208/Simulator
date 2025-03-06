@@ -4,9 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.Pane;
+
+import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
 import static dbps.dbps.service.SettingService.commonProgressIndicator;
@@ -16,6 +19,7 @@ public class MessageSettingController {
     HexMsgTransceiver hexMsgTransceiver = HexMsgTransceiver.getInstance();
     
     AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+    ResourceBundle bundle;
 
 
     @FXML
@@ -30,18 +34,21 @@ public class MessageSettingController {
     @FXML
     public void initialize() {
         msPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/messageSetting.css").toExternalForm());
+        bundle= ResourceManager.getInstance().getBundle();
 
         pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             int selectedCount = Integer.parseInt(newValue.replace("개", ""));
             msgInitialize.getItems().clear();
-            msgInitialize.getItems().add("전체");
+            msgInitialize.getItems().add(bundle.getString("All"));
 
             for (int i = 1; i <= selectedCount; i++) {
                 msgInitialize.getItems().add("page "+i);
             }
 
-            msgInitialize.setValue("전체");
+            msgInitialize.setValue(bundle.getString("All"));
         });
+        msgInitialize.getItems().add(bundle.getString("All"));
+        msgInitialize.setValue(bundle.getString("All"));
     }
 
     public void sendMsgInitialize() throws JsonProcessingException {
@@ -50,7 +57,7 @@ public class MessageSettingController {
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"061";
             }
-            if (msgInitialize.getValue().equals("전체")){
+            if (msgInitialize.getValue().equals(bundle.getString("All"))){
                 msg += "99";
             }
             else{
@@ -65,7 +72,7 @@ public class MessageSettingController {
             if (isRS){
                 msg = "10 02 "+String.format("%02X", RS485_ADDR_NUM)+" 00 02 4B ";
             }
-            if (msgInitialize.getValue().equals("전체")){
+            if (msgInitialize.getValue().equals(bundle.getString("All"))){
                 msg += "80";
             }
             else{

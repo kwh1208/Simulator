@@ -9,6 +9,8 @@ import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
@@ -27,6 +29,7 @@ public class AsciiMsgTransceiver {
     private final BoardSettingService boardSettingService;
     private final ASCiiDefaultSettingService asciiDefaultSettingService;
     private final BTService btService;
+    private final ResourceBundle bundle;
 
 
     private AsciiMsgTransceiver() {
@@ -41,6 +44,7 @@ public class AsciiMsgTransceiver {
         firmwareService = FirmwareService.getFirmwareService();
         boardSettingService = BoardSettingService.getInstance();
         asciiDefaultSettingService = ASCiiDefaultSettingService.getInstance();
+        bundle= ResourceManager.getInstance().getBundle();
     }
 
     public static AsciiMsgTransceiver getInstance() {
@@ -118,8 +122,8 @@ public class AsciiMsgTransceiver {
                 return;
             }
             if (receiveMsg.charAt(5) == 'F') {//오류 발생
-                logService.warningLog("오류가 발생했습니다.");
-                logService.warningLog("받은 메세지 : " + receiveMsg);
+                logService.warningLog("errorOccurred");
+                logService.warningLog(bundle.getString("receivedMsg") + receiveMsg);
                 return;
             }
 
@@ -144,28 +148,38 @@ public class AsciiMsgTransceiver {
 
         String cmd = receiveMsg.substring(4, 6);
         char status = receiveMsg.charAt(6);
+
         if (cmd.equals("31")) {
-
             String time = receiveMsg.substring(6, 19);
-            String[] koreanWeekdays = {"일", "월", "화", "수", "목", "금", "토"};
 
-            // 요일 숫자를 한글로 변환 (숫자가 한 자릿수라고 가정)
-            char weekdayChar = time.charAt(6); // 요일 숫자는 문자열의 7번째 위치
-            int weekdayIndex = Character.getNumericValue(weekdayChar); // 숫자 '0'~'6'을 인덱스로 변환
-            String weekdayKorean = koreanWeekdays[weekdayIndex]; // 한글 요일로 변환
+            // 한글과 영어 요일을 다국어 지원하도록 변경
+            String[] weekdaysKorean = {"일", "월", "화", "수", "목", "금", "토"};
+            String[] weekdaysEnglish = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
-            // 숫자 요일을 한글 요일로 대체하여 새로운 시간 문자열 생성
-            StringBuilder sb = new StringBuilder();
-            sb.append(time, 0, 2).append("-").append(time, 2, 4).append("-").append(time, 4, 6)
-                    .append(" (").append(weekdayKorean).append(") ").append(time, 7, 9).append(":").append(time, 9, 11).append(":").append(time, 11, 13);
+            // 현재 설정된 언어 확인
+            boolean isKorean = bundle.getLocale().equals("ko");
 
-            logService.updateInfoLog("컨트롤러 시간은 " + sb + "입니다.");
-            underTheLineLeftService.setTime(sb.toString());
+            // 숫자 요일을 언어별 요일로 변환
+            char weekdayChar = time.charAt(6);
+            int weekdayIndex = Character.getNumericValue(weekdayChar);
+            String weekday = isKorean ? weekdaysKorean[weekdayIndex] : weekdaysEnglish[weekdayIndex];
+
+            // 다국어 형식 문자열 생성
+            String formattedTime = String.format(
+                    "%s-%s-%s (%s) %s:%s:%s",
+                    time.substring(0, 2), time.substring(2, 4), time.substring(4, 6),
+                    weekday,
+                    time.substring(7, 9), time.substring(9, 11), time.substring(11, 13)
+            );
+
+            logService.updateInfoLog(MessageFormat.format(bundle.getString("controllerTimeInfo"), formattedTime));
+            underTheLineLeftService.setTime(formattedTime);
             return;
         }
+
         if (cmd.equals("B3")) {
             boardSettingService.setUI(receiveMsg.substring(7, 21));
-            logService.updateInfoLog("보드기능 설정에 성공했습니다.");
+            logService.updateInfoLog(bundle.getString("boardSettingSuccess"));
             return;
         }
         if (cmd.equals("B2")) {
@@ -173,20 +187,20 @@ public class AsciiMsgTransceiver {
         }
         if (cmd.equals("33")) {
             asciiDefaultSettingService.setProperties(receiveMsg);
-            logService.updateInfoLog("기본값 설정에 성공했습니다.");
+            logService.updateInfoLog(bundle.getString("defaultSettingSuccess"));
             return;
         }
         if (cmd.equals("81")) {
             firmwareService.setFirmware(receiveMsg.substring(6));
-            logService.updateInfoLog("펌웨어 정보 읽기에 성공했습니다.");
+            logService.updateInfoLog(bundle.getString("firmwareInfoReadSuccess"));
             return;
         }
         if (cmd.equals("96")) {
-            logService.updateInfoLog("폰트 이름 설정에 성공했습니다.");
+            logService.updateInfoLog(bundle.getString("fontNameSettingSuccess"));
             return;
         }
         if (cmd.equals("95")) {
-            logService.updateInfoLog("폰트 이름 설정에 성공했습니다.");
+            logService.updateInfoLog(bundle.getString("fontNameSettingSuccess"));
             return;
         }
         if (cmd.equals("40")) {
@@ -196,106 +210,106 @@ public class AsciiMsgTransceiver {
             try {
                 row = Integer.parseInt(receiveMsg.substring(6, 8));
                 column = Integer.parseInt(receiveMsg.substring(8, 10));
-                logService.updateInfoLog("화면 크기 설정에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("displaySizeSettingSuccess"));
             } catch (NumberFormatException e) {
                 row = Integer.parseInt(msg.substring(6, 8));
                 column = Integer.parseInt(msg.substring(8, 10));
             } finally {
                 sizeOfDisplayBoardService.setDisplaySize(row, column);
                 if (row != Integer.parseInt(msg.substring(6, 8)) || column != Integer.parseInt(msg.substring(8, 10))) {
-                    logService.warningLog("화면 크기 설정에 실패했습니다.");
-                    logService.warningLog(row + "단, " + column + "열까지만 가능합니다.");
+                    logService.warningLog(bundle.getString("displaySizeSettingFailed"));
+                    logService.warningLog(MessageFormat.format(bundle.getString("displaySizeLimit"), row, column));
                 }
             }
         }
 
         if (status == '0') { // 정상 처리
             if (cmd.equals("20")) {
-                logService.updateInfoLog("배경이미지 표출에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("backgroundImageDisplaySuccess"));
             }
             if (cmd.equals("21")) {
-                logService.updateInfoLog("화면 끄기/켜기에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("screenPowerToggleSuccess"));
             }
             if (cmd.equals("22")) {
-                logService.updateInfoLog("외부 신호 출력에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("externalSignalOutputSuccess"));
             }
             if (cmd.equals("30")) {
-                logService.updateInfoLog("시간 동기화에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("timeSyncSuccess"));
             }
             if (cmd.equals("41")) {
-                logService.updateInfoLog("컨트롤러 리셋에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("controllerResetSuccess"));
             }
             if (cmd.equals("42")) {
-                logService.updateInfoLog("공장초기화에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("factoryResetSuccess"));
             }
             if (cmd.equals("50")) {
-                logService.updateInfoLog("밝기 조절에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("brightnessControlSuccess"));
             }
             if (cmd.equals("52")) {
-                logService.updateInfoLog("받은 메세지 : " + receiveMsg);
+                logService.updateInfoLog(bundle.getString("receivedMsg") + receiveMsg);
             }
             if (cmd.equals("54")) {
-                logService.updateInfoLog("표출 속도 변경에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("displaySpeedChangeSuccess"));
             }
             if (cmd.equals("56")) {
-                logService.updateInfoLog("폰트 두께 설정 선택에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("fontThicknessSettingSuccess"));
             }
             if (cmd.equals("60")) {
-                logService.updateInfoLog("페이지 메세지 개수 설정에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("pageMessageCountSettingSuccess"));
             }
             if (cmd.equals("61")) {
-                logService.updateInfoLog("페이지 메세지 삭제에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("pageMessageDeletionSuccess"));
             }
             if (cmd.equals("62")) {
-                logService.updateInfoLog("섹션별 효과 설정에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("sectionEffectSettingSuccess"));
             }
             if (cmd.equals("70")) {
-                logService.updateInfoLog("화면 채우기에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("fillDisplaySuccess"));
             }
             if (cmd.equals("32")) {
-                logService.updateInfoLog("default 설정에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("defaultSettingSuccess"));
             }
             if (cmd.equals("82")) {
-                logService.updateInfoLog("맥주소 설정에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("macAddressSettingSuccess"));
             }
             if (cmd.equals("85")) {
-                logService.updateInfoLog("하트비트 세팅에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("heartbeatSettingSuccess"));
             }
             if (cmd.equals("B4")) {
-                logService.updateInfoLog("잔상지연 설정에 성공했습니다.");
+                logService.updateInfoLog(bundle.getString("afterimageDelaySettingSuccess"));
             }
 
 
         } else if (status == 'F') { // 오류 발생
             errorLog(cmd, receiveMsg);
         } else {
-            logService.warningLog("알 수 없는 상태 코드입니다. 전송 패킷을 확인해주세요.");
-            logService.warningLog("받은 메세지 : " + receiveMsg);
+            logService.warningLog(bundle.getString("unknownStatusCode"));
+            logService.warningLog(bundle.getString("receivedMsg") + receiveMsg);
         }
 
     }
 
     private void errorLog(String command, String msg) {
         String errorMsg = switch (command) {
-            case "20" -> "배경이미지 표출에 실패했습니다.";
-            case "21" -> "화면 끄기/켜기에 실패했습니다.";
-            case "22" -> "외부 신호 출력에 실패했습니다.";
-            case "30" -> "시간 동기화에 실패했습니다.";
-            case "31" -> "컨트롤러 시간 읽기에 실패했습니다.";
-            case "41" -> "컨트롤러 리셋에 실패했습니다.";
-            case "42" -> "공장초기화에 실패했습니다.";
-            case "50" -> "밝기 조절에 실패했습니다.";
-            case "54" -> "표출 속도 변경에 실패했습니다.";
-            case "56" -> "배경이미지 표출 목록 선택에 실패했습니다.";
-            case "60" -> "페이지 메세지 개수 설정에 실패했습니다.";
-            case "61" -> "페이지 메세지 삭제에 실패했습니다.";
-            case "62" -> "섹션별 효과 설정에 실패했습니다.";
-            case "70" -> "화면 채우기에 실패했습니다.";
-            case "81" -> "펌웨어 정보 읽기에 실패했습니다.";
-            case "85" -> "하트비트 세팅에 실패했습니다.";
-            default -> "알 수 없는 명령어입니다. 전송 패킷을 확인해주세요.";
+            case "20" -> bundle.getString("backgroundImageDisplayFailed");
+            case "21" -> bundle.getString("screenPowerToggleFailed");
+            case "22" -> bundle.getString("externalSignalOutputFailed");
+            case "30" -> bundle.getString("timeSyncFailed");
+            case "31" -> bundle.getString("controllerTimeReadFailed");
+            case "41" -> bundle.getString("controllerResetFailed");
+            case "42" -> bundle.getString("factoryResetFailed");
+            case "50" -> bundle.getString("brightnessControlFailed");
+            case "54" -> bundle.getString("displaySpeedChangeFailed");
+            case "56" -> bundle.getString("backgroundImageListSelectionFailed");
+            case "60" -> bundle.getString("pageMessageCountSettingFailed");
+            case "61" -> bundle.getString("pageMessageDeletionFailed");
+            case "62" -> bundle.getString("sectionEffectSettingFailed");
+            case "79" -> bundle.getString("fillDisplayFailed");
+            case "81" -> bundle.getString("firmwareInfoReadFailed");
+            case "85" -> bundle.getString("heartbeatSettingFailed");
+            default -> bundle.getString("unknownStatusCode");
         };
         logService.warningLog(errorMsg);
-        logService.warningLog("받은 메세지 : " + msg);
+        logService.warningLog(bundle.getString("receivedMsg") + msg);
     }
 }

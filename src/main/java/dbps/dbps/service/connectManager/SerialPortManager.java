@@ -78,7 +78,7 @@ public class SerialPortManager {
 
 
             if (!port.openPort()) {
-                throw new IllegalStateException(portName + bundle.getString("portCantOpen"));
+                logService.errorLog(portName + bundle.getString("portCantOpen"));
             }
 
             serialPortMap.put(portName, port);

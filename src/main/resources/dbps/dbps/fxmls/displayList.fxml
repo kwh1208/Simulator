@@ -1,25 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.collections.FXCollections?>
-<AnchorPane fx:id="displayListAP" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplayListController"
-            style="-fx-border-color: #4A4A4A; -fx-border-radius: 10; -fx-background-color: #333333;">
-    <TextField fx:id="search" layoutX="13.0" layoutY="13.0" prefHeight="21.0" prefWidth="377.0"
-               promptText="%modulePrompt"/>
+<AnchorPane fx:id="displayListAP" prefHeight="600.0" prefWidth="400.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10; -fx-background-color: #333333;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplayListController">
+    <TextField fx:id="search" layoutX="13.0" layoutY="13.0" prefHeight="21.0" prefWidth="377.0" promptText="%modulePrompt" />
     <ListView fx:id="moduleList" layoutX="13.0" layoutY="61.0" prefHeight="449.0" prefWidth="377.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
     </ListView>
-    <Button layoutX="232.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="30.0"
-            prefWidth="74.0" text="%confirmButton"/>
-    <Button layoutX="316.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="30.0"
-            prefWidth="74.0" text="%close"/>
-    <Label layoutX="20.0" layoutY="523.0" prefHeight="21.0" prefWidth="85.0" text="%displaySignal"/>
-    <TextField fx:id="displaySignal" layoutX="90.0" layoutY="521.0" prefHeight="21.0" prefWidth="290.0"
-               editable="false"/>
+    <Button layoutX="232.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="30.0" prefWidth="74.0" text="%confirmButton" />
+    <Button layoutX="316.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="30.0" prefWidth="74.0" text="%close" />
+    <Label layoutX="20.0" layoutY="523.0" prefHeight="21.0" prefWidth="85.0" text="%displaySignal" />
+    <TextField fx:id="displaySignal" editable="false" layoutX="127.0" layoutY="521.0" prefHeight="21.0" prefWidth="253.0" />
 </AnchorPane>

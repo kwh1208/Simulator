@@ -108,7 +108,7 @@
       </ComboBox>
    </Pane>
    <Label layoutX="13.0" layoutY="282.0" text="RS485 Address" />
-   <Label fx:id="rs_address" layoutX="208.0" layoutY="282.0" text="00" />
+   <Label fx:id="rs_address" layoutX="213.0" layoutY="282.0" text="00" />
 
    <Button layoutX="14.0" layoutY="320.0" mnemonicParsing="false" onMouseClicked="#openCommunicationSetting" prefHeight="31.0" prefWidth="219.0" text="%communicationSetting" />
    <Button layoutX="257.0" layoutY="320.0" mnemonicParsing="false" onMouseClicked="#Transfer" prefHeight="31.0" prefWidth="101.0" text="%sendButton" />

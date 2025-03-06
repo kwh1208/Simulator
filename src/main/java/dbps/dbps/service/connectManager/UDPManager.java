@@ -2,6 +2,7 @@ package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.DabitNetService;
 import dbps.dbps.service.LogService;
+import dbps.dbps.service.ResourceManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,11 +35,13 @@ public class UDPManager {
     private static UDPManager udpManager = null;
     private static LogService logService;
     private static DabitNetService dabitNetService;
+    ResourceBundle bundle;
 
 
     private UDPManager() {
         logService = LogService.getLogService();
         dabitNetService = DabitNetService.getInstance();
+        bundle= ResourceManager.getInstance().getBundle();
         setIP(UDP_IP);
         setPORT(UDP_PORT);
     }
@@ -64,7 +68,7 @@ public class UDPManager {
                     if (utf8) sendByte = msg.getBytes(StandardCharsets.UTF_8);
                     else if (ascUTF16) sendByte = msg.getBytes(StandardCharsets.UTF_16BE);
                     DatagramPacket sendPacket = new DatagramPacket(sendByte, sendByte.length, serverAddr, PORT);
-                    logService.updateInfoLog("전송 메세지 :"+msg);
+                    logService.updateInfoLog(bundle.getString("sendMsg")+msg);
                     socket.send(sendPacket);
                     int totalBytesRead = 0;
                     byte[] receiveBuffer = new byte[1024];
@@ -83,7 +87,7 @@ public class UDPManager {
                                 }
                             }
                         } catch (java.net.SocketTimeoutException e) {
-                            logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                            logService.errorLog(bundle.getString("connectionFail"));
                             throw e;
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -100,11 +104,11 @@ public class UDPManager {
                     if (result.contains("init_rtcTimeDate Start")){
                         result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
                     }
-                    logService.updateInfoLog("받은 메세지 :"+result);
+                    logService.updateInfoLog(bundle.getString("receivedMsg")+result);
                     return result;
                 }catch (IOException e){
                     //에러 처리
-                    logService.errorLog(msg+"전송에 실패했습니다.");
+                    logService.errorLog(bundle.getString("connectionFail"));
                     throw e;
                 } finally {
                     disconnect();
@@ -123,7 +127,7 @@ public class UDPManager {
                 DatagramPacket receivePacket;
                 try {
                     InetAddress serverAddr = InetAddress.getByName(IP);
-                    logService.updateInfoLog("전송 메세지 :"+bytesToHex(msg, msg.length));
+                    logService.updateInfoLog(bundle.getString("sendMsg")+bytesToHex(msg, msg.length));
                     DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
                     socket.send(sendPacket);
 
@@ -142,7 +146,7 @@ public class UDPManager {
                                 }
                             }
                         } catch (SocketTimeoutException e) {
-                            logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                            logService.errorLog(bundle.getString("connectionFail"));
                             throw new RuntimeException();
                         }
                     }
@@ -155,7 +159,7 @@ public class UDPManager {
                             result = matcher.group(0); // 전체 매칭된 부분을 추출
                         }
                     }
-                    logService.updateInfoLog("받은 메세지 :"+result);
+                    logService.updateInfoLog(bundle.getString("receivedMsg")+result);
                     return result;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -192,7 +196,7 @@ public class UDPManager {
                         }
                     }
                 } catch (SocketTimeoutException e) {
-                    logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                    logService.errorLog(bundle.getString("connectionFail"));
                     throw new RuntimeException();
                 }
             }
@@ -242,7 +246,7 @@ public class UDPManager {
                         }
                     }
                 } catch (SocketTimeoutException e) {
-                    logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                    logService.errorLog(bundle.getString("connectionFail"));
                     throw new RuntimeException();
                 }
             }
@@ -390,7 +394,7 @@ public class UDPManager {
             socketList.add(tmpSocket);
         } catch (SocketException e) {
             e.printStackTrace();
-            logService.errorLog("IP: " + IP + ", PORT: " + PORT+"열기에 실패했습니다.");
+            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, PORT));
         }
     }
 
@@ -447,7 +451,7 @@ public class UDPManager {
             }
         } catch (SocketException e) {
             e.printStackTrace();
-            logService.errorLog("IP: " + IP + ", PORT: " + PORT + " 열기에 실패했습니다.");
+            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, PORT));
         }
     }
 
@@ -482,7 +486,7 @@ public class UDPManager {
 
     //접속하기
     public void connect(String IP, int PORT){
-        logService.updateInfoLog("UDP 서버에 연결합니다. IP: " + IP + ", PORT: " + PORT);
+        logService.updateInfoLog(MessageFormat.format(bundle.getString("udpServerConnection"), IP, PORT));
         this.IP = IP;
         this.PORT = PORT;
         try {
@@ -493,7 +497,7 @@ public class UDPManager {
             socket.setSoTimeout(RESPONSE_LATENCY*1000);
         } catch (SocketException e) {
             e.printStackTrace();
-            logService.errorLog("IP: " + IP + ", PORT: " + PORT+"열기에 실패했습니다.");
+            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, PORT));
         }
     }
 
@@ -507,7 +511,7 @@ public class UDPManager {
             socket.setBroadcast(true);
             socket.setSoTimeout(RESPONSE_LATENCY*1000);
         } catch (SocketException e) {
-            logService.errorLog("IP: " + IP + ", PORT: " + PORT+"열기에 실패했습니다.");
+            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, PORT));
         }
     }
 
@@ -533,7 +537,7 @@ public class UDPManager {
             socket.close();
             socket = null;
         }
-        logService.updateInfoLog("UDP 서버를 종료합니다. IP: " + IP + ", PORT: " + PORT);
+        logService.updateInfoLog(MessageFormat.format(bundle.getString("udpServerConnectionClosed"), IP, PORT));
     }
 
     public void disconnectNoLog() {

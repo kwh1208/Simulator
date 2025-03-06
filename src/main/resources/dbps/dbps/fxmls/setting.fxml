@@ -28,10 +28,10 @@
 
     <Label layoutX="365.0" layoutY="320.0" text="%displayBrightness"/>
     <ChoiceBox fx:id="displayBright" layoutX="490.0" layoutY="315.0" prefHeight="25.0" prefWidth="109.0"
-               value="100%(기본)">
+               value="100%">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="100%(기본)"/>
+                <String fx:value="100%"/>
                 <String fx:value="75%"/>
                 <String fx:value="50%"/>
                 <String fx:value="25%"/>
@@ -43,12 +43,9 @@
             text="%sendButton" onMouseClicked="#sendDisplayBright"/>
 
     <Label layoutX="365.0" layoutY="356.0" text="%sectionEffect"/>
-    <ChoiceBox fx:id="pageMsgType" layoutX="490.0" layoutY="351.0" prefHeight="25.0" prefWidth="109.0"
-               value="효과 동시 표출">
+    <ChoiceBox fx:id="pageMsgType" layoutX="490.0" layoutY="351.0" prefHeight="25.0" prefWidth="109.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="효과 개별 표출"/>
-                <String fx:value="효과 동시 표출"/>
             </FXCollections>
         </items>
     </ChoiceBox>

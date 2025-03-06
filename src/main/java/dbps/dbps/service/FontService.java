@@ -18,12 +18,14 @@ public class FontService {
     private static FontService instance = null;
     HexMsgTransceiver hexMsgTransceiver;
     LogService logService;
+    ResourceBundle bundle;
     //사용안함, 영어, 유니코드 한국, 유니코드 일본어, 유니코드 중국어, 한글조합형, 사용자 폰트, 유니코드 전체
     private final int[][] fontKindAddr = {{0, 0, 0xac00, 0x3040, 0x4e00, 0x8861, 0xe000, 0}, {0, 0x7f, 0xd7a3, 0x30ff, 0x9fff, 0xd3bd, 0xe07f, 0xd7a3}};
 
     private FontService(){
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         logService = LogService.getLogService();
+        bundle=ResourceManager.getInstance().getBundle();
     }
 
     public static FontService getInstance(){
@@ -340,7 +342,7 @@ public class FontService {
                         sendPacket[sendPacket.length-1] = 0x03;
 
                         if (isCancelled()){
-                            logService.updateInfoLog("전송을 취소했습니다.");
+                            logService.updateInfoLog(bundle.getString("transferCancel"));
                             msg = "10 02 00 00 02 45 01 10 03";
                             if (isRS){
                                 msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
@@ -358,7 +360,7 @@ public class FontService {
                                 success = true;
                             } catch (Exception e) {
                                 if (isCancelled()){
-                                    logService.updateInfoLog("전송을 취소했습니다.");
+                                    logService.updateInfoLog(bundle.getString("transferCancel"));
                                     msg = "10 02 00 00 02 45 01 10 03";
                                     if (isRS){
                                         msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
@@ -367,9 +369,9 @@ public class FontService {
                                     return null;
                                 }
                                 retryCount++;
-                                logService.warningLog("패킷 전송 실패 "+retryCount+"번째 재시도, 1초 후 재시도합니다.");
+                                logService.warningLog(bundle.getString("packetTransmissionRetry"));
                                 if (retryCount >= 3) {
-                                    logService.errorLog("⚠️ 3번 재시도 후에도 패킷 전송 실패");
+                                    logService.errorLog(bundle.getString("packetTransmissionFailedAfterRetries"));
                                     return null;
                                 }
                                 Thread.sleep(1000); // 재시도 전 대기 (1000ms)

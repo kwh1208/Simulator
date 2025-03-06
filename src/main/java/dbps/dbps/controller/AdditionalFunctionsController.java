@@ -19,6 +19,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
@@ -45,20 +47,22 @@ public class AdditionalFunctionsController {
 
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
 
-        displaySpeed.getItems().add("사용안함");
+        displaySpeed.getItems().add(bundle.getString("notUsed"));
         for (int i = 1; i < 100; i++) {
             if (i==1){
-                displaySpeed.getItems().add("1(빠름)");
+                displaySpeed.getItems().add(bundle.getString("1(fast)"));
             } else if (i==99) {
-                displaySpeed.getItems().add("99(빠름)");
+                displaySpeed.getItems().add(bundle.getString("99(slow)"));
             }
             else displaySpeed.getItems().add(String.valueOf(i));
         }
+        displaySpeed.setValue(bundle.getString("notUsed"));
 
         for (int i = 1; i < 21; i++) {
-            if (i==8) blinkCnt.getItems().add("8회(기본값)");
-            else blinkCnt.getItems().add(i + "회");
+            if (i==8) blinkCnt.getItems().add("8"+bundle.getString("times")+bundle.getString("default"));
+            else blinkCnt.getItems().add(i +bundle.getString("times"));
         }
+        blinkCnt.setValue("8"+bundle.getString("times")+bundle.getString("default"));
 
         for (double i = 1.0; i <= 3.1; i += 0.1) {
             fontWidth.getItems().add(Double.parseDouble(String.format("%.1f", i)));
@@ -150,54 +154,51 @@ public class AdditionalFunctionsController {
     public void sendFillColor() throws InterruptedException {
         String value = fillColor.getValue();
         if (IS_ASCII){
-            String result = "";
-            if (value.equals("검은색")){
-                result = "0";
-            }else if (value.equals("빨간색")){
-                result = "1";
-            } else if (value.equals("초록색")){
-                result = "2";
-            } else if (value.equals("노란색")){
-                result = "3";
-            } else if (value.equals("파란색")){
-                result = "4";
-            } else if (value.equals("분홍색")){
-                result = "5";
-            } else if (value.equals("청록색")){
-                result = "6";
-            } else result = "7";
-            String msg = "![0070"+result+"!]";
+            String msg = "![0070"+getColorCode(value)+"!]";
             if (isRS){
-                msg = "!["+convertRS485AddrASCii()+"070"+result+"!]";
+                msg = "!["+convertRS485AddrASCii()+"070"+getColorCode(value)+"!]";
             }
             asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
         }
         else {
             hexMsgTransceiver.sendMessages("10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 02 45 00 10 03", progressIndicator);
 
-            String msg;
-            String result;
-            if (value.equals("검은색")){
-                result = "00 ";
-            }else if (value.equals("빨간색")){
-                result = "07 ";
-            } else if (value.equals("초록색")){
-                result = "38 ";
-            } else if (value.equals("노란색")){
-                result = "3F ";
-            } else if (value.equals("파란색")){
-                result = "C0 ";
-            } else if (value.equals("분홍색")){
-                result = "C7 ";
-            } else if (value.equals("청록색")){
-                result = "F8 ";
-            } else result = "FF ";
-            msg = "10 02 00 00 06 42 08 "+result+"00 00 00 10 03";
+            String msg = "10 02 00 00 06 42 08 "+getColorCodeHex(value)+"00 00 00 10 03";
             if (isRS){
-                msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 06 42 08 "+result+"00 00 00 10 03";
+                msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 06 42 08 "+getColorCodeHex(value)+"00 00 00 10 03";
             }
             hexMsgTransceiver.sendMessages(msg, progressIndicator);
         }
+    }
+
+    private String getColorCode(String value) {
+        Map<String, String> colorMap = new HashMap<>();
+        colorMap.put("검은색", "0");
+        colorMap.put("빨간색", "1");
+        colorMap.put("초록색", "2");
+        colorMap.put("노란색", "3");
+        colorMap.put("파란색", "4");
+        colorMap.put("분홍색", "5");
+        colorMap.put("청록색", "6");
+        colorMap.put("흰색", "7");
+        colorMap.put("보라색", "8");
+        colorMap.put("하늘색", "9");
+
+        return colorMap.getOrDefault(value, "0"); // 기본값을 검은색("0")으로 설정
+    }
+
+    private String getColorCodeHex(String value) {
+        Map<String, String> colorMap = new HashMap<>();
+        colorMap.put("검은색", "00 ");
+        colorMap.put("빨간색", "07 ");
+        colorMap.put("초록색", "38 ");
+        colorMap.put("노란색", "3F ");
+        colorMap.put("파란색", "C0 ");
+        colorMap.put("분홍색", "C7 ");
+        colorMap.put("청록색", "F8 ");
+        colorMap.put("흰색", "FF "); // 기본값을 흰색으로 지정
+
+        return colorMap.getOrDefault(value, "FF ");
     }
 
     public void sendBlinkCnt() {
@@ -212,7 +213,7 @@ public class AdditionalFunctionsController {
 
     public void sendDisplaySpeed() {
         int speed;
-        if (displaySpeed.getValue().equals("사용안함")){
+        if (displaySpeed.getValue().equals(bundle.getString("notUsed"))){
             speed = 0;
         }
         else{
