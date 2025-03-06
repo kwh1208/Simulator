@@ -5,14 +5,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="HEXMsgAP" prefHeight="596.0" prefWidth="700.0" style="-fx-border-color: black; -fx-border-width: 1 0 0 0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.HEXMessageController">
+<AnchorPane fx:id="HEXMsgAP" prefHeight="596.0" prefWidth="600.0" style="-fx-border-color: black; -fx-border-width: 1 0 0 0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.HEXMessageController">
     <Label layoutX="34.0" layoutY="20.0" text="%msgType" />
-    <Pane layoutX="197.0" layoutY="10.0" prefHeight="30.0" prefWidth="285.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
+    <Pane layoutX="177.0" layoutY="10.0" prefHeight="30.0" prefWidth="231.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
         <RadioButton fx:id="realTimeMsg" layoutX="12.0" layoutY="5.0" mnemonicParsing="false" text="%realTimeMsg" />
-        <RadioButton fx:id="pageMsg" layoutX="150.0" layoutY="5.0" mnemonicParsing="false" text="%pageMsg" />
+        <RadioButton fx:id="pageMsg" layoutX="125.0" layoutY="5.0" mnemonicParsing="false" text="%pageMsg" />
     </Pane>
-    <Label fx:id="pageCntLabel" layoutX="490.0" layoutY="16.0" text="page" visible="false" />
-    <ChoiceBox fx:id="pageMsgCnt" layoutX="540.0" layoutY="12.0" prefHeight="21.0" prefWidth="140" value="1" visible="false">
+    <Label fx:id="pageCntLabel" layoutX="426.0" layoutY="18.0" text="page" visible="false"/>
+    <ChoiceBox fx:id="pageMsgCnt" layoutX="476.0" layoutY="14.0" prefHeight="21.0" prefWidth="95.0" value="1" visible="false">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="1" />
@@ -29,14 +29,14 @@
         </items>
     </ChoiceBox>
     <Label layoutX="34.0" layoutY="50.0" text="%sectionNum" />
-    <Pane layoutX="197.0" layoutY="41.0" prefHeight="30.0" prefWidth="346.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
+    <Pane layoutX="177.0" layoutY="41.0" prefHeight="30.0" prefWidth="231.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
         <RadioButton fx:id="section0" layoutX="12.0" layoutY="5.0" mnemonicParsing="false" text="0" />
-        <RadioButton fx:id="section1" layoutX="123.0" layoutY="5.0" mnemonicParsing="false" text="1" />
-        <RadioButton fx:id="section2" layoutX="234.0" layoutY="5.0" mnemonicParsing="false" text="2" />
+        <RadioButton fx:id="section1" layoutX="88.0" layoutY="5.0" mnemonicParsing="false" text="1" />
+        <RadioButton fx:id="section2" layoutX="164.0" layoutY="5.0" mnemonicParsing="false" text="2" />
     </Pane>
 
     <Label layoutX="34.0" layoutY="80.0" text="%displayControl" />
-    <ChoiceBox fx:id="displayControl" layoutX="197.0" layoutY="76.0" prefHeight="21.0" prefWidth="139.0" value="On">
+    <ChoiceBox fx:id="displayControl" layoutX="177.0" layoutY="76.0" prefHeight="21.0" prefWidth="107.0" value="On">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="Off" />
@@ -64,7 +64,7 @@
     </ChoiceBox>
 
     <Label layoutX="34.0" layoutY="110.0" text="%displayMethod" />
-    <ChoiceBox fx:id="displayMethod" layoutX="197.0" layoutY="106.0" prefHeight="21.0" prefWidth="139.0" value="Clear">
+    <ChoiceBox fx:id="displayMethod" layoutX="177.0" layoutY="106.0" prefHeight="21.0" prefWidth="107.0" value="Clear">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="Normal" />
@@ -74,7 +74,7 @@
     </ChoiceBox>
 
     <Label layoutX="34.0" layoutY="140.0" text="%characterCode" />
-    <ChoiceBox fx:id="charCodes" layoutX="197.0" layoutY="136.0" prefHeight="21.0" prefWidth="139.0">
+    <ChoiceBox fx:id="charCodes" layoutX="177.0" layoutY="136.0" prefHeight="21.0" prefWidth="107.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
@@ -82,7 +82,7 @@
     </ChoiceBox>
 
     <Label layoutX="34.0" layoutY="170.0" text="%fontSize" />
-    <ChoiceBox fx:id="fontSize" layoutX="197.0" layoutY="166.0" prefHeight="21.0" prefWidth="139.0" value="16(Standard)">
+    <ChoiceBox fx:id="fontSize" layoutX="177.0" layoutY="166.0" prefHeight="21.0" prefWidth="107.0" value="16(Standard)">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="12" />
@@ -103,8 +103,8 @@
             </FXCollections>
         </items>
     </ChoiceBox>
-    <Label layoutX="415.0" layoutY="170.0" text="%fontGroup" />
-    <ChoiceBox fx:id="fontGroup" layoutX="519.0" layoutY="166.0" prefHeight="21.0" prefWidth="139.0">
+    <Label layoutX="325.0" layoutY="170.0" text="%fontGroup" />
+    <ChoiceBox fx:id="fontGroup" layoutX="429.0" layoutY="166.0" prefHeight="21.0" prefWidth="107.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
@@ -112,15 +112,15 @@
     </ChoiceBox>
 
     <Label layoutX="34.0" layoutY="200.0" text="%entranceEffect" />
-    <ChoiceBox fx:id="effectIn" layoutX="197.0" layoutY="196.0" prefHeight="21.0" prefWidth="139.0">
+    <ChoiceBox fx:id="effectIn" layoutX="177.0" layoutY="196.0" prefHeight="21.0" prefWidth="107.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
     </ChoiceBox>
 
-    <Label layoutX="415.0" layoutY="200.0" text="%effectDirection" />
-    <ChoiceBox fx:id="inDirection" layoutX="519.0" layoutY="196.0" prefHeight="21.0" prefWidth="139.0" value="방향없음">
+    <Label layoutX="325.0" layoutY="200.0" text="%effectDirection" />
+    <ChoiceBox fx:id="inDirection" layoutX="429.0" layoutY="196.0" prefHeight="21.0" prefWidth="107.0" value="방향없음">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
@@ -129,15 +129,15 @@
 
 
     <Label layoutX="34.0" layoutY="230.0" text="%exitEffect" />
-    <ChoiceBox fx:id="effectOut" layoutX="197.0" layoutY="226.0" prefHeight="21.0" prefWidth="139.0">
+    <ChoiceBox fx:id="effectOut" layoutX="177.0" layoutY="226.0" prefHeight="21.0" prefWidth="107.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
     </ChoiceBox>
 
-    <Label layoutX="415.0" layoutY="230.0" text="%effectDirection" />
-    <ChoiceBox fx:id="outDirection" layoutX="519.0" layoutY="226.0" prefHeight="21.0" prefWidth="139.0">
+    <Label layoutX="325.0" layoutY="230.0" text="%effectDirection" />
+    <ChoiceBox fx:id="outDirection" layoutX="429.0" layoutY="226.0" prefHeight="21.0" prefWidth="107.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
@@ -146,7 +146,7 @@
 
 
     <Label layoutX="34.0" layoutY="260.0" text="%reserve" />
-    <ChoiceBox fx:id="sub" disable="true" layoutX="197.0" layoutY="256.0" prefHeight="21.0" prefWidth="139.0" value="NotUsed">
+    <ChoiceBox fx:id="sub" disable="true" layoutX="177.0" layoutY="256.0" prefHeight="21.0" prefWidth="107.0" value="NotUsed">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
@@ -154,7 +154,7 @@
     </ChoiceBox>
 
     <Label layoutX="34.0" layoutY="290.0" text="%effectSpeed" />
-    <ChoiceBox fx:id="effectSpeed" layoutX="197.0" layoutY="286.0" prefHeight="21.0" prefWidth="139.0">
+    <ChoiceBox fx:id="effectSpeed" layoutX="177.0" layoutY="286.0" prefHeight="21.0" prefWidth="107.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
@@ -162,7 +162,7 @@
     </ChoiceBox>
 
     <Label layoutX="34.0" layoutY="320.0" text="%maintainDuration" />
-    <ChoiceBox fx:id="effectTime" layoutX="197.0" layoutY="316.0" prefHeight="21.0" prefWidth="139.0">
+    <ChoiceBox fx:id="effectTime" layoutX="177.0" layoutY="316.0" prefHeight="21.0" prefWidth="107.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
@@ -170,7 +170,7 @@
     </ChoiceBox>
 
     <Label layoutX="34.0" layoutY="350.0" text="%XStart" />
-    <ChoiceBox layoutX="197.0" layoutY="346.0" prefHeight="21.0" prefWidth="139.0" value="0" fx:id="xStart">
+    <ChoiceBox layoutX="177.0" layoutY="346.0" prefHeight="21.0" prefWidth="107.0" value="0" fx:id="xStart">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="0" />
@@ -202,8 +202,8 @@
         </items>
     </ChoiceBox>
 
-    <Label layoutX="385.0" layoutY="350.0" text="%YStart" />
-    <ChoiceBox fx:id="yStart" layoutX="518.0" layoutY="346.0" prefHeight="21.0" prefWidth="139" value="0">
+    <Label layoutX="325.0" layoutY="350.0" text="%YStart" />
+    <ChoiceBox fx:id="yStart" layoutX="429.0" layoutY="346.0" prefHeight="21.0" prefWidth="107.0" value="0">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="0" />
@@ -220,7 +220,7 @@
     </ChoiceBox>
 
     <Label layoutX="34.0" layoutY="380.0" text="%XEnd" />
-    <ChoiceBox layoutX="197.0" layoutY="376.0" prefHeight="21.0" prefWidth="139.0" value="0" fx:id="xEnd">
+    <ChoiceBox layoutX="177.0" layoutY="376.0" prefHeight="21.0" prefWidth="107.0" value="0" fx:id="xEnd">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="0" />
@@ -252,8 +252,8 @@
         </items>
     </ChoiceBox>
 
-    <Label layoutX="385.0" layoutY="380.0" text="%YEnd" />
-    <ChoiceBox fx:id="yEnd" layoutX="518.0" layoutY="376.0" prefHeight="21.0" prefWidth="139" value="0">
+    <Label layoutX="325.0" layoutY="380.0" text="%YEnd" />
+    <ChoiceBox fx:id="yEnd" layoutX="429.0" layoutY="376.0" prefHeight="21.0" prefWidth="107.0" value="0">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="0" />
@@ -270,24 +270,24 @@
     </ChoiceBox>
 
     <Label layoutX="34.0" layoutY="410.0" text="%bgSelection" />
-    <ChoiceBox fx:id="bgImg" layoutX="197.0" layoutY="406.0" prefHeight="21.0" prefWidth="139.0">
+    <ChoiceBox fx:id="bgImg" layoutX="177.0" layoutY="406.0" prefHeight="21.0" prefWidth="107.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
     </ChoiceBox>
 
-    <Label layoutX="197.0" layoutY="436.0" prefHeight="13.0" style="-fx-text-fill: #E0E0E0; " text="%colorCode" />
+    <Label layoutX="107.0" layoutY="436.0" prefHeight="13.0" style="-fx-text-fill: #E0E0E0; " text="%colorCode" />
 
     <Label layoutX="34.0" layoutY="460.0" text="%textColor" />
-    <TextField fx:id="textColor" layoutX="197.0" layoutY="452.0" prefHeight="35.0" prefWidth="500.0" style="-fx-background-color: black; -fx-text-fill: white" />
+    <TextField fx:id="textColor" layoutX="177.0" layoutY="452.0" prefHeight="35.0" prefWidth="399.0" style="-fx-background-color: black; -fx-text-fill: white" />
     <Label layoutX="34.0" layoutY="500.0" text="%textBgColor" />
-    <TextField fx:id="bgColor" layoutX="197.0" layoutY="492.0" prefHeight="35.0" prefWidth="500.0" style="-fx-background-color: black; -fx-text-fill: white" />
+    <TextField fx:id="bgColor" layoutX="177.0" layoutY="492.0" prefHeight="35.0" prefWidth="399.0" style="-fx-background-color: black; -fx-text-fill: white" />
     <Label layoutX="34.0" layoutY="540.0" text="%text" />
-    <TextField fx:id="msgPreview" layoutX="197.0" layoutY="532.0" prefHeight="35.0" prefWidth="500.0" style="-fx-background-color: black; -fx-text-fill: white" />
-    <Button layoutX="400.0" layoutY="572.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="30.0" prefWidth="81.0" text="%saveButton" />
-    <Button layoutX="500.0" layoutY="572.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="%initButton" />
-    <Button layoutX="600.0" layoutY="572.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="81.0" text="%sendButton" />
+    <TextField fx:id="msgPreview" layoutX="177.0" layoutY="532.0" prefHeight="35.0" prefWidth="399.0" style="-fx-background-color: black; -fx-text-fill: white" />
+    <Button layoutX="296.0" layoutY="572.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="30.0" prefWidth="81.0" text="%saveButton" />
+    <Button layoutX="396.0" layoutY="572.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="%initButton" />
+    <Button layoutX="496.0" layoutY="572.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="81.0" text="%sendButton" />
     <ProgressIndicator fx:id="progressIndicator" layoutX="320.0" layoutY="200.0" visible="false" />
    <RadioButton fx:id="hexChkBox" layoutX="35.0" layoutY="572.0" mnemonicParsing="false" text="HexProtocol" />
    <RadioButton fx:id="asciiChkBox" layoutX="141.0" layoutY="572.0" mnemonicParsing="false" text="ASCiiProtocol" />

@@ -3,13 +3,17 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane fx:id="ASAP" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dbps.dbps.controller.AdvancedSettingController" layoutX="19.0" layoutY="183.0" prefHeight="174.0" prefWidth="310.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
-<children>
-    <Label alignment="CENTER" layoutX="85.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0" text="%advancedSetting"
+<Pane fx:id="ASAP" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="dbps.dbps.controller.AdvancedSettingController" layoutX="19.0" layoutY="183.0" prefHeight="174.0"
+      prefWidth="278.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
+    <Label alignment="CENTER" layoutX="70.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0" text="%advancedSetting"
            style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder"/>
-    <Button layoutX="40.0" layoutY="23.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="230.0" text="%fontSetting" onMouseClicked="#fontSetting" style=""/>
-    <Button layoutX="40.0" layoutY="60.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="230.0" text="%displaySignalSetting" onMouseClicked="#transferSignalSetting" style=""/>
-    <Button layoutX="40.0" layoutY="97.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="230.0" text="%boardSetting" onMouseClicked="#boardSetting" style=""/>
-    <Button layoutX="40.0" layoutY="134.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="230.0" text="%firmwareUpgrade" onMouseClicked="#firmwareInfo" style=""/>
-</children>
+    <Button layoutX="34.0" layoutY="23.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="210.0"
+            text="%fontSetting" onMouseClicked="#fontSetting"/>
+    <Button layoutX="34.0" layoutY="60.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="210.0"
+            text="%displaySignalSetting" onMouseClicked="#transferSignalSetting"/>
+    <Button layoutX="34.0" layoutY="97.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="210.0"
+            text="%boardSetting" onMouseClicked="#boardSetting"/>
+    <Button layoutX="34.0" layoutY="134.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="210.0"
+            text="%firmwareUpgrade" onMouseClicked="#firmwareInfo"/>
 </Pane>

@@ -1,28 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
+<?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.collections.FXCollections?>
 
-<VBox fx:id="rightVbox" xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="dbps.dbps.controller.UnderTheLineRightController"
-      layoutX="350.0" layoutY="396.0">
-<Pane layoutX="284.0" layoutY="539.0" prefHeight="67.0" prefWidth="288.0">
-    <children>
-        <Label layoutX="18.0" layoutY="5.0" text="%bgSelection" />
-        <ComboBox fx:id="BGImgSelection" layoutX="140.0"  prefHeight="28.0" prefWidth="109.0">
+<VBox fx:id="rightVbox" layoutX="305.0" layoutY="396.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.UnderTheLineRightController">
+    <Pane layoutX="284.0" layoutY="539.0" prefHeight="67.0" prefWidth="288.0">
+        <Label layoutX="10.0" layoutY="5.0" text="%bgSelection" />
+        <ComboBox fx:id="BGImgSelection" layoutX="110.0" prefHeight="28.0" prefWidth="90.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
             </items>
         </ComboBox>
-        <Button layoutX="261.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="%sendButton" onMouseClicked="#sendBGImgSelection"/>
-        <Button layoutX="18.0" layoutY="40.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="306.0" text="%additionalFunction" onMouseClicked="#openAdditionalFunction"/>
-        <Button layoutX="18.0" layoutY="130.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="153.0" text="%asPhotoAttachment" onMouseClicked="#ASPhoto"/>
-        <Button layoutX="171.0" layoutY="130.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="153.0" text="AS" onMouseClicked="#AS"/>
-        <Button layoutX="18.0" layoutY="160.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="306.0" text="%officialDocument" onMouseClicked="#docs"/>
-    </children>
-</Pane>
+        <Button layoutX="220.0" mnemonicParsing="false" onMouseClicked="#sendBGImgSelection" prefHeight="28.0" prefWidth="63.0" text="%sendButton" />
+        <Button layoutX="10.0" layoutY="40.0" mnemonicParsing="false" onMouseClicked="#openAdditionalFunction" prefHeight="30.0" prefWidth="280.0" text="%additionalFunction" />
+        <Button layoutX="10.0" layoutY="130.0" mnemonicParsing="false" onMouseClicked="#ASPhoto" prefHeight="30.0" prefWidth="140.0" text="%asPhotoAttachment" />
+        <Button layoutX="150.0" layoutY="130.0" mnemonicParsing="false" onMouseClicked="#AS" prefHeight="30.0" prefWidth="140.0" text="AS" />
+        <Button layoutX="10.0" layoutY="160.0" mnemonicParsing="false" onMouseClicked="#docs" prefHeight="30.0" prefWidth="280.0" text="%officialDocument" />
+    </Pane>
 </VBox>

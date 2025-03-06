@@ -5,12 +5,11 @@
 
 <VBox alignment="TOP_CENTER" prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MainController">
-    <!-- StackPane으로 TabPane과 HELP 버튼 겹쳐서 배치 -->
     <StackPane>
         <!-- TabPane 추가 -->
         <TabPane fx:id="mainTab" prefHeight="640.0" prefWidth="590.0" tabClosingPolicy="UNAVAILABLE">
                 <Tab fx:id="messageTab" text="아스키 프로토콜"/>
-            <Tab fx:id="setting" text="%setting" style="-fx-padding: 57px"/>
+            <Tab fx:id="setting" text="%setting" style="-fx-padding: 35px"/>
         </TabPane>
     </StackPane>
     <!-- 로그 영역 추가 -->

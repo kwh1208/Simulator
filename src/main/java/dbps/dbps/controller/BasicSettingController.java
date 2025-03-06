@@ -38,7 +38,7 @@ public class BasicSettingController {
 
         protocolFormat.getItems().addAll(
                 bundle.getString("ASCiiProtocol"),
-                bundle.getString("HexProtocol")
+                bundle.getString("protocolTransfer")
         );
 
         basicPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/communicationSetting.css").toExternalForm());
@@ -46,7 +46,7 @@ public class BasicSettingController {
         if (IS_ASCII){
             protocolFormat.setValue(bundle.getString("ASCiiProtocol"));
         } else {
-            protocolFormat.setValue(bundle.getString("HexProtocol"));
+            protocolFormat.setValue(bundle.getString("protocolTransfer"));
         }
 
         //드롭다운 감지해서 탭 변경
@@ -55,7 +55,7 @@ public class BasicSettingController {
                 mainService.showASCiiMsgTab();
                 IS_ASCII = true;
                 configService.setProperty("IS_ASCII", "true");
-            } else if (newValue.equals(bundle.getString("HexProtocol"))) {
+            } else if (newValue.equals(bundle.getString("protocolTransfer"))) {
                 mainService.showHEXMsgTab();
                 IS_ASCII = false;
                 configService.setProperty("IS_ASCII", "false");

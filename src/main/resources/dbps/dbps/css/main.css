@@ -11,7 +11,7 @@
 }
 /* Tab 스타일 */
 .tab {
-    -fx-pref-width: 150px; /* 탭의 선호 너비 */
+    -fx-pref-width: 100px; /* 탭의 선호 너비 */
     -fx-pref-height: 30px;
     -fx-background-color: #333333; /* 탭 배경 색상 */
     -fx-background-radius: 5 5 0 0; /* 탭 배경의 모서리를 둥글게 */
@@ -19,7 +19,6 @@
     -fx-border-radius: 5 5 0 0; /* 탭 테두리의 모서리를 둥글게 */
 }
 .hyperlink{
-
     -fx-text-fill: #1495C8;
 }
 .hyperlink:focused {

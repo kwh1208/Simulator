@@ -40,7 +40,7 @@ public class LogController {
         logTextArea.setWrapText(true);
         logTextArea.setEditable(false);
         logTextArea.setStyle("-fx-background-color: #1C1F26; -fx-text-fill: white;");
-        logTextArea.setMinWidth(696);
+        logTextArea.setMinWidth(596);
         logTextArea.setMinHeight(127);
         scrollPane.setContent(logTextArea);
 

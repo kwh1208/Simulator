@@ -47,7 +47,7 @@ public class MainService {
             // 캐시된 UI 노드를 사용
             messageTab.setContent(cachedContent.get("ascii"));
             Label label = new Label(ResourceManager.getInstance().getBundle().getString("ASCiiProtocol"));
-            label.setStyle("-fx-alignment: center; -fx-padding: 12px;");
+            label.setStyle("-fx-alignment: center;");
             messageTab.setGraphic(label); // Label을 그래픽으로 설정
             messageTab.setText("");
         } catch (IOException e) {
@@ -69,8 +69,8 @@ public class MainService {
             }
             // 캐시된 UI 노드를 사용
             messageTab.setContent(cachedContent.get("hex"));
-            Label label = new Label(ResourceManager.getInstance().getBundle().getString("HexProtocol"));
-            label.setStyle("-fx-alignment: center; -fx-padding: 15px;");
+            Label label = new Label(ResourceManager.getInstance().getBundle().getString("protocolTransfer"));
+            label.setStyle("-fx-alignment: center; -fx-padding: 4px;");
             messageTab.setGraphic(label);
             messageTab.setText("");
         } catch (IOException e) {

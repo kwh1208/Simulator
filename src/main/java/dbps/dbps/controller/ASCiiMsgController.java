@@ -208,10 +208,10 @@ public class ASCiiMsgController {
         for (int i = 1; i < 10; i++) {
             TextField textField = new TextField();
             textField.setMaxHeight(45.0);
-            textField.setMaxWidth(565.0);
+            textField.setMaxWidth(498.0);  // 수정된 최대 너비 (600 - 11 - 91)
             AnchorPane.setLeftAnchor(textField, 11.0);
             AnchorPane.setTopAnchor(textField, 27.0 + (i - 1) * 55.0);
-            AnchorPane.setRightAnchor(textField, 91.0);
+            AnchorPane.setRightAnchor(textField, 161.0);
             AnchorPane.setBottomAnchor(textField, 538 - (i - 1) * 55.0);
             textField.setId("transmitMsg" + i);
             textField.setText(transmitMsgContents.get(i - 1));
@@ -220,14 +220,15 @@ public class ASCiiMsgController {
             Button sendButton = new Button(bundle.getString("sendButton"));
             sendButton.setPrefHeight(45.0);
             sendButton.setPrefWidth(61.0);
-            AnchorPane.setLeftAnchor(sendButton, 620.0);
+            AnchorPane.setLeftAnchor(sendButton, 533.0);
             AnchorPane.setTopAnchor(sendButton, 27.0 + (i - 1) * 55.0);
             AnchorPane.setBottomAnchor(sendButton, 538 - (i - 1) * 55.0);
-            AnchorPane.setRightAnchor(sendButton, 8.0);
+            AnchorPane.setRightAnchor(sendButton, 98.0);
             sendButton.setId("msgSendBtn" + i);
             sendButton.setOnMouseClicked(this::sendMsg);
 
-            ASCiiMsgAnchorPane.getChildren().addAll(textField,  sendButton);
+            ASCiiMsgAnchorPane.getChildren().addAll(textField, sendButton);
         }
     }
+
 }
