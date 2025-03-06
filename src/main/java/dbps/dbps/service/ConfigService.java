@@ -25,7 +25,7 @@ public class ConfigService {
         createFileIfNotExists(displayFilePath);
         loadProperties();
 
-        IS_ASCII = Boolean.parseBoolean(getProperty("IS_ASCII"));
+        IS_ASCII= Boolean.parseBoolean(getProperty("IS_ASCII"));
         CONNECT_TYPE = getProperty("connectType");
         OPEN_PORT_NAME = getProperty("openPortName");
         SERIAL_BAUDRATE = Integer.parseInt(getProperty("serialSpeed"));
@@ -38,7 +38,6 @@ public class ConfigService {
         SIZE_COLUMN = Integer.parseInt(getProperty("displayColumnSize"));
         BITS_PER_PIXEL = getProperty("bitsPerPixel").charAt(0)-'0';
         howToArrange = getProperty("howToArrange");
-        RESPONSE_LATENCY = Integer.parseInt(getProperty("latency"));
         isRS = Boolean.parseBoolean(getProperty("isRS"));
         serverTCPPort = Integer.parseInt(getProperty("serverTCPPort"));
 
@@ -99,7 +98,7 @@ public class ConfigService {
             defaultProperties.setProperty("openPortNum", "COM1");
             defaultProperties.setProperty("isRS", "false");
             defaultProperties.setProperty("clientTCPAddr", "192.168.0.10");
-            defaultProperties.setProperty("openPortName", "1");
+            defaultProperties.setProperty("openPortName", "COM1");
             defaultProperties.setProperty("clientTCPPort", "5100");
             defaultProperties.setProperty("serverTCPAddr", "192.168.0.10");
             defaultProperties.setProperty("serverTCPPort", "5000");

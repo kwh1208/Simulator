@@ -11,11 +11,12 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import lombok.Setter;
 
 import java.io.IOException;
 
+@Setter
 public class Constants {
-    //현재 연결 방법(serial, tcp, udp, RS485, WiFi, Bluetooth)
     public static String CONNECT_TYPE = "none";
     ConfigService configService;
 
@@ -25,46 +26,69 @@ public class Constants {
             (byte) 0x34, (byte) 0x35, (byte) 0x36, (byte) 0x37, (byte) 0x38,
             (byte) 0x39, (byte) 0x10, (byte) 0x03
     };
+    public static boolean KEEP_OPEN;
+
+    public static int RESPONSE_LATENCY;
+
+    public static boolean IS_ASCII;
+
+    public static int serverTCPPort;
+
+    public static String hostIP;
+
+    public static boolean ascUTF16;
+
+    public static int SERIAL_BAUDRATE;
+
+    public static String OPEN_PORT_NAME;
+
+    public static int RS485_ADDR_NUM;
+
+    public static boolean isRS;
+
+    public static String TCP_IP;
+
+    public static int TCP_PORT;
+
+    public static String UDP_IP;
+
+    public static int UDP_PORT;
+
+    public static boolean isBT;
+
+    public static int SIZE_ROW;
+    public static int SIZE_COLUMN;
+    public static int BITS_PER_PIXEL;
+    public static String howToArrange;
+    public static String uploadFirmwarePath;
+
+    static {
+        ConfigService configService = ConfigService.getInstance();
+        RESPONSE_LATENCY = Integer.parseInt(configService.getProperty("RESPONSE_LATENCY"));
+        IS_ASCII = Boolean.parseBoolean(configService.getProperty("IS_ASCII"));
+        serverTCPPort = Integer.parseInt(configService.getProperty("serverTCPPort"));
+        hostIP = configService.getProperty("serverTCPAddr");
+        IS_ASCII= Boolean.parseBoolean(configService.getProperty("IS_ASCII"));
+        CONNECT_TYPE = configService.getProperty("connectType");
+        OPEN_PORT_NAME = configService.getProperty("openPortName");
+        SERIAL_BAUDRATE = Integer.parseInt(configService.getProperty("serialSpeed"));
+        RS485_ADDR_NUM = Integer.parseInt(configService.getProperty("RS485_ADDR_NUM"));
+        TCP_IP = configService.getProperty("clientTCPAddr");
+        TCP_PORT = Integer.parseInt(configService.getProperty("clientTCPPort"));
+        UDP_IP = configService.getProperty("UDPAddr");
+        UDP_PORT = Integer.parseInt(configService.getProperty("UDPPort"));
+        SIZE_ROW = Integer.parseInt(configService.getProperty("displayRowSize"));
+        SIZE_COLUMN = Integer.parseInt(configService.getProperty("displayColumnSize"));
+        BITS_PER_PIXEL = configService.getProperty("bitsPerPixel").charAt(0)-'0';
+        howToArrange = configService.getProperty("howToArrange");
+        isRS = Boolean.parseBoolean(configService.getProperty("isRS"));
+        serverTCPPort = Integer.parseInt(configService.getProperty("serverTCPPort"));
+    }
+
     @FXML
     public void initialize() {
         configService = ConfigService.getInstance();
     }
-
-    public static boolean KEEP_OPEN = false;
-
-    public static int RESPONSE_LATENCY = 3;
-
-    public static boolean IS_ASCII = false;
-
-    public static int serverTCPPort = 5000;
-
-    public static String hostIP;
-
-    public static boolean ascUTF16 = false;
-
-    public static int SERIAL_BAUDRATE = 115200;
-
-    public static String OPEN_PORT_NAME = "COM1";
-
-    public static int RS485_ADDR_NUM = 0;
-
-    public static boolean isRS = false;
-
-    public static String TCP_IP = "";
-
-    public static int TCP_PORT = 0;
-
-    public static String UDP_IP = "";
-
-    public static int UDP_PORT = 0;
-
-    public static boolean isBT = false;
-
-    public static int SIZE_ROW = 0;
-    public static int SIZE_COLUMN = 0;
-    public static int BITS_PER_PIXEL = 0;
-    public static String howToArrange = "가로형";
-    public static String uploadFirmwarePath = "";
 
     private static final int[] wCRCTable = {
             0X0000, 0XC0C1, 0XC181, 0X0140, 0XC301, 0X03C0, 0X0280, 0XC241,

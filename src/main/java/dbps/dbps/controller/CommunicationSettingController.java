@@ -574,6 +574,8 @@ public class CommunicationSettingController {
                         hostIP = serverIPAddress.getValue();
                         serverTCPPort = Integer.parseInt(serverIPPort.getText());
                         hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
+                        configService.setProperty("serverTCPAddr", hostIP);
+                        configService.setProperty("serverTCPPort", String.valueOf(serverTCPPort));
                     } else {
                         CONNECT_TYPE = "UDP";
                         String IPAddress = UDPIPAddress.getText();
