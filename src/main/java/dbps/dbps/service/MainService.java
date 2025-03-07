@@ -33,28 +33,6 @@ public class MainService {
         return instance;
     }
 
-    public void showASCiiMsgTab() {
-        try {
-            // 캐시에 아스키 탭 내용이 있는지 확인
-            if (!cachedContent.containsKey("ascii")) {
-                // 캐시가 없으면 로드하여 저장
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/dbps/dbps/fxmls/ASCiiMessage.fxml"));
-                ResourceBundle bundle = ResourceManager.getInstance().getBundle();
-                loader.setResources(bundle);
-                Node asciiContent = loader.load();
-                cachedContent.put("ascii", asciiContent);  // 캐싱
-            }
-            // 캐시된 UI 노드를 사용
-            messageTab.setContent(cachedContent.get("ascii"));
-            Label label = new Label(ResourceManager.getInstance().getBundle().getString("ASCiiProtocol"));
-            label.setStyle("-fx-alignment: center;");
-            messageTab.setGraphic(label); // Label을 그래픽으로 설정
-            messageTab.setText("");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     // 헥사 메시지 탭 표시
     public void showHEXMsgTab() {
         try {
@@ -78,7 +56,7 @@ public class MainService {
         }
     }
 
-    public void changeSetTab(){
+    public void changeSetTab() {
         try {
             {
                 if (!cachedContent.containsKey("set")) {
@@ -91,7 +69,7 @@ public class MainService {
                 settingTab.setContent(cachedContent.get("set"));
             }
 
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

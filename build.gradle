@@ -87,8 +87,8 @@ jlink {
     }
 
     jpackage {
-        imageName = 'dbProtocolSimulator'
-        installerName = 'dbProtocolSimulator'
+        imageName = 'DBPS'
+        installerName = 'DBPS'
         installerType = 'exe'
         icon = 'src/main/resources/icon-removebg.ico'
         installerOptions = [

@@ -68,7 +68,6 @@ public class Constants {
         IS_ASCII = Boolean.parseBoolean(configService.getProperty("IS_ASCII"));
         serverTCPPort = Integer.parseInt(configService.getProperty("serverTCPPort"));
         hostIP = configService.getProperty("serverTCPAddr");
-        IS_ASCII= Boolean.parseBoolean(configService.getProperty("IS_ASCII"));
         CONNECT_TYPE = configService.getProperty("connectType");
         OPEN_PORT_NAME = configService.getProperty("openPortName");
         SERIAL_BAUDRATE = Integer.parseInt(configService.getProperty("serialSpeed"));

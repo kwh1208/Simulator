@@ -7,13 +7,8 @@
 
 <Pane fx:id="basicPane" layoutX="19.0" layoutY="57.0" prefHeight="95.0" prefWidth="278.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BasicSettingController">
     <Label alignment="CENTER" layoutX="70.0" layoutY="-12.0" prefHeight="18.0" prefWidth="140.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-font-weight: bold; -fx-text-fill: white;  -fx-origin: top;" text="%programSetting" />
-    <Label layoutX="14.0" layoutY="30.0" text="%protocolFormat" />
-    <ComboBox fx:id="protocolFormat" layoutX="140.0" layoutY="24.0" prefHeight="25.0" prefWidth="127.0" value="%ASCiiProtocol">
-        <items>
-            <FXCollections fx:factory="observableArrayList">
-            </FXCollections>
-        </items>
-    </ComboBox>
+    <RadioButton fx:id="hexRadioBtn" layoutX="14.0" layoutY="30.0" text="%HexProtocol"/>
+    <RadioButton fx:id="ascRadioBtn" layoutX="140" layoutY="30.0" text="%ASCiiProtocol"/>
     <Label layoutX="14.0" layoutY="66.0" text="%programLanguage" />
     <ComboBox fx:id="programLanguage" layoutX="140.0" layoutY="60.0" prefHeight="25.0" prefWidth="127" value="한국어">
         <items>
