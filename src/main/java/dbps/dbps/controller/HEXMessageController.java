@@ -2,9 +2,14 @@ package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
@@ -20,9 +25,12 @@ import static java.lang.Integer.parseInt;
 public class HEXMessageController {
 
     public ProgressIndicator progressIndicator;
+    public TextField packetPreview;
     HexMsgTransceiver hexMsgTransceiver;
     HexMsgService hexMsgService;
     AsciiMsgTransceiver asciiMsgTransceiver;
+
+    public static final BooleanProperty isAsc = new SimpleBooleanProperty(IS_ASCII);
 
     @FXML
     private AnchorPane HEXMsgAP;
@@ -105,7 +113,7 @@ public class HEXMessageController {
     private TextField bgColor;
 
     @FXML
-    private TextField msgPreview;
+    private TextField sendMsg;
 
     ConfigService configService;
 
@@ -180,11 +188,54 @@ public class HEXMessageController {
         setXY();
 
         setUI();
+
+        packetPreview.setOnMouseClicked(event -> {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString(packetPreview.getText());
+            clipboard.setContent(content);
+        });
+
+        packetBinding();
+    }
+
+    private void packetBinding() {
+        packetPreview.textProperty().bind(Bindings.createStringBinding(() -> {
+                    if (IS_ASCII) {
+                        return makeASCMsg();
+                    } else {
+                        return makeHexMsg();
+                    }
+                },
+                isAsc,
+                msgTypeGroup.selectedToggleProperty(),
+                sectionGroup.selectedToggleProperty(),
+                displayControl.valueProperty(),
+                displayMethod.valueProperty(),
+                charCodes.valueProperty(),
+                fontSize.valueProperty(),
+                fontGroup.valueProperty(),
+                effectIn.valueProperty(),
+                inDirection.valueProperty(),
+                effectOut.valueProperty(),
+                outDirection.valueProperty(),
+                effectSpeed.valueProperty(),
+                effectTime.valueProperty(),
+                xStart.valueProperty(),
+                yStart.valueProperty(),
+                xEnd.valueProperty(),
+                yEnd.valueProperty(),
+                bgImg.valueProperty(),
+                textColor.textProperty(),
+                sendMsg.textProperty(),
+                bgColor.textProperty()
+        ));
     }
 
     private void setUI() {
         charCodes.getItems().clear();
-        charCodes.getItems().addAll(new ComboItem("CombinationType", bundle.getString("CombinationType")));
+        charCodes.getItems().addAll(new ComboItem("CombinationType", bundle.getString("CombinationType")),
+                new ComboItem("UTF16", bundle.getString("UTF16")));
 
         fontGroup.getItems().clear();
         fontGroup.getItems().addAll(
@@ -256,6 +307,7 @@ public class HEXMessageController {
 
 // 기본 선택
         effectTime.setValue(new ComboItem("2sec", "2" + bundle.getString("sec")));
+
 
     }
 
@@ -336,7 +388,7 @@ public class HEXMessageController {
         bgImg.setValue(new ComboItem(configService.getProperty("bgImg" + msgNum), bundle.getString(configService.getProperty("bgImg" + msgNum))));
         textColor.setText(configService.getProperty("textColor" + msgNum));
         bgColor.setText(configService.getProperty("bgColor" + msgNum));
-        msgPreview.setText(configService.getProperty("text" + msgNum));
+        sendMsg.setText(configService.getProperty("text" + msgNum));
     }
 
     public void save() {
@@ -363,11 +415,11 @@ public class HEXMessageController {
         configService.setProperty("bgImg" + msgNum, bgImg.getValue().key());
         configService.setProperty("textColor" + msgNum, textColor.getText());
         configService.setProperty("bgColor" + msgNum, bgColor.getText());
-        configService.setProperty("text" + msgNum, msgPreview.getText());
+        configService.setProperty("text" + msgNum, sendMsg.getText());
     }
 
     public void send() {
-        if (IS_ASCII){
+        if (IS_ASCII) {
             String msg = makeASCMsg();
             asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
         } else {
@@ -399,7 +451,7 @@ public class HEXMessageController {
             String bgImgValue = bgImg.getValue().displayText();
             String textColorValue = textColor.getText();
             String bgColorValue = bgColor.getText();
-            String text = msgPreview.getText();
+            String text = sendMsg.getText();
 
 
             StringBuilder msg = new StringBuilder("10 02 ");
@@ -764,20 +816,20 @@ public class HEXMessageController {
         String msgNum = getMsgNum();
         configService.setProperty("displayControl" + msgNum, "On");
         configService.setProperty("displayMethod" + msgNum, "Clear");
-        configService.setProperty("charCode" + msgNum, "한글 조합형");
+        configService.setProperty("charCode" + msgNum, "CombinationType");
         configService.setProperty("fontSize" + msgNum, "16(Standard)");
-        configService.setProperty("fontGroup" + msgNum, "폰트그룹1");
-        configService.setProperty("effectIn" + msgNum, "정지효과");
-        configService.setProperty("effectInDirection" + msgNum, "방향없음");
-        configService.setProperty("effectOut" + msgNum, "사용안함");
-        configService.setProperty("effectOutDirection" + msgNum, "사용안함");
+        configService.setProperty("fontGroup" + msgNum, "fontGroup1");
+        configService.setProperty("effectIn" + msgNum, "staticEffect");
+        configService.setProperty("effectInDirection" + msgNum, "noDirection");
+        configService.setProperty("effectOut" + msgNum, "notUsed");
+        configService.setProperty("effectOutDirection" + msgNum, "notUsed");
         configService.setProperty("effectSpeed" + msgNum, "5");
-        configService.setProperty("effectTime" + msgNum, "2초");
+        configService.setProperty("effectTime" + msgNum, "2sec");
         configService.setProperty("xStart" + msgNum, "0");
         configService.setProperty("xEnd" + msgNum, "0");
         configService.setProperty("yStart" + msgNum, "0");
         configService.setProperty("yEnd" + msgNum, "0");
-        configService.setProperty("bgImg" + msgNum, "사용안함");
+        configService.setProperty("bgImg" + msgNum, "notUsed");
         configService.setProperty("textColor" + msgNum, "1");
         configService.setProperty("bgColor" + msgNum, "0");
 
@@ -864,8 +916,8 @@ public class HEXMessageController {
         sendMsg.append("/B").append(bgImg.getValue().displayText().equals(bundle.getString("notUsed")) ? "000" : String.format("%03d", parseInt(bgImg.getValue().displayText())));
         sendMsg.append("/T").append(Integer.parseInt(fontGroup.getValue().displayText().replaceAll("\\D", "")) - 1);
 
-        int length = msgPreview.getText().length();
-        String text = msgPreview.getText();
+        int length = this.sendMsg.getText().length();
+        String text = this.sendMsg.getText();
         String fgColors = textColor.getText();
         String bgColors = bgColor.getText();
 
@@ -1090,4 +1142,47 @@ public class HEXMessageController {
         }
         return true;
     }
+
+    public void defaultSet() {
+        // 바인딩 해제
+        packetPreview.textProperty().unbind();
+        String msg = makeASCMsg();
+
+        // 앞뒤의 "!"와 "]" 제거 (필요한 경우)
+        msg = msg.substring(1, msg.length() - 1);
+
+        // "/" 기준으로 분리
+        String[] tokens = msg.split("/");
+
+        int pIdx = -1, tIdx = -1;
+        for (int i = 0; i < tokens.length; i++) {
+            if (tokens[i].startsWith("P") && pIdx == -1) {
+                pIdx = i;
+            }
+            if (tokens[i].startsWith("T") && tIdx == -1) {
+                tIdx = i;
+            }
+        }
+
+        // pIdx부터 tIdx 바로 앞까지의 토큰들을 "/"로 연결
+        StringBuilder sb = new StringBuilder();
+        for (int i = pIdx; i < tIdx; i++) {
+            if (i > pIdx) {
+                sb.append("/");
+            }
+            sb.append(tokens[i]);
+        }
+        String result = sb.toString();
+
+        // 추가로 "/C"와 "/G" 토큰을 붙임
+        result += "/C" + textColor.getText().charAt(0) + "/G" + bgColor.getText().charAt(0) + "/T" + (Integer.parseInt(fontGroup.getValue().displayText().replaceAll("[^0-9.]", "")) - 1) + "!]";
+
+        // 최종 메시지 설정 (접두어 추가)
+        packetPreview.setText("![0032/" + result);
+
+        // 전송 및 바인딩 복원 (원래의 바인딩 방식 호출)
+        asciiMsgTransceiver.sendMessages(packetPreview.getText(), false, progressIndicator);
+        packetBinding();
+    }
+
 }

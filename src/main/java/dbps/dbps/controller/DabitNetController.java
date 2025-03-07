@@ -13,8 +13,6 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -175,13 +173,6 @@ public class DabitNetController {
                 wifiSSID.setLayoutX(143.0);
                 wifiSSID.setPrefWidth(146);
                 AP.setText("AP-");
-            }
-        });
-
-        dabitNetAP.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode()== KeyCode.F10){
-                defaultChange.setVisible(true);
-                defaultLoad.setVisible(true);
             }
         });
     }

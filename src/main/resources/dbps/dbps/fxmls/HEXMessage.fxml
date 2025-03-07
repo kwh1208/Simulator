@@ -11,7 +11,7 @@
         <RadioButton fx:id="realTimeMsg" layoutX="12.0" layoutY="5.0" mnemonicParsing="false" text="%realTimeMsg" />
         <RadioButton fx:id="pageMsg" layoutX="125.0" layoutY="5.0" mnemonicParsing="false" text="%pageMsg" />
     </Pane>
-    <Label fx:id="pageCntLabel" layoutX="426.0" layoutY="18.0" text="page" visible="false"/>
+    <Label fx:id="pageCntLabel" layoutX="426.0" layoutY="18.0" text="page" visible="false" />
     <ChoiceBox fx:id="pageMsgCnt" layoutX="476.0" layoutY="14.0" prefHeight="21.0" prefWidth="95.0" value="1" visible="false">
         <items>
             <FXCollections fx:factory="observableArrayList">
@@ -144,33 +144,24 @@
         </items>
     </ChoiceBox>
 
-
-    <Label layoutX="34.0" layoutY="260.0" text="%reserve" />
-    <ChoiceBox fx:id="sub" disable="true" layoutX="177.0" layoutY="256.0" prefHeight="21.0" prefWidth="107.0" value="NotUsed">
+    <Label layoutX="34.0" layoutY="260.0" text="%effectSpeed" />
+    <ChoiceBox fx:id="effectSpeed" layoutX="177.0" layoutY="256.0" prefHeight="21.0" prefWidth="107.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
     </ChoiceBox>
 
-    <Label layoutX="34.0" layoutY="290.0" text="%effectSpeed" />
-    <ChoiceBox fx:id="effectSpeed" layoutX="177.0" layoutY="286.0" prefHeight="21.0" prefWidth="107.0">
+    <Label layoutX="34.0" layoutY="290.0" text="%maintainDuration" />
+    <ChoiceBox fx:id="effectTime" layoutX="177.0" layoutY="286.0" prefHeight="21.0" prefWidth="107.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
     </ChoiceBox>
 
-    <Label layoutX="34.0" layoutY="320.0" text="%maintainDuration" />
-    <ChoiceBox fx:id="effectTime" layoutX="177.0" layoutY="316.0" prefHeight="21.0" prefWidth="107.0">
-        <items>
-            <FXCollections fx:factory="observableArrayList">
-            </FXCollections>
-        </items>
-    </ChoiceBox>
-
-    <Label layoutX="34.0" layoutY="350.0" text="%XStart" />
-    <ChoiceBox layoutX="177.0" layoutY="346.0" prefHeight="21.0" prefWidth="107.0" value="0" fx:id="xStart">
+    <Label layoutX="34.0" layoutY="320.0" text="%XStart" />
+    <ChoiceBox layoutX="177.0" layoutY="316.0" prefHeight="21.0" prefWidth="107.0" value="0" fx:id="xStart">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="0" />
@@ -202,8 +193,8 @@
         </items>
     </ChoiceBox>
 
-    <Label layoutX="325.0" layoutY="350.0" text="%YStart" />
-    <ChoiceBox fx:id="yStart" layoutX="429.0" layoutY="346.0" prefHeight="21.0" prefWidth="107.0" value="0">
+    <Label layoutX="325.0" layoutY="320.0" text="%YStart" />
+    <ChoiceBox fx:id="yStart" layoutX="429.0" layoutY="316.0" prefHeight="21.0" prefWidth="107.0" value="0">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="0" />
@@ -219,8 +210,8 @@
         </items>
     </ChoiceBox>
 
-    <Label layoutX="34.0" layoutY="380.0" text="%XEnd" />
-    <ChoiceBox layoutX="177.0" layoutY="376.0" prefHeight="21.0" prefWidth="107.0" value="0" fx:id="xEnd">
+    <Label layoutX="34.0" layoutY="350.0" text="%XEnd" />
+    <ChoiceBox layoutX="177.0" layoutY="346.0" prefHeight="21.0" prefWidth="107.0" value="0" fx:id="xEnd">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="0" />
@@ -252,8 +243,8 @@
         </items>
     </ChoiceBox>
 
-    <Label layoutX="325.0" layoutY="380.0" text="%YEnd" />
-    <ChoiceBox fx:id="yEnd" layoutX="429.0" layoutY="376.0" prefHeight="21.0" prefWidth="107.0" value="0">
+    <Label layoutX="325.0" layoutY="350.0" text="%YEnd" />
+    <ChoiceBox fx:id="yEnd" layoutX="429.0" layoutY="346.0" prefHeight="21.0" prefWidth="107.0" value="0">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="0" />
@@ -269,24 +260,27 @@
         </items>
     </ChoiceBox>
 
-    <Label layoutX="34.0" layoutY="410.0" text="%bgSelection" />
-    <ChoiceBox fx:id="bgImg" layoutX="177.0" layoutY="406.0" prefHeight="21.0" prefWidth="107.0">
+    <Label layoutX="34.0" layoutY="380.0" text="%bgSelection" />
+    <ChoiceBox fx:id="bgImg" layoutX="177.0" layoutY="376.0" prefHeight="21.0" prefWidth="107.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
     </ChoiceBox>
 
-    <Label layoutX="107.0" layoutY="436.0" prefHeight="13.0" style="-fx-text-fill: #E0E0E0; " text="%colorCode" />
+    <Label layoutX="107.0" layoutY="406.0" prefHeight="13.0" style="-fx-text-fill: #E0E0E0; " text="%colorCode" />
 
-    <Label layoutX="34.0" layoutY="460.0" text="%textColor" />
-    <TextField fx:id="textColor" layoutX="177.0" layoutY="452.0" prefHeight="35.0" prefWidth="399.0" style="-fx-background-color: black; -fx-text-fill: white" />
-    <Label layoutX="34.0" layoutY="500.0" text="%textBgColor" />
-    <TextField fx:id="bgColor" layoutX="177.0" layoutY="492.0" prefHeight="35.0" prefWidth="399.0" style="-fx-background-color: black; -fx-text-fill: white" />
-    <Label layoutX="34.0" layoutY="540.0" text="%text" />
-    <TextField fx:id="msgPreview" layoutX="177.0" layoutY="532.0" prefHeight="35.0" prefWidth="399.0" style="-fx-background-color: black; -fx-text-fill: white" />
-    <Button layoutX="296.0" layoutY="572.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="30.0" prefWidth="81.0" text="%saveButton" />
-    <Button layoutX="396.0" layoutY="572.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="%initButton" />
-    <Button layoutX="496.0" layoutY="572.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="81.0" text="%sendButton" />
+    <Label layoutX="34.0" layoutY="430.0" text="%textColor" />
+    <TextField fx:id="textColor" layoutX="177.0" layoutY="422.0" prefHeight="33.0" prefWidth="399.0" style="-fx-background-color: black; -fx-text-fill: white" />
+    <Label layoutX="34.0" layoutY="468.0" text="%textBgColor" />
+    <TextField fx:id="bgColor" layoutX="177.0" layoutY="460.0" prefHeight="33.0" prefWidth="399.0" style="-fx-background-color: black; -fx-text-fill: white" />
+    <Label layoutX="34.0" layoutY="506.0" text="%text" />
+    <TextField fx:id="sendMsg" layoutX="177.0" layoutY="498.0" prefHeight="33.0" prefWidth="399.0" style="-fx-background-color: black; -fx-text-fill: white" />
+    <Label layoutX="34.0" layoutY="544.0" text="%packet" />
+    <TextField fx:id="packetPreview" editable="false" layoutX="177.0" layoutY="536.0" prefHeight="33.0" prefWidth="399.0" style="-fx-background-color: black; -fx-text-fill: white" />
+    <Button layoutX="222.0" layoutY="574.0" mnemonicParsing="false" onMouseClicked="#defaultSet" prefHeight="30.0" text="%defaultSetting" />
+    <Button layoutX="316.0" layoutY="574.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="%initButton" />
+    <Button layoutX="406.0" layoutY="574.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="30.0" prefWidth="81.0" text="%saveButton" />
+    <Button layoutX="496.0" layoutY="574.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="81.0" text="%sendButton" />
     <ProgressIndicator fx:id="progressIndicator" layoutX="320.0" layoutY="200.0" visible="false" />
 </AnchorPane>

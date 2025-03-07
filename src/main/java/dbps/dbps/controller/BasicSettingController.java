@@ -12,6 +12,7 @@ import javafx.scene.layout.Pane;
 import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.IS_ASCII;
+import static dbps.dbps.controller.HEXMessageController.isAsc;
 
 public class BasicSettingController {
     @FXML
@@ -40,16 +41,20 @@ public class BasicSettingController {
 
         if (IS_ASCII){
             ascRadioBtn.setSelected(true);
+            isAsc.set(true);
         } else {
             hexRadioBtn.setSelected(true);
+            isAsc.set(false);
         }
 
         protocolType.selectedToggleProperty().addListener((observable, oldValue, newValue)->{
             if (newValue.equals(hexRadioBtn)){
                 IS_ASCII=false;
+                isAsc.set(false);
             }
             else {
                 IS_ASCII=true;
+                isAsc.set(true);
             }
             configService.setProperty("IS_ASCII", String.valueOf(IS_ASCII));
         });
