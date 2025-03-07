@@ -22,8 +22,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -41,6 +43,12 @@ public class CommunicationSettingController {
     public Button shutConnect;
     public Button keepOpenBtn;
     public RadioButton mqttRadio;
+    public Pane mqttPane;
+    public Button dbNetBtn;
+    public Button bleBtn;
+    public Button testConnectBtn;
+    public Label responseTimeLabel;
+    public Button closeBtn;
     SerialPortManager serialPortManager;
     TCPManager tcpManager;
 
@@ -316,13 +324,42 @@ public class CommunicationSettingController {
         clientIPAddress.setText(configService.getProperty("clientTCPAddr"));
         clientIPPort.setText(configService.getProperty("clientTCPPort"));
 
-        Platform.runLater(() -> {
-            communicationSettingAP.getScene().setOnKeyPressed(event -> {
-                if (event.getCode() == KeyCode.F10) {
-                     keepOpenBtn.setVisible(!keepOpenBtn.isVisible());
-                }
-            });
+        communicationSettingAP.addEventHandler(KeyEvent.KEY_PRESSED, event ->{
+            if (event.isAltDown() && event.getCode() == KeyCode.F10) {
+                toggleMqtt();
+            }
         });
+
+    }
+
+    private void toggleMqtt() {
+        Stage stage = (Stage) communicationSettingAP.getScene().getWindow();
+        if (!mqttPane.isVisible()) {
+            stage.setHeight(725);
+            mqttPane.setVisible(true);
+            connect.setLayoutY(connect.getLayoutY()+80);
+            keepOpenBtn.setLayoutY(keepOpenBtn.getLayoutY()+80);
+            shutConnect.setLayoutY(shutConnect.getLayoutY()+80);
+            dbNetBtn.setLayoutY(dbNetBtn.getLayoutY()+80);
+            bleBtn.setLayoutY(bleBtn.getLayoutY()+80);
+            testConnectBtn.setLayoutY(testConnectBtn.getLayoutY()+80);
+            responseTimeLabel.setLayoutY(responseTimeLabel.getLayoutY()+80);
+            delayTime.setLayoutY(delayTime.getLayoutY()+80);
+            closeBtn.setLayoutY(closeBtn.getLayoutY()+80);
+        }
+        else {
+            stage.setHeight(600);
+            mqttPane.setVisible(false);
+            connect.setLayoutY(connect.getLayoutY()-80);
+            keepOpenBtn.setLayoutY(keepOpenBtn.getLayoutY()-80);
+            shutConnect.setLayoutY(shutConnect.getLayoutY()-80);
+            dbNetBtn.setLayoutY(dbNetBtn.getLayoutY()-80);
+            bleBtn.setLayoutY(bleBtn.getLayoutY()-80);
+            testConnectBtn.setLayoutY(testConnectBtn.getLayoutY()-80);
+            responseTimeLabel.setLayoutY(responseTimeLabel.getLayoutY()-80);
+            delayTime.setLayoutY(delayTime.getLayoutY()-80);
+            closeBtn.setLayoutY(closeBtn.getLayoutY()-80);
+        }
     }
 
     //사용가능한 포트 가져오기

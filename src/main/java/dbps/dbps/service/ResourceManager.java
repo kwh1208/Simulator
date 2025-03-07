@@ -20,7 +20,6 @@ public class ResourceManager {
         return instance;
     }
 
-    // 번들 초기화 (로케일에 따라 번들 선택)
     public static void initialize(Locale locale) {
         bundle = ResourceBundle.getBundle("dbps.dbps.messages", locale);
     }
