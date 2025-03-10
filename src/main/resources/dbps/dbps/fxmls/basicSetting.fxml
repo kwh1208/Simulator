@@ -5,16 +5,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane fx:id="basicPane" layoutX="19.0" layoutY="57.0" prefHeight="95.0" prefWidth="278.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BasicSettingController">
-    <Label alignment="CENTER" layoutX="70.0" layoutY="-12.0" prefHeight="18.0" prefWidth="140.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-font-weight: bold; -fx-text-fill: white;  -fx-origin: top;" text="%programSetting" />
-    <RadioButton fx:id="hexRadioBtn" layoutX="14.0" layoutY="30.0" text="%HexProtocol"/>
-    <RadioButton fx:id="ascRadioBtn" layoutX="140" layoutY="30.0" text="%ASCiiProtocol"/>
-    <Label layoutX="14.0" layoutY="66.0" text="%programLanguage" />
-    <ComboBox fx:id="programLanguage" layoutX="140.0" layoutY="60.0" prefHeight="25.0" prefWidth="127" value="한국어">
+<Pane fx:id="basicPane" layoutX="19.0" prefHeight="95.0" prefWidth="278.0"
+      xmlns="http://javafx.com/javafx/17.0.2-ea"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BasicSettingController">
+    <RadioButton fx:id="hexRadioBtn" layoutX="205" layoutY="15" text="%HexProtocol"/>
+    <RadioButton fx:id="ascRadioBtn" layoutX="305" layoutY="15" text="%ASCiiProtocol"/>
+    <ComboBox fx:id="programLanguage" layoutX="425" layoutY="13" prefHeight="25.0" prefWidth="100" value="한국어">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="한국어" />
-                <String fx:value="English" />
+                <String fx:value="한국어"/>
+                <String fx:value="English"/>
             </FXCollections>
         </items>
     </ComboBox>

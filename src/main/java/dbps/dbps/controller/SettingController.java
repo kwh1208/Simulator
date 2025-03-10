@@ -1,22 +1,11 @@
 package dbps.dbps.controller;
 
 
-import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
@@ -51,56 +40,7 @@ public class SettingController {
         pageMsgType.setValue(bundle.getString("simultaneousEffectDisplay"));
     }
 
-    @FXML
-    public void communicationSettingClicked(MouseEvent mouseEvent) {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/communicationSetting.fxml"));
-            fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
-            Parent root = fxmlLoader.load();
 
-            Stage modalStage = new Stage();
-            modalStage.setTitle("통신 설정");
-            modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
-
-            modalStage.initModality(Modality.APPLICATION_MODAL);
-
-            Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-            modalStage.initOwner(parentStage);
-
-            Scene scene = new Scene(root);
-            modalStage.setScene(scene);
-            modalStage.setResizable(false);
-
-            modalStage.setOnShown(event -> {
-                // 부모 창 위치와 크기 가져오기
-                double parentX = parentStage.getX();
-                double parentY = parentStage.getY();
-                double parentWidth = parentStage.getWidth();
-
-                // 모달 창 크기 계산
-                double modalWidth = modalStage.getWidth();
-
-                // 위치 계산
-                double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
-                double modalY = parentY;
-
-                // 위치 설정
-                modalStage.setX(modalX);
-                modalStage.setY(modalY);
-            });
-
-            modalStage.showAndWait();
-        } catch (IOException e) {
-        }
-    }
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 
 
     public void sendDisplayBright() {

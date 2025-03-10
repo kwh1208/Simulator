@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 import java.util.ResourceBundle;
@@ -18,6 +19,7 @@ import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class SizeOfDisplayBoardController {
 
+    public ChoiceBox<String> displayBright;
     AsciiMsgTransceiver asciiMsgTransceiver;
 
     HexMsgTransceiver hexMsgTransceiver;
@@ -28,10 +30,6 @@ public class SizeOfDisplayBoardController {
 
     HexMsgService hexMsgService;
     ResourceBundle bundle;
-
-
-    @FXML
-    public ChoiceBox<String> colorNum;
 
     @FXML
     public ChoiceBox<String> howToArray;
@@ -93,7 +91,6 @@ public class SizeOfDisplayBoardController {
     private void setInitialValues() {
         SIZE_ROW = spinnerForRow.getValue();
         SIZE_COLUMN = spinnerForColumn.getValue();
-        BITS_PER_PIXEL = Integer.parseInt(String.valueOf(colorNum.getValue()).substring(0,1));
         configService.setProperty("displayRowSize", String.valueOf(SIZE_ROW));
         configService.setProperty("displayColumnSize", String.valueOf(SIZE_COLUMN));
     }
@@ -111,7 +108,7 @@ public class SizeOfDisplayBoardController {
         hexMsgService.changeXY(SIZE_COLUMN,SIZE_ROW);
     }
 
-    private void displaySizeASC() throws ExecutionException, InterruptedException {
+    private void displaySizeASC() {
         String msg = "![0040";
         if (isRS){
             msg = "!["+convertRS485AddrASCii()+"040";
@@ -146,18 +143,8 @@ public class SizeOfDisplayBoardController {
             msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 07 40";
 
         }
+        msg+=" 08";
 
-        switch (String.valueOf(colorNum.getValue()).charAt(0)){
-            case 50:
-                msg+=" 02";
-                break;
-            case 51:
-                msg+=" 03";
-                break;
-            case 56:
-                msg+=" 08";
-                break;
-        }
         msg += " "+Integer.toHexString(spinnerForRow.getValue());
         msg += " "+Integer.toHexString(spinnerForColumn.getValue());
         if (howToArray.getValue().equals(bundle.getString("horizontalDefault"))) {
@@ -176,6 +163,10 @@ public class SizeOfDisplayBoardController {
         msg+=" 00 F1 10 03";
 
         hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
+
+    }
+    //Todo
+    public void sendDisplayBright(MouseEvent mouseEvent) {
 
     }
 }
