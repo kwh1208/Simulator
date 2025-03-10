@@ -330,7 +330,7 @@ public class SerialPortManager {
             logService.updateInfoLog(log);
 
             outputStream.write(msg);
-
+            System.out.println(222);
             // 읽기용 버퍼 초기화
             byte[] buffer = new byte[1024];
             int totalBytesRead = 0;
@@ -350,9 +350,12 @@ public class SerialPortManager {
                     }
                 }
             }
+            if (totalBytesRead == 0){
+                throw new RuntimeException();
+            }
             bytesToHex(buffer, totalBytesRead);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(111);
             throw e;
         }
     }

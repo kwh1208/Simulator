@@ -900,7 +900,13 @@ public class HEXMessageController {
 
     //Todo 나중에 asc랑 합치면서 사용할 함수
     private String makeASCMsg() {
-        StringBuilder sendMsg = new StringBuilder("![00");
+        StringBuilder sendMsg;
+        if (isRS){
+            sendMsg = new StringBuilder("!["+convertRS485AddrASCii()+"0");
+        }
+        else {
+             sendMsg = new StringBuilder("![00");
+        }
         if (realTimeMsg.isSelected()) sendMsg.append("0/P00");
         else sendMsg.append("1/P").append(String.format("%02d", Integer.parseInt(pageMsgCnt.getValue()) - 1));
 
