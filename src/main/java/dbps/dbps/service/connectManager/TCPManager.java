@@ -295,7 +295,7 @@ public class TCPManager {
                         break;
                     }
                 } else {
-                    break; // 타임아웃
+                    throw new RuntimeException();
                 }
             }
 

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.text.MessageFormat;
 import java.util.*;
 
 import static dbps.dbps.Constants.*;
@@ -369,7 +370,7 @@ public class FontService {
                                     return null;
                                 }
                                 retryCount++;
-                                logService.warningLog(bundle.getString("packetTransmissionRetry"));
+                                logService.warningLog(MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount));
                                 if (retryCount >= 3) {
                                     logService.errorLog(bundle.getString("packetTransmissionFailedAfterRetries"));
                                     return null;
