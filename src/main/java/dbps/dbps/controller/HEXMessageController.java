@@ -2,33 +2,59 @@ package dbps.dbps.controller;
 
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
-import javafx.beans.binding.Bindings;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import javafx.util.Duration;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static dbps.dbps.Constants.*;
-import static java.lang.Integer.parseInt;
 
 public class HEXMessageController {
 
     public ProgressIndicator progressIndicator;
-    public TextField packetPreview;
+    public RadioButton hexRadioBtn;
+    public RadioButton ascRadioBtn;
+    public Pane hexPane;
+    public Pane ascPane;
+    public TextFlow preview;
+    public TextField sendMsgAsc;
+    public Label textColorLabel;
+    public ChoiceBox<ComboItem> textColorASC;
+    public Label bgColorLabel;
+    public ChoiceBox<ComboItem> bgColorASC;
+    public Tooltip previewTooltip;
+    public ImageView arrow;
+    public Label previewLabel;
+    public Button defaultBtn;
     HexMsgTransceiver hexMsgTransceiver;
     HexMsgService hexMsgService;
     AsciiMsgTransceiver asciiMsgTransceiver;
+    ToggleGroup protocolType = new ToggleGroup();
 
     public static final BooleanProperty isAsc = new SimpleBooleanProperty(IS_ASCII);
 
@@ -123,6 +149,8 @@ public class HEXMessageController {
 
     ResourceBundle bundle;
 
+    Map<String, Integer> COLOR_MAP;
+
     @FXML
     private void initialize() {
         configService = ConfigService.getInstance();
@@ -134,6 +162,39 @@ public class HEXMessageController {
         hexMsgService.setYStart(yStart);
         hexMsgService.setXEnd(xEnd);
         hexMsgService.setYEnd(yEnd);
+        hexRadioBtn.setToggleGroup(protocolType);
+        ascRadioBtn.setToggleGroup(protocolType);
+
+        if (IS_ASCII){
+            ascRadioBtn.setSelected(true);
+            toggleVisible(false);
+        }
+        else {
+            hexRadioBtn.setSelected(true);
+            toggleVisible(true);
+        }
+
+        isAsc.addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                ascRadioBtn.setSelected(true);
+            } else {
+                hexRadioBtn.setSelected(true);
+            }
+        });
+
+        protocolType.selectedToggleProperty().addListener((observable, oldValue, newValue)->{
+            if (newValue.equals(hexRadioBtn)){
+                IS_ASCII=false;
+                isAsc.set(false);
+            }
+            else {
+                IS_ASCII=true;
+                isAsc.set(true);
+            }
+            configService.setProperty("IS_ASCII", String.valueOf(IS_ASCII));
+            toggleVisible(newValue.equals(hexRadioBtn));
+        });
+
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
 
         realTimeMsg.setToggleGroup(msgTypeGroup);
@@ -185,51 +246,204 @@ public class HEXMessageController {
 
         saveConfig();
 
+        COLOR_MAP = new HashMap<>();
+
+        COLOR_MAP.put("black", 0);
+        COLOR_MAP.put("red", 1);
+        COLOR_MAP.put("green", 2);
+        COLOR_MAP.put("yellow", 3);
+        COLOR_MAP.put("blue", 4);
+        COLOR_MAP.put("pink", 5);
+        COLOR_MAP.put("skyblue", 6);
+        COLOR_MAP.put("white", 7);
+
         setXY();
 
         setUI();
 
-        packetPreview.setOnMouseClicked(event -> {
-            Clipboard clipboard = Clipboard.getSystemClipboard();
-            ClipboardContent content = new ClipboardContent();
-            content.putString(packetPreview.getText());
-            clipboard.setContent(content);
-        });
-
         packetBinding();
+
+        hackTooltipStartTiming(previewTooltip);
     }
 
     private void packetBinding() {
-        packetPreview.textProperty().bind(Bindings.createStringBinding(() -> {
-                    if (IS_ASCII) {
-                        return makeASCMsg();
-                    } else {
-                        return makeHexMsg();
-                    }
-                },
-                isAsc,
-                msgTypeGroup.selectedToggleProperty(),
-                sectionGroup.selectedToggleProperty(),
-                displayControl.valueProperty(),
-                displayMethod.valueProperty(),
-                charCodes.valueProperty(),
-                fontSize.valueProperty(),
-                fontGroup.valueProperty(),
-                effectIn.valueProperty(),
-                inDirection.valueProperty(),
-                effectOut.valueProperty(),
-                outDirection.valueProperty(),
-                effectSpeed.valueProperty(),
-                effectTime.valueProperty(),
-                xStart.valueProperty(),
-                yStart.valueProperty(),
-                xEnd.valueProperty(),
-                yEnd.valueProperty(),
-                bgImg.valueProperty(),
-                textColor.textProperty(),
-                sendMsg.textProperty(),
-                bgColor.textProperty()
-        ));
+        // 기존 미리보기 초기화
+        updatePreviewBackground();
+
+        msgTypeGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        pageMsgCnt.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        sectionGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        displayControl.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        displayMethod.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        charCodes.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        fontSize.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        fontGroup.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        effectIn.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        inDirection.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        effectOut.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        outDirection.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        effectSpeed.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        effectTime.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        xStart.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        yStart.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        xEnd.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        yEnd.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        bgImg.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        textColorASC.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+        bgColorASC.valueProperty().addListener((obs, oldVal, newVal) -> scheduleUpdatePreviewBackground());
+    }
+
+    private PauseTransition updateDelay = new PauseTransition(Duration.millis(100));
+
+    private void scheduleUpdatePreviewBackground() {
+        // 변경이 발생할 때마다 PauseTransition을 재시작함
+        updateDelay.setOnFinished(e -> updatePreviewBackground());
+        updateDelay.playFromStart();
+    }
+
+    private void updatePreviewBackground() {
+        // 컨트롤 상태로부터 새 세그먼트 목록 계산
+        List<String> newSegments = getPreviewSegments();
+
+        // TextFlow의 기존 자식 노드를 모두 제거
+        preview.getChildren().clear();
+
+        for (int i = 0; i < newSegments.size(); i++) {
+            String seg = newSegments.get(i);
+            Text textNode = new Text(seg);
+            textNode.setFill(Color.WHITE);  // 텍스트 색상은 흰색
+
+            // 배경을 위한 Rectangle 생성 (텍스트 크기에 맞춰 조정)
+            Rectangle bgRect = new Rectangle();
+            // 텍스트의 크기 계산 (applyCss()를 호출하여 레이아웃 정보를 최신화)
+            textNode.applyCss();
+            Bounds bounds = textNode.getBoundsInLocal();
+            bgRect.setWidth(bounds.getWidth());
+            bgRect.setHeight(bounds.getHeight());
+            // 기본 배경은 투명하게 설정
+            bgRect.setFill(Color.TRANSPARENT);
+
+            // 만약 이전 세그먼트가 존재하고, 해당 인덱스 값이 달라졌다면 배경에 애니메이션 적용
+            if (previousSegments != null && previousSegments.size() > i && !previousSegments.get(i).equals(seg)) {
+                bgRect.setFill(Color.DARKORANGE);
+                Timeline timeline = new Timeline(
+                        new KeyFrame(Duration.ZERO, new KeyValue(bgRect.fillProperty(), Color.DARKORANGE)),
+                        new KeyFrame(Duration.seconds(1.5), new KeyValue(bgRect.fillProperty(), Color.TRANSPARENT))
+                );
+                timeline.play();
+            }
+
+            StackPane stack = new StackPane();
+            stack.getChildren().addAll(bgRect, textNode);
+            preview.getChildren().add(stack);
+        }
+
+        // 이후 변경 비교를 위해 이전 세그먼트 업데이트
+        previousSegments = newSegments;
+    }
+
+
+    private List<String> getPreviewSegments() {
+        List<String> segments = new ArrayList<>();
+        String msg;
+
+        // 0. 시작 부분
+        if (isRS) {
+            msg = "![" + convertRS485AddrASCii() + "0";
+        } else {
+            msg = "![00";
+        }
+        segments.add(msg);
+
+        // 1. 실시간 메시지 여부에 따른 메시지 타입
+        if (realTimeMsg.isSelected()) {
+            msg = "0/P00";
+        } else {
+            msg = "1/P" + String.format("%02d", Integer.parseInt(pageMsgCnt.getValue()) - 1);
+        }
+        msg += String.format("%02d", Integer.parseInt(((RadioButton) sectionGroup.getSelectedToggle()).getText()));
+        segments.add(msg);
+
+        // 3. /D + setDText(...)
+        msg = "/D" + setDText(displayControl.getValue(), displayMethod.getValue());
+        segments.add(msg);
+
+        // 4. /F + setFText(...)
+        msg = "/F" + setFText(charCodes.getValue().displayText(), fontSize.getValue());
+        segments.add(msg);
+
+        // 5. /E + setEText(effectIn, inDirection)
+        msg = "/E" + setEText(effectIn.getValue().displayText(), inDirection.getValue().displayText());
+        msg += setEText(effectOut.getValue().displayText(), outDirection.getValue().displayText());
+        segments.add(msg);
+
+        // 7. /S + setSText(...)
+        msg = "/S" + setSText(effectSpeed.getValue().displayText(), effectTime.getValue().displayText());
+        segments.add(msg);
+
+        // 8. /X + xStart/xEnd 값 (4로 나눈 후 2자리 포맷)
+        msg = "/X" + String.format("%02d", Integer.parseInt(xStart.getValue()) / 4)
+                + String.format("%02d", Integer.parseInt(xEnd.getValue()) / 4);
+        segments.add(msg);
+
+        // 9. /Y + yStart/yEnd 값 (4로 나눈 후 2자리 포맷)
+        msg = "/Y" + String.format("%02d", Integer.parseInt(yStart.getValue()) / 4)
+                + String.format("%02d", Integer.parseInt(yEnd.getValue()) / 4);
+        segments.add(msg);
+
+        // 10. /B + bgImg 값 (특정 조건에 따라 "000" 또는 포맷된 값)
+        msg = "/B" + (bgImg.getValue().displayText().equals(bundle.getString("notUsed"))
+                ? "000"
+                : String.format("%03d", Integer.parseInt(bgImg.getValue().displayText())));
+        segments.add(msg);
+
+        // 11. /C + fgColors, /G + bgColors
+        String fgColors = textColorASC.getValue().key();
+        msg = "/C" + COLOR_MAP.get(fgColors);
+        segments.add(msg);
+
+        String bgColors = bgColorASC.getValue().key();
+        msg = "/G" + COLOR_MAP.get(bgColors);
+        segments.add(msg);
+
+        // 12. /T + fontGroup 값 (숫자만 추출 후 -1)
+        msg = "/T" + (Integer.parseInt(fontGroup.getValue().displayText().replaceAll("\\D", "")) - 1);
+        segments.add(msg);
+
+        // 13. 닫는 부분
+        msg = "!]";
+        segments.add(msg);
+
+        return segments;
+    }
+
+
+    List<String> previousSegments;
+
+
+    public void toggleVisible(boolean visible){
+        if (visible){
+            hexPane.setVisible(true);
+            ascPane.setVisible(false);
+            textColorLabel.setDisable(true);
+            textColorASC.setDisable(true);
+            bgColorLabel.setDisable(true);
+            bgColorASC.setDisable(true);
+            previewLabel.setDisable(true);
+            defaultBtn.setDisable(true);
+            preview.setVisible(false);
+        }
+        else {
+            hexPane.setVisible(false);
+            ascPane.setVisible(true);
+            textColorLabel.setDisable(false);
+            textColorASC.setDisable(false);
+            bgColorLabel.setDisable(false);
+            bgColorASC.setDisable(false);
+            previewLabel.setDisable(false);
+            defaultBtn.setDisable(false);
+            preview.setVisible(true);
+        }
     }
 
     private void setUI() {
@@ -246,7 +460,6 @@ public class HEXMessageController {
 
         effectIn.getItems().addAll(
                 new ComboItem("staticEffect", bundle.getString("staticEffect")),
-                new ComboItem("randomEffect", bundle.getString("randomEffect")),
                 new ComboItem("move", bundle.getString("move")),
                 new ComboItem("wipe", bundle.getString("wipe")),
                 new ComboItem("blind", bundle.getString("blind")),
@@ -261,7 +474,6 @@ public class HEXMessageController {
 
         effectOut.getItems().addAll(
                 new ComboItem("staticEffect", bundle.getString("staticEffect")),
-                new ComboItem("randomEffect", bundle.getString("randomEffect")),
                 new ComboItem("move", bundle.getString("move")),
                 new ComboItem("wipe", bundle.getString("wipe")),
                 new ComboItem("blind", bundle.getString("blind")),
@@ -308,7 +520,28 @@ public class HEXMessageController {
 // 기본 선택
         effectTime.setValue(new ComboItem("2sec", "2" + bundle.getString("sec")));
 
+        textColorASC.getItems().addAll(
+                new ComboItem("black", bundle.getString("black")),
+                new ComboItem("red", bundle.getString("red")),
+                new ComboItem("green", bundle.getString("green")),
+                new ComboItem("yellow", bundle.getString("yellow")),
+                new ComboItem("blue", bundle.getString("blue")),
+                new ComboItem("pink", bundle.getString("pink")),
+                new ComboItem("skyblue", bundle.getString("skyblue")),
+                new ComboItem("white", bundle.getString("white")));
 
+        textColorASC.setValue(new ComboItem(configService.getProperty("textColorASC"+getMsgNum()), bundle.getString(configService.getProperty("textColorASC"+getMsgNum()))));
+
+        bgColorASC.getItems().addAll(
+                new ComboItem("black", bundle.getString("black")),
+                new ComboItem("red", bundle.getString("red")),
+                new ComboItem("green", bundle.getString("green")),
+                new ComboItem("yellow", bundle.getString("yellow")),
+                new ComboItem("blue", bundle.getString("blue")),
+                new ComboItem("pink", bundle.getString("pink")),
+                new ComboItem("skyblue", bundle.getString("skyblue")),
+                new ComboItem("white", bundle.getString("white")));
+        bgColorASC.setValue(new ComboItem(configService.getProperty("bgColorASC"+getMsgNum()), bundle.getString(configService.getProperty("bgColorASC"+getMsgNum()))));
     }
 
     private void setXY() {
@@ -385,42 +618,20 @@ public class HEXMessageController {
         yStart.setValue(configService.getProperty("yStart" + msgNum));
         xEnd.setValue(configService.getProperty("xEnd" + msgNum));
         yEnd.setValue(configService.getProperty("yEnd" + msgNum));
-        bgImg.setValue(new ComboItem(configService.getProperty("bgImg" + msgNum), bundle.getString(configService.getProperty("bgImg" + msgNum))));
+        bgImg.setValue(new ComboItem(
+                configService.getProperty("bgImg" + msgNum),
+                configService.getProperty("bgImg" + msgNum).equals("notUsed") ? bundle.getString(configService.getProperty("bgImg" + msgNum)) : configService.getProperty("bgImg" + msgNum)
+        ));
         textColor.setText(configService.getProperty("textColor" + msgNum));
         bgColor.setText(configService.getProperty("bgColor" + msgNum));
         sendMsg.setText(configService.getProperty("text" + msgNum));
-    }
-
-    public void save() {
-        String msgNum = getMsgNum();
-        configService.setProperty("isHexRealTime", "0");
-        if (pageMsg.isSelected()) {
-            configService.setProperty("isHexRealTime", pageMsgCnt.getValue());
-        }
-        configService.setProperty("displayControl" + msgNum, displayControl.getValue());
-        configService.setProperty("displayMethod" + msgNum, displayMethod.getValue());
-        configService.setProperty("charCode" + msgNum, charCodes.getValue().key());
-        configService.setProperty("fontSize" + msgNum, fontSize.getValue());
-        configService.setProperty("fontGroup" + msgNum, fontGroup.getValue().key());
-        configService.setProperty("effectIn" + msgNum, effectIn.getValue().key());
-        configService.setProperty("effectInDirection" + msgNum, inDirection.getValue().key());
-        configService.setProperty("effectOut" + msgNum, effectOut.getValue().key());
-        configService.setProperty("effectOutDirection" + msgNum, outDirection.getValue().key());
-        configService.setProperty("effectSpeed" + msgNum, effectSpeed.getValue().key());
-        configService.setProperty("effectTime" + msgNum, effectTime.getValue().key());
-        configService.setProperty("xStart" + msgNum, xStart.getValue());
-        configService.setProperty("yStart" + msgNum, yStart.getValue());
-        configService.setProperty("xEnd" + msgNum, xEnd.getValue());
-        configService.setProperty("yEnd" + msgNum, yEnd.getValue());
-        configService.setProperty("bgImg" + msgNum, bgImg.getValue().key());
-        configService.setProperty("textColor" + msgNum, textColor.getText());
-        configService.setProperty("bgColor" + msgNum, bgColor.getText());
-        configService.setProperty("text" + msgNum, sendMsg.getText());
+        textColorASC.setValue(new ComboItem(configService.getProperty("textColorASC" + msgNum), bundle.getString(configService.getProperty("textColorASC" + msgNum))));
+        bgColorASC.setValue(new ComboItem(configService.getProperty("bgColorASC"+msgNum), bundle.getString(configService.getProperty("bgColorASC"+msgNum))));
     }
 
     public void send() {
         if (IS_ASCII) {
-            String msg = makeASCMsg();
+            String msg = sendMsgAsc.getText();
             asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
         } else {
             String msg = makeHexMsg();
@@ -589,7 +800,7 @@ public class HEXMessageController {
 
             return msg.toString();
         } catch (Exception e) {
-            LogService.getLogService().warningLog(e.getMessage());
+
         }
         return null;
     }
@@ -803,7 +1014,6 @@ public class HEXMessageController {
         directionBox.getSelectionModel().selectFirst();
     }
 
-
     private void updateInDirections(String effect) {
         selectEffect(effect, inDirection);
     }
@@ -821,8 +1031,8 @@ public class HEXMessageController {
         configService.setProperty("fontGroup" + msgNum, "fontGroup1");
         configService.setProperty("effectIn" + msgNum, "staticEffect");
         configService.setProperty("effectInDirection" + msgNum, "noDirection");
-        configService.setProperty("effectOut" + msgNum, "notUsed");
-        configService.setProperty("effectOutDirection" + msgNum, "notUsed");
+        configService.setProperty("effectOut" + msgNum, "staticEffect");
+        configService.setProperty("effectOutDirection" + msgNum, "noDirection");
         configService.setProperty("effectSpeed" + msgNum, "5");
         configService.setProperty("effectTime" + msgNum, "2sec");
         configService.setProperty("xStart" + msgNum, "0");
@@ -832,6 +1042,8 @@ public class HEXMessageController {
         configService.setProperty("bgImg" + msgNum, "notUsed");
         configService.setProperty("textColor" + msgNum, "1");
         configService.setProperty("bgColor" + msgNum, "0");
+        configService.setProperty("textColorASC"+msgNum, "red");
+        configService.setProperty("black", "bgColorASC"+msgNum);
 
         doMsgSettings();
     }
@@ -859,13 +1071,13 @@ public class HEXMessageController {
                 (observable, oldValue, newValue) -> configService.setProperty("effectIn" + getMsgNum(), newValue.key())
         );
         inDirection.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("inDirection" + getMsgNum(), newValue.key())
+                (observable, oldValue, newValue) -> configService.setProperty("effectInDefault" + getMsgNum(), newValue.key())
         );
         effectOut.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> configService.setProperty("effectOut" + getMsgNum(), newValue.key())
         );
         outDirection.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("outDirection" + getMsgNum(), newValue.key())
+                (observable, oldValue, newValue) -> configService.setProperty("effectOutDefault" + getMsgNum(), newValue.key())
         );
         effectSpeed.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> configService.setProperty("effectSpeed" + getMsgNum(), newValue.key())
@@ -896,61 +1108,6 @@ public class HEXMessageController {
         bgImg.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> configService.setProperty("bgImg" + getMsgNum(), newValue.key())
         );
-    }
-
-    //Todo 나중에 asc랑 합치면서 사용할 함수
-    private String makeASCMsg() {
-        StringBuilder sendMsg;
-        if (isRS){
-            sendMsg = new StringBuilder("!["+convertRS485AddrASCii()+"0");
-        }
-        else {
-             sendMsg = new StringBuilder("![00");
-        }
-        if (realTimeMsg.isSelected()) sendMsg.append("0/P00");
-        else sendMsg.append("1/P").append(String.format("%02d", Integer.parseInt(pageMsgCnt.getValue()) - 1));
-
-        sendMsg.append(String.format("%02d", Integer.parseInt(((RadioButton) sectionGroup.getSelectedToggle()).getText())));
-
-        sendMsg.append("/D").append(setDText(displayControl.getValue(), displayMethod.getValue()));
-        sendMsg.append("/F").append(setFText(charCodes.getValue().displayText(), fontSize.getValue()));
-        sendMsg.append("/E").append(setEText(effectIn.getValue().displayText(), inDirection.getValue().displayText()));
-        sendMsg.append(setEText(effectOut.getValue().displayText(), outDirection.getValue().displayText()));
-        sendMsg.append("/S").append(setSText(effectSpeed.getValue().displayText(), effectTime.getValue().displayText()));
-        sendMsg.append("/X").append(String.format("%02d", parseInt(xStart.getValue()) / 4)).append(String.format("%02d", parseInt(xEnd.getValue()) / 4));
-        sendMsg.append("/Y").append(String.format("%02d", parseInt(yStart.getValue()) / 4)).append(String.format("%02d", parseInt(yEnd.getValue()) / 4));
-        sendMsg.append("/B").append(bgImg.getValue().displayText().equals(bundle.getString("notUsed")) ? "000" : String.format("%03d", parseInt(bgImg.getValue().displayText())));
-        sendMsg.append("/T").append(Integer.parseInt(fontGroup.getValue().displayText().replaceAll("\\D", "")) - 1);
-
-        int length = this.sendMsg.getText().length();
-        String text = this.sendMsg.getText();
-        String fgColors = textColor.getText();
-        String bgColors = bgColor.getText();
-
-        int currentColor = fgColors.charAt(0) - '0';
-        int currentBg = bgColors.charAt(0) - '0';
-
-        sendMsg.append("/C").append(currentColor).append("/G").append(currentBg);
-
-        for (int i = 0; i < length; i++) {
-            int nextColor = (i < fgColors.length()) ? fgColors.charAt(i) - '0' : currentColor;
-            int nextBg = (i < bgColors.length()) ? bgColors.charAt(i) - '0' : currentBg;
-
-            if (i > 0 && (nextColor != currentColor || nextBg != currentBg)) {
-                // 색상이 변경되면 새로운 C/G 추가
-                sendMsg.append("/C").append(nextColor).append("/G").append(nextBg);
-                currentColor = nextColor;
-                currentBg = nextBg;
-            }
-
-            // 문자 추가
-            sendMsg.append(text.charAt(i));
-        }
-
-        sendMsg.append("!]");
-
-        return sendMsg.toString();
-
     }
 
     private String setDText(String value1, String value2) {
@@ -1106,7 +1263,7 @@ public class HEXMessageController {
             } else if (value2.equals(bundle.getString("allSimultaneous"))) {
                 return "55";
             }
-        } else if (value1.equals(bundle.getString("randomEffect"))) return "122";
+        } else if (value1.equals(bundle.getString("randomEffect"))) return "57";
         return "54";//3D 효과, 왼쪽
     }
 
@@ -1149,46 +1306,58 @@ public class HEXMessageController {
         return true;
     }
 
-    public void defaultSet() {
-        // 바인딩 해제
-        packetPreview.textProperty().unbind();
-        String msg = makeASCMsg();
 
-        // 앞뒤의 "!"와 "]" 제거 (필요한 경우)
-        msg = msg.substring(1, msg.length() - 1);
-
-        // "/" 기준으로 분리
-        String[] tokens = msg.split("/");
-
-        int pIdx = -1, tIdx = -1;
-        for (int i = 0; i < tokens.length; i++) {
-            if (tokens[i].startsWith("P") && pIdx == -1) {
-                pIdx = i;
-            }
-            if (tokens[i].startsWith("T") && tIdx == -1) {
-                tIdx = i;
-            }
-        }
-
-        // pIdx부터 tIdx 바로 앞까지의 토큰들을 "/"로 연결
+    private String getTextFromParent(Parent parent) {
         StringBuilder sb = new StringBuilder();
-        for (int i = pIdx; i < tIdx; i++) {
-            if (i > pIdx) {
-                sb.append("/");
+        for (Node child : parent.getChildrenUnmodifiable()) {
+            if (child instanceof Text) {
+                sb.append(((Text) child).getText());
+            } else if (child instanceof Parent) {
+                sb.append(getTextFromParent((Parent) child));
             }
-            sb.append(tokens[i]);
         }
-        String result = sb.toString();
+        return sb.toString();
+    }
 
-        // 추가로 "/C"와 "/G" 토큰을 붙임
-        result += "/C" + textColor.getText().charAt(0) + "/G" + bgColor.getText().charAt(0) + "/T" + (Integer.parseInt(fontGroup.getValue().displayText().replaceAll("[^0-9.]", "")) - 1) + "!]";
+    public void copy() {
+        sendMsgAsc.setText(getPreviewText());
+    }
 
-        // 최종 메시지 설정 (접두어 추가)
-        packetPreview.setText("![0032/" + result);
+    public void sendDefault() {
+        asciiMsgTransceiver.sendMessages(getPreviewText().replace("![000", "![0032"), false, progressIndicator);
+    }
 
-        // 전송 및 바인딩 복원 (원래의 바인딩 방식 호출)
-        asciiMsgTransceiver.sendMessages(packetPreview.getText(), false, progressIndicator);
-        packetBinding();
+    private String getPreviewText() {
+        StringBuilder sb = new StringBuilder();
+        for (Node node : preview.getChildren()) {
+            if (node instanceof Text) {
+                sb.append(((Text) node).getText());
+            } else if (node instanceof Parent) {  // 예: StackPane처럼 Text가 자식으로 포함된 경우
+                sb.append(getTextFromParent((Parent) node));
+            }
+        }
+        return sb.toString();
+    }
+
+    public static void hackTooltipStartTiming(Tooltip tooltip) {
+        try {
+            Field fieldBehavior = tooltip.getClass().getDeclaredField("BEHAVIOR");
+            fieldBehavior.setAccessible(true);
+            Object objBehavior = fieldBehavior.get(tooltip);
+
+            Field fieldTimer = objBehavior.getClass().getDeclaredField("activationTimer");
+            fieldTimer.setAccessible(true);
+            Timeline objTimer = (Timeline) fieldTimer.get(objBehavior);
+
+            objTimer.getKeyFrames().clear();
+            objTimer.getKeyFrames().add(new KeyFrame(new Duration(10)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void openMulti(MouseEvent mouseEvent) throws IOException {
+        openModal("/dbps/dbps/fxmls/ASCiiMessage.fxml", "ASCii 프로토콜 전송", mouseEvent);
     }
 
 }

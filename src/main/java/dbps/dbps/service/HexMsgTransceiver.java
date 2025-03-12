@@ -55,7 +55,7 @@ public class HexMsgTransceiver {
         return instance;
     }
 
-    public CompletableFuture<String> sendByteMessages(byte[] msg, ProgressIndicator progressIndicator) {
+    public void sendByteMessages(byte[] msg, ProgressIndicator progressIndicator) {
         CompletableFuture<String> resultFuture = new CompletableFuture<>();
         Task<String> sendTask = switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> serialPortManager.sendMsgAndGetMsgByte(msg);
@@ -95,7 +95,6 @@ public class HexMsgTransceiver {
             resultFuture.completeExceptionally(new IllegalStateException("Task is null."));
         }
 
-        return resultFuture;
     }
 
 
@@ -272,11 +271,11 @@ public class HexMsgTransceiver {
         FirmwareService.firmwareInformation.setText(asciiString);
     }
 
-
+    //Todo 로그 수정
     private void handleScreenSizeSetting(String[] splitMsg, byte[] msg) {
         if (!splitMsg[7].equals(String.format("%02X", msg[7])) || !splitMsg[8].equals(String.format("%02X", msg[8]))) {
             logService.warningLog(bundle.getString("displaySizeSettingFailed"));
-            logService.warningLog(MessageFormat.format(bundle.getString("displaySizeLimit"), Integer.parseInt(splitMsg[7]), Integer.parseInt(splitMsg[8])));
+            logService.warningLog(MessageFormat.format(bundle.getString("displaySizeLimit"), Integer.parseInt(splitMsg[7], 16), Integer.parseInt(splitMsg[8], 16)));
         } else {
             logService.updateInfoLog(bundle.getString("displaySizeSettingSuccess"));
         }

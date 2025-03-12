@@ -60,7 +60,7 @@ public class Constants {
     public static int SIZE_COLUMN;
     public static int BITS_PER_PIXEL;
     public static String howToArrange;
-    public static String uploadFirmwarePath;
+    public static String uploadFirmwarePath = "";
 
     static {
         ConfigService configService = ConfigService.getInstance();
@@ -227,7 +227,6 @@ public class Constants {
 
             // 모달 창 크기 계산
             double modalWidth = modalStage.getWidth();
-            double modalHeight = modalStage.getHeight();
 
             // 위치 계산
             double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙

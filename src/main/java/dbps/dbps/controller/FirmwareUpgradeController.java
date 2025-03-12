@@ -281,9 +281,8 @@ public class FirmwareUpgradeController {
                 hexToDecimal = String.valueOf(extraByte);  // 10진수 문자열로 변환
 
                 // 기존 데이터 부분을 읽기 (1바이트 이후부터)
-                result = new String(buffer, 1, length, "MS949"); // ASCII 호환 인코딩
-
-
+                result = new String(buffer, 1, length, "MS949");
+                result=result.replaceAll("!]", "");
             }
         } catch (IOException e) {
 

@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="605.0" prefWidth="590.0"
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="530.0"
             style="-fx-border-color: black; -fx-border-width: 1 0 0 0" xmlns="http://javafx.com/javafx/17.0.2-ea"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.SettingController">
     <!--프로그램 설정-->
@@ -17,19 +15,37 @@
     <!--전광판 크기-->
     <fx:include source="sizeOfDisplayBoard.fxml"/>
 
-    <Label layoutX="315.0" layoutY="356.0" text="%sectionEffect"/>
-    <ChoiceBox fx:id="pageMsgType" layoutX="430.0" layoutY="351.0" prefHeight="25.0" prefWidth="87.0">
+    <Pane layoutX="220.0" layoutY="301.0" prefHeight="134.0" prefWidth="288.0"
+          style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
+        <Label alignment="CENTER" layoutX="74.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0"
+               style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder"
+               text="%timeSet" textFill="WHITE"/>
+        <TextField fx:id="timeBoard" alignment="CENTER" editable="false" layoutX="14.0" layoutY="24.0" prefHeight="30.0"
+                   prefWidth="260.0" text="%currentTime"/>
+        <Button layoutX="14.0" layoutY="64.0" mnemonicParsing="false" onMouseClicked="#getControllerTime"
+                prefHeight="60.0" prefWidth="131.0" text="%controllerTime"/>
+        <Button layoutX="145.0" layoutY="64.0" mnemonicParsing="false" onMouseClicked="#synchronizeTime"
+                prefHeight="60.0" prefWidth="131.0" text="%syncWithPcTime"/>
+    </Pane>
+
+    <Label layoutX="230.0" layoutY="445.0" text="%bgSelection"/>
+    <ComboBox fx:id="BGImgSelection" layoutX="330.0" layoutY="440.0" prefHeight="28.0" prefWidth="90.0">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+            </FXCollections>
+        </items>
+    </ComboBox>
+    <Button layoutX="440.0" layoutY="440.0" mnemonicParsing="false" onMouseClicked="#sendBGImgSelection"
+            prefHeight="28.0" prefWidth="63.0" text="%sendButton"/>
+
+    <Label layoutX="230.0" layoutY="480.0" text="%fillDisplay"/>
+    <ChoiceBox fx:id="fillColor" layoutX="330.0" layoutY="475.0" prefHeight="28.0" prefWidth="90.0" value="%black">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
     </ChoiceBox>
-    <Button layoutX="525.0" layoutY="350.0" mnemonicParsing="false" onMouseClicked="#sendPageMsgType" prefHeight="28.0"
+    <Button layoutX="440.0" layoutY="475.0" mnemonicParsing="false" onMouseClicked="#sendFillColor" prefHeight="28.0"
             prefWidth="63.0" text="%sendButton"/>
-    <!--선아래 왼쪽-->
-    <fx:include source="underTheLineLeft.fxml"/>
-
-    <!--선아래 오른쪽-->
-    <fx:include source="underTheLineRight.fxml"/>
     <ProgressIndicator fx:id="commonProgressIndicator" layoutX="320.0" layoutY="200.0" visible="false"/>
 </AnchorPane>

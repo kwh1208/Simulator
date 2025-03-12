@@ -259,7 +259,6 @@ public class SerialPortManager {
                         logService.errorLog(bundle.getString("connectionFail"));
                         throw e;
                     } catch (Exception e) {
-                        logService.errorLog(bundle.getString("Error")+ e.getMessage());
                         throw e;
                     } finally {
                         closePort(portName); // 작업 후 포트 닫기
@@ -330,7 +329,6 @@ public class SerialPortManager {
             logService.updateInfoLog(log);
 
             outputStream.write(msg);
-            System.out.println(222);
             // 읽기용 버퍼 초기화
             byte[] buffer = new byte[1024];
             int totalBytesRead = 0;
@@ -355,7 +353,6 @@ public class SerialPortManager {
             }
             bytesToHex(buffer, totalBytesRead);
         } catch (Exception e) {
-            System.out.println(111);
             throw e;
         }
     }

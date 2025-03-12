@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import java.lang.*?>
 <AnchorPane fx:id="boardAP" prefHeight="409.0" prefWidth="377.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BoardSettingsController">
    <Label layoutX="13.0" layoutY="51.0" text="%cmdType" />
    <Pane layoutX="212.0" layoutY="39.0" prefHeight="31.0" prefWidth="158.0" style="-fx-border-color: black;">
@@ -110,7 +112,15 @@
    <Label layoutX="13.0" layoutY="282.0" text="RS485 Address" />
    <Label fx:id="rs_address" layoutX="213.0" layoutY="282.0" text="00" />
 
-   <Button layoutX="14.0" layoutY="320.0" mnemonicParsing="false" onMouseClicked="#openCommunicationSetting" prefHeight="31.0" prefWidth="219.0" text="%communicationSetting" />
+   <Button layoutX="14.0" layoutY="320.0" mnemonicParsing="false" onMouseClicked="#openCommunicationSetting" prefHeight="31.0" prefWidth="219.0" text="%communicationSetting" styleClass="newWindow-button">
+      <graphic>
+         <ImageView preserveRatio="true" fitWidth="16" fitHeight="16">
+
+               <Image url="@../images/new-window.png"/>
+
+         </ImageView>
+      </graphic>
+   </Button>
    <Button layoutX="257.0" layoutY="320.0" mnemonicParsing="false" onMouseClicked="#Transfer" prefHeight="31.0" prefWidth="101.0" text="%sendButton" />
    <Button layoutX="257.0" layoutY="356.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="31.0" prefWidth="101.0" text="%close" />
    <ProgressIndicator fx:id="progressIndicator" layoutX="160.0" layoutY="150.0" visible="false" />

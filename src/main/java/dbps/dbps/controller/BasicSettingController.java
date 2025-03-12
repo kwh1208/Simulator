@@ -47,6 +47,14 @@ public class BasicSettingController {
             isAsc.set(false);
         }
 
+        isAsc.addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                ascRadioBtn.setSelected(true);
+            } else {
+                hexRadioBtn.setSelected(true);
+            }
+        });
+
         protocolType.selectedToggleProperty().addListener((observable, oldValue, newValue)->{
             if (newValue.equals(hexRadioBtn)){
                 IS_ASCII=false;

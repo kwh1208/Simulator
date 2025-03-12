@@ -1,106 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.collections.*?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<AnchorPane fx:id="displaySignalAP" prefHeight="479.0" prefWidth="550.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplaySignalSettingController">
-   <children>
-       <Label layoutX="29.0" layoutY="10.0" text="%displaySignal" />
-       <Label layoutX="272.0" layoutY="11.0" text="%memo" />
-       <ListView fx:id="signalList" layoutX="29.0" layoutY="35.0" prefHeight="331.0" prefWidth="205.0">
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import java.lang.*?>
+<AnchorPane fx:id="displaySignalAP" prefHeight="479.0" prefWidth="550.0" style="-fx-background-color: #333333"
+            xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dbps.dbps.controller.DisplaySignalSettingController">
+    <children>
+        <Label layoutX="29.0" layoutY="10.0" text="%displaySignal"/>
+        <Label layoutX="272.0" layoutY="11.0" text="%memo"/>
+        <ListView fx:id="signalList" layoutX="29.0" layoutY="35.0" prefHeight="331.0" prefWidth="205.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="32D-P16D1S11" />
-                    <String fx:value="16D-P16D1S10-1" />
-                    <String fx:value="16D-P16D1S11" />
-                    <String fx:value="16D-P16D1S21" />
-                    <String fx:value="16D-P16D1S31" />
-                    <String fx:value="16D-P16D1S41" />
+                    <String fx:value="32D-P16D1S11"/>
+                    <String fx:value="16D-P16D1S10-1"/>
+                    <String fx:value="16D-P16D1S11"/>
+                    <String fx:value="16D-P16D1S21"/>
+                    <String fx:value="16D-P16D1S31"/>
+                    <String fx:value="16D-P16D1S41"/>
                     <String fx:value="08D-P16D2S10-1^9"/>
                     <String fx:value="08D-P16D2S11-1^9"/>
-                    <String fx:value="08D-P16D2S21" />
-                    <String fx:value="08D-P16D2S23-1^2" />
+                    <String fx:value="08D-P16D2S21"/>
+                    <String fx:value="08D-P16D2S23-1^2"/>
                     <String fx:value="08D-P16D2S31-9^1"/>
-                    <String fx:value="08D-P16D2S81" />
-                    <String fx:value="08D-P32D1S11" />
-                    <String fx:value="08D-P32D1S12" />
+                    <String fx:value="08D-P16D2S81"/>
+                    <String fx:value="08D-P32D1S11"/>
+                    <String fx:value="08D-P32D1S12"/>
                     <String fx:value="08D-P32D1S22-9&lt;1"/>
-                    <String fx:value="08D-P32D1S31" />
-                    <String fx:value="08D-P32D1S32" />
-                    <String fx:value="08D-P64D1S21" />
-                    <String fx:value="08D-P64D1S31" />
-                    <String fx:value="08D-P64D1S41-11" />
-                    <String fx:value="08D-P64D1S61" />
-                    <String fx:value="08D-P64D1S71" />
-                    <String fx:value="08D-P64D1S91-11" />
-                    <String fx:value="08D-P128D1S42" />
-                    <String fx:value="08D-P128D1S51" />
-                    <String fx:value="04D-P16D4S11-1^5^9^13" />
-                    <String fx:value="04D-P16D4S21-1^5^9^13" />
+                    <String fx:value="08D-P32D1S31"/>
+                    <String fx:value="08D-P32D1S32"/>
+                    <String fx:value="08D-P64D1S21"/>
+                    <String fx:value="08D-P64D1S31"/>
+                    <String fx:value="08D-P64D1S41-11"/>
+                    <String fx:value="08D-P64D1S61"/>
+                    <String fx:value="08D-P64D1S71"/>
+                    <String fx:value="08D-P64D1S91-11"/>
+                    <String fx:value="08D-P128D1S42"/>
+                    <String fx:value="08D-P128D1S51"/>
+                    <String fx:value="04D-P16D4S11-1^5^9^13"/>
+                    <String fx:value="04D-P16D4S21-1^5^9^13"/>
                     <String fx:value="04D-P32D2S11"/>
                     <String fx:value="04D-P32D2S21"/>
                     <String fx:value="04D-P32D2S31-2&lt;1^4&lt;3"/>
-                    <String fx:value="04D-P32D2S41" />
-                    <String fx:value="04D-P32D2S51" />
-                    <String fx:value="04D-P32D2S61" />
-                    <String fx:value="04D-P32D2S71" />
-                    <String fx:value="04D-P32D4S11" />
-                    <String fx:value="04D-P64D1S11" />
-                    <String fx:value="04D-D2-SA1-A4E8A8E8A4" />
-                    <String fx:value="04D-D2-SA1-A4E8A8E8" />
-                    <String fx:value="02D-P64D2S21" />
-                    <String fx:value="02D-P64D2S31" />
-                    <String fx:value="02D-P64D2S41" />
-                    <String fx:value="02D-P128D2S21" />
-                    <String fx:value="02D-P256D2S41" />
-                    <String fx:value="01D-P64D4S21-4^8^12^16" />
-                    <String fx:value="01D-P128D2S21" />
-                    <String fx:value="01D-P128D2S31" />
+                    <String fx:value="04D-P32D2S41"/>
+                    <String fx:value="04D-P32D2S51"/>
+                    <String fx:value="04D-P32D2S61"/>
+                    <String fx:value="04D-P32D2S71"/>
+                    <String fx:value="04D-P32D4S11"/>
+                    <String fx:value="04D-P64D1S11"/>
+                    <String fx:value="04D-D2-SA1-A4E8A8E8A4"/>
+                    <String fx:value="04D-D2-SA1-A4E8A8E8"/>
+                    <String fx:value="02D-P64D2S21"/>
+                    <String fx:value="02D-P64D2S31"/>
+                    <String fx:value="02D-P64D2S41"/>
+                    <String fx:value="02D-P128D2S21"/>
+                    <String fx:value="02D-P256D2S41"/>
+                    <String fx:value="01D-P64D4S21-4^8^12^16"/>
+                    <String fx:value="01D-P128D2S21"/>
+                    <String fx:value="01D-P128D2S31"/>
                 </FXCollections>
             </items>
-       </ListView>
-       <TextArea fx:id="memo" layoutX="268.0" layoutY="36.0" prefHeight="200.0" prefWidth="259.0" />
-       <Button layoutX="270.0" layoutY="246.0" mnemonicParsing="false" onMouseClicked="#search" prefHeight="28.0" prefWidth="140.0" text="%searchSignal" />
-       <Button layoutX="415.0" layoutY="246.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="28.0" prefWidth="110.0" text="%saveMemo" />
-       <Label layoutX="289.0" layoutY="284.0" text="Color Order" />
-       <ChoiceBox fx:id="colorScan" layoutX="413.0" layoutY="282.0" prefHeight="21.0" prefWidth="107.0" value="RGB">
-           <items>
-               <FXCollections fx:factory="observableArrayList">
-                   <String fx:value="RGB" />
-                   <String fx:value="RBG" />
-                   <String fx:value="GRB" />
-                   <String fx:value="GBR" />
-                   <String fx:value="BRG" />
-                   <String fx:value="BGR" />
-                   <String fx:value="NC1" />
-               </FXCollections>
-           </items>
-       </ChoiceBox>
-       <Label layoutX="290.0" layoutY="316.0" text="Scan Order" />
-       <ChoiceBox fx:id="scanOrder" disable="true" layoutX="413.0" layoutY="314.0" prefHeight="21.0" prefWidth="107.0" value="138 IC">
-           <items>
-               <FXCollections fx:factory="observableArrayList">
-                   <String fx:value="138 IC" />
-               </FXCollections>
-           </items>
-       </ChoiceBox>
-       <Button layoutX="456.0" layoutY="343.0" mnemonicParsing="false" onMouseClicked="#signalTransfer" prefHeight="28.0" prefWidth="64.0" text="%sendButton" />
-       <Spinner fx:id="spinnerForSec" layoutX="330.0" layoutY="379.0" prefHeight="28.0" prefWidth="64.0" />
-       <Button fx:id="autoTransfer" layoutX="400.0" layoutY="379.0" mnemonicParsing="false" onMouseClicked="#autoTransfer" prefHeight="28.0" prefWidth="120.0" text="%autoTransfer" />
-       <Pane layoutX="14.0" layoutY="383.0" prefHeight="77.0" prefWidth="304.0" style="-fx-border-color: black;">
-           <children>
-               <Label layoutX="14.0" layoutY="-6.0" prefHeight="13.0" prefWidth="107.0" style="-fx-background-color: #333333;" text="%afterimageDelaySetting" />
-               <Label layoutX="20.0" layoutY="18.0" text="Before" />
-               <Label layoutX="81.0" layoutY="18.0" text="After" />
-               <Spinner fx:id="spinnerForBefore" layoutX="14.0" layoutY="39.0" prefHeight="21.0" prefWidth="60.0" />
-               <Spinner fx:id="spinnerForAfter" layoutX="80.0" layoutY="39.0" prefHeight="21.0" prefWidth="60.0" />
-               <Button layoutX="159.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#setting" prefHeight="28.0" prefWidth="64.0" text="%set" />
-               <Button layoutX="230.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="28.0" prefWidth="64.0" text="%read" />
-           </children>
-       </Pane>
-       <Button layoutX="456.0" layoutY="419.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="28.0" prefWidth="64.0" text="%close" />
-       <ProgressIndicator fx:id="progressIndicator" layoutX="250.0" layoutY="150.0" visible="false"/>
-   </children>
+        </ListView>
+        <TextArea fx:id="memo" layoutX="268.0" layoutY="36.0" prefHeight="200.0" prefWidth="259.0"/>
+        <Button layoutX="270.0" layoutY="246.0" mnemonicParsing="false" onMouseClicked="#search" prefHeight="28.0"
+                prefWidth="140.0" text="%searchSignal" styleClass="newWindow-button">
+            <graphic>
+                <ImageView preserveRatio="true" fitWidth="16" fitHeight="16">
+
+                        <Image url="@../images/new-window.png"/>
+
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button layoutX="415.0" layoutY="246.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="28.0"
+                prefWidth="110.0" text="%saveMemo"/>
+        <Label layoutX="289.0" layoutY="284.0" text="Color Order"/>
+        <ChoiceBox fx:id="colorScan" layoutX="413.0" layoutY="282.0" prefHeight="21.0" prefWidth="107.0" value="RGB">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="RGB"/>
+                    <String fx:value="RBG"/>
+                    <String fx:value="GRB"/>
+                    <String fx:value="GBR"/>
+                    <String fx:value="BRG"/>
+                    <String fx:value="BGR"/>
+                    <String fx:value="NC1"/>
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+        <Label layoutX="290.0" layoutY="316.0" text="Scan Order"/>
+        <ChoiceBox fx:id="scanOrder" disable="true" layoutX="413.0" layoutY="314.0" prefHeight="21.0" prefWidth="107.0"
+                   value="138 IC">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="138 IC"/>
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+        <Button layoutX="456.0" layoutY="343.0" mnemonicParsing="false" onMouseClicked="#signalTransfer"
+                prefHeight="28.0" prefWidth="64.0" text="%sendButton"/>
+        <Spinner fx:id="spinnerForSec" layoutX="330.0" layoutY="379.0" prefHeight="28.0" prefWidth="64.0"/>
+        <Button fx:id="autoTransfer" layoutX="400.0" layoutY="379.0" mnemonicParsing="false"
+                onMouseClicked="#autoTransfer" prefHeight="28.0" prefWidth="120.0" text="%autoTransfer"/>
+        <Pane layoutX="14.0" layoutY="383.0" prefHeight="77.0" prefWidth="304.0" style="-fx-border-color: black;">
+            <Label layoutX="14.0" layoutY="-6.0" prefHeight="13.0" prefWidth="107.0"
+                   style="-fx-background-color: #333333;" text="%afterimageDelaySetting"/>
+            <Label layoutX="20.0" layoutY="18.0" text="Before"/>
+            <Label layoutX="81.0" layoutY="18.0" text="After"/>
+            <Spinner fx:id="spinnerForBefore" layoutX="14.0" layoutY="39.0" prefHeight="21.0" prefWidth="60.0"/>
+            <Spinner fx:id="spinnerForAfter" layoutX="80.0" layoutY="39.0" prefHeight="21.0" prefWidth="60.0"/>
+            <Button layoutX="159.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#setting" prefHeight="28.0"
+                    prefWidth="64.0" text="%set"/>
+            <Button layoutX="230.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="28.0"
+                    prefWidth="64.0" text="%read"/>
+        </Pane>
+        <Button layoutX="456.0" layoutY="419.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="28.0"
+                prefWidth="64.0" text="%close"/>
+        <ProgressIndicator fx:id="progressIndicator" layoutX="250.0" layoutY="150.0" visible="false"/>
+    </children>
 </AnchorPane>

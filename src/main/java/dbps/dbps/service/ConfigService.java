@@ -80,7 +80,7 @@ public class ConfigService {
             defaultProperties.setProperty("16D-P16D1S10-1", "VS040T110-0\nVS048T110-0\nVS064T110-0\nVS064T110-0(CE3.00)\nVS096T110-0\nVS128T110-0");
         }
         else {
-            for (int i = 1; i < 10; i++) {
+            for (int i = 1; i <= 10; i++) {
                 if (i==1){
                     defaultProperties.setProperty("ASCMsg"+i, "![000Hello world!]");
                 } else if (i==2) {
@@ -153,8 +153,8 @@ public class ConfigService {
                     defaultProperties.setProperty("fontGroup"+i+j, "fontGroup1");
                     defaultProperties.setProperty("effectIn"+i+j, "staticEffect");
                     defaultProperties.setProperty("effectInDirection"+i+j, "noDirection");
-                    defaultProperties.setProperty("effectOut"+i+j, "notUsed");
-                    defaultProperties.setProperty("effectOutDirection"+i+j, "notUsed");
+                    defaultProperties.setProperty("effectOut"+i+j, "staticEffect");
+                    defaultProperties.setProperty("effectOutDirection"+i+j, "noDirection");
                     defaultProperties.setProperty("effectSpeed"+i+j, "5");
                     defaultProperties.setProperty("effectTime"+i+j, "2sec");
                     defaultProperties.setProperty("xStart"+i+j, "0");
@@ -164,6 +164,8 @@ public class ConfigService {
                     defaultProperties.setProperty("bgImg"+i+j, "notUsed");
                     defaultProperties.setProperty("textColor"+i+j, "1");
                     defaultProperties.setProperty("bgColor"+i+j, "0");
+                    defaultProperties.setProperty("textColorASC"+i+j, "red");
+                    defaultProperties.setProperty("bgColorASC"+i+j, "black");
                     if (i==0) {
                         defaultProperties.setProperty("text"+i+j, "realTime 메세지 "+j);
                     }
@@ -174,6 +176,7 @@ public class ConfigService {
             }
 
             defaultProperties.setProperty("displayControlDefault", "On");
+            defaultProperties.setProperty("displaySignal", "32D-P161S11");
             defaultProperties.setProperty("displayMethodDefault", "Clear");
             defaultProperties.setProperty("charCodeDefault", "한글 조합형");
             defaultProperties.setProperty("fontSizeDefault", "16(Standard)");
@@ -246,9 +249,6 @@ public class ConfigService {
         }
     }
 
-    /**
-     * ttl, tcp
-     */
     public void setProperty(String key, String value) {
         properties.setProperty(key, value);
         saveProperties();

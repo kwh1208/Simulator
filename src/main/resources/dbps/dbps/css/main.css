@@ -103,5 +103,63 @@
 
 .label{
     -fx-text-fill: #E0E0E0;
+}
+.text-field{
+    -fx-background-color: black;
+    -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
+    -fx-text-fill: white;
+}
+.text-field:focused{
+    -fx-border-color: orange;
+}
 
+.combo-box {
+    -fx-background-color: #1C1F26;
+    -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
+    -fx-text-fill: white;
+
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: white; /* 드롭다운 목록의 기본 텍스트 색상 */
+}
+.combo-box .arrow-button {
+    -fx-background-color: #1C1F26; /* 화살표 버튼 배경색 */
+}
+.combo-box .arrow-button .arrow {
+    -fx-background-color: white; /* 화살표 색상 */
+}
+.combo-box .list-view .list-cell {
+    -fx-background-color: #1C1F26; /* 각 항목의 배경색 */
+    -fx-text-fill: white; /* 텍스트 색상 */
+}
+.combo-box .list-view .list-cell:hover {
+    -fx-background-color: orange; /* 각 항목의 배경색 */
+    -fx-text-fill: black; /* 텍스트 색상 */
+}
+
+.combo-box .scroll-bar:vertical {
+    -fx-opacity: 0; /* 스크롤바를 완전히 숨김 */
+    -fx-pref-width: 0; /* 수직 스크롤바 너비를 0으로 설정 */
+    -fx-pref-height: 0; /* 수평 스크롤바 높이를 0으로 설정 */
+}
+
+.newWindow-button {
+    /* 위쪽은 조금 밝은 톤, 아래쪽은 어두운 톤으로 그라디언트 */
+    -fx-background-color: linear-gradient(#505050, #3C3C3C);
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+
+    /* 버튼 외곽선(테두리) */
+    -fx-border-color: #888888;
+    -fx-border-width: 1;
+
+    /* 둥근 모서리로 부드러운 느낌 */
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+
+    /* 드롭 섀도(아래에서 1px 정도 떨어진 그림자) */
+    /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0.3, 0, 1);*/
+
+    -fx-cursor: hand;
 }

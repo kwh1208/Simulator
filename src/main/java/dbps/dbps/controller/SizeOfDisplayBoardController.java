@@ -1,18 +1,15 @@
 package dbps.dbps.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.*;
 import static dbps.dbps.service.SettingService.commonProgressIndicator;
@@ -20,6 +17,7 @@ import static dbps.dbps.service.SettingService.commonProgressIndicator;
 public class SizeOfDisplayBoardController {
 
     public ChoiceBox<String> displayBright;
+    public ChoiceBox<String> colorNum;
     AsciiMsgTransceiver asciiMsgTransceiver;
 
     HexMsgTransceiver hexMsgTransceiver;
@@ -91,12 +89,13 @@ public class SizeOfDisplayBoardController {
     private void setInitialValues() {
         SIZE_ROW = spinnerForRow.getValue();
         SIZE_COLUMN = spinnerForColumn.getValue();
+        BITS_PER_PIXEL = Integer.parseInt(String.valueOf(colorNum.getValue()).substring(0,1));
         configService.setProperty("displayRowSize", String.valueOf(SIZE_ROW));
         configService.setProperty("displayColumnSize", String.valueOf(SIZE_COLUMN));
     }
 
 
-    public void sendDisplaySize() throws ExecutionException, InterruptedException, JsonProcessingException {
+    public void sendDisplaySize() {
         if (IS_ASCII){
             displaySizeASC();
         }
@@ -143,7 +142,17 @@ public class SizeOfDisplayBoardController {
             msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 07 40";
 
         }
-        msg+=" 08";
+        switch (String.valueOf(colorNum.getValue()).charAt(0)){
+            case 50:
+                msg+=" 02";
+                break;
+            case 51:
+                msg+=" 03";
+                break;
+            case 56:
+                msg+=" 08";
+                break;
+        }
 
         msg += " "+Integer.toHexString(spinnerForRow.getValue());
         msg += " "+Integer.toHexString(spinnerForColumn.getValue());
@@ -163,10 +172,70 @@ public class SizeOfDisplayBoardController {
         msg+=" 00 F1 10 03";
 
         hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
-
     }
-    //Todo
-    public void sendDisplayBright(MouseEvent mouseEvent) {
+    public void sendDisplayBright() {
+        if (IS_ASCII){
+            String msg = "![0050";
+            if (isRS){
+                msg = "!["+convertRS485AddrASCii()+"050";
+            }
+            switch (displayBright.getValue()){
+                case "100%": msg += "99"; break;
+                case "75%": msg += "75"; break;
+                case "50%": msg += "50"; break;
+                case "25%": msg += "25"; break;
+                case "5%": msg += "05"; break;
+            }
+            msg += "!]";
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
 
+
+        } else{
+            String msg = "10 02 00 00 02 44 ";
+            if (isRS){
+                msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 02 44 ";
+            }
+            switch (displayBright.getValue()){
+                case "100%": msg += "64"; break;
+                case "75%": msg += "48"; break;
+                case "50%": msg += "32"; break;
+                case "25%": msg += "19"; break;
+                case "5%": msg += "05"; break;
+            }
+            msg += " 10 03";
+            hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
+        }
+    }
+
+    public void sendDisplayOn() {
+        if (IS_ASCII) {
+            String msg = "![00211!]";
+            if (isRS) {
+                msg = "![" + convertRS485AddrASCii() + "0211!]";
+            }
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
+            return;
+        }
+        String msg = "10 02 00 00 02 41 01 10 03";
+        if (isRS) {
+            msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 02 41 01 10 03";
+        }
+        hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
+    }
+
+    public void sendDisplayOff() {
+        if (IS_ASCII) {
+            String msg = "![00210!]";
+            if (isRS) {
+                msg = "![" + convertRS485AddrASCii() + "0210!]";
+            }
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
+            return;
+        }
+        String msg = "10 02 00 00 02 41 00 10 03";
+        if (isRS) {
+            msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 02 41 00 10 03";
+        }
+        hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
     }
 }

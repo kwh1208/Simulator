@@ -44,7 +44,7 @@ public class AsciiMsgTransceiver {
         firmwareService = FirmwareService.getFirmwareService();
         boardSettingService = BoardSettingService.getInstance();
         asciiDefaultSettingService = ASCiiDefaultSettingService.getInstance();
-        bundle= ResourceManager.getInstance().getBundle();
+        bundle = ResourceManager.getInstance().getBundle();
     }
 
     public static AsciiMsgTransceiver getInstance() {
@@ -157,7 +157,7 @@ public class AsciiMsgTransceiver {
             String[] weekdaysEnglish = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
             // 현재 설정된 언어 확인
-            boolean isKorean = bundle.getLocale().equals("ko");
+            boolean isKorean = bundle.getLocale().getLanguage().equals("ko");
 
             // 숫자 요일을 언어별 요일로 변환
             char weekdayChar = time.charAt(6);
@@ -196,7 +196,10 @@ public class AsciiMsgTransceiver {
             return;
         }
         if (cmd.equals("96")) {
-            logService.updateInfoLog(bundle.getString("fontNameSettingSuccess"));
+            if (receiveMsg.equals("![0096F!]")){
+                logService.updateInfoLog(bundle.getString("fontNameReadFail"));
+            }
+            logService.updateInfoLog(bundle.getString("fontNameReadSuccess"));
             return;
         }
         if (cmd.equals("95")) {
@@ -204,22 +207,17 @@ public class AsciiMsgTransceiver {
             return;
         }
         if (cmd.equals("40")) {
-            int row = 0;
-            int column = 0;
+            int sendRow = Integer.parseInt(msg.substring(6, 8));
+            int sendColumn = Integer.parseInt(msg.substring(8, 10));
+            int receiveRow = Integer.parseInt(receiveMsg.substring(6, 8));
+            int receiveColumn = Integer.parseInt(receiveMsg.substring(8, 10));
 
-            try {
-                row = Integer.parseInt(receiveMsg.substring(6, 8));
-                column = Integer.parseInt(receiveMsg.substring(8, 10));
+            if (sendRow == receiveRow && sendColumn == receiveColumn) {
                 logService.updateInfoLog(bundle.getString("displaySizeSettingSuccess"));
-            } catch (NumberFormatException e) {
-                row = Integer.parseInt(msg.substring(6, 8));
-                column = Integer.parseInt(msg.substring(8, 10));
-            } finally {
-                sizeOfDisplayBoardService.setDisplaySize(row, column);
-                if (row != Integer.parseInt(msg.substring(6, 8)) || column != Integer.parseInt(msg.substring(8, 10))) {
-                    logService.warningLog(bundle.getString("displaySizeSettingFailed"));
-                    logService.warningLog(MessageFormat.format(bundle.getString("displaySizeLimit"), row, column));
-                }
+            } else {
+                logService.warningLog(bundle.getString("displaySizeSettingFailed"));
+                logService.warningLog(MessageFormat.format(bundle.getString("displaySizeLimit"), receiveRow, receiveColumn));
+                sizeOfDisplayBoardService.setDisplaySize(receiveRow, receiveColumn);
             }
         }
 

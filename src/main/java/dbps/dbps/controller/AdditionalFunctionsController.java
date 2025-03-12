@@ -19,22 +19,22 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ResourceBundle;
 
-import static dbps.dbps.Constants.*;
+import static dbps.dbps.Constants.convertRS485AddrASCii;
+import static dbps.dbps.Constants.isRS;
+import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class AdditionalFunctionsController {
 
     public ComboBox<String> displaySpeed;
     public ComboBox<String> blinkCnt;
-    public ChoiceBox<String> fillColor;
     public ChoiceBox<String> offset;
     public ChoiceBox<Double> fontWidth;
     public ChoiceBox<Double> fontHeight;
     public ProgressIndicator progressIndicator;
     public AnchorPane additionalFunctionAp;
+    public ChoiceBox<String> pageMsgType;
     AsciiMsgTransceiver asciiMsgTransceiver;
     ResourceBundle bundle;
 
@@ -75,21 +75,13 @@ public class AdditionalFunctionsController {
 
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
 
-        addItems();
+        pageMsgType.getItems().add(bundle.getString("individualEffectDisplay"));
+        pageMsgType.getItems().add(bundle.getString("simultaneousEffectDisplay"));
+
+        pageMsgType.setValue(bundle.getString("simultaneousEffectDisplay"));
     }
 
-    private void addItems() {
-        fillColor.getItems().addAll(
-                bundle.getString("black"),
-                bundle.getString("red"),
-                bundle.getString("green"),
-                bundle.getString("yellow"),
-                bundle.getString("blue"),
-                bundle.getString("pink"),
-                bundle.getString("cyan"),
-                bundle.getString("white")
-        );
-    }
+
 
     public void openBGSchedule(MouseEvent mouseEvent) throws IOException {
         openModal("/dbps/dbps/fxmls/BGSchedule.fxml", "배경화면 스케쥴", mouseEvent);
@@ -151,55 +143,6 @@ public class AdditionalFunctionsController {
         modalStage.showAndWait();
     }
 
-    public void sendFillColor() throws InterruptedException {
-        String value = fillColor.getValue();
-        if (IS_ASCII){
-            String msg = "![0070"+getColorCode(value)+"!]";
-            if (isRS){
-                msg = "!["+convertRS485AddrASCii()+"070"+getColorCode(value)+"!]";
-            }
-            asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
-        }
-        else {
-            hexMsgTransceiver.sendMessages("10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 02 45 00 10 03", progressIndicator);
-
-            String msg = "10 02 00 00 06 42 08 "+getColorCodeHex(value)+"00 00 00 10 03";
-            if (isRS){
-                msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 06 42 08 "+getColorCodeHex(value)+"00 00 00 10 03";
-            }
-            hexMsgTransceiver.sendMessages(msg, progressIndicator);
-        }
-    }
-
-    private String getColorCode(String value) {
-        Map<String, String> colorMap = new HashMap<>();
-        colorMap.put("검은색", "0");
-        colorMap.put("빨간색", "1");
-        colorMap.put("초록색", "2");
-        colorMap.put("노란색", "3");
-        colorMap.put("파란색", "4");
-        colorMap.put("분홍색", "5");
-        colorMap.put("청록색", "6");
-        colorMap.put("흰색", "7");
-        colorMap.put("보라색", "8");
-        colorMap.put("하늘색", "9");
-
-        return colorMap.getOrDefault(value, "0"); // 기본값을 검은색("0")으로 설정
-    }
-
-    private String getColorCodeHex(String value) {
-        Map<String, String> colorMap = new HashMap<>();
-        colorMap.put("검은색", "00 ");
-        colorMap.put("빨간색", "07 ");
-        colorMap.put("초록색", "38 ");
-        colorMap.put("노란색", "3F ");
-        colorMap.put("파란색", "C0 ");
-        colorMap.put("분홍색", "C7 ");
-        colorMap.put("청록색", "F8 ");
-        colorMap.put("흰색", "FF "); // 기본값을 흰색으로 지정
-
-        return colorMap.getOrDefault(value, "FF ");
-    }
 
     public void sendBlinkCnt() {
         int cnt = Integer.parseInt(blinkCnt.getValue().replaceAll("[^0-9]", ""));
@@ -243,5 +186,20 @@ public class AdditionalFunctionsController {
     public void close(MouseEvent mouseEvent) {
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();
+    }
+
+    public void sendPageMsgType() {
+        //![0062N!] : 동시, ![0062Y!] : 개별
+        String msg = "![0062";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"062";
+        }
+        if (pageMsgType.getValue().contains("동시")){
+            msg += "N";
+        } else{
+            msg += "Y";
+        }
+        msg += "!]";
+        asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
     }
 }

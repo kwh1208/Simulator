@@ -5,14 +5,14 @@
 <?import javafx.scene.layout.*?>
 
 <VBox fx:id="logVBoX" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.LogController">
-    <Pane prefHeight="30.0" prefWidth="590.0" style="-fx-background-color: #1C1F26">
-        <Label layoutX="8.0" prefHeight="23.0" prefWidth="590.0" text="%viewLog" />
-      <Button fx:id="clearBtn" layoutX="537.0" mnemonicParsing="false" onMouseClicked="#clearBtnClicked" style="-fx-background-color: transparent;">
-          <graphic>
-              <ImageView fx:id="trashCanImage" fitHeight="20.0" fitWidth="23" />
-          </graphic>
-      </Button>
+    <Pane prefHeight="30.0" prefWidth="560.0" style="-fx-background-color: #1C1F26">
+        <Label layoutX="8.0" prefHeight="23.0" prefWidth="560.0" text="%viewLog" />
+        <Button fx:id="clearBtn" layoutX="464.0" mnemonicParsing="false" onMouseClicked="#clearBtnClicked" style="-fx-background-color: transparent;">
+            <graphic>
+                <ImageView fx:id="trashCanImage" fitHeight="20.0" fitWidth="23" />
+            </graphic>
+        </Button>
     </Pane>
-    <ScrollPane fx:id="scrollPane" prefHeight="130.0" prefWidth="460.0" style="-fx-background-color: transparent;">
+    <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="130.0" prefWidth="200.0" style="-fx-background-color: transparent;">
     </ScrollPane>
 </VBox>

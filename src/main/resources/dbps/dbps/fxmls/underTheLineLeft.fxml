@@ -2,14 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane fx:id="leftPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dbps.dbps.controller.UnderTheLineLeftController" layoutX="-5.0" layoutY="382.0" prefHeight="257.0" prefWidth="272.0">
-<children>
-    <Button layoutX="50.0" layoutY="18.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="115.0" text="%displayOn" onMouseClicked="#sendDisplayOn"/>
-    <Button layoutX="165.0" layoutY="18.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="115.0" text="%displayOff" onMouseClicked="#sendDisplayOff" />
-    <TextField fx:id="timeBoard" alignment="CENTER" layoutX="50.0" layoutY="58.0" prefHeight="30.0" prefWidth="230.0" text="%currentTime" editable="false"/>
-    <Button layoutX="50.0" layoutY="98.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="230.0" text="%controllerTime" onMouseClicked="#getControllerTime"/>
-    <Button layoutX="50.0" layoutY="138.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="230.0" text="%syncWithPcTime" onMouseClicked="#synchronizeTime"/>
-    <Button layoutX="50.0" layoutY="178.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="123.5" text="%CPUReboot" onMouseClicked="#resetController"/>
-    <Button layoutX="173.5" layoutY="178.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="108.5" text="%FactoryReset" onMouseClicked="#hardReset"/>
-</children>
+<Pane fx:id="leftPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="dbps.dbps.controller.UnderTheLineLeftController" layoutX="-5.0" layoutY="382.0" prefHeight="257.0"
+      prefWidth="272.0">
 </Pane>

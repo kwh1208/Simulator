@@ -139,6 +139,9 @@ public class FontNameController {
                 readTask.setOnSucceeded(e -> {
                     try {
                         String result = readTask.get();
+                        if (result.equals("![0096F!]")){
+                            return;
+                        }
                         String[] fontNames = getFontName(result.getBytes(Charset.forName("MS949")));
 
                         // UI 업데이트
@@ -270,13 +273,6 @@ public class FontNameController {
                 hexMsgTransceiver.sendByteMessages(sendMsg, progressIndicator);
             }
         }
-
-        //쓰기
-        //0095
-        //10 02 00 00 DB 48 00 32
-
-
-        //36바이트까지 가능.
     }
 
     public static String[] getFontName(byte[] tmp) throws UnsupportedEncodingException {

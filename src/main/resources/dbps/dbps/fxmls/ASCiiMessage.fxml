@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="ASCiiMsgAnchorPane" prefHeight="444.0" prefWidth="450.0" style="-fx-border-color: black; -fx-border-width: 1 0 0 0; -fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.ASCiiMsgController">
+    <ProgressIndicator fx:id="progressIndicator" layoutX="320.0" layoutY="240.0" visible="false" />
+    <CheckBox fx:id="utf_8" layoutX="14.0" layoutY="3.0" mnemonicParsing="false" text="UTF-8" />
+    <CheckBox fx:id="utf_16" layoutX="100.0" layoutY="3.0" mnemonicParsing="false" text="UTF-16" />
+<!--    <TextField fx:id="transmitMsg1" layoutX="14.0" layoutY="41.0" prefHeight="28.0" prefWidth="339.0" />-->
+<!--    <Button fx:id="msgSendBtn1" layoutX="367.0" layoutY="41.0" mnemonicParsing="false" onMouseClicked="#sendMsg" prefHeight="28.0" prefWidth="59.0" text="%sendButton" />-->
+
+<!--    <TextField fx:id="transmitMsg2" layoutX="14.0" layoutY="81.0" prefHeight="28.0" prefWidth="339.0" />-->
+<!--    <Button fx:id="msgSendBtn2" layoutX="367.0" layoutY="81.0" mnemonicParsing="false" onMouseClicked="#sendMsg" prefHeight="28.0" prefWidth="59.0" text="%sendButton" />-->
+
+<!--    <TextField fx:id="transmitMsg3" layoutX="14.0" layoutY="121.0" prefHeight="28.0" prefWidth="339.0" />-->
+<!--    <Button fx:id="msgSendBtn3" layoutX="367.0" layoutY="121.0" mnemonicParsing="false" onMouseClicked="#sendMsg" prefHeight="28.0" prefWidth="59.0" text="%sendButton" />-->
+
+<!--    <TextField fx:id="transmitMsg4" layoutX="14.0" layoutY="161.0" prefHeight="28.0" prefWidth="339.0" />-->
+<!--    <Button fx:id="msgSendBtn4" layoutX="367.0" layoutY="161.0" mnemonicParsing="false" onMouseClicked="#sendMsg" prefHeight="28.0" prefWidth="59.0" text="%sendButton" />-->
+
+<!--    <TextField fx:id="transmitMsg5" layoutX="14.0" layoutY="201.0" prefHeight="28.0" prefWidth="339.0" />-->
+<!--    <Button fx:id="msgSendBtn5" layoutX="367.0" layoutY="201.0" mnemonicParsing="false" onMouseClicked="#sendMsg" prefHeight="28.0" prefWidth="59.0" text="%sendButton" />-->
+
+<!--    <TextField fx:id="transmitMsg6" layoutX="14.0" layoutY="241.0" prefHeight="28.0" prefWidth="339.0" />-->
+<!--    <Button fx:id="msgSendBtn6" layoutX="367.0" layoutY="241.0" mnemonicParsing="false" onMouseClicked="#sendMsg" prefHeight="28.0" prefWidth="59.0" text="%sendButton" />-->
+
+<!--    <TextField fx:id="transmitMsg7" layoutX="14.0" layoutY="281.0" prefHeight="28.0" prefWidth="339.0" />-->
+<!--    <Button fx:id="msgSendBtn7" layoutX="367.0" layoutY="281.0" mnemonicParsing="false" onMouseClicked="#sendMsg" prefHeight="28.0" prefWidth="59.0" text="%sendButton" />-->
+
+<!--    <TextField fx:id="transmitMsg8" layoutX="14.0" layoutY="321.0" prefHeight="28.0" prefWidth="339.0" />-->
+<!--    <Button fx:id="msgSendBtn8" layoutX="367.0" layoutY="321.0" mnemonicParsing="false" onMouseClicked="#sendMsg" prefHeight="28.0" prefWidth="59.0" text="%sendButton" />-->
+
+<!--    <TextField fx:id="transmitMsg9" layoutX="14.0" layoutY="361.0" prefHeight="28.0" prefWidth="339.0" />-->
+<!--    <Button fx:id="msgSendBtn9" layoutX="367.0" layoutY="361.0" mnemonicParsing="false" onMouseClicked="#sendMsg" prefHeight="28.0" prefWidth="59.0" text="%sendButton" />-->
+
+<!--    <TextField fx:id="transmitMsg10" layoutX="14.0" layoutY="401.0" prefHeight="28.0" prefWidth="339.0" />-->
+<!--    <Button fx:id="msgSendBtn10" layoutX="367.0" layoutY="401.0" mnemonicParsing="false" onMouseClicked="#sendMsg" prefHeight="28.0" prefWidth="59.0" text="%sendButton" />-->
+
+</AnchorPane>

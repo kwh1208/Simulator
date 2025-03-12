@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-
+<?import java.lang.*?>
 <AnchorPane fx:id="communicationSettingAP" prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: #333333;"
             xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dbps.dbps.controller.CommunicationSettingController">
@@ -80,7 +81,15 @@
         <Button fx:id="findSpeedBtn" layoutX="100.0" layoutY="123.0" mnemonicParsing="false"
                 onMouseClicked="#findCommunicationSpeed" prefHeight="27.0" prefWidth="130.0" text="%findBaudrate"/>
         <Button fx:id="openDeviceManagerBtn" layoutX="232.0" layoutY="123.0" mnemonicParsing="false"
-                onMouseClicked="#openDeviceManager" prefHeight="27.0" prefWidth="135.0" text="%deviceManager"/>
+                onMouseClicked="#openDeviceManager" prefHeight="27.0" prefWidth="135.0" text="%deviceManager" styleClass="newWindow-button">
+            <graphic>
+                <ImageView preserveRatio="true" fitWidth="16" fitHeight="16">
+
+                        <Image url="@../images/new-window.png"/>
+
+                </ImageView>
+            </graphic>
+        </Button>
 
     </Pane>
     <Pane layoutX="15.0" layoutY="191.0" prefHeight="87.0" prefWidth="373.0" style="-fx-border-color: black;">
@@ -120,11 +129,27 @@
     <Button fx:id="shutConnect" layoutX="269.0" layoutY="497.0" mnemonicParsing="false"
             onMouseClicked="#closeSerialPort" prefHeight="27.0" prefWidth="115.0" text="%closePort"/>
     <Button layoutX="17.0" layoutY="529.0" mnemonicParsing="false" onMouseClicked="#openDabitNet" prefHeight="27.0"
-            prefWidth="115.0" text="dbNet"/>
+            prefWidth="115.0" text="dbNet" styleClass="newWindow-button">
+        <graphic>
+            <ImageView preserveRatio="true" fitWidth="16" fitHeight="16">
+
+                    <Image url="@../images/new-window.png"/>
+
+            </ImageView>
+        </graphic>
+    </Button>
     <Button fx:id="keepOpenBtn" layoutX="143.0" layoutY="497.0" mnemonicParsing="false" prefHeight="27.0"
             prefWidth="115.0" text="포트 유지" onMouseClicked="#keepOpen"/>
     <Button layoutX="142.0" layoutY="529.0" mnemonicParsing="false" onMouseClicked="#openBluetooth" prefHeight="27.0"
-            prefWidth="115.0" text="dbBle"/>
+            prefWidth="115.0" text="dbBle" styleClass="newWindow-button">
+        <graphic>
+            <ImageView preserveRatio="true" fitWidth="16" fitHeight="16">
+
+                    <Image url="@../images/new-window.png"/>
+
+            </ImageView>
+        </graphic>
+    </Button>
     <Button layoutX="269.0" layoutY="529.0" minWidth="115.0" mnemonicParsing="false" onMouseClicked="#controllerConnect"
             prefHeight="27.0" text="%connect"/>
     <Label layoutX="19.0" layoutY="569.0" text="%responseTime"/>

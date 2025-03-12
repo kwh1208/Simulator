@@ -62,7 +62,7 @@ public class Simulator extends Application {
 
         // Scene 설정
         Parent root = loader.load();
-        Scene scene = new Scene(root, 600, 800);
+        Scene scene = new Scene(root, 530, 800);
 
         // 스타일시트 적용
         scene.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/main.css").toExternalForm());
@@ -88,7 +88,7 @@ public class Simulator extends Application {
         launch();
     }
     @Override
-    public void stop() throws Exception{
+    public void stop() throws Exception {
         super.stop();
 
         try {
