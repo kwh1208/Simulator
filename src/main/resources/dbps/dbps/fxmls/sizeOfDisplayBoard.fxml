@@ -38,7 +38,7 @@
         </items>
     </ChoiceBox>
     <Button layoutX="225.0" layoutY="113.0" mnemonicParsing="false" onMouseClicked="#sendDisplaySize" prefHeight="28.0"
-            prefWidth="60.0" text="%sendButton"/>
+            prefWidth="60.0" text="%set"/>
     <Label layoutX="20.0" layoutY="151.0" text="%displayBrightness"/>
     <ChoiceBox fx:id="displayBright" layoutX="120.0" layoutY="146.0" prefHeight="25.0" prefWidth="87.0" value="100%">
         <items>
@@ -52,7 +52,7 @@
         </items>
     </ChoiceBox>
     <Button layoutX="225.0" layoutY="146.0" mnemonicParsing="false" onMouseClicked="#sendDisplayBright"
-            prefHeight="28.0" prefWidth="60.0" text="%sendButton"/>
+            prefHeight="28.0" prefWidth="60.0" text="%set"/>
     <Button layoutX="30.0" layoutY="176.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="115.0" text="%displayOn"
             onMouseClicked="#sendDisplayOn"/>
     <Button layoutX="155.0" layoutY="176.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="115.0"

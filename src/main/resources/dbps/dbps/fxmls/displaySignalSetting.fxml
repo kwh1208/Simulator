@@ -102,7 +102,7 @@
             </items>
         </ChoiceBox>
         <Button layoutX="456.0" layoutY="343.0" mnemonicParsing="false" onMouseClicked="#signalTransfer"
-                prefHeight="28.0" prefWidth="64.0" text="%sendButton"/>
+                prefHeight="28.0" prefWidth="64.0" text="%set"/>
         <Spinner fx:id="spinnerForSec" layoutX="330.0" layoutY="379.0" prefHeight="28.0" prefWidth="64.0"/>
         <Button fx:id="autoTransfer" layoutX="400.0" layoutY="379.0" mnemonicParsing="false"
                 onMouseClicked="#autoTransfer" prefHeight="28.0" prefWidth="120.0" text="%autoTransfer"/>

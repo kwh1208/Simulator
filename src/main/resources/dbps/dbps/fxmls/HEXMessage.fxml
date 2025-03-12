@@ -9,7 +9,7 @@
 
 <AnchorPane fx:id="HEXMsgAP" prefHeight="599.0" prefWidth="500.0" style="-fx-border-color: black; -fx-border-width: 1 0 0 0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.HEXMessageController">
     <Pane layoutX="9.0" layoutY="34.0" prefHeight="438.0" prefWidth="507.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
-        <Label layoutX="36.0" layoutY="-20.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="프로토콜 속성" />
+        <Label layoutX="36.0" layoutY="-20.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%ProtocolProperties" />
         <Label layoutX="14.0" layoutY="10.0" text="%msgType" />
         <Pane layoutX="137.0" prefHeight="30.0" prefWidth="231.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
             <RadioButton fx:id="realTimeMsg" layoutX="12.0" layoutY="5.0" mnemonicParsing="false" text="%realTimeMsg" />
@@ -278,24 +278,24 @@
         <Label fx:id="bgColorLabel" layoutX="14.0" layoutY="362.0" text="%textBgColor" />
         <ChoiceBox fx:id="bgColorASC" layoutX="137.0" layoutY="359.0" prefHeight="21.0" prefWidth="107.0" />
 
-        <Label fx:id="previewLabel" layoutX="15.0" layoutY="386.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="프로토콜 미리보기" />
+        <Label fx:id="previewLabel" layoutX="15.0" layoutY="386.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%ProtocolPreview" />
         <TextFlow fx:id="preview" layoutX="14.0" layoutY="414.0" prefHeight="33" prefWidth="442.0" style="-fx-font-style: italic" />
         <Button fx:id="defaultBtn" layoutX="442.0" layoutY="404.0" mnemonicParsing="false" onMouseClicked="#sendDefault" prefHeight="30.0" prefWidth="58.0" text="%set" />
     </Pane>
     <Pane fx:id="ascPane" layoutX="16.0" layoutY="476.0" prefHeight="86.0" prefWidth="499.0" visible="false">
         <TextField fx:id="sendMsgAsc" layoutY="14.0" prefHeight="33" prefWidth="491.0" style="-fx-background-color: black; -fx-text-fill: white" />
         <Button layoutX="300.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="90.0" text="%sendButton" />
-        <Button layoutX="395.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#openMulti" prefHeight="30.0" prefWidth="97.0" styleClass="newWindow-button" text="다중입력">
+        <Button layoutX="395.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#openMulti" prefHeight="30.0" prefWidth="97.0" styleClass="newWindow-button" text="%MultiInput">
             <graphic>
                 <ImageView fitHeight="16" fitWidth="16" preserveRatio="true">
                     <Image url="@../images/new-window.png" />
                 </ImageView>
             </graphic>
         </Button>
-        <Button layoutX="137.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="90.0" text="속성 초기화" />
-        <Button layoutX="1.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#copy" prefHeight="30.0" prefWidth="130.0" text="미리보기 가져오기">
+        <Button layoutX="137.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="90.0" text="PropertyInit" />
+        <Button layoutX="1.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#copy" prefHeight="30.0" prefWidth="130.0" text="GetPreview">
             <tooltip>
-                <Tooltip fx:id="previewTooltip" text="미리보기 내용을 입력 칸에 복사해 수정할 수 있습니다." />
+                <Tooltip fx:id="previewTooltip" text="%previewToolTip" />
             </tooltip>
         </Button>
     </Pane>
@@ -308,7 +308,7 @@
         <TextField fx:id="bgColor" layoutX="107.0" layoutY="55.0" prefHeight="33" prefWidth="296.0" style="-fx-background-color: black; -fx-text-fill: white" />
         <Label layoutX="4.0" layoutY="98.0" text="%text" />
         <TextField fx:id="sendMsg" layoutX="107.0" layoutY="90.0" prefHeight="33" prefWidth="296.0" style="-fx-background-color: black; -fx-text-fill: white" />
-        <Button layoutX="414.0" layoutY="57.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="속성 초기화" />
+        <Button layoutX="414.0" layoutY="57.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="PropertyInit" />
         <Button layoutX="414.0" layoutY="92.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="81.0" text="%sendButton" />
     </Pane>
     <ProgressIndicator fx:id="progressIndicator" layoutX="320.0" layoutY="200.0" visible="false" />
