@@ -283,7 +283,7 @@
         <Button fx:id="defaultBtn" layoutX="442.0" layoutY="404.0" mnemonicParsing="false" onMouseClicked="#sendDefault" prefHeight="30.0" prefWidth="58.0" text="%set" />
     </Pane>
     <Pane fx:id="ascPane" layoutX="16.0" layoutY="476.0" prefHeight="86.0" prefWidth="499.0" visible="false">
-        <TextField fx:id="sendMsgAsc" layoutY="14.0" prefHeight="33" prefWidth="491.0" style="-fx-background-color: black; -fx-text-fill: white" />
+        <TextField fx:id="sendMsgAsc" layoutY="14.0" prefHeight="33" prefWidth="491.0" style="-fx-background-color: black; -fx-text-fill: white" promptText="Type Protocol..."/>
         <Button layoutX="300.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="90.0" text="%sendButton" />
         <Button layoutX="395.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#openMulti" prefHeight="30.0" prefWidth="97.0" styleClass="newWindow-button" text="%MultiInput">
             <graphic>
@@ -308,7 +308,7 @@
         <TextField fx:id="bgColor" layoutX="107.0" layoutY="55.0" prefHeight="33" prefWidth="296.0" style="-fx-background-color: black; -fx-text-fill: white" />
         <Label layoutX="4.0" layoutY="98.0" text="%text" />
         <TextField fx:id="sendMsg" layoutX="107.0" layoutY="90.0" prefHeight="33" prefWidth="296.0" style="-fx-background-color: black; -fx-text-fill: white" />
-        <Button layoutX="414.0" layoutY="57.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="PropertyInit" />
+        <Button layoutX="414.0" layoutY="57.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="81.0" text="%PropertyInit" />
         <Button layoutX="414.0" layoutY="92.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="81.0" text="%sendButton" />
     </Pane>
     <ProgressIndicator fx:id="progressIndicator" layoutX="320.0" layoutY="200.0" visible="false" />
