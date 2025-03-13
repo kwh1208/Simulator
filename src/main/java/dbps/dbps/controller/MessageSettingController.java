@@ -6,8 +6,11 @@ import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 import java.util.ResourceBundle;
 
@@ -105,5 +108,10 @@ public class MessageSettingController {
 
             hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
         }
+    }
+
+    public void close(MouseEvent mouseEvent) {
+        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        stage.close();
     }
 }

@@ -36,40 +36,41 @@ public class MainService {
     // 헥사 메시지 탭 표시
     public void showHEXMsgTab() {
         try {
-            // 캐시에 헥사 탭 내용이 있는지 확인
-            if (!cachedContent.containsKey("hex")) {
-                // 캐시가 없으면 로드하여 저장
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/dbps/dbps/fxmls/HEXMessage.fxml"));
-                ResourceBundle bundle = ResourceManager.getInstance().getBundle();
-                loader.setResources(bundle);
-                Node hexContent = loader.load();
-                cachedContent.put("hex", hexContent);  // 캐싱
-            }
-            // 캐시된 UI 노드를 사용
-            messageTab.setContent(cachedContent.get("hex"));
+            Node hexContent = cachedContent.computeIfAbsent("hex", key -> {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/dbps/dbps/fxmls/HEXMessage.fxml"));
+                    ResourceBundle bundle = ResourceManager.getInstance().getBundle();
+                    loader.setResources(bundle);
+                    return loader.load();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            messageTab.setContent(hexContent);
             Label label = new Label(ResourceManager.getInstance().getBundle().getString("protocolTransfer"));
             label.setStyle("-fx-alignment: center; -fx-padding: 4px;");
             messageTab.setGraphic(label);
             messageTab.setText("");
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
             e.printStackTrace();
         }
     }
 
+    // setting 탭을 지연 로드하며 캐싱 처리
     public void changeSetTab() {
         try {
-            {
-                if (!cachedContent.containsKey("set")) {
+            Node setContent = cachedContent.computeIfAbsent("set", key -> {
+                try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/dbps/dbps/fxmls/setting.fxml"));
                     ResourceBundle bundle = ResourceManager.getInstance().getBundle();
                     loader.setResources(bundle);
-                    Node hexContent = loader.load();
-                    cachedContent.put("set", hexContent);  // 캐싱
+                    return loader.load();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-                settingTab.setContent(cachedContent.get("set"));
-            }
-
-        } catch (IOException e) {
+            });
+            settingTab.setContent(setContent);
+        } catch (RuntimeException e) {
             e.printStackTrace();
         }
     }

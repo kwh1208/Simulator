@@ -22,6 +22,7 @@ public class SettingController {
     public ProgressIndicator commonProgressIndicator;
     public ComboBox<String> BGImgSelection;
     public ChoiceBox<String> fillColor;
+    public ChoiceBox<String> displayBright;
 
     HexMsgTransceiver hexMsgTransceiver;
     AsciiMsgTransceiver asciiMsgTransceiver;
@@ -253,5 +254,71 @@ public class SettingController {
         colorMap.put("흰색", "FF "); // 기본값을 흰색으로 지정
 
         return colorMap.getOrDefault(value, "FF ");
+    }
+
+    public void sendDisplayBright() {
+        if (IS_ASCII){
+            String msg = "![0050";
+            if (isRS){
+                msg = "!["+convertRS485AddrASCii()+"050";
+            }
+            switch (displayBright.getValue()){
+                case "100%": msg += "99"; break;
+                case "75%": msg += "75"; break;
+                case "50%": msg += "50"; break;
+                case "25%": msg += "25"; break;
+                case "5%": msg += "05"; break;
+            }
+            msg += "!]";
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
+
+
+        } else{
+            String msg = "10 02 00 00 02 44 ";
+            if (isRS){
+                msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 02 44 ";
+            }
+            switch (displayBright.getValue()){
+                case "100%": msg += "64"; break;
+                case "75%": msg += "48"; break;
+                case "50%": msg += "32"; break;
+                case "25%": msg += "19"; break;
+                case "5%": msg += "05"; break;
+            }
+            msg += " 10 03";
+            hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
+        }
+    }
+
+    public void sendDisplayOn() {
+        if (IS_ASCII) {
+            String msg = "![00211!]";
+            if (isRS) {
+                msg = "![" + convertRS485AddrASCii() + "0211!]";
+            }
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
+            return;
+        }
+        String msg = "10 02 00 00 02 41 01 10 03";
+        if (isRS) {
+            msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 02 41 01 10 03";
+        }
+        hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
+    }
+
+    public void sendDisplayOff() {
+        if (IS_ASCII) {
+            String msg = "![00210!]";
+            if (isRS) {
+                msg = "![" + convertRS485AddrASCii() + "0210!]";
+            }
+            asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
+            return;
+        }
+        String msg = "10 02 00 00 02 41 00 10 03";
+        if (isRS) {
+            msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 02 41 00 10 03";
+        }
+        hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
     }
 }

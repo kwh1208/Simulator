@@ -5,13 +5,11 @@
 
 <VBox alignment="TOP_CENTER" prefHeight="800.0" prefWidth="560.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MainController">
-    <StackPane>
-        <!-- TabPane 추가 -->
-        <TabPane fx:id="mainTab" prefHeight="640.0" prefWidth="580.0" tabClosingPolicy="UNAVAILABLE">
-                <Tab fx:id="messageTab" text="아스키 프로토콜"/>
-            <Tab fx:id="setting" text="%setting" style="-fx-padding: 35px"/>
-        </TabPane>
-    </StackPane>
+    <!-- TabPane 추가 -->
+    <TabPane fx:id="mainTab" prefHeight="640.0" prefWidth="580.0" tabClosingPolicy="UNAVAILABLE">
+        <Tab fx:id="messageTab" text="아스키 프로토콜"/>
+        <Tab fx:id="setting" text="%setting" style="-fx-padding: 35px"/>
+    </TabPane>
     <!-- 로그 영역 추가 -->
     <fx:include source="log.fxml"/>
 </VBox>

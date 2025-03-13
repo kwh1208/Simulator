@@ -85,6 +85,9 @@
     -fx-border-radius: 10; /* 버튼 모서리 둥글기 */
     -fx-padding: 5 10 5 10; /* 버튼 내부 여백 */
     -fx-background-radius: 10; /* 배경 둥글기 */
+
+    -fx-alignment: center;
+    -fx-text-alignment: center;
 }
 
 .button:hover {

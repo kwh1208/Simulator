@@ -3,9 +3,17 @@ package dbps.dbps.controller;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.IOException;
@@ -47,12 +55,56 @@ public class AdvancedSettingController {
     //표출신호 창 열기
     @FXML
     public void transferSignalSetting(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/displaySignalSetting.fxml", "표출신호 설정", mouseEvent);
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/displaySignalSetting.fxml"));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
+        Parent root = fxmlLoader.load();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle("표출신호 설정");
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.setOnShown(event -> {
+            // 부모 창 위치와 크기 가져오기
+            double parentX = parentStage.getX();
+            double parentY = parentStage.getY();
+            double parentWidth = parentStage.getWidth();
+            double parentHeight = parentStage.getHeight();
+
+            // 모달 창 크기 계산
+            double modalWidth = modalStage.getWidth();
+
+            // 위치 계산
+            double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
+            double modalY = parentY;
+
+            // 위치 설정
+            modalStage.setX(modalX);
+            modalStage.setY(modalY);
+        });
+
+        modalStage.setOnCloseRequest(e->{
+            DisplaySignalSettingController.timeline.stop();
+        });
+
+        modalStage.showAndWait();
     }
+
     //보드기능 설정 창 열기
     @FXML
     public void boardSetting(MouseEvent mouseEvent) throws IOException {
         openModal("/dbps/dbps/fxmls/boardSettings.fxml", "보드 기능 설정", mouseEvent);
+    }
+
+    public void pageMsg(MouseEvent mouseEvent) throws IOException {
+        openModal("/dbps/dbps/fxmls/messageSetting.fxml", "페이지메세지 설정", mouseEvent);
     }
 
     //펌웨어 모달창 열기
@@ -65,7 +117,7 @@ public class AdvancedSettingController {
         openModal("/dbps/dbps/fxmls/additionalFunctions.fxml", "추가 기능", mouseEvent);
     }
 
-    public void resetController() throws InterruptedException {
+    public void resetController() {
         if (IS_ASCII) {
             String msg = "![0041!]";
             if (isRS) {

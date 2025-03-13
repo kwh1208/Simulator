@@ -35,7 +35,8 @@ public class FirmwareService {
     public static TextArea firmwareInformation;
 
     public void setFirmware(String firmware) {
-        firmwareInformation.setText(firmware);
+        String replace = firmware.replace("![", "");
+        firmwareInformation.setText(replace);
     }
 
     public Task<Void> firmwareUpload(ProgressBar progressBar, Label progressLabel) {

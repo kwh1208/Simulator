@@ -25,7 +25,15 @@ public class MainController {
         mainService = MainService.getInstance();
         MainService.setMessageTab(messageTab);
         MainService.setSettingTab(setting);
+        mainTab.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
+            if (newTab == messageTab) {
+                mainService.showHEXMsgTab();
+            } else if (newTab == setting) {
+                mainService.changeSetTab();
+            }
+        });
+
+        // 초기 탭(예, 메시지 탭)을 미리 로드
         mainService.showHEXMsgTab();
-        mainService.changeSetTab();
     }
 }

@@ -42,12 +42,6 @@ public class DisplaySignalSettingController {
     private Spinner<Integer> spinnerForSec;
 
     @FXML
-    private Spinner<Integer> spinnerForBefore;
-
-    @FXML
-    private Spinner<Integer> spinnerForAfter;
-
-    @FXML
     private Button autoTransfer;
 
     AsciiMsgTransceiver asciiMsgTransceiver;
@@ -62,18 +56,6 @@ public class DisplaySignalSettingController {
 
     @FXML
     private void initialize() {
-        SpinnerValueFactory<Integer> valueFactoryForSec = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 3);
-        SpinnerValueFactory<Integer> valueFactoryForBefore = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 0);
-        SpinnerValueFactory<Integer> valueFactoryForAfter = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 0);
-
-        spinnerForSec.setValueFactory(valueFactoryForSec);
-        spinnerForBefore.setValueFactory(valueFactoryForBefore);
-        spinnerForAfter.setValueFactory(valueFactoryForAfter);
-
-        spinnerForSec.setEditable(true);
-        spinnerForBefore.setEditable(true);
-        spinnerForAfter.setEditable(true);
-
         signalList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.equals("08D-P64D1S21")) {
                 scanOrder.getItems().clear();
@@ -92,6 +74,10 @@ public class DisplaySignalSettingController {
             }
             memo.setText(configService.getDisplayProperty(signalList.getFocusModel().getFocusedItem()));
         });
+
+        SpinnerValueFactory<Integer> valueFactoryForSec = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 3);
+        spinnerForSec.setValueFactory(valueFactoryForSec);
+        spinnerForSec.setEditable(true);
 
         signalList.setOnMouseClicked(event -> handleDoubleClick(event, signalList));
 
@@ -133,6 +119,11 @@ public class DisplaySignalSettingController {
     //현재창 닫기
     @FXML
     void closeWindow() {
+        if (timeline != null) {
+            timeline.stop();
+            timeline = null;
+        }
+
         Stage stage = (Stage) spinnerForSec.getScene().getWindow();
         stage.close();
     }
@@ -291,7 +282,6 @@ public class DisplaySignalSettingController {
         timeline = new Timeline();
         timeline.setCycleCount(signalCount); // 각 신호에 대해 반복
 
-        long ctime = System.currentTimeMillis();
         for (int i = startIdx; i < signalCount; i++) {
             int index = i; // 람다식 내부에서 사용될 인덱스
             KeyFrame keyFrame = new KeyFrame(Duration.seconds((i - startIdx) * time), event -> {
@@ -312,31 +302,6 @@ public class DisplaySignalSettingController {
 
         autoTransfer.setText("해제"); // 자동 전송 시작 시 버튼 텍스트 변경
         timeline.play(); // 타임라인 시작
-    }
-
-    @FXML
-    public void setting() {
-        Integer before = spinnerForBefore.getValue();
-        Integer after = spinnerForAfter.getValue();
-
-        String beforeStr = (before < 10) ? " " + before : before.toString();
-        String afterStr = (after < 10) ? " " + after : after.toString();
-
-        String msg = "![00B4" + beforeStr + " " + afterStr + "!]";
-        if (isRS) {
-            msg = "![" + convertRS485AddrASCii() + "0B4" + beforeStr + " " + afterStr + "!]";
-        }
-
-        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
-    }
-
-    @FXML
-    public void read() {
-        String msg = "![00B50!]";
-        if (isRS) {
-            msg = "![" + convertRS485AddrASCii() + "0B50!]";
-        }
-        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     public void save() {

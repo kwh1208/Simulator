@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="additionalFunctionAp" prefHeight="368.0" prefWidth="400.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdditionalFunctionsController">
+<AnchorPane fx:id="additionalFunctionAp" prefHeight="440.0" prefWidth="400.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdditionalFunctionsController">
     <Pane layoutX="22.0" layoutY="138.0" prefHeight="62.0" prefWidth="367.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10" />
     <Label layoutX="28.0" layoutY="40.0" text="%displayRateSetting" />
     <ComboBox fx:id="displaySpeed" layoutX="175.0" layoutY="35.0" prefHeight="28.0" prefWidth="113.0" value="사용안함">
@@ -46,19 +46,29 @@
     <Label layoutX="152.0" layoutY="177.0" text="%height" />
     <Button layoutX="322.0" layoutY="140.0" mnemonicParsing="false" onMouseClicked="#sendFontWeight" prefHeight="28.0" prefWidth="63.0" text="%set" />
 
-    <Label layoutX="35.0" layoutY="212.0" text="%sectionEffect" />
-    <ChoiceBox fx:id="pageMsgType" layoutX="160.0" layoutY="206.0" prefHeight="25.0" prefWidth="128.0">
+    <Label layoutX="35.0" layoutY="302.0" text="%sectionEffect" />
+    <ChoiceBox fx:id="pageMsgType" layoutX="160.0" layoutY="296.0" prefHeight="25.0" prefWidth="128.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
     </ChoiceBox>
-    <Button layoutX="323.0" layoutY="205.0" mnemonicParsing="false" onMouseClicked="#sendPageMsgType" prefHeight="28.0" prefWidth="63.0" text="%set" />
+    <Button layoutX="323.0" layoutY="295.0" mnemonicParsing="false" onMouseClicked="#sendPageMsgType" prefHeight="28.0" prefWidth="63.0" text="%set" />
 
-    <Button layoutX="40.0" layoutY="242.0" onMouseClicked="#openBGSchedule" prefHeight="30" prefWidth="165.0" text="%BGSchedule" />
-    <Button layoutX="220.0" layoutY="242.0" onMouseClicked="#openRelay" prefHeight="30" prefWidth="165.0" text="%relaySignal" />
-    <Button layoutX="40.0" layoutY="281.0" mnemonicParsing="false" onMouseClicked="#fontName" prefHeight="30.0" prefWidth="165.0" text="%fontFileName" />
+    <Button layoutX="40.0" layoutY="332.0" onMouseClicked="#openBGSchedule" prefHeight="30" prefWidth="165.0" text="%BGSchedule" />
+    <Button layoutX="220.0" layoutY="332.0" onMouseClicked="#openRelay" prefHeight="30" prefWidth="165.0" text="%relaySignal" />
+    <Button layoutX="40.0" layoutY="371.0" mnemonicParsing="false" onMouseClicked="#fontName" prefHeight="30.0" prefWidth="165.0" text="%fontFileName" />
     <ProgressIndicator fx:id="progressIndicator" layoutX="180.0" layoutY="150.0" visible="false" />
-    <Button layoutX="321.0" layoutY="325.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="28.0" prefWidth="63.0" text="%close" />
+    <Button layoutX="321.0" layoutY="404.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="28.0" prefWidth="63.0" text="%close" />
+
+    <Pane layoutX="24.0" layoutY="213.0" prefHeight="77.0" prefWidth="367.0" style="-fx-border-color: black;">
+        <Label layoutX="14.0" layoutY="-6.0" prefHeight="13.0" prefWidth="107.0" style="-fx-background-color: #333333;" text="%afterimageDelaySetting" />
+        <Label layoutX="40.0" layoutY="17.0" text="Before" />
+        <Label layoutX="131.0" layoutY="17.0" text="After" />
+        <Spinner fx:id="spinnerForBefore" layoutX="34.0" layoutY="38.0" prefHeight="21.0" prefWidth="60.0" />
+        <Spinner fx:id="spinnerForAfter" layoutX="130.0" layoutY="38.0" prefHeight="21.0" prefWidth="60.0" />
+        <Button layoutX="225.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#setting" prefHeight="28.0" prefWidth="63.0" text="%set" />
+        <Button layoutX="299.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="28.0" prefWidth="63.0" text="%read" />
+    </Pane>
 
 </AnchorPane>

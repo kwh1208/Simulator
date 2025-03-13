@@ -1,81 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane fx:id="ASAP" layoutX="17.0" layoutY="50.0" prefWidth="278.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdvancedSettingController">
-    <Button layoutX="20.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClicked" prefHeight="40.0" prefWidth="150.0" styleClass="newWindow-button" text="%communicationSetting">
-        <graphic>
-            <ImageView fitHeight="16" fitWidth="16" preserveRatio="true">
-                <Image url="@../images/new-window.png"/>
-            </ImageView>
-        </graphic>
-    </Button>
-    <Button layoutX="20.0" layoutY="60.0" mnemonicParsing="false" onMouseClicked="#fontSetting" prefHeight="40.0" prefWidth="150.0" styleClass="newWindow-button" text="%fontSetting">
-        <graphic>
-            <ImageView fitHeight="16" fitWidth="16" preserveRatio="true">
-                <Image url="@../images/new-window.png"/>
-            </ImageView>
-        </graphic>
-    </Button>
-    <Button layoutX="20.0" layoutY="110.0" mnemonicParsing="false" onMouseClicked="#transferSignalSetting" prefHeight="40.0" prefWidth="150.0" styleClass="newWindow-button" text="%displaySignalSetting">
-        <graphic>
-            <ImageView fitHeight="16" fitWidth="16" preserveRatio="true">
-
-                    <Image url="@../images/new-window.png" />
-
-            </ImageView>
-        </graphic>
-    </Button>
-    <Button layoutX="20.0" layoutY="160.0" mnemonicParsing="false" onMouseClicked="#boardSetting" prefHeight="40.0" prefWidth="150.0" styleClass="newWindow-button" text="%boardSetting">
-        <graphic>
-            <ImageView fitHeight="16" fitWidth="16" preserveRatio="true">
-
-                    <Image url="@../images/new-window.png" />
-
-            </ImageView>
-        </graphic>
-    </Button>
-    <Button layoutX="20.0" layoutY="210.0" mnemonicParsing="false" onMouseClicked="#firmwareInfo" prefHeight="40.0" prefWidth="150.0" styleClass="newWindow-button" text="%firmwareUpgrade">
-        <graphic>
-            <ImageView fitHeight="16" fitWidth="16" preserveRatio="true">
-
-                    <Image url="@../images/new-window.png" />
-
-            </ImageView>
-        </graphic>
-    </Button>
-    <Button layoutX="20.0" layoutY="260.0" mnemonicParsing="false" onMouseClicked="#openAdditionalFunction" prefHeight="40.0" prefWidth="150.0" styleClass="newWindow-button" text="%additionalFunction">
-        <graphic>
-            <ImageView fitHeight="16" fitWidth="16" preserveRatio="true">
-
-                    <Image url="@../images/new-window.png" />
-
-            </ImageView>
-        </graphic>
-    </Button>
-    <Button layoutX="20.0" layoutY="308.0" mnemonicParsing="false" onMouseClicked="#resetController" prefHeight="60.0" prefWidth="75.0" text="%CPUReboot" />
-    <Button layoutX="95.0" layoutY="308.0" mnemonicParsing="false" onMouseClicked="#hardReset" prefHeight="60.0" prefWidth="75.0" text="%FactoryReset" />
-    <Pane layoutX="14.0" layoutY="401.0" prefHeight="100.0" prefWidth="164.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
-        <Label alignment="CENTER" layoutX="20.0" layoutY="-14.0" prefHeight="18.0" prefWidth="120.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%customerSupport" textFill="WHITE" />
-        <Button layoutX="7.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#ASPhoto" prefHeight="30.0" prefWidth="150.0" styleClass="newWindow-button" text="%asPhotoAttachment">
-            <graphic>
-                <ImageView fitHeight="16" fitWidth="16" preserveRatio="true">
-
-                        <Image url="@../images/new-window.png" />
-
-                </ImageView>
-            </graphic>
-        </Button>
-        <Button layoutX="7.0" layoutY="61.0" mnemonicParsing="false" onMouseClicked="#docs" prefHeight="30.0" prefWidth="150.0" styleClass="newWindow-button" text="%officialDocument">
-            <graphic>
-                <ImageView fitHeight="16" fitWidth="16" preserveRatio="true">
-
-                        <Image url="@../images/new-window.png" />
-
-                </ImageView>
-            </graphic>
-        </Button>
+<Pane fx:id="ASAP" layoutX="17.0" layoutY="50.0" prefWidth="278.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdvancedSettingController">
+    <Button layoutX="20.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClicked"
+            prefHeight="40.0" prefWidth="150.0" styleClass="newWindow-button" text="%communicationSetting"/>
+    <Button layoutX="20.0" layoutY="60.0" mnemonicParsing="false" onMouseClicked="#fontSetting" prefHeight="40.0"
+            prefWidth="150.0" styleClass="newWindow-button" text="%fontSetting"/>
+    <Button layoutX="20.0" layoutY="110.0" mnemonicParsing="false" onMouseClicked="#transferSignalSetting"
+            prefHeight="40.0" prefWidth="150.0" styleClass="newWindow-button" text="%displaySignalSetting"/>
+    <Button layoutX="20.0" layoutY="160.0" mnemonicParsing="false" onMouseClicked="#boardSetting" prefHeight="40.0"
+            prefWidth="150.0" styleClass="newWindow-button" text="%boardSetting"/>
+    <Button layoutX="20.0" layoutY="210.0" mnemonicParsing="false" onMouseClicked="#firmwareInfo" prefHeight="40.0"
+            prefWidth="150.0" styleClass="newWindow-button" text="%firmwareUpgrade"/>
+    <Button layoutX="20.0" layoutY="260.0" mnemonicParsing="false" onMouseClicked="#pageMsg" prefHeight="40.0"
+            prefWidth="150.0" styleClass="newWindow-button" text="%pageMsgSetting"/>
+    <Button layoutX="20.0" layoutY="310.0" mnemonicParsing="false" onMouseClicked="#openAdditionalFunction"
+            prefHeight="40.0" prefWidth="150.0" styleClass="newWindow-button" text="%additionalFunction"/>
+    <Button layoutX="15.0" layoutY="358.0" mnemonicParsing="false" onMouseClicked="#resetController" prefHeight="40.0"
+            prefWidth="75.0" text="%CPUReboot"/>
+    <Button layoutX="90.0" layoutY="358.0" mnemonicParsing="false" onMouseClicked="#hardReset" prefHeight="40.0"
+            prefWidth="85.0" text="%FactoryReset"/>
+    <Pane layoutX="14.0" layoutY="421.0" prefHeight="100.0" prefWidth="164.0"
+          style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
+        <Label alignment="CENTER" layoutX="20.0" layoutY="-14.0" prefHeight="18.0" prefWidth="120.0"
+               style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder"
+               text="%customerSupport" textFill="WHITE"/>
+        <Button layoutX="7.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#ASPhoto" prefHeight="30.0"
+                prefWidth="150.0" styleClass="newWindow-button" text="%asPhotoAttachment"/>
+        <Button layoutX="7.0" layoutY="61.0" mnemonicParsing="false" onMouseClicked="#docs" prefHeight="30.0"
+                prefWidth="150.0" styleClass="newWindow-button" text="%officialDocument"/>
     </Pane>
 </Pane>

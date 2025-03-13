@@ -27,7 +27,6 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -242,10 +241,11 @@ public class HEXMessageController {
         effectIn.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateInDirections(newValue.displayText()));
 
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
+
+        setXY();
         doMsgSettings();
-
+        setUI();
         saveConfig();
-
         COLOR_MAP = new HashMap<>();
 
         COLOR_MAP.put("black", 0);
@@ -257,13 +257,7 @@ public class HEXMessageController {
         COLOR_MAP.put("skyblue", 6);
         COLOR_MAP.put("white", 7);
 
-        setXY();
-
-        setUI();
-
         packetBinding();
-
-        hackTooltipStartTiming(previewTooltip);
     }
 
     private void packetBinding() {
@@ -1071,13 +1065,13 @@ public class HEXMessageController {
                 (observable, oldValue, newValue) -> configService.setProperty("effectIn" + getMsgNum(), newValue.key())
         );
         inDirection.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("effectInDefault" + getMsgNum(), newValue.key())
+                (observable, oldValue, newValue) -> configService.setProperty("effectInDirection" + getMsgNum(), newValue.key())
         );
         effectOut.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> configService.setProperty("effectOut" + getMsgNum(), newValue.key())
         );
         outDirection.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("effectOutDefault" + getMsgNum(), newValue.key())
+                (observable, oldValue, newValue) -> configService.setProperty("effectOutDirection" + getMsgNum(), newValue.key())
         );
         effectSpeed.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> configService.setProperty("effectSpeed" + getMsgNum(), newValue.key())
@@ -1337,23 +1331,6 @@ public class HEXMessageController {
             }
         }
         return sb.toString();
-    }
-
-    public static void hackTooltipStartTiming(Tooltip tooltip) {
-        try {
-            Field fieldBehavior = tooltip.getClass().getDeclaredField("BEHAVIOR");
-            fieldBehavior.setAccessible(true);
-            Object objBehavior = fieldBehavior.get(tooltip);
-
-            Field fieldTimer = objBehavior.getClass().getDeclaredField("activationTimer");
-            fieldTimer.setAccessible(true);
-            Timeline objTimer = (Timeline) fieldTimer.get(objBehavior);
-
-            objTimer.getKeyFrames().clear();
-            objTimer.getKeyFrames().add(new KeyFrame(new Duration(10)));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void openMulti(MouseEvent mouseEvent) throws IOException {

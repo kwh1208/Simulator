@@ -5,44 +5,42 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane fx:id="msPane" layoutX="305.0" layoutY="210.0" prefHeight="101.0" prefWidth="290.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MessageSettingController">
-    <children>
-        <Label alignment="CENTER" layoutX="75.0" layoutY="-14.0" prefHeight="18.0" prefWidth="160.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%PageMessageSettings" />
-        <Label layoutX="19.0" layoutY="26.0" text="%SetTotalCount" />
-        <ChoiceBox fx:id="pageMsgCnt" layoutX="120.0" layoutY="20.0" prefHeight="25.0" prefWidth="94.0" value="10">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="1" />
-                    <String fx:value="2" />
-                    <String fx:value="3" />
-                    <String fx:value="4" />
-                    <String fx:value="5" />
-                    <String fx:value="6" />
-                    <String fx:value="7" />
-                    <String fx:value="8" />
-                    <String fx:value="9" />
-                    <String fx:value="10" />
-                </FXCollections>
-            </items>
-        </ChoiceBox>
-        <Button layoutX="220.0" layoutY="19.0" mnemonicParsing="false" onMouseClicked="#sendPageCnt" prefHeight="28.0" prefWidth="63.0" text="%sendButton" />
-        <Label layoutX="17.0" layoutY="63.0" text="%ResetMsg" />
-        <ChoiceBox fx:id="msgInitialize" layoutX="120.0" layoutY="58.0" prefHeight="25.0" prefWidth="94.0">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="page 1" />
-                    <String fx:value="page 2" />
-                    <String fx:value="page 3" />
-                    <String fx:value="page 4" />
-                    <String fx:value="page 5" />
-                    <String fx:value="page 6" />
-                    <String fx:value="page 7" />
-                    <String fx:value="page 8" />
-                    <String fx:value="page 9" />
-                    <String fx:value="page 10" />
-                </FXCollections>
-            </items>
-        </ChoiceBox>
-        <Button layoutX="220.0" layoutY="57.0" mnemonicParsing="false" onMouseClicked="#sendMsgInitialize" prefHeight="28.0" prefWidth="63.0" text="%sendButton" />
-    </children>
+<Pane fx:id="msPane" prefHeight="125.0" prefWidth="290.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MessageSettingController">
+    <Label layoutX="19.0" layoutY="26.0" text="%SetTotalCount" />
+    <ChoiceBox fx:id="pageMsgCnt" layoutX="120.0" layoutY="20.0" prefHeight="25.0" prefWidth="94.0" value="10">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="1" />
+                <String fx:value="2" />
+                <String fx:value="3" />
+                <String fx:value="4" />
+                <String fx:value="5" />
+                <String fx:value="6" />
+                <String fx:value="7" />
+                <String fx:value="8" />
+                <String fx:value="9" />
+                <String fx:value="10" />
+            </FXCollections>
+        </items>
+    </ChoiceBox>
+    <Button layoutX="220.0" layoutY="19.0" mnemonicParsing="false" onMouseClicked="#sendPageCnt" prefHeight="28.0" prefWidth="63.0" text="%sendButton" />
+    <Label layoutX="17.0" layoutY="63.0" text="%ResetMsg" />
+    <ChoiceBox fx:id="msgInitialize" layoutX="120.0" layoutY="58.0" prefHeight="25.0" prefWidth="94.0">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="page 1" />
+                <String fx:value="page 2" />
+                <String fx:value="page 3" />
+                <String fx:value="page 4" />
+                <String fx:value="page 5" />
+                <String fx:value="page 6" />
+                <String fx:value="page 7" />
+                <String fx:value="page 8" />
+                <String fx:value="page 9" />
+                <String fx:value="page 10" />
+            </FXCollections>
+        </items>
+    </ChoiceBox>
+    <Button layoutX="220.0" layoutY="57.0" mnemonicParsing="false" onMouseClicked="#sendMsgInitialize" prefHeight="28.0" prefWidth="63.0" text="%sendButton" />
+    <Button layoutX="220.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#close" text="%close" prefHeight="28.0" prefWidth="63.0"/>
 </Pane>

@@ -9,9 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -35,6 +33,8 @@ public class AdditionalFunctionsController {
     public ProgressIndicator progressIndicator;
     public AnchorPane additionalFunctionAp;
     public ChoiceBox<String> pageMsgType;
+    public Spinner<Integer> spinnerForBefore;
+    public Spinner<Integer> spinnerForAfter;
     AsciiMsgTransceiver asciiMsgTransceiver;
     ResourceBundle bundle;
 
@@ -46,6 +46,18 @@ public class AdditionalFunctionsController {
         bundle = ResourceManager.getInstance().getBundle();
 
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
+
+
+        SpinnerValueFactory<Integer> valueFactoryForBefore = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 0);
+        SpinnerValueFactory<Integer> valueFactoryForAfter = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 0);
+
+
+        spinnerForBefore.setValueFactory(valueFactoryForBefore);
+        spinnerForAfter.setValueFactory(valueFactoryForAfter);
+
+
+        spinnerForBefore.setEditable(true);
+        spinnerForAfter.setEditable(true);
 
         displaySpeed.getItems().add(bundle.getString("notUsed"));
         for (int i = 1; i < 100; i++) {
@@ -201,5 +213,30 @@ public class AdditionalFunctionsController {
         }
         msg += "!]";
         asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
+    }
+
+    @FXML
+    public void setting() {
+        Integer before = spinnerForBefore.getValue();
+        Integer after = spinnerForAfter.getValue();
+
+        String beforeStr = (before < 10) ? " " + before : before.toString();
+        String afterStr = (after < 10) ? " " + after : after.toString();
+
+        String msg = "![00B4" + beforeStr + " " + afterStr + "!]";
+        if (isRS) {
+            msg = "![" + convertRS485AddrASCii() + "0B4" + beforeStr + " " + afterStr + "!]";
+        }
+
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
+    }
+
+    @FXML
+    public void read() {
+        String msg = "![00B50!]";
+        if (isRS) {
+            msg = "![" + convertRS485AddrASCii() + "0B50!]";
+        }
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 }
