@@ -215,6 +215,11 @@ public class HEXMessageController {
         }
         section0.setSelected(true);
 
+        System.out.println("textAsc"+getMsgNum());
+        if (configService.getProperty("textAsc"+getMsgNum())!=null){
+            sendMsgAsc.setText(configService.getProperty("textAsc"+getMsgNum()));
+        }
+
         msgTypeGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 RadioButton selectedRadioButton = (RadioButton) newValue;
@@ -1046,9 +1051,6 @@ public class HEXMessageController {
         doMsgSettings();
     }
 
-    public void preview(MouseEvent mouseEvent) {
-    }
-
     private void saveConfig() {
         displayControl.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> configService.setProperty("displayControl" + getMsgNum(), newValue));
@@ -1106,6 +1108,14 @@ public class HEXMessageController {
         bgImg.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> configService.setProperty("bgImg" + getMsgNum(), newValue.key())
         );
+
+        sendMsg.textProperty().addListener((observable, oldValue, newValue)->{
+            configService.setProperty("text"+getMsgNum(), newValue);
+        });
+
+        sendMsgAsc.textProperty().addListener((observable, oldValue, newValue)->{
+            configService.setProperty("textAsc"+getMsgNum(), newValue);
+        });
     }
 
     private String setDText(String value1, String value2) {
