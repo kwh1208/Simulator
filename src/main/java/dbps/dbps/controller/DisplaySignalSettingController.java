@@ -1,22 +1,27 @@
 package dbps.dbps.controller;
 
-import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.ConfigService;
-import dbps.dbps.service.DisplaySignal;
-import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.Simulator;
+import dbps.dbps.service.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
 
 import static dbps.dbps.Constants.*;
+import static dbps.dbps.controller.DisplayListController.SELECTED_SIGNAL;
 import static dbps.dbps.service.DisplaySignal.SignalMap_ASC;
 import static dbps.dbps.service.DisplaySignal.SignalMap_HEX;
 
@@ -90,6 +95,15 @@ public class DisplaySignalSettingController {
             }
         });
 
+        signalList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)->{
+            if (configService.getProperty(newValue+"-color")==null){
+                colorScan.setValue("RGB");
+            }
+            else {
+                colorScan.setValue(configService.getProperty(configService.getProperty("displaySignal")+"-color"));
+            }
+        });
+
 
         displaySignalAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/displaySignal.css").toExternalForm());
         displaySignal = DisplaySignal.getInstance();
@@ -104,6 +118,12 @@ public class DisplaySignalSettingController {
 
         if (configService.getProperty(configService.getProperty("displaySignal")+"-color")!=null){
             colorScan.setValue(configService.getProperty(configService.getProperty("displaySignal")+"-color"));
+        }
+
+
+        if (index != -1) { // 유효한 인덱스인지 확인
+            signalList.getSelectionModel().select(index);
+            signalList.scrollTo(index); // 선택한 항목으로 스크롤 이동
         }
     }
 
@@ -309,6 +329,51 @@ public class DisplaySignalSettingController {
     }
 
     public void search(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/displayList.fxml", "통신 설정", mouseEvent);
+        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/displayList.fxml"));
+        fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
+        Parent root = fxmlLoader.load();
+
+        DisplayListController controller = fxmlLoader.getController();
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle("통신 설정");
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
+
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        modalStage.initOwner(parentStage);
+
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.setResizable(false);
+
+        modalStage.setOnHiding(event -> {
+            int targetIndex = signalList.getItems().indexOf(SELECTED_SIGNAL);
+            if (targetIndex != -1) { // 유효한 인덱스인지 확인
+                signalList.getSelectionModel().select(targetIndex);
+                signalList.scrollTo(targetIndex); // 선택한 항목으로 스크롤 이동
+            }
+        });
+
+        modalStage.setOnShown(event -> {
+            // 부모 창 위치와 크기 가져오기
+            double parentX = parentStage.getX();
+            double parentY = parentStage.getY();
+            double parentWidth = parentStage.getWidth();
+
+            // 모달 창 크기 계산
+            double modalWidth = modalStage.getWidth();
+
+            // 위치 계산
+            double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
+            double modalY = parentY;
+
+            // 위치 설정
+            modalStage.setX(modalX);
+            modalStage.setY(modalY);
+        });
+
+        modalStage.showAndWait();
     }
 }

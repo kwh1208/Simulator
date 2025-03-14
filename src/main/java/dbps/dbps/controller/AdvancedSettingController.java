@@ -91,7 +91,9 @@ public class AdvancedSettingController {
         });
 
         modalStage.setOnCloseRequest(e->{
-            DisplaySignalSettingController.timeline.stop();
+            if (DisplaySignalSettingController.timeline !=null){
+                DisplaySignalSettingController.timeline.stop();
+            }
         });
 
         modalStage.showAndWait();
