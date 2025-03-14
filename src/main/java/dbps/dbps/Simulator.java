@@ -10,15 +10,10 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -58,10 +53,6 @@ public class Simulator extends Application {
         instance = this;  // 인스턴스를 저장
         this.stage = stage;
 
-        Stage splashStage = new Stage();
-        splashStage.initStyle(StageStyle.UNDECORATED);
-        showSplashScreen(splashStage);
-
         // 백그라운드에서 FXML 로드
         Task<Parent> loadTask = new Task<>() {
             @Override
@@ -81,11 +72,9 @@ public class Simulator extends Application {
             Platform.runLater(() -> {
                 stage.setScene(scene);
                 stage.setResizable(false);
-                stage.setTitle("DBPS V1.2.0");
+                stage.setTitle("DBPS V1.2.1");
                 stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
                 stage.show();
-
-                splashStage.close();
             });
         });
 
@@ -96,26 +85,6 @@ public class Simulator extends Application {
 
         // 별도의 스레드에서 백그라운드 작업 시작
         new Thread(loadTask).start();
-    }
-
-    private void showSplashScreen(Stage splashStage) {
-        // 스플래시 이미지를 불러옵니다.
-        Image splashImage = new Image(getClass().getResourceAsStream("/dbps/dbps/images/logo.jpg"));
-        ImageView splashImageView = new ImageView(splashImage);
-        splashImageView.setPreserveRatio(true);
-        splashImageView.setFitWidth(530);
-
-        // 중앙에 위치하도록 StackPane 사용
-        StackPane splashRoot = new StackPane(splashImageView);
-        Scene splashScene = new Scene(splashRoot, 538, 348);
-
-        splashStage.setScene(splashScene);
-        splashStage.show();
-
-        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-        // Stage의 가로, 세로 크기를 고려해 중앙에 배치
-        splashStage.setX((bounds.getWidth() - splashStage.getWidth()) / 2);
-        splashStage.setY((bounds.getHeight() - splashStage.getHeight()) / 2);
     }
 
 

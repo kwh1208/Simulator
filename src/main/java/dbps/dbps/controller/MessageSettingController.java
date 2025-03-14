@@ -1,10 +1,7 @@
 package dbps.dbps.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import dbps.dbps.Simulator;
-import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.HexMsgTransceiver;
-import dbps.dbps.service.ResourceManager;
+import dbps.dbps.service.*;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
@@ -23,7 +20,7 @@ public class MessageSettingController {
     
     AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
     ResourceBundle bundle;
-
+    ConfigService configService;
 
     @FXML
     public ChoiceBox<String> msgInitialize;
@@ -33,6 +30,8 @@ public class MessageSettingController {
 
     @FXML
     public Pane msPane;
+
+    private ChoiceBox<String> pageMsgChoiceBox;
 
     @FXML
     public void initialize() {
@@ -52,9 +51,10 @@ public class MessageSettingController {
         });
         msgInitialize.getItems().add(bundle.getString("All"));
         msgInitialize.setValue(bundle.getString("All"));
+        configService=ConfigService.getInstance();
     }
 
-    public void sendMsgInitialize() throws JsonProcessingException {
+    public void sendMsgInitialize() {
         if (IS_ASCII){
             String msg = "![0061";
             if (isRS){
@@ -108,6 +108,11 @@ public class MessageSettingController {
 
             hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
         }
+
+        PageMsgCnt= Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", ""));
+        configService.setProperty("pageMsgCnt", String.valueOf(PageMsgCnt));
+
+        HexMsgService.getInstance().setUI(PageMsgCnt);
     }
 
     public void close(MouseEvent mouseEvent) {

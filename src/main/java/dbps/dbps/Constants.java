@@ -61,6 +61,7 @@ public class Constants {
     public static int BITS_PER_PIXEL;
     public static String howToArrange;
     public static String uploadFirmwarePath = "";
+    public static int PageMsgCnt;
 
     static {
         ConfigService configService = ConfigService.getInstance();
@@ -82,6 +83,7 @@ public class Constants {
         howToArrange = configService.getProperty("howToArrange");
         isRS = Boolean.parseBoolean(configService.getProperty("isRS"));
         serverTCPPort = Integer.parseInt(configService.getProperty("serverTCPPort"));
+        PageMsgCnt = Integer.parseInt(configService.getProperty("pageMsgCnt"));
     }
 
     @FXML

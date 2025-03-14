@@ -70,7 +70,7 @@ public class HEXMessageController {
     private Label pageCntLabel;
 
     @FXML
-    private ChoiceBox<String> pageMsgCnt;
+    public ChoiceBox<String> pageMsgCnt;
 
     @FXML
     private RadioButton section0;
@@ -172,6 +172,7 @@ public class HEXMessageController {
             hexRadioBtn.setSelected(true);
             toggleVisible(true);
         }
+
 
         isAsc.addListener((observable, oldValue, newValue) -> {
             if(newValue){
@@ -322,7 +323,7 @@ public class HEXMessageController {
                 bgRect.setFill(Color.DARKORANGE);
                 Timeline timeline = new Timeline(
                         new KeyFrame(Duration.ZERO, new KeyValue(bgRect.fillProperty(), Color.DARKORANGE)),
-                        new KeyFrame(Duration.seconds(1.5), new KeyValue(bgRect.fillProperty(), Color.TRANSPARENT))
+                        new KeyFrame(Duration.seconds(4), new KeyValue(bgRect.fillProperty(), Color.TRANSPARENT))
                 );
                 timeline.play();
             }
@@ -438,6 +439,10 @@ public class HEXMessageController {
             defaultBtn.setDisable(false);
             preview.setVisible(true);
         }
+    }
+
+    public static void changePageMsgCnt(){
+
     }
 
     private void setUI() {
@@ -909,7 +914,7 @@ public class HEXMessageController {
                 return "2C ";
             } else if (direction.equals(bundle.getString("green"))) {
                 return "2D ";
-            } else if (direction.equals(bundle.getString("blue"))) {
+            } else if (direction.equals(bundle.getString("yellow"))) {
                 return "2E ";
             } else if (direction.equals(bundle.getString("white"))) {
                 return "2F ";
@@ -971,8 +976,7 @@ public class HEXMessageController {
                     new ComboItem("left", bundle.getString("left")),
                     new ComboItem("right", bundle.getString("right")),
                     new ComboItem("up", bundle.getString("up")),
-                    new ComboItem("down", bundle.getString("down")),
-                    new ComboItem("bottomRight", bundle.getString("bottomRight"))
+                    new ComboItem("down", bundle.getString("down"))
             ));
         } else if (effect.equals(bundle.getString("rotateEffect"))) {
             directionBox.setItems(FXCollections.observableArrayList(
@@ -1236,7 +1240,7 @@ public class HEXMessageController {
                 return "44";
             } else if (value2.equals(bundle.getString("green"))) {
                 return "45";
-            } else if (value2.equals(bundle.getString("blue"))) {
+            } else if (value2.equals(bundle.getString("yellow"))) {
                 return "46";
             } else if (value2.equals(bundle.getString("white"))) {
                 return "47";
@@ -1248,7 +1252,7 @@ public class HEXMessageController {
                 return "49";
             } else if (value2.equals(bundle.getString("green"))) {
                 return "50";
-            } else if (value2.equals(bundle.getString("blue"))) {
+            } else if (value2.equals(bundle.getString("yellow"))) {
                 return "51";
             } else if (value2.equals(bundle.getString("white"))) {
                 return "52";

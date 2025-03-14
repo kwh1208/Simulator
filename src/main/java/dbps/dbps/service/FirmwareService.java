@@ -35,7 +35,8 @@ public class FirmwareService {
     public static TextArea firmwareInformation;
 
     public void setFirmware(String firmware) {
-        String replace = firmware.replace("![", "");
+        System.out.println("firmware = " + firmware);
+        String replace = firmware.replace("!]", "");
         firmwareInformation.setText(replace);
     }
 

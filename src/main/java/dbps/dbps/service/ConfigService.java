@@ -196,7 +196,7 @@ public class ConfigService {
             defaultProperties.setProperty("bgColorDefault", "2");
             defaultProperties.setProperty("settingText", "![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]");
 
-            defaultProperties.setProperty("pageMsgCnt", "1");
+            defaultProperties.setProperty("pageMsgCnt", "10");
             defaultProperties.setProperty("pageMsgClear", "전체");
             defaultProperties.setProperty("displayBrightness", "100");
             defaultProperties.setProperty("realTimeMsg", "효과 동시표출");
