@@ -6,9 +6,7 @@ import javafx.concurrent.Task;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
@@ -103,6 +101,63 @@ public class TCPManager {
             }
         };
     }
+
+    public Task<String> sendASCMsg(String msg, boolean utf8, boolean utf16){
+        return new Task<>() {
+
+            @Override
+            protected String call() throws Exception {
+                if (socket==null||socket.isClosed()){
+                    connect(IP, PORT);
+                }
+                try {
+                    InputStream input = socket.getInputStream();
+                    OutputStream output = socket.getOutputStream();
+                    byte[] sendBytes = msg.getBytes(Charset.forName("MS949"));
+                    if (utf8) sendBytes = msg.getBytes(StandardCharsets.UTF_8);
+                    if (utf16) sendBytes = createPacket(msg);
+                    input.skip(input.available());
+                    logService.updateInfoLog(bundle.getString("sendMsg") + msg);
+                    output.write(sendBytes);
+                    output.flush();
+
+
+                    byte[] buffer = new byte[1024];
+                    int totalBytesRead = 0;
+
+                    while (true) {
+                        int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                        if (bytesRead > 0) {
+                            totalBytesRead += bytesRead;
+                            if (dataReceivedIsComplete(buffer, totalBytesRead)) {
+                                break;
+                            }
+                        } else {
+                            break; // 타임아웃
+                        }
+                    }
+                    String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+                    if (result.contains("RX") && result.contains("![") && result.contains("!]")) {
+                        int indexTX = result.indexOf("TX");
+                        result = result.substring(indexTX);
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                    }
+                    if (result.contains("init_rtcTimeDate Start")){
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                    }
+                    logService.updateInfoLog(bundle.getString("receivedMsg") + result);
+                    return result;
+                } catch (IOException e) {
+                    e.getMessage();
+                    logService.errorLog(bundle.getString("connectionFail"));
+                    throw e;
+                }finally {
+                    socket.close();
+                }
+            }
+        };
+    }
+
 
     //접속하기
     public void connect(String IP, int PORT) {

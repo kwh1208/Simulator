@@ -13,7 +13,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.Setter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 @Setter
 public class Constants {
@@ -240,5 +243,61 @@ public class Constants {
         });
 
         modalStage.showAndWait();
+    }
+
+    public static byte[] createPacket(String rawPacket) throws UnsupportedEncodingException {
+        try {
+            String header = rawPacket.substring(2, 5);
+            String trimmed = rawPacket.substring(5, rawPacket.lastIndexOf("!]"));
+
+            ByteArrayOutputStream finalBaos = new ByteArrayOutputStream();
+            finalBaos.write("![".getBytes("MS949"));
+            finalBaos.write(header.getBytes("MS949"));
+
+            String[] tokens = trimmed.split("/");
+            for (String token : tokens) {
+                if(token.isEmpty()){
+                    continue;
+                }
+
+                finalBaos.write("/".getBytes("MS949"));
+
+                int codeLen = getControlCodeLength(token);
+                String controlCode = token.substring(0, Math.min(codeLen, token.length()));
+                String content = token.length() > codeLen ? token.substring(codeLen) : "";
+
+                finalBaos.write(controlCode.getBytes("MS949"));
+                if(!content.isEmpty()){
+                    finalBaos.write(content.getBytes(StandardCharsets.UTF_16BE));
+                }
+            }
+            finalBaos.write("!]".getBytes("MS949"));
+
+            return finalBaos.toByteArray();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private static int getControlCodeLength(String token) {
+        char firstChar = token.charAt(0);
+        switch(firstChar) {
+            case 'F':
+            case 'P':
+            case 'X':
+            case 'Y':
+            case 'E':
+            case 'S':
+            case 'D':
+                return 5;
+            case 'C':
+            case 'G':
+            case 'T':
+                return 2;
+            case 'B':
+                return 3;
+            default:
+                return 1;
+        }
     }
 }

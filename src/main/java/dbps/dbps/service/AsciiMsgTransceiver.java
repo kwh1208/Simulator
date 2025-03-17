@@ -109,6 +109,61 @@ public class AsciiMsgTransceiver {
         return resultFuture;
     }
 
+    public CompletableFuture<String> sendMessages(String msg, boolean utf8, boolean utf16, ProgressIndicator progressIndicator) {
+        CompletableFuture<String> resultFuture = new CompletableFuture<>();
+
+        Platform.runLater(() -> {
+            if (progressIndicator != null) {
+                progressIndicator.setVisible(true);
+            }
+        });
+
+        Task<String> sendTask = switch (CONNECT_TYPE) {
+            case "serial", "bluetooth", "rs485" -> serialPortManager.sendMsgAndGetMsg(msg, utf8, utf16);
+            case "UDP" -> udpManager.sendASCMsg(msg, utf8, utf16);
+            case "clientTCP" -> tcpManager.sendASCMsg(msg, utf8, utf16);
+            case "serverTCP" -> serverTCPManager.sendASCMsg(msg, utf8, utf16);
+            default -> {
+                resultFuture.completeExceptionally(new IllegalStateException("Unexpected value: " + CONNECT_TYPE));
+                yield null;
+            }
+        };
+
+        if (sendTask != null) {
+            sendTask.setOnSucceeded(event -> {
+                String receivedMsg = sendTask.getValue();
+                msgReceive(receivedMsg, msg); // msgReceive를 통해 결과 처리
+                resultFuture.complete(receivedMsg);
+
+                Platform.runLater(() -> {
+                    if (progressIndicator != null) {
+                        progressIndicator.setVisible(false);
+                    }
+                });
+            });
+
+            sendTask.setOnFailed(event -> {
+                Throwable exception = sendTask.getException();
+                resultFuture.completeExceptionally(exception);
+                Platform.runLater(() -> {
+                    if (progressIndicator != null) {
+                        progressIndicator.setVisible(false);
+                    }
+                });
+            });
+
+            try {
+                new Thread(sendTask).start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            resultFuture.completeExceptionally(new IllegalStateException("Task is null."));
+        }
+
+        return resultFuture;
+    }
+
 
 //
 

@@ -216,7 +216,7 @@
         <Button layoutX="411.0" layoutY="91.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0"
                 prefWidth="90.0" text="%sendButton"/>
     </Pane>
-    <ProgressIndicator fx:id="progressIndicator" layoutX="320.0" layoutY="200.0" visible="false"/>
+    <ProgressIndicator fx:id="progressIndicator" layoutX="242.0" layoutY="240.0" visible="false"/>
     <RadioButton fx:id="hexRadioBtn" layoutX="270.0" layoutY="7.0" text="%HexProtocol"/>
     <RadioButton fx:id="ascRadioBtn" layoutX="395.0" layoutY="7.0" text="%ASCiiProtocol"/>
 </AnchorPane>

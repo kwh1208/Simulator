@@ -215,7 +215,6 @@ public class HEXMessageController {
         }
         section0.setSelected(true);
 
-        System.out.println("textAsc"+getMsgNum());
         if (configService.getProperty("textAsc"+getMsgNum())!=null){
             sendMsgAsc.setText(configService.getProperty("textAsc"+getMsgNum()));
         }
@@ -636,7 +635,15 @@ public class HEXMessageController {
     public void send() {
         if (IS_ASCII) {
             String msg = sendMsgAsc.getText();
-            asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
+            if (msg.contains("/F01")){
+                asciiMsgTransceiver.sendMessages(msg, false, true, progressIndicator);
+                return;
+            }
+            if (msg.contains("/F02")){
+                asciiMsgTransceiver.sendMessages(msg, true,false, progressIndicator);
+                return;
+            }
+            else asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
         } else {
             String msg = makeHexMsg();
             hexMsgTransceiver.sendMessages(msg, progressIndicator);
@@ -787,14 +794,11 @@ public class HEXMessageController {
                 String resultHex;
 
                 resultHex = String.format("%02X ", tmpValue + add);
-                if (String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length != 1) {
+                if (charCodes.getValue().displayText().equals(bundle.getString("UTF16")) || String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length != 1) {
                     resultHex += String.format("%02X ", 0);
                 }
 
                 msg.append(resultHex);
-                if (charCodes.getValue().equals(bundle.getString("UTF16")) && String.valueOf(text.charAt(i)).getBytes(Charset.forName("MS949")).length == 1) {
-                    msg.append(String.format("%02X ", 0));
-                }
             }
 
 

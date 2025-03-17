@@ -270,4 +270,58 @@ public class ServerTCPManager {
             }
         };
     }
+
+    public Task<String> sendASCMsg(String msg, boolean utf8, boolean utf16) {
+        return new Task<>() {
+
+            @Override
+            protected String call() throws Exception {
+                if (socket == null) {
+                    connect(hostIP, serverTCPPort);
+                }
+                try {
+                    InputStream input = socket.getInputStream();
+                    OutputStream output = socket.getOutputStream();
+                    byte[] sendData = msg.getBytes(Charset.forName("MS949"));
+                    if (utf8) sendData = msg.getBytes(StandardCharsets.UTF_8);
+                    if (utf16) sendData = createPacket(msg);
+                    logService.updateInfoLog(bundle.getString("sendMsg") + msg);
+                    output.write(sendData);
+                    output.flush();
+
+                    byte[] buffer = new byte[1024];
+                    int totalBytesRead = 0;
+
+                    while (true) {
+                        int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                        if (bytesRead > 0) {
+                            totalBytesRead += bytesRead;
+                            if (dataReceivedIsComplete(buffer, totalBytesRead)) {
+                                break;
+                            }
+                        } else {
+                            break; // 타임아웃
+                        }
+                    }
+                    String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+                    if (result.contains("RX") && result.contains("![") && result.contains("!]")) {
+                        int indexTX = result.indexOf("TX");
+                        result = result.substring(indexTX);
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]") + 2);
+                    }
+                    if (result.contains("init_rtcTimeDate Start")) {
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]") + 2);
+                    }
+                    logService.updateInfoLog(bundle.getString("receivedMsg") + result);
+                    return result;
+                } catch (IOException e) {
+                    e.getMessage();
+                    logService.errorLog(bundle.getString("connectionFail"));
+                    throw e;
+                } finally {
+                    disconnect();
+                }
+            }
+        };
+    }
 }

@@ -117,6 +117,70 @@ public class UDPManager {
         };
     }
 
+    public Task<String> sendASCMsg(String msg, boolean utf8, boolean utf16){
+        return new Task<String>() {
+            @Override
+            protected String call() throws Exception {
+                if (socket == null||socket.isClosed()) {
+                    connect(IP, PORT);
+                }
+                DatagramPacket receivePacket;
+                try{
+                    InetAddress serverAddr = InetAddress.getByName(IP);
+                    byte[] sendByte = msg.getBytes(Charset.forName("MS949"));
+
+                    if (utf8) sendByte = msg.getBytes(StandardCharsets.UTF_8);
+                    if (utf16) sendByte = createPacket(msg);
+                    DatagramPacket sendPacket = new DatagramPacket(sendByte, sendByte.length, serverAddr, PORT);
+                    logService.updateInfoLog(bundle.getString("sendMsg")+msg);
+                    socket.send(sendPacket);
+                    int totalBytesRead = 0;
+                    byte[] receiveBuffer = new byte[1024];
+                    receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+                    while (true) {
+                        try {
+                            // 패킷 수신
+                            socket.receive(receivePacket);
+                            int bytesRead = receivePacket.getLength(); // 수신된 바이트 수
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
+
+                                // 데이터 처리 로직
+                                if (dataReceivedIsComplete(receiveBuffer, totalBytesRead)) {
+                                    break; // 수신 완료 조건 만족 시 루프 종료
+                                }
+                            }
+                        } catch (java.net.SocketTimeoutException e) {
+                            logService.errorLog(bundle.getString("connectionFail"));
+                            throw e;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            break;
+                        }
+                    }
+
+                    String result = new String(receiveBuffer, 0, totalBytesRead);
+                    if (result.contains("RX") && result.contains("![") && result.contains("!]")) {
+                        int indexTX = result.indexOf("TX");
+                        result = result.substring(indexTX);
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                    }
+                    if (result.contains("init_rtcTimeDate Start")){
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                    }
+                    logService.updateInfoLog(bundle.getString("receivedMsg")+result);
+                    return result;
+                }catch (IOException e){
+                    //에러 처리
+                    logService.errorLog(bundle.getString("connectionFail"));
+                    throw e;
+                } finally {
+                    disconnect();
+                }
+            }
+        };
+    }
+
     public Task<String> sendMsgAndGetMsgByte(byte[] msg){
         return new Task<>() {
             @Override

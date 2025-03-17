@@ -188,6 +188,77 @@ public class SerialPortManager {
         return task;
     }
 
+    public Task<String> sendMsgAndGetMsg(String msg, boolean utf8, boolean utf16) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String portName = OPEN_PORT_NAME;
+                synchronized (portLock) {
+                    if (!isPortOpen(portName)) {
+                        openPort(portName, SERIAL_BAUDRATE);
+                    }
+                    SerialPort port = serialPortMap.get(portName);
+                    if (port == null) {
+                        throw new IllegalStateException("포트를 열 수 없습니다: " + portName);
+                    }
+
+                    if(!isBT &&port.getPortDescription().toLowerCase().contains("bluetooth")){
+                        logService.warningLog(bundle.getString("bluetoothPort"));
+                        closePort(portName);
+                        throw new RuntimeException();
+                    }
+
+                    logService.updateInfoLog(bundle.getString("sendMsg") + msg);
+
+                    try (InputStream inputStream = new BufferedInputStream(port.getInputStream());
+                         OutputStream outputStream = new BufferedOutputStream(port.getOutputStream())) {
+                        inputStream.skip(inputStream.available());
+                        byte[] dataToSend = msg.getBytes(utf8 ? StandardCharsets.UTF_8 : Charset.forName("MS949"));
+                        if (utf16) dataToSend = createPacket(msg);
+                        outputStream.write(dataToSend);
+                        outputStream.flush();
+
+                        byte[] buffer = new byte[1024];
+                        int totalBytesRead = 0;
+                        while (true) {
+                            int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
+
+                                if (dataReceivedIsComplete(buffer, totalBytesRead)) {
+                                    break;
+                                }
+                            } else {
+                                break; // 타임아웃
+                            }
+                        }
+
+                        String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+                        if (result.contains("TX") && result.contains("![") && result.contains("!]")) {
+                            int indexTX = result.indexOf("TX");
+                            result = result.substring(indexTX);
+                            result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                        }
+                        logService.updateInfoLog(bundle.getString("receivedMsg") + result);
+                        return result;
+                    } catch (SerialPortTimeoutException | SerialPortIOException e) {
+                        logService.errorLog(bundle.getString("connectionFail"));
+                        throw e;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        logService.errorLog(bundle.getString("Error") + e.getMessage());
+                        throw e;
+                    } finally {
+                        closePort(portName); // 작업 후 포트 닫기
+                    }
+                }
+            }
+        };
+        taskQueue.add(task);
+        return task;
+    }
+
     private int extractNumberAfterTXBeforeByteHex(String input) {
         // "TX" 뒤의 "byte" 앞 숫자를 찾는 정규식
         Pattern pattern = Pattern.compile("TX.*?(\\d+)\\s*byte");
