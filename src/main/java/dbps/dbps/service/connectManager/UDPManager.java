@@ -66,7 +66,6 @@ public class UDPManager {
                     byte[] sendByte = msg.getBytes(Charset.forName("MS949"));
 
                     if (utf8) sendByte = msg.getBytes(StandardCharsets.UTF_8);
-                    else if (ascUTF16) sendByte = msg.getBytes(StandardCharsets.UTF_16BE);
                     DatagramPacket sendPacket = new DatagramPacket(sendByte, sendByte.length, serverAddr, PORT);
                     logService.updateInfoLog(bundle.getString("sendMsg")+msg);
                     socket.send(sendPacket);
@@ -132,7 +131,12 @@ public class UDPManager {
                     if (utf8) sendByte = msg.getBytes(StandardCharsets.UTF_8);
                     if (utf16) sendByte = createPacket(msg);
                     DatagramPacket sendPacket = new DatagramPacket(sendByte, sendByte.length, serverAddr, PORT);
-                    logService.updateInfoLog(bundle.getString("sendMsg")+msg);
+                    if (utf8){
+                        logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF8(msg));
+                    } else if (utf16) {
+                        logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF16(msg));
+                    }
+                    else logService.updateInfoLog(bundle.getString("sendMsg") + msg);
                     socket.send(sendPacket);
                     int totalBytesRead = 0;
                     byte[] receiveBuffer = new byte[1024];

@@ -635,13 +635,12 @@ public class HEXMessageController {
     public void send() {
         if (IS_ASCII) {
             String msg = sendMsgAsc.getText();
-            if (msg.contains("/F01")){
+            if (msg.contains("/F01")||msg.contains("/f01")){
                 asciiMsgTransceiver.sendMessages(msg, false, true, progressIndicator);
                 return;
             }
-            if (msg.contains("/F02")){
+            if (msg.contains("/F02")||msg.contains("/f02")){
                 asciiMsgTransceiver.sendMessages(msg, true,false, progressIndicator);
-                return;
             }
             else asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
         } else {

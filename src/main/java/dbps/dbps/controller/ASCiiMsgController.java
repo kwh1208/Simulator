@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static dbps.dbps.Constants.ascUTF16;
-
 
 public class ASCiiMsgController {
 
@@ -73,7 +71,6 @@ public class ASCiiMsgController {
         if (selected) {
             utf_8.setSelected(!isUtf16);
             utf_16.setSelected(isUtf16);
-            ascUTF16 = isUtf16;
         }
     }
 

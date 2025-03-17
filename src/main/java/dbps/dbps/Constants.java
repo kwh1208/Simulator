@@ -173,6 +173,37 @@ public class Constants {
         return hexString.toString();
     }
 
+    private static String bytesToHexUTF16(byte[] bytes, int length) {
+        StringBuilder sb = new StringBuilder(" ");
+        for (int i = 0; i < length; i += 2) {
+            if (i + 1 < length) {
+                int codeUnit = (bytes[i] & 0xff) | ((bytes[i + 1] & 0xff) << 8);
+                sb.append(String.format("%04X", codeUnit));
+            } else {
+                sb.append(String.format("%02X", bytes[i]));
+            }
+            if (i + 2 < length) {
+                sb.append(" ");
+            }
+        }
+        return sb.toString();
+    }
+
+    public static String bytesToHexUTF8(byte[] bytes) {
+        StringBuilder sb = new StringBuilder(" ");
+        for (int i = 0; i < bytes.length; i += 3) {
+            // 3바이트씩 처리 (마지막 그룹은 3바이트 미만일 수 있음)
+            for (int j = i; j < i + 3 && j < bytes.length; j++) {
+                sb.append(String.format("%02X", bytes[j]));
+            }
+            if (i + 3 < bytes.length) {
+                sb.append(" ");
+            }
+        }
+        return sb.toString();
+    }
+
+
     public static String convertRS485AddrASCii(){
         String[] arr = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V"};
 
@@ -280,24 +311,71 @@ public class Constants {
     }
 
     private static int getControlCodeLength(String token) {
+        token = token.toUpperCase();
         char firstChar = token.charAt(0);
-        switch(firstChar) {
-            case 'F':
-            case 'P':
-            case 'X':
-            case 'Y':
-            case 'E':
-            case 'S':
-            case 'D':
-                return 5;
-            case 'C':
-            case 'G':
-            case 'T':
-                return 2;
-            case 'B':
-                return 3;
-            default:
-                return 1;
+        return switch (firstChar) {
+            case 'F', 'P', 'X', 'Y', 'E', 'S', 'D' -> 5;
+            case 'C', 'G', 'T' -> 2;
+            case 'B', 'U' -> 4;
+            default -> 1;
+        };
+    }
+
+    public static String formatLogForUTF16(String msg) throws UnsupportedEncodingException {
+        String header = msg.substring(2, 5);
+        String trimmed = msg.substring(5, msg.lastIndexOf("!]"));
+
+        StringBuilder logMsg= new StringBuilder("![");
+        logMsg.append(header);
+
+        String[] tokens = trimmed.split("/");
+        for (String token : tokens) {
+            if(token.isEmpty()){
+                continue;
+            }
+
+            logMsg.append("/");
+
+            int codeLen = getControlCodeLength(token);
+            String controlCode = token.substring(0, Math.min(codeLen, token.length()));
+            String content = token.length() > codeLen ? token.substring(codeLen) : "";
+
+            logMsg.append(controlCode);
+            if(!content.isEmpty()){
+                byte[] bytes = content.getBytes(StandardCharsets.UTF_16BE);
+                logMsg.append(bytesToHexUTF16(bytes, bytes.length));
+            }
         }
+        logMsg.append("!]");
+        return logMsg.toString();
+    }
+
+    public static String formatLogForUTF8(String msg) throws UnsupportedEncodingException {
+        String header = msg.substring(2, 5);
+        String trimmed = msg.substring(5, msg.lastIndexOf("!]"));
+
+        StringBuilder logMsg= new StringBuilder("![");
+        logMsg.append(header);
+
+        String[] tokens = trimmed.split("/");
+        for (String token : tokens) {
+            if(token.isEmpty()){
+                continue;
+            }
+
+            logMsg.append("/");
+
+            int codeLen = getControlCodeLength(token);
+            String controlCode = token.substring(0, Math.min(codeLen, token.length()));
+            String content = token.length() > codeLen ? token.substring(codeLen) : "";
+
+            logMsg.append(controlCode);
+            if(!content.isEmpty()){
+                byte[] bytes = content.getBytes(StandardCharsets.UTF_8);
+                logMsg.append(bytesToHexUTF8(bytes));
+            }
+        }
+        logMsg.append("!]");
+        return logMsg.toString();
     }
 }

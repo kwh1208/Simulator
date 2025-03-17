@@ -56,10 +56,7 @@ public class TCPManager {
                     InputStream input = socket.getInputStream();
                     OutputStream output = socket.getOutputStream();
                     byte[] sendBytes = msg.getBytes(Charset.forName("MS949"));
-                    if (utf8) sendBytes = msg.getBytes(StandardCharsets.UTF_8);
-                    else if (ascUTF16) {
-                        sendBytes = msg.getBytes(StandardCharsets.UTF_16BE);
-                    }
+
                     input.skip(input.available());
                     logService.updateInfoLog(bundle.getString("sendMsg") + msg);
                     output.write(sendBytes);
@@ -92,7 +89,7 @@ public class TCPManager {
                     logService.updateInfoLog(bundle.getString("receivedMsg") + result);
                     return result;
                 } catch (IOException e) {
-                    e.getMessage();
+                    e.printStackTrace();
                     logService.errorLog(bundle.getString("connectionFail"));
                     throw e;
                 }finally {
@@ -117,10 +114,15 @@ public class TCPManager {
                     if (utf8) sendBytes = msg.getBytes(StandardCharsets.UTF_8);
                     if (utf16) sendBytes = createPacket(msg);
                     input.skip(input.available());
-                    logService.updateInfoLog(bundle.getString("sendMsg") + msg);
+                    if (utf8){
+                        logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF8(msg));
+                    } else if (utf16) {
+                        logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF16(msg));
+                    }
+                    else logService.updateInfoLog(bundle.getString("sendMsg") + msg);
+
                     output.write(sendBytes);
                     output.flush();
-
 
                     byte[] buffer = new byte[1024];
                     int totalBytesRead = 0;

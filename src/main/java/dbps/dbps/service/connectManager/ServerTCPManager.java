@@ -228,9 +228,6 @@ public class ServerTCPManager {
                     OutputStream output = socket.getOutputStream();
                     byte[] sendData = msg.getBytes(Charset.forName("MS949"));
                     if (utf8) sendData = msg.getBytes(StandardCharsets.UTF_8);
-                    else if (ascUTF16) {
-                        sendData = msg.getBytes(StandardCharsets.UTF_16BE);
-                    }
                     logService.updateInfoLog(bundle.getString("sendMsg") + msg);
                     output.write(sendData);
                     output.flush();
@@ -285,7 +282,12 @@ public class ServerTCPManager {
                     byte[] sendData = msg.getBytes(Charset.forName("MS949"));
                     if (utf8) sendData = msg.getBytes(StandardCharsets.UTF_8);
                     if (utf16) sendData = createPacket(msg);
-                    logService.updateInfoLog(bundle.getString("sendMsg") + msg);
+                    if (utf8){
+                        logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF8(msg));
+                    } else if (utf16) {
+                        logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF16(msg));
+                    }
+                    else logService.updateInfoLog(bundle.getString("sendMsg") + msg);
                     output.write(sendData);
                     output.flush();
 

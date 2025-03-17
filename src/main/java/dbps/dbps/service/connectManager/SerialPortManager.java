@@ -208,7 +208,12 @@ public class SerialPortManager {
                         throw new RuntimeException();
                     }
 
-                    logService.updateInfoLog(bundle.getString("sendMsg") + msg);
+                    if (utf8){
+                        logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF8(msg));
+                    } else if (utf16) {
+                        logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF16(msg));
+                    }
+                    else logService.updateInfoLog(bundle.getString("sendMsg") + msg);
 
                     try (InputStream inputStream = new BufferedInputStream(port.getInputStream());
                          OutputStream outputStream = new BufferedOutputStream(port.getOutputStream())) {
