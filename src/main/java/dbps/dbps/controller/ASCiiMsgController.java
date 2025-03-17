@@ -8,6 +8,7 @@ import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.ResourceManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
@@ -15,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,4 +121,8 @@ public class ASCiiMsgController {
     }
 
 
+    public void close(MouseEvent mouseEvent) {
+        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        stage.close();
+    }
 }

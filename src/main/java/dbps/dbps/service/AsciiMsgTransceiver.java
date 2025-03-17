@@ -177,7 +177,7 @@ public class AsciiMsgTransceiver {
                 return;
             }
             if (receiveMsg.charAt(5) == 'F') {//오류 발생
-                logService.warningLog("errorOccurred");
+                logService.warningLog(bundle.getString("errorOccurred"));
                 logService.warningLog(bundle.getString("receivedMsg") + receiveMsg);
                 return;
             }
@@ -252,7 +252,8 @@ public class AsciiMsgTransceiver {
         }
         if (cmd.equals("96")) {
             if (receiveMsg.equals("![0096F!]")){
-                logService.updateInfoLog(bundle.getString("fontNameReadFail"));
+                logService.warningLog(bundle.getString("fontNameReadFail"));
+                return;
             }
             logService.updateInfoLog(bundle.getString("fontNameReadSuccess"));
             return;

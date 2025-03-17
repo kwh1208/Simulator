@@ -541,8 +541,8 @@ public class DabitNetController {
     @FXML
     public void setDefault() {
         clientIPTF.setText(configService.getProperty("dbNetIP"));
-        clientGatewayTF.setText(configService.getProperty("dbNetPort"));
-        clientPortTF.setText(configService.getProperty("dbNetGateway"));
+        clientGatewayTF.setText(configService.getProperty("dbNetGateway"));
+        clientPortTF.setText(configService.getProperty("dbNetPort"));
         clientSubnetMaskTF.setText(configService.getProperty("dbNetSubnet"));
     }
 

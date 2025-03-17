@@ -58,5 +58,5 @@
         </items>
     </ChoiceBox>
     <Button layoutX="440.0" layoutY="511.0" mnemonicParsing="false" onMouseClicked="#sendFillColor" prefHeight="28.0" prefWidth="63.0" text="%sendButton" />
-    <ProgressIndicator fx:id="commonProgressIndicator" layoutX="320.0" layoutY="200.0" visible="false" />
+    <ProgressIndicator fx:id="commonProgressIndicator" layoutX="242.0" layoutY="240.0" visible="false"/>
 </AnchorPane>
