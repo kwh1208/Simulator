@@ -93,7 +93,7 @@ public class TCPManager {
                     logService.errorLog(bundle.getString("connectionFail"));
                     throw e;
                 }finally {
-                    socket.close();
+                    disconnect();
                 }
             }
         };
@@ -154,7 +154,7 @@ public class TCPManager {
                     logService.errorLog(bundle.getString("connectionFail"));
                     throw e;
                 }finally {
-                    socket.close();
+                    disconnect();
                 }
             }
         };
