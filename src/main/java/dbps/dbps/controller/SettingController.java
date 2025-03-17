@@ -206,7 +206,7 @@ public class SettingController {
         }
     }
 
-    public void sendFillColor() throws InterruptedException {
+    public void sendFillColor() {
         String value = fillColor.getValue();
         if (IS_ASCII){
             String msg = "![0070"+getColorCode(value)+"!]";
@@ -216,8 +216,6 @@ public class SettingController {
             asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
         }
         else {
-            hexMsgTransceiver.sendMessages("10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 02 45 00 10 03", commonProgressIndicator);
-
             String msg = "10 02 00 00 06 42 08 "+getColorCodeHex(value)+"00 00 00 10 03";
             if (isRS){
                 msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 06 42 08 "+getColorCodeHex(value)+"00 00 00 10 03";
