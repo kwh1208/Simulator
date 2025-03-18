@@ -1,6 +1,5 @@
 package dbps.dbps.service;
 
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import lombok.Setter;
@@ -20,25 +19,25 @@ public class ASCiiDefaultSettingService {
         return instance;
     }
 
-    ChoiceBox<String> displayControl;
-    ChoiceBox<String> displayMethod;
-    ChoiceBox<String> charCodes;
-    ChoiceBox<String> fontSize;
-    ChoiceBox<String> fontGroup;
-    ChoiceBox<String> effectIn;
-    ChoiceBox<String> inDirection;
-    ChoiceBox<String> effectOut;
-    ChoiceBox<String> outDirection;
-    ChoiceBox<String> sub;
-    ChoiceBox<String> effectSpeed;
+    ComboBox<String> displayControl;
+    ComboBox<String> displayMethod;
+    ComboBox<String> charCodes;
+    ComboBox<String> fontSize;
+    ComboBox<String> fontGroup;
+    ComboBox<String> effectIn;
+    ComboBox<String> inDirection;
+    ComboBox<String> effectOut;
+    ComboBox<String> outDirection;
+    ComboBox<String> sub;
+    ComboBox<String> effectSpeed;
     ComboBox<String> effectTime;
-    ChoiceBox<String> xStart;
-    ChoiceBox<String> yStart;
-    ChoiceBox<String> xEnd;
-    ChoiceBox<String> yEnd;
+    ComboBox<String> xStart;
+    ComboBox<String> yStart;
+    ComboBox<String> xEnd;
+    ComboBox<String> yEnd;
     ComboBox<String> bgImg;
-    ChoiceBox<String> fontColor;
-    ChoiceBox<String> fontBgColor;
+    ComboBox<String> fontColor;
+    ComboBox<String> fontBgColor;
     TextField defaultSetting;
 
     //![0033/P0000/D0001/F0003/E0101/S1504/
@@ -129,11 +128,11 @@ public class ASCiiDefaultSettingService {
         fontGroup.setValue(fontGroup.getItems().get(Integer.parseInt(split[9].substring(1,2))));
     }
 
-    public void setPos(String code, ChoiceBox<String> choiceBox){
+    public void setPos(String code, ComboBox<String> choiceBox){
         choiceBox.setValue(String.valueOf((Integer.parseInt(code)/4)));
     }
 
-    public void setEffectValues(String code, ChoiceBox<String> choiceBox1, ChoiceBox<String> choiceBox2) {
+    public void setEffectValues(String code, ComboBox<String> choiceBox1, ComboBox<String> choiceBox2) {
         switch (code) {
             case "00":
                 choiceBox1.setValue("효과없음");

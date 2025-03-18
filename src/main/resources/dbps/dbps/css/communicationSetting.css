@@ -21,39 +21,8 @@
      /* 글꼴 크기 */
     -fx-text-fill: white;
 }
-.choice-box .context-menu {
-    -fx-background-color: #1C1F26;
-    -fx-pref-width: 150; /* 컨텍스트 메뉴 너비를 오른쪽 CSS와 동일하게 설정 */
-}
-.choice-box .menu-item:focused {
-    -fx-background-color: orange;
-}
-.choice-box .menu-item > .label {
-    -fx-text-fill: white;
-    -fx-padding: 0 0 0 20px;
-}
-.choice-box .menu-item:focused > .label {
-    -fx-text-fill: black;
-}
 .root{
     -fx-font-family: Gulim;
-}
-
-.choice-box .menu-item:focused {
-    -fx-background-color: orange;
-}
-.choice-box .menu-item > .label {
-    -fx-text-fill: white;
-}
-.choice-box .menu-item:focused > .label {
-    -fx-text-fill: black;
-}
-.choice-box {
-    -fx-background-color: #1C1F26;
-    -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
-}
-.choice-box .label {
-    -fx-text-fill: white;
 }
 
 .button {

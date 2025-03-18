@@ -2,8 +2,6 @@
 
 <?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import java.lang.*?>
 <AnchorPane fx:id="communicationSettingAP" prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: #333333;"
@@ -23,8 +21,8 @@
         </ComboBox>
 
         <Label layoutX="14.0" layoutY="57.0" text="%baudrateSetting"/>
-        <ChoiceBox fx:id="serialSpeedChoiceBox" layoutX="235.0" layoutY="51.0" prefHeight="25.0" prefWidth="120.0"
-                   value="115200">
+        <ComboBox fx:id="serialSpeedComboBox" layoutX="235.0" layoutY="51.0" prefHeight="25.0" prefWidth="120.0"
+                  value="115200">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="9600"/>
@@ -37,10 +35,10 @@
                     <String fx:value="921600"/>
                 </FXCollections>
             </items>
-        </ChoiceBox>
-        <CheckBox fx:id="RS485ChkBox" layoutX="14.0" layoutY="88.0" mnemonicParsing="false" text="RS-485 address"/>
-        <ChoiceBox fx:id="RS485ChoiceBox" layoutX="255.0" layoutY="87.0" prefHeight="21.0" prefWidth="99.0"
-                   value="Dabit 00" visible="false">
+        </ComboBox>
+        <CheckBox fx:id="RS485ChkBox" layoutX="14.0" layoutY="88.0" mnemonicParsing="false" text="RS-485 Address"/>
+        <ComboBox fx:id="RS485ComboBox" layoutX="255.0" layoutY="87.0" prefHeight="21.0" prefWidth="99.0"
+                  value="Dabit 00" visible="false">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Dabit 00"/>
@@ -77,7 +75,7 @@
                     <String fx:value="Dabit 31"/>
                 </FXCollections>
             </items>
-        </ChoiceBox>
+        </ComboBox>
         <Button fx:id="findSpeedBtn" layoutX="100.0" layoutY="123.0" mnemonicParsing="false"
                 onMouseClicked="#findCommunicationSpeed" prefHeight="27.0" prefWidth="130.0" text="%findBaudrate"/>
         <Button fx:id="openDeviceManagerBtn" layoutX="232.0" layoutY="123.0" mnemonicParsing="false"
@@ -100,12 +98,12 @@
         <RadioButton fx:id="serverTCPRadioBtn" layoutX="16.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0"
                      style="-fx-background-color: #333333;" text="Server TCP/IP"/>
         <Label layoutX="16.0" layoutY="21.0" text="IP Address"/>
-        <ChoiceBox fx:id="serverIPAddress" layoutX="210.0" layoutY="17.0" prefWidth="145.0">
+        <ComboBox fx:id="serverIPAddress" layoutX="210.0" layoutY="17.0" prefWidth="145.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
             </items>
-        </ChoiceBox>
+        </ComboBox>
         <Label layoutX="16.0" layoutY="47.0" text="IP Port"/>
         <TextField fx:id="serverIPPort" layoutX="210.0" layoutY="50.0" prefWidth="145.0"/>
     </Pane>
@@ -122,17 +120,17 @@
     <Button fx:id="shutConnect" layoutX="269.0" layoutY="497.0" mnemonicParsing="false"
             onMouseClicked="#closeSerialPort" prefHeight="27.0" prefWidth="115.0" text="%closePort"/>
     <Button layoutX="17.0" layoutY="529.0" mnemonicParsing="false" onMouseClicked="#openDabitNet" prefHeight="27.0"
-            prefWidth="115.0" text="dbNet" styleClass="newWindow-button">
+            prefWidth="115.0" text="DBNet" styleClass="newWindow-button">
     </Button>
     <Button fx:id="keepOpenBtn" layoutX="143.0" layoutY="497.0" mnemonicParsing="false" prefHeight="27.0"
             prefWidth="115.0" text="포트 유지" onMouseClicked="#keepOpen"/>
     <Button layoutX="142.0" layoutY="529.0" mnemonicParsing="false" onMouseClicked="#openBluetooth" prefHeight="27.0"
-            prefWidth="115.0" text="dbBle" styleClass="newWindow-button">
+            prefWidth="115.0" text="DBBle" styleClass="newWindow-button">
     </Button>
     <Button layoutX="269.0" layoutY="529.0" minWidth="115.0" mnemonicParsing="false" onMouseClicked="#controllerConnect"
             prefHeight="27.0" text="%connect"/>
     <Label layoutX="19.0" layoutY="569.0" text="%responseTime"/>
-    <ChoiceBox fx:id="delayTime" layoutX="156.0" layoutY="562.0" prefHeight="27.0" prefWidth="54.0" value="3">
+    <ComboBox fx:id="delayTime" layoutX="156.0" layoutY="562.0" prefHeight="27.0" prefWidth="54.0" value="3">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="1"/>
@@ -143,7 +141,7 @@
                 <String fx:value="6"/>
             </FXCollections>
         </items>
-    </ChoiceBox>
+    </ComboBox>
     <Button layoutX="310.0" layoutY="562.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClose"
             prefHeight="27.0" prefWidth="70.0" text="%close"/>
     <ProgressIndicator fx:id="progressIndicator" layoutX="170.0" layoutY="240.0" visible="false"/>

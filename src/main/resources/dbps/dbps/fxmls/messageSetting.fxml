@@ -7,7 +7,7 @@
 
 <Pane fx:id="msPane" prefHeight="125.0" prefWidth="290.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MessageSettingController">
     <Label layoutX="19.0" layoutY="26.0" text="%SetTotalCount" />
-    <ChoiceBox fx:id="pageMsgCnt" layoutX="120.0" layoutY="20.0" prefHeight="25.0" prefWidth="94.0" value="10">
+    <ComboBox fx:id="pageMsgCnt" layoutX="120.0" layoutY="20.0" prefHeight="25.0" prefWidth="94.0" value="10">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="1" />
@@ -22,10 +22,10 @@
                 <String fx:value="10" />
             </FXCollections>
         </items>
-    </ChoiceBox>
+    </ComboBox>
     <Button layoutX="220.0" layoutY="19.0" mnemonicParsing="false" onMouseClicked="#sendPageCnt" prefHeight="28.0" prefWidth="63.0" text="%sendButton" />
     <Label layoutX="17.0" layoutY="63.0" text="%ResetMsg" />
-    <ChoiceBox fx:id="msgInitialize" layoutX="120.0" layoutY="58.0" prefHeight="25.0" prefWidth="94.0">
+    <ComboBox fx:id="msgInitialize" layoutX="120.0" layoutY="58.0" prefHeight="25.0" prefWidth="94.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="page 1" />
@@ -40,7 +40,7 @@
                 <String fx:value="page 10" />
             </FXCollections>
         </items>
-    </ChoiceBox>
+    </ComboBox>
     <Button layoutX="220.0" layoutY="57.0" mnemonicParsing="false" onMouseClicked="#sendMsgInitialize" prefHeight="28.0" prefWidth="63.0" text="%sendButton" />
     <Button layoutX="220.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#close" text="%close" prefHeight="28.0" prefWidth="63.0"/>
 </Pane>

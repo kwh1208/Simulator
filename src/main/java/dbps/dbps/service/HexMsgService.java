@@ -1,16 +1,17 @@
 package dbps.dbps.service;
 
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import lombok.Setter;
 
 @Setter
 public class HexMsgService {
     public static HexMsgService instance;
 
-    private ChoiceBox<String> xStart;
-    private ChoiceBox<String> yStart;
-    private ChoiceBox<String> xEnd;
-    private ChoiceBox<String> yEnd;
+    private ComboBox<String> xStart;
+    private ComboBox<String> yStart;
+    private ComboBox<String> xEnd;
+    private ComboBox<String> yEnd;
 
     public static HexMsgService getInstance() {
         if (instance == null) {
@@ -20,7 +21,7 @@ public class HexMsgService {
     }
 
 
-    public ChoiceBox<String> pageMsgCnt;
+    public ComboBox<String> pageMsgCnt;
 
 
     private HexMsgService() {

@@ -3,7 +3,6 @@ package dbps.dbps.controller;
 
 import dbps.dbps.service.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
@@ -21,8 +20,8 @@ public class SettingController {
     @FXML
     public ProgressIndicator commonProgressIndicator;
     public ComboBox<String> BGImgSelection;
-    public ChoiceBox<String> fillColor;
-    public ChoiceBox<String> displayBright;
+    public ComboBox<String> fillColor;
+    public ComboBox<String> displayBright;
 
     HexMsgTransceiver hexMsgTransceiver;
     AsciiMsgTransceiver asciiMsgTransceiver;

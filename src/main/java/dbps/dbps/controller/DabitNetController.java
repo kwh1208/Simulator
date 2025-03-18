@@ -33,7 +33,7 @@ import static dbps.dbps.Constants.openModal;
 public class DabitNetController {
 
     @FXML
-    public ChoiceBox<String> networkSelection;
+    public ComboBox<String> networkSelection;
     public RadioButton isSerial;
     public RadioButton isUDP;
     public ComboBox<String> serialPortComboBox;
@@ -50,15 +50,15 @@ public class DabitNetController {
     public RadioButton wifiStation;
     public TextField wifiSSID;
     public TextField wifiPW;
-    public ChoiceBox<String> debugging;
-    public ChoiceBox<String> connectPort;
-    public ChoiceBox<Integer> baudRate;
+    public ComboBox<String> debugging;
+    public ComboBox<String> connectPort;
+    public ComboBox<Integer> baudRate;
     public TextField ascFirst;
     public TextField ascSecond;
     public TextField hexFirst;
     public TextField hexSecond;
     public TextField timeOut;
-    public ChoiceBox<String> baudRateChoiceBox;
+    public ComboBox<String> baudRateComboBox;
     public Label versionInfo;
     public Label DBCommunication;
     public Label AP;
@@ -231,7 +231,7 @@ public class DabitNetController {
                     sendTask = serialPortManager.send300MsgAndGetMsg(
                             "++SET++![SEARCHING DIBD  B\r\n!]",
                             serialPortComboBox.getValue(),
-                            Integer.parseInt(baudRateChoiceBox.getValue())
+                            Integer.parseInt(baudRateComboBox.getValue())
                     );
                 } else {
                     if (networkSelection.getValue().equals("All")) {
@@ -316,7 +316,7 @@ public class DabitNetController {
 
             sendByte = getBytesSerial(newDB300);
 
-            Task<Void> set = serialPortManager.send300ByteMsg(sendByte, serialPortComboBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
+            Task<Void> set = serialPortManager.send300ByteMsg(sendByte, serialPortComboBox.getValue(), Integer.parseInt(baudRateComboBox.getValue()));
 
             set.setOnSucceeded(event->{
                 Platform.runLater(() -> {
@@ -517,7 +517,7 @@ public class DabitNetController {
     public void reboot() {
         udpManager.disconnectNoLog();
         if (isSerial.isSelected()) {
-            Task<String> reboot = serialPortManager.send300MsgAndGetMsg("++SET++![RESET  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortComboBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
+            Task<String> reboot = serialPortManager.send300MsgAndGetMsg("++SET++![RESET  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortComboBox.getValue(), Integer.parseInt(baudRateComboBox.getValue()));
 
             new Thread(reboot);
         } else {
@@ -553,7 +553,7 @@ public class DabitNetController {
             dbNetProgressBar.setVisible(true);
         });
         if (isSerial.isSelected()) {
-            Task<String> read = serialPortManager.send300MsgAndGetMsg("++SET++![INFO_R  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortComboBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
+            Task<String> read = serialPortManager.send300MsgAndGetMsg("++SET++![INFO_R  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortComboBox.getValue(), Integer.parseInt(baudRateComboBox.getValue()));
 
             Thread readTask = new Thread(read);
             readTask.start();
@@ -613,7 +613,7 @@ public class DabitNetController {
 
             Task<Void> write = serialPortManager.send300ByteMsg(msg.getBytes("MS949"),
                     serialPortComboBox.getValue(),
-                    Integer.parseInt(baudRateChoiceBox.getValue()));
+                    Integer.parseInt(baudRateComboBox.getValue()));
 
             new Thread(write).start();
         } else {

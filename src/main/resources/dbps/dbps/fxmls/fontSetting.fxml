@@ -117,7 +117,7 @@
         <Button disable="true" layoutX="377.0" layoutY="103.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" userData="fontGroup4fontPath3" />
     </Pane>
 
-    <Label layoutX="16.0" layoutY="605.0" prefHeight="13.0" prefWidth="161.0" text="Font Size(Total/Limit)" />
+    <Label layoutX="16.0" layoutY="605.0" prefHeight="13.0" prefWidth="161.0" text="%fontFileSize" />
 
     <Button layoutX="286.0" layoutY="630.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="21.0" prefWidth="69.0" text="%sendButton" />
     <Button layoutX="366.0" layoutY="630.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="21.0" prefWidth="69.0" text="%close" />

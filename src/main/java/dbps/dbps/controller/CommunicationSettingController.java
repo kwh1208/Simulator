@@ -62,13 +62,13 @@ public class CommunicationSettingController {
     private ComboBox<String> serialPortComboBox;
 
     @FXML
-    private ChoiceBox<String> serialSpeedChoiceBox;
+    private ComboBox<String> serialSpeedComboBox;
 
     @FXML
     private CheckBox RS485ChkBox;
 
     @FXML
-    private ChoiceBox<String> RS485ChoiceBox;
+    private ComboBox<String> RS485ComboBox;
 
     @FXML
     private Button findSpeedBtn;
@@ -96,7 +96,7 @@ public class CommunicationSettingController {
     private RadioButton serverTCPRadioBtn;
 
     @FXML
-    private ChoiceBox<String> serverIPAddress;
+    private ComboBox<String> serverIPAddress;
 
     @FXML
     private TextField serverIPPort;
@@ -115,7 +115,7 @@ public class CommunicationSettingController {
     private TextField UDPIPPort;
 
     @FXML
-    private ChoiceBox<String> delayTime;
+    private ComboBox<String> delayTime;
 
     @FXML
     private Button connect;
@@ -197,8 +197,8 @@ public class CommunicationSettingController {
                 connect.setText(bundle.getString("openPort"));
                 shutConnect.setText(bundle.getString("closePort"));
                 RS485ChkBox.setSelected(true);
-                RS485ChoiceBox.setVisible(true);
-                RS485ChoiceBox.setValue("Dabit "+String.format("%02d", RS485_ADDR_NUM));
+                RS485ComboBox.setVisible(true);
+                RS485ComboBox.setValue("Dabit "+String.format("%02d", RS485_ADDR_NUM));
                 isRS=true;
                 break;
             default:
@@ -232,14 +232,14 @@ public class CommunicationSettingController {
                 CONNECT_TYPE = "clientTCP";
                 configService.setProperty("connectType", "clientTCP");
                 RS485ChkBox.setSelected(false);
-                RS485ChoiceBox.setVisible(false);
+                RS485ComboBox.setVisible(false);
             } else if (selectedRadioButton.equals(serverTCPRadioBtn)) {
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(true);
                 UDPRadioToggle(false);
                 RS485ChkBox.setSelected(false);
-                RS485ChoiceBox.setVisible(false);
+                RS485ComboBox.setVisible(false);
                 CONNECT_TYPE = "serverTCP";
             } else  {
                 serialRadioToggle(false);
@@ -247,7 +247,7 @@ public class CommunicationSettingController {
                 serverTCPRadioToggle(false);
                 UDPRadioToggle(true);
                 RS485ChkBox.setSelected(false);
-                RS485ChoiceBox.setVisible(false);
+                RS485ComboBox.setVisible(false);
                 CONNECT_TYPE = "UDP";
             }
         });
@@ -266,7 +266,8 @@ public class CommunicationSettingController {
         serialPortComboBox.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
 
         RS485ChkBox.selectedProperty().addListener((observableValue, oldValue, newValue) ->
-                {RS485ChoiceBox.setVisible(newValue);
+                {
+                    RS485ComboBox.setVisible(newValue);
                     if (newValue){
                         isRS = true;
                     }
@@ -339,7 +340,7 @@ public class CommunicationSettingController {
             Integer speed = findSpeedTask.getValue();
             if (speed != null && speed > 0) {
                 SERIAL_BAUDRATE = speed;
-                serialSpeedChoiceBox.setValue(String.valueOf(speed));
+                serialSpeedComboBox.setValue(String.valueOf(speed));
                 configService.setProperty("serialSpeed", String.valueOf(speed));
             }
         });
@@ -419,7 +420,7 @@ public class CommunicationSettingController {
 
     //포트열기
     public void openPort(String portName){
-        serialPortManager.openPort(portName, Integer.parseInt(serialSpeedChoiceBox.getValue()));
+        serialPortManager.openPort(portName, Integer.parseInt(serialSpeedComboBox.getValue()));
         OPEN_PORT_NAME = portName;
     }
 
@@ -538,15 +539,15 @@ public class CommunicationSettingController {
                         if (RS485ChkBox.isSelected()) {
                             CONNECT_TYPE = "rs485";
                             OPEN_PORT_NAME = serialPortComboBox.getValue();
-                            SERIAL_BAUDRATE = Integer.parseInt(serialSpeedChoiceBox.getValue());
-                            RS485_ADDR_NUM = Integer.parseInt(RS485ChoiceBox.getValue().replaceAll("[^0-9]", ""));
+                            SERIAL_BAUDRATE = Integer.parseInt(serialSpeedComboBox.getValue());
+                            RS485_ADDR_NUM = Integer.parseInt(RS485ComboBox.getValue().replaceAll("[^0-9]", ""));
                             String msg = "10 02 " + convertRS485AddrASCii() + " 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
                             hexMsgTransceiver.sendMessages(msg, progressIndicator);
                             configService.setProperty("RS485_ADDR_NUM", String.valueOf(RS485_ADDR_NUM));
                         } else {
                             CONNECT_TYPE = "serial";
                             OPEN_PORT_NAME = serialPortComboBox.getValue();
-                            SERIAL_BAUDRATE = Integer.parseInt(serialSpeedChoiceBox.getValue());
+                            SERIAL_BAUDRATE = Integer.parseInt(serialSpeedComboBox.getValue());
                             hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03", progressIndicator);
                         }
                         configService.setProperty("openPortName", OPEN_PORT_NAME);
@@ -612,7 +613,7 @@ public class CommunicationSettingController {
     }
 
     private void serialRadioToggle(boolean isSerial) {
-        toggleComponents(isSerial, serialPortComboBox, serialSpeedChoiceBox, RS485ChkBox, findSpeedBtn, openDeviceManagerBtn);
+        toggleComponents(isSerial, serialPortComboBox, serialSpeedComboBox, RS485ChkBox, findSpeedBtn, openDeviceManagerBtn);
     }
 
     private void clientTCPRadioToggle(boolean isClient) {

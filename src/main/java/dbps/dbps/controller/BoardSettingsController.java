@@ -119,7 +119,7 @@ public class BoardSettingsController {
     private void handleSetCommand() {
         StringBuilder msg = new StringBuilder(isRS ? "![" + convertRS485AddrASCii() + "0B2 " : "![00B2 ");
 
-        msg.append(debugMethod.getValue().equals("disable") ? "0," : debugMethod.getValue().replaceAll("[^0-9]", "") + ",");
+        msg.append(debugMethod.getValue().equals("Disable") ? "0," : debugMethod.getValue().replaceAll("[^0-9]", "") + ",");
         msg.append(getComboBoxIndex(BH1_Func, BH1_OPTIONS)).append(",");
         msg.append(getComboBoxIndex(J4_func, J4_OPTIONS)).append(",");
         msg.append(getComboBoxIndex(J2_baud, BAUD_RATES)).append(",");

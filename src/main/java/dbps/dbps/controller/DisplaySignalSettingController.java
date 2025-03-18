@@ -38,10 +38,10 @@ public class DisplaySignalSettingController {
     private ListView<String> signalList;
 
     @FXML
-    private ChoiceBox<String> colorScan;
+    private ComboBox<String> colorScan;
 
     @FXML
-    private ChoiceBox<String> scanOrder;
+    private ComboBox<String> scanOrder;
 
     @FXML
     private Spinner<Integer> spinnerForSec;

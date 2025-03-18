@@ -20,7 +20,7 @@
     <Label layoutX="210.0" layoutY="58.0" prefHeight="13.0" prefWidth="80.0" text="X16 Pixels"/>
 
     <Label layoutX="20.0" layoutY="87.0" text="%bitsPerPixel" />
-    <ChoiceBox fx:id="colorNum" layoutX="120.0" layoutY="82.0" prefHeight="25.0" prefWidth="145" value="3BPP(8Colors)">
+    <ComboBox fx:id="colorNum" layoutX="120.0" layoutY="82.0" prefHeight="25.0" prefWidth="145" value="3BPP(8Colors)">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="2BPP(3Colors)" />
@@ -28,15 +28,15 @@
                 <String fx:value="8BPP(256Colors)" />
             </FXCollections>
         </items>
-    </ChoiceBox>
+    </ComboBox>
 
     <Label layoutX="20.0" layoutY="118.0" text="%moduleArrangementMethod"/>
-    <ChoiceBox fx:id="howToArray" layoutX="120.0" layoutY="113.0" prefHeight="25.0" prefWidth="100.0">
+    <ComboBox fx:id="howToArray" layoutX="120.0" layoutY="113.0" prefHeight="25.0" prefWidth="100.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
-    </ChoiceBox>
+    </ComboBox>
     <Button layoutX="225.0" layoutY="113.0" mnemonicParsing="false" onMouseClicked="#sendDisplaySize" prefHeight="28.0"
             prefWidth="60.0" text="%set"/>
 </Pane>

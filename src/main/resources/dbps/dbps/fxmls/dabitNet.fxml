@@ -61,7 +61,7 @@
                 <Pane layoutX="14.0" layoutY="14.0" prefHeight="171.0" prefWidth="350.0" style="-fx-border-color: black;-fx-border-width: 1px">
                     <RadioButton fx:id="isUDP" layoutX="11.0" layoutY="-8.0" mnemonicParsing="false" selected="true" style="-fx-background-color: #333333" text="UDP" />
                     <Label layoutX="25.0" layoutY="26.0" text="Network Selection" />
-                    <ChoiceBox fx:id="networkSelection" layoutX="163.0" layoutY="22.0" prefWidth="150.0" value="All">
+                    <ComboBox fx:id="networkSelection" layoutX="163.0" layoutY="22.0" prefWidth="150.0" value="All">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="All" />
@@ -69,16 +69,16 @@
                                 <String fx:value="Ethernet" />
                             </FXCollections>
                         </items>
-                    </ChoiceBox>
+                    </ComboBox>
                     <Label layoutX="25.0" layoutY="64.0" text="Response Type" />
-                    <ChoiceBox layoutX="163.0" layoutY="60.0" prefWidth="150.0" value="Broadcast">
+                    <ComboBox layoutX="163.0" layoutY="60.0" prefWidth="150.0" value="Broadcast">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="Broadcast" />
                                 <String fx:value="Unicast" />
                             </FXCollections>
                         </items>
-                    </ChoiceBox>
+                    </ComboBox>
                     <Button layoutX="202.0" layoutY="95.0" mnemonicParsing="false" text="Network Connections" onMouseClicked="#networkConnection"/>
                 </Pane>
                 <Pane layoutX="14.0" layoutY="215.0" prefHeight="150.0" prefWidth="350.0" style="-fx-border-color: black;-fx-border-width: 1px">
@@ -91,7 +91,7 @@
                         </items>
                     </ComboBox>
                     <Label layoutX="25.0" layoutY="69.0" text="BaudRate" />
-                    <ChoiceBox fx:id="baudRateChoiceBox" layoutX="124.0" layoutY="66.0" prefWidth="150.0" value="115200">
+                    <ComboBox fx:id="baudRateComboBox" layoutX="124.0" layoutY="66.0" prefWidth="150.0" value="115200">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="9600" />
@@ -104,7 +104,7 @@
                                 <String fx:value="921600" />
                             </FXCollections>
                         </items>
-                    </ChoiceBox>
+                    </ComboBox>
                     <Button layoutX="200.0" layoutY="105.0" mnemonicParsing="false" onMouseClicked="#openDeviceManager" text="Device Manager" />
                 </Pane>
             </AnchorPane>
@@ -119,25 +119,25 @@
                 <Pane layoutX="14.0" layoutY="99.0" prefHeight="120.0" prefWidth="350.0" style="-fx-border-width: 1px; -fx-border-color: black">
                     <Label layoutX="20.0" layoutY="-8.0" style="-fx-background-color: #333333" text="Options" />
                     <Label layoutX="25.0" layoutY="14.0" text="Debugging State" />
-                    <ChoiceBox fx:id="debugging" layoutX="185.0" layoutY="10.0" prefWidth="150.0">
+                    <ComboBox fx:id="debugging" layoutX="185.0" layoutY="10.0" prefWidth="150.0">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="Disabled" />
                                 <String fx:value="Enabled" />
                             </FXCollections>
                         </items>
-                    </ChoiceBox>
+                    </ComboBox>
                     <Label layoutX="25.0" layoutY="50.0" text="Dev Connect Port" />
-                    <ChoiceBox fx:id="connectPort" layoutX="185.0" layoutY="48.0" prefWidth="150.0">
+                    <ComboBox fx:id="connectPort" layoutX="185.0" layoutY="48.0" prefWidth="150.0">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="TTL" />
                                 <String fx:value="RS232" />
                             </FXCollections>
                         </items>
-                    </ChoiceBox>
+                    </ComboBox>
                     <Label layoutX="25.0" layoutY="91.0" text="Dev BaudRate" />
-                    <ChoiceBox fx:id="baudRate" layoutX="185.0" layoutY="87.0" prefWidth="150.0">
+                    <ComboBox fx:id="baudRate" layoutX="185.0" layoutY="87.0" prefWidth="150.0">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <Integer fx:value="9600" />
@@ -150,7 +150,7 @@
                                 <Integer fx:value="921600" />
                             </FXCollections>
                         </items>
-                    </ChoiceBox>
+                    </ComboBox>
                 </Pane>
                 <Pane layoutX="14.0" layoutY="228.0" prefHeight="163.0" prefWidth="350.0" style="-fx-border-color: black;-fx-border-width: 1px">
                     <Label layoutX="20.0" layoutY="-8.0" style="-fx-background-color: #333333" text="Data Packing Condition" />

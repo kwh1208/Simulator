@@ -27,12 +27,12 @@ public class AdditionalFunctionsController {
 
     public ComboBox<String> displaySpeed;
     public ComboBox<String> blinkCnt;
-    public ChoiceBox<String> offset;
-    public ChoiceBox<Double> fontWidth;
-    public ChoiceBox<Double> fontHeight;
+    public ComboBox<String> offset;
+    public ComboBox<Double> fontWidth;
+    public ComboBox<Double> fontHeight;
     public ProgressIndicator progressIndicator;
     public AnchorPane additionalFunctionAp;
-    public ChoiceBox<String> pageMsgType;
+    public ComboBox<String> pageMsgType;
     public Spinner<Integer> spinnerForBefore;
     public Spinner<Integer> spinnerForAfter;
     AsciiMsgTransceiver asciiMsgTransceiver;

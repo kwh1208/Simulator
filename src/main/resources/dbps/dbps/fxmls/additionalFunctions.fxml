@@ -27,7 +27,7 @@
     <Button layoutX="321.0" layoutY="70.0" mnemonicParsing="false" onMouseClicked="#sendBlinkCnt" prefHeight="28.0" prefWidth="63.0" text="%set" />
 
     <Label layoutX="28.0" layoutY="110.0" text="%offsetChange" />
-    <ChoiceBox fx:id="offset" layoutX="175.0" layoutY="105.0" prefHeight="28.0" prefWidth="113.0" value="4(default)">
+    <ComboBox fx:id="offset" layoutX="175.0" layoutY="105.0" prefHeight="28.0" prefWidth="113.0" value="4(default)">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="1" />
@@ -36,23 +36,23 @@
                 <String fx:value="4(default)" />
             </FXCollections>
         </items>
-    </ChoiceBox>
+    </ComboBox>
     <Button layoutX="321.0" layoutY="105.0" mnemonicParsing="false" onMouseClicked="#sendoffSet" prefHeight="28.0" prefWidth="63.0" text="%set" />
 
     <Label layoutX="32.0" layoutY="144.0" prefHeight="13.0" prefWidth="92.0" text="%fontWeightSetting" />
-    <ChoiceBox fx:id="fontHeight" layoutX="216.0" layoutY="172.0" prefHeight="21.0" prefWidth="72.0" />
-    <ChoiceBox fx:id="fontWidth" layoutX="216.0" layoutY="142.0" prefHeight="21.0" prefWidth="72.0" />
+    <ComboBox fx:id="fontHeight" layoutX="216.0" layoutY="172.0" prefHeight="21.0" prefWidth="72.0" />
+    <ComboBox fx:id="fontWidth" layoutX="216.0" layoutY="142.0" prefHeight="21.0" prefWidth="72.0" />
     <Label layoutX="153.0" layoutY="147.0" text="%width" />
     <Label layoutX="152.0" layoutY="177.0" text="%height" />
     <Button layoutX="322.0" layoutY="140.0" mnemonicParsing="false" onMouseClicked="#sendFontWeight" prefHeight="28.0" prefWidth="63.0" text="%set" />
 
     <Label layoutX="35.0" layoutY="302.0" text="%sectionEffect" />
-    <ChoiceBox fx:id="pageMsgType" layoutX="160.0" layoutY="296.0" prefHeight="25.0" prefWidth="128.0">
+    <ComboBox fx:id="pageMsgType" layoutX="160.0" layoutY="296.0" prefHeight="25.0" prefWidth="128.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
-    </ChoiceBox>
+    </ComboBox>
     <Button layoutX="323.0" layoutY="295.0" mnemonicParsing="false" onMouseClicked="#sendPageMsgType" prefHeight="28.0" prefWidth="63.0" text="%set" />
 
     <Button layoutX="40.0" layoutY="332.0" onMouseClicked="#openBGSchedule" prefHeight="30" prefWidth="165.0" text="%BGSchedule" />

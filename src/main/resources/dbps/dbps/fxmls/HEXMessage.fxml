@@ -21,7 +21,7 @@
             <RadioButton fx:id="pageMsg" layoutX="125.0" layoutY="5.0" mnemonicParsing="false" text="%pageMsg"/>
         </Pane>
         <Label fx:id="pageCntLabel" layoutX="385.0" layoutY="8.0" text="page" visible="false"/>
-        <ChoiceBox fx:id="pageMsgCnt" layoutX="435.0" layoutY="4.0" prefHeight="21.0" prefWidth="60.0" value="1"
+        <ComboBox fx:id="pageMsgCnt" layoutX="435.0" layoutY="4.0" prefHeight="21.0" prefWidth="60.0" value="1"
                    visible="false">
             <items>
                 <FXCollections fx:factory="observableArrayList">
@@ -37,7 +37,7 @@
                     <String fx:value="10"/>
                 </FXCollections>
             </items>
-        </ChoiceBox>
+        </ComboBox>
         <Label layoutX="14.0" layoutY="40.0" text="%sectionNum"/>
         <Pane layoutX="137.0" layoutY="31.0" prefHeight="30.0" prefWidth="231.0"
               style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
@@ -47,7 +47,7 @@
         </Pane>
 
         <Label layoutX="14.0" layoutY="69.0" text="%displayControl"/>
-        <ChoiceBox fx:id="displayControl" layoutX="137.0" layoutY="65.0" prefHeight="21.0" prefWidth="107.0" value="On">
+        <ComboBox fx:id="displayControl" layoutX="137.0" layoutY="65.0" prefHeight="21.0" prefWidth="107.0" value="On">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Off"/>
@@ -72,10 +72,10 @@
                     <String fx:value="90"/>
                 </FXCollections>
             </items>
-        </ChoiceBox>
+        </ComboBox>
 
         <Label layoutX="14.0" layoutY="94.0" text="%displayMethod"/>
-        <ChoiceBox fx:id="displayMethod" layoutX="137.0" layoutY="90.0" prefHeight="21.0" prefWidth="107.0"
+        <ComboBox fx:id="displayMethod" layoutX="137.0" layoutY="90.0" prefHeight="21.0" prefWidth="107.0"
                    value="Clear">
             <items>
                 <FXCollections fx:factory="observableArrayList">
@@ -83,18 +83,18 @@
                     <String fx:value="Clear"/>
                 </FXCollections>
             </items>
-        </ChoiceBox>
+        </ComboBox>
 
         <Label layoutX="14.0" layoutY="118.0" text="%characterCode"/>
-        <ChoiceBox fx:id="charCodes" layoutX="137.0" layoutY="114.0" prefHeight="21.0" prefWidth="107.0">
+        <ComboBox fx:id="charCodes" layoutX="137.0" layoutY="114.0" prefHeight="21.0" prefWidth="107.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
             </items>
-        </ChoiceBox>
+        </ComboBox>
 
         <Label layoutX="14.0" layoutY="142.0" text="%fontSize"/>
-        <ChoiceBox fx:id="fontSize" layoutX="137.0" layoutY="138.0" prefHeight="21.0" prefWidth="107.0"
+        <ComboBox fx:id="fontSize" layoutX="137.0" layoutY="138.0" prefHeight="21.0" prefWidth="107.0"
                    value="16(Standard)">
             <items>
                 <FXCollections fx:factory="observableArrayList">
@@ -115,64 +115,64 @@
                     <String fx:value="64"/>
                 </FXCollections>
             </items>
-        </ChoiceBox>
+        </ComboBox>
         <Label layoutX="265.0" layoutY="142.0" text="%fontGroup"/>
-        <ChoiceBox fx:id="fontGroup" layoutX="369.0" layoutY="138.0" prefHeight="21.0" prefWidth="107.0">
+        <ComboBox fx:id="fontGroup" layoutX="369.0" layoutY="138.0" prefHeight="21.0" prefWidth="107.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
             </items>
-        </ChoiceBox>
+        </ComboBox>
 
         <Label layoutX="14.0" layoutY="166.0" text="%entranceEffect"/>
-        <ChoiceBox fx:id="effectIn" layoutX="137.0" layoutY="162.0" prefHeight="21.0" prefWidth="107.0">
+        <ComboBox fx:id="effectIn" layoutX="137.0" layoutY="162.0" prefHeight="21.0" prefWidth="107.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
             </items>
-        </ChoiceBox>
+        </ComboBox>
 
         <Label layoutX="265.0" layoutY="166.0" text="%effectDirection"/>
-        <ChoiceBox fx:id="inDirection" layoutX="369.0" layoutY="162.0" prefHeight="21.0" prefWidth="107.0" value="방향없음">
+        <ComboBox fx:id="inDirection" layoutX="369.0" layoutY="162.0" prefHeight="21.0" prefWidth="107.0" value="방향없음">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
             </items>
-        </ChoiceBox>
+        </ComboBox>
 
 
         <Label layoutX="14.0" layoutY="190.0" text="%exitEffect"/>
-        <ChoiceBox fx:id="effectOut" layoutX="137.0" layoutY="186.0" prefHeight="21.0" prefWidth="107.0"/>
+        <ComboBox fx:id="effectOut" layoutX="137.0" layoutY="186.0" prefHeight="21.0" prefWidth="107.0"/>
 
         <Label layoutX="265.0" layoutY="190.0" text="%effectDirection"/>
-        <ChoiceBox fx:id="outDirection" layoutX="369.0" layoutY="186.0" prefHeight="21.0" prefWidth="107.0"/>
+        <ComboBox fx:id="outDirection" layoutX="369.0" layoutY="186.0" prefHeight="21.0" prefWidth="107.0"/>
 
         <Label layoutX="14.0" layoutY="215.0" text="%effectSpeed"/>
-        <ChoiceBox fx:id="effectSpeed" layoutX="137.0" layoutY="211.0" prefHeight="21.0" prefWidth="107.0"/>
+        <ComboBox fx:id="effectSpeed" layoutX="137.0" layoutY="211.0" prefHeight="21.0" prefWidth="107.0"/>
 
         <Label layoutX="14.0" layoutY="240.0" text="%maintainDuration"/>
-        <ChoiceBox fx:id="effectTime" layoutX="137.0" layoutY="236.0" prefHeight="21.0" prefWidth="107.0"/>
+        <ComboBox fx:id="effectTime" layoutX="137.0" layoutY="236.0" prefHeight="21.0" prefWidth="107.0"/>
 
         <Label layoutX="14.0" layoutY="265.0" text="%XStart"/>
-        <ChoiceBox layoutX="137.0" layoutY="261.0" prefHeight="21.0" prefWidth="107.0" value="0" fx:id="xStart"/>
+        <ComboBox layoutX="137.0" layoutY="261.0" prefHeight="21.0" prefWidth="107.0" value="0" fx:id="xStart"/>
 
         <Label layoutX="265.0" layoutY="265.0" text="%YStart"/>
-        <ChoiceBox fx:id="yStart" layoutX="369.0" layoutY="261.0" prefHeight="21.0" prefWidth="107.0" value="0"/>
+        <ComboBox fx:id="yStart" layoutX="369.0" layoutY="261.0" prefHeight="21.0" prefWidth="107.0" value="0"/>
 
         <Label layoutX="14.0" layoutY="290.0" text="%XEnd"/>
-        <ChoiceBox layoutX="137.0" layoutY="286.0" prefHeight="21.0" prefWidth="107.0" value="0" fx:id="xEnd"/>
+        <ComboBox layoutX="137.0" layoutY="286.0" prefHeight="21.0" prefWidth="107.0" value="0" fx:id="xEnd"/>
 
         <Label layoutX="265.0" layoutY="290.0" text="%YEnd"/>
-        <ChoiceBox fx:id="yEnd" layoutX="369.0" layoutY="286.0" prefHeight="21.0" prefWidth="107.0" value="0"/>
+        <ComboBox fx:id="yEnd" layoutX="369.0" layoutY="286.0" prefHeight="21.0" prefWidth="107.0" value="0"/>
 
         <Label layoutX="14.0" layoutY="315.0" text="%bgSelection"/>
-        <ChoiceBox fx:id="bgImg" layoutX="137.0" layoutY="311.0" prefHeight="21.0" prefWidth="107.0"/>
+        <ComboBox fx:id="bgImg" layoutX="137.0" layoutY="311.0" prefHeight="21.0" prefWidth="107.0"/>
 
         <Label fx:id="textColorLabel" layoutX="14.0" layoutY="337.0" text="%textColor"/>
-        <ChoiceBox fx:id="textColorASC" layoutX="137.0" layoutY="335.0" prefHeight="21.0" prefWidth="107.0"/>
+        <ComboBox fx:id="textColorASC" layoutX="137.0" layoutY="335.0" prefHeight="21.0" prefWidth="107.0"/>
 
         <Label fx:id="bgColorLabel" layoutX="14.0" layoutY="362.0" text="%textBgColor"/>
-        <ChoiceBox fx:id="bgColorASC" layoutX="137.0" layoutY="359.0" prefHeight="21.0" prefWidth="107.0"/>
+        <ComboBox fx:id="bgColorASC" layoutX="137.0" layoutY="359.0" prefHeight="21.0" prefWidth="107.0"/>
 
         <Label fx:id="previewLabel" layoutX="15.0" layoutY="386.0"
                style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder"

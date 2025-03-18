@@ -4,6 +4,7 @@ import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.Pane;
@@ -16,8 +17,8 @@ import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class SizeOfDisplayBoardController {
 
-    public ChoiceBox<String> displayBright;
-    public ChoiceBox<String> colorNum;
+    public ComboBox<String> displayBright;
+    public ComboBox<String> colorNum;
     AsciiMsgTransceiver asciiMsgTransceiver;
 
     HexMsgTransceiver hexMsgTransceiver;
@@ -30,7 +31,7 @@ public class SizeOfDisplayBoardController {
     ResourceBundle bundle;
 
     @FXML
-    public ChoiceBox<String> howToArray;
+    public ComboBox<String> howToArray;
 
     @FXML
     public Pane dpPane;

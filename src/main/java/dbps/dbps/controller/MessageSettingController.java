@@ -4,7 +4,7 @@ import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -23,15 +23,15 @@ public class MessageSettingController {
     ConfigService configService;
 
     @FXML
-    public ChoiceBox<String> msgInitialize;
+    public ComboBox<String> msgInitialize;
 
     @FXML
-    public ChoiceBox<String> pageMsgCnt;
+    public ComboBox<String> pageMsgCnt;
 
     @FXML
     public Pane msPane;
 
-    private ChoiceBox<String> pageMsgChoiceBox;
+    private ComboBox<String> pageMsgComboBox;
 
     @FXML
     public void initialize() {

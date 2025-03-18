@@ -8,6 +8,11 @@
     -fx-background-color: #1C1F26; /* 체크박스 배경색 */
 }
 
+
+.root{
+    -fx-font-family: Gulim;
+}
+
 .scroll-bar {
     -fx-background-color: #1C1C1C; /* 전체 스크롤바 배경색 */
 }
@@ -26,9 +31,6 @@
 
 .scroll-bar .thumb:hover {
     -fx-background-color: #FF9800; /* 마우스를 올렸을 때 썸의 색상 */
-}
-.root{
-    -fx-font-family: Gulim;
 }
 
 /* 스크롤바 화살표 버튼 */

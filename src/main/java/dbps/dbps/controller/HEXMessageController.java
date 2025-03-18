@@ -43,9 +43,9 @@ public class HEXMessageController {
     public TextFlow preview;
     public TextField sendMsgAsc;
     public Label textColorLabel;
-    public ChoiceBox<ComboItem> textColorASC;
+    public ComboBox<ComboItem> textColorASC;
     public Label bgColorLabel;
-    public ChoiceBox<ComboItem> bgColorASC;
+    public ComboBox<ComboItem> bgColorASC;
     public Tooltip previewTooltip;
     public ImageView arrow;
     public Label previewLabel;
@@ -70,7 +70,7 @@ public class HEXMessageController {
     private Label pageCntLabel;
 
     @FXML
-    public ChoiceBox<String> pageMsgCnt;
+    public ComboBox<String> pageMsgCnt;
 
     @FXML
     private RadioButton section0;
@@ -82,54 +82,54 @@ public class HEXMessageController {
     private RadioButton section2;
 
     @FXML
-    private ChoiceBox<String> displayControl;
+    private ComboBox<String> displayControl;
 
     @FXML
-    private ChoiceBox<String> displayMethod;
+    private ComboBox<String> displayMethod;
 
     @FXML
-    private ChoiceBox<ComboItem> charCodes;
+    private ComboBox<ComboItem> charCodes;
 
     @FXML
-    private ChoiceBox<String> fontSize;
+    private ComboBox<String> fontSize;
 
     @FXML
-    private ChoiceBox<ComboItem> fontGroup;
+    private ComboBox<ComboItem> fontGroup;
 
     @FXML
-    private ChoiceBox<ComboItem> effectIn;
+    private ComboBox<ComboItem> effectIn;
 
     @FXML
-    private ChoiceBox<ComboItem> inDirection;
-
-
-    @FXML
-    private ChoiceBox<ComboItem> effectOut;
-
-    @FXML
-    private ChoiceBox<ComboItem> outDirection;
+    private ComboBox<ComboItem> inDirection;
 
 
     @FXML
-    private ChoiceBox<ComboItem> effectSpeed;
+    private ComboBox<ComboItem> effectOut;
 
     @FXML
-    private ChoiceBox<ComboItem> effectTime;
+    private ComboBox<ComboItem> outDirection;
+
 
     @FXML
-    private ChoiceBox<String> xStart;
+    private ComboBox<ComboItem> effectSpeed;
 
     @FXML
-    private ChoiceBox<String> yStart;
+    private ComboBox<ComboItem> effectTime;
 
     @FXML
-    private ChoiceBox<String> xEnd;
+    private ComboBox<String> xStart;
 
     @FXML
-    private ChoiceBox<String> yEnd;
+    private ComboBox<String> yStart;
 
     @FXML
-    private ChoiceBox<ComboItem> bgImg;
+    private ComboBox<String> xEnd;
+
+    @FXML
+    private ComboBox<String> yEnd;
+
+    @FXML
+    private ComboBox<ComboItem> bgImg;
 
     @FXML
     private TextField textColor;
@@ -259,7 +259,7 @@ public class HEXMessageController {
         COLOR_MAP.put("yellow", 3);
         COLOR_MAP.put("blue", 4);
         COLOR_MAP.put("pink", 5);
-        COLOR_MAP.put("skyblue", 6);
+        COLOR_MAP.put("cyan", 6);
         COLOR_MAP.put("white", 7);
 
         packetBinding();
@@ -531,7 +531,7 @@ public class HEXMessageController {
                 new ComboItem("yellow", bundle.getString("yellow")),
                 new ComboItem("blue", bundle.getString("blue")),
                 new ComboItem("pink", bundle.getString("pink")),
-                new ComboItem("skyblue", bundle.getString("skyblue")),
+                new ComboItem("cyan", bundle.getString("cyan")),
                 new ComboItem("white", bundle.getString("white")));
 
         textColorASC.setValue(new ComboItem(configService.getProperty("textColorASC"+getMsgNum()), bundle.getString(configService.getProperty("textColorASC"+getMsgNum()))));
@@ -543,7 +543,7 @@ public class HEXMessageController {
                 new ComboItem("yellow", bundle.getString("yellow")),
                 new ComboItem("blue", bundle.getString("blue")),
                 new ComboItem("pink", bundle.getString("pink")),
-                new ComboItem("skyblue", bundle.getString("skyblue")),
+                new ComboItem("cyan", bundle.getString("cyan")),
                 new ComboItem("white", bundle.getString("white")));
         bgColorASC.setValue(new ComboItem(configService.getProperty("bgColorASC"+getMsgNum()), bundle.getString(configService.getProperty("bgColorASC"+getMsgNum()))));
     }
@@ -952,7 +952,7 @@ public class HEXMessageController {
 
     }
 
-    private void selectEffect(String effect, ChoiceBox<ComboItem> directionBox) {
+    private void selectEffect(String effect, ComboBox<ComboItem> directionBox) {
         directionBox.setDisable(false);
         if (effect.equals(bundle.getString("staticEffect"))) {
             directionBox.setItems(FXCollections.observableArrayList(

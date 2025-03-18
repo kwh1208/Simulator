@@ -1,6 +1,7 @@
 package dbps.dbps.service;
 
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import lombok.Setter;
 
@@ -18,7 +19,7 @@ public class SizeOfDisplayBoardService {
     }
 
     @Setter
-    public ChoiceBox<String> howToArray;
+    public ComboBox<String> howToArray;
     @Setter
     private Spinner<Integer> spinnerForRow;
     @Setter
