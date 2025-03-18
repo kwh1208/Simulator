@@ -757,6 +757,23 @@ public class DabitNetController {
         openModal("/dbps/dbps/fxmls/defaultChange.fxml", "기본 설정 변경", mouseEvent);
     }
 
+    public void openDeviceManager(MouseEvent mouseEvent) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "devmgmt.msc");
+            pb.start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void networkConnection(MouseEvent mouseEvent) {
+        try {
+            Runtime.getRuntime().exec("cmd /c start ncpa.cpl");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Setter
     @Getter
     @ToString
