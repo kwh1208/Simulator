@@ -82,16 +82,16 @@ public class HEXMessageController {
     private RadioButton section2;
 
     @FXML
-    private ComboBox<String> displayControl;
+    private ComboBox<ComboItem> displayControl;
 
     @FXML
-    private ComboBox<String> displayMethod;
+    private ComboBox<ComboItem> displayMethod;
 
     @FXML
     private ComboBox<ComboItem> charCodes;
 
     @FXML
-    private ComboBox<String> fontSize;
+    private ComboBox<ComboItem> fontSize;
 
     @FXML
     private ComboBox<ComboItem> fontGroup;
@@ -249,8 +249,8 @@ public class HEXMessageController {
 
         setXY();
         doMsgSettings();
-        setUI();
         saveConfig();
+        setUI();
         COLOR_MAP = new HashMap<>();
 
         COLOR_MAP.put("black", 0);
@@ -364,11 +364,11 @@ public class HEXMessageController {
         segments.add(msg);
 
         // 3. /D + setDText(...)
-        msg = "/D" + setDText(displayControl.getValue(), displayMethod.getValue());
+        msg = "/D" + setDText(displayControl.getValue().key(), displayMethod.getValue().key());
         segments.add(msg);
 
         // 4. /F + setFText(...)
-        msg = "/F" + setFText(charCodes.getValue().displayText(), fontSize.getValue());
+        msg = "/F" + setFText(charCodes.getValue().key(), fontSize.getValue());
         segments.add(msg);
 
         // 5. /E + setEText(effectIn, inDirection)
@@ -431,6 +431,7 @@ public class HEXMessageController {
             previewLabel.setDisable(true);
             defaultBtn.setDisable(true);
             preview.setVisible(false);
+
         }
         else {
             hexPane.setVisible(false);
@@ -443,16 +444,69 @@ public class HEXMessageController {
             defaultBtn.setDisable(false);
             preview.setVisible(true);
         }
-    }
 
-    public static void changePageMsgCnt(){
-
+        charCodes.getItems().clear();
+        charCodes.getItems().addAll(
+                new ComboItem("CombinationType", bundle.getString("CombinationType")),
+                new ComboItem("UTF16", bundle.getString("UTF16")));
+        if (ascRadioBtn.isSelected()){
+            charCodes.getItems().addAll(
+                    new ComboItem("UTF8Com", bundle.getString("UTF8Com")),
+                    new ComboItem("UTF8UNI", bundle.getString("UTF8UNI"))
+            );
+        }
+        charCodes.setValue(new ComboItem(configService.getProperty("charCode"+getMsgNum()), bundle.getString(configService.getProperty("charCode"+getMsgNum()))));
     }
 
     private void setUI() {
+        displayControl.getItems().clear();
+        displayControl.getItems().addAll(
+                new ComboItem("On", bundle.getString("On")),
+                new ComboItem("Off", bundle.getString("Off")),
+                new ComboItem("1", "1"+bundle.getString("times")),
+                new ComboItem("2", "2"+bundle.getString("times")),
+                new ComboItem("3", "3"+bundle.getString("times")),
+                new ComboItem("4", "4"+bundle.getString("times")),
+                new ComboItem("5", "5"+bundle.getString("times")),
+                new ComboItem("6", "6"+bundle.getString("times")),
+                new ComboItem("7", "7"+bundle.getString("times")),
+                new ComboItem("8", "8"+bundle.getString("times")),
+                new ComboItem("9", "9"+bundle.getString("times")),
+                new ComboItem("10", "10"+bundle.getString("times")),
+                new ComboItem("20", "20"+bundle.getString("times")),
+                new ComboItem("30", "30"+bundle.getString("times")),
+                new ComboItem("40", "40"+bundle.getString("times")),
+                new ComboItem("50", "50"+bundle.getString("times")),
+                new ComboItem("60", "60"+bundle.getString("times")),
+                new ComboItem("70", "70"+bundle.getString("times")),
+                new ComboItem("80", "80"+bundle.getString("times")),
+                new ComboItem("90", "90"+bundle.getString("times"))
+        );
+        displayControl.setValue(new ComboItem(configService.getProperty("displayControl"+getMsgNum()), bundle.getString(configService.getProperty("displayControl"+getMsgNum()))));
+
+        displayMethod.getItems().clear();
+        displayMethod.getItems().addAll(
+                new ComboItem("Clear", bundle.getString("Clear")),
+                new ComboItem("Normal", bundle.getString("Normal"))
+        );
+        displayMethod.setValue(new ComboItem(configService.getProperty("displayMethod"+getMsgNum()), bundle.getString(configService.getProperty("displayMethod"+getMsgNum()))));
+
         charCodes.getItems().clear();
-        charCodes.getItems().addAll(new ComboItem("CombinationType", bundle.getString("CombinationType")),
+        charCodes.getItems().addAll(
+                new ComboItem("CombinationType", bundle.getString("CombinationType")),
                 new ComboItem("UTF16", bundle.getString("UTF16")));
+        if (ascRadioBtn.isSelected()){
+            charCodes.getItems().addAll(
+                    new ComboItem("UTF8Com", bundle.getString("UTF8Com")),
+                    new ComboItem("UTF8UNI", bundle.getString("UTF8UNI"))
+            );
+        }
+        charCodes.setValue(new ComboItem(configService.getProperty("charCode"+getMsgNum()), bundle.getString(configService.getProperty("charCode"+getMsgNum()))));
+
+        fontSize.getItems().clear();
+        fontSize.getItems().addAll(
+
+        );
 
         fontGroup.getItems().clear();
         fontGroup.getItems().addAll(
@@ -592,8 +646,8 @@ public class HEXMessageController {
     private void doMsgSettings() {
         String msgNum = getMsgNum();
 
-        displayControl.setValue(configService.getProperty("displayControl" + msgNum));
-        displayMethod.setValue(configService.getProperty("displayMethod" + msgNum));
+        displayControl.setValue(new ComboItem(configService.getProperty("displayControl" + msgNum), bundle.getString(configService.getProperty("displayControl" + msgNum))));
+        displayMethod.setValue(new ComboItem(configService.getProperty("displayMethod" + msgNum), bundle.getString(configService.getProperty("displayMethod" + msgNum))));
         charCodes.setValue(new ComboItem(configService.getProperty("charCode" + msgNum), bundle.getString(configService.getProperty("charCode" + msgNum))));
         fontSize.setValue(configService.getProperty("fontSize" + msgNum));
         fontGroup.setValue(new ComboItem(configService.getProperty("fontGroup" + msgNum), bundle.getString(configService.getProperty("fontGroup" + msgNum))));
@@ -655,8 +709,8 @@ public class HEXMessageController {
             String msgType = ((RadioButton) msgTypeGroup.getSelectedToggle()).getText();
             String pageMsgCntValue = pageMsgCnt.getValue();
             String section = ((RadioButton) sectionGroup.getSelectedToggle()).getText();
-            String displayControlValue = displayControl.getValue();
-            String displayMethodValue = displayMethod.getValue();
+            String displayControlValue = displayControl.getValue().key();
+            String displayMethodValue = displayMethod.getValue().key();
             String charCodesValue = charCodes.getValue().displayText();
             String fontSizeValue = fontSize.getValue();
             String fontGroupValue = fontGroup.getValue().displayText();
@@ -1057,10 +1111,10 @@ public class HEXMessageController {
 
     private void saveConfig() {
         displayControl.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("displayControl" + getMsgNum(), newValue));
+                (observable, oldValue, newValue) -> configService.setProperty("displayControl" + getMsgNum(), newValue.key()));
 
         displayMethod.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("displayMethod" + getMsgNum(), newValue)
+                (observable, oldValue, newValue) -> configService.setProperty("displayMethod" + getMsgNum(), newValue.key())
         );
         charCodes.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> configService.setProperty("charCodes" + getMsgNum(), newValue.key())

@@ -47,40 +47,17 @@
         </Pane>
 
         <Label layoutX="14.0" layoutY="69.0" text="%displayControl"/>
-        <ComboBox fx:id="displayControl" layoutX="137.0" layoutY="65.0" prefHeight="21.0" prefWidth="107.0" value="On">
+        <ComboBox fx:id="displayControl" layoutX="137.0" layoutY="65.0" prefHeight="21.0" prefWidth="107.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Off"/>
-                    <String fx:value="On"/>
-                    <String fx:value="1"/>
-                    <String fx:value="2"/>
-                    <String fx:value="3"/>
-                    <String fx:value="4"/>
-                    <String fx:value="5"/>
-                    <String fx:value="6"/>
-                    <String fx:value="7"/>
-                    <String fx:value="8"/>
-                    <String fx:value="9"/>
-                    <String fx:value="10"/>
-                    <String fx:value="20"/>
-                    <String fx:value="30"/>
-                    <String fx:value="40"/>
-                    <String fx:value="50"/>
-                    <String fx:value="60"/>
-                    <String fx:value="70"/>
-                    <String fx:value="80"/>
-                    <String fx:value="90"/>
                 </FXCollections>
             </items>
         </ComboBox>
 
         <Label layoutX="14.0" layoutY="94.0" text="%displayMethod"/>
-        <ComboBox fx:id="displayMethod" layoutX="137.0" layoutY="90.0" prefHeight="21.0" prefWidth="107.0"
-                   value="Clear">
+        <ComboBox fx:id="displayMethod" layoutX="137.0" layoutY="90.0" prefHeight="21.0" prefWidth="107.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Normal"/>
-                    <String fx:value="Clear"/>
                 </FXCollections>
             </items>
         </ComboBox>
@@ -94,25 +71,9 @@
         </ComboBox>
 
         <Label layoutX="14.0" layoutY="142.0" text="%fontSize"/>
-        <ComboBox fx:id="fontSize" layoutX="137.0" layoutY="138.0" prefHeight="21.0" prefWidth="107.0"
-                   value="16(Standard)">
+        <ComboBox fx:id="fontSize" layoutX="137.0" layoutY="138.0" prefHeight="21.0" prefWidth="107.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="12"/>
-                    <String fx:value="14"/>
-                    <String fx:value="16(Standard)"/>
-                    <String fx:value="20"/>
-                    <String fx:value="24"/>
-                    <String fx:value="28"/>
-                    <String fx:value="32"/>
-                    <String fx:value="36"/>
-                    <String fx:value="40"/>
-                    <String fx:value="44"/>
-                    <String fx:value="48"/>
-                    <String fx:value="52"/>
-                    <String fx:value="56"/>
-                    <String fx:value="60"/>
-                    <String fx:value="64"/>
                 </FXCollections>
             </items>
         </ComboBox>
