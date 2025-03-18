@@ -476,6 +476,7 @@ public class HEXMessageController {
         selectEffect(effectIn.getValue().displayText(), inDirection);
 
         effectOut.getItems().addAll(
+                new ComboItem("noEffect", bundle.getString("noEffect")),
                 new ComboItem("staticEffect", bundle.getString("staticEffect")),
                 new ComboItem("move", bundle.getString("move")),
                 new ComboItem("wipe", bundle.getString("wipe")),
