@@ -3,9 +3,12 @@ package dbps.dbps.controller;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 import static dbps.dbps.Constants.convertRS485AddrASCii;
 import static dbps.dbps.Constants.isRS;
@@ -56,5 +59,10 @@ public class RelayController {
             return "00000";
         } else
             return String.format("%05d", Integer.parseInt(value));
+    }
+
+    public void close(MouseEvent mouseEvent) {
+        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        stage.close();
     }
 }

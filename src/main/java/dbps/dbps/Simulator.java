@@ -91,7 +91,7 @@ public class Simulator extends Application {
     public static void main(String[] args) {
         System.setProperty("prism.lcdtext", "false");
         System.setProperty("prism.subpixeltext", "false");
-        System.setProperty("prism.text", "t2k");
+//        System.setProperty("prism.text", "t2k");
 
 
         Locale.setDefault(Locale.KOREAN);

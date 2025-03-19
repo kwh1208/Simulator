@@ -3,12 +3,10 @@ package dbps.dbps.controller;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
@@ -19,6 +17,8 @@ public class SizeOfDisplayBoardController {
 
     public ComboBox<String> displayBright;
     public ComboBox<String> colorNum;
+    public Label rowPixel;
+    public Label colPixel;
     AsciiMsgTransceiver asciiMsgTransceiver;
 
     HexMsgTransceiver hexMsgTransceiver;
@@ -48,8 +48,10 @@ public class SizeOfDisplayBoardController {
         configService = ConfigService.getInstance();
         hexMsgService = HexMsgService.getInstance();
         bundle = ResourceManager.getInstance().getBundle();
+        rowPixel.setText("x 16"+bundle.getString("pixel"));
+        colPixel.setText("x 16"+bundle.getString("pixel"));
 
-        dpPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/sizeOfDisplayBoard.css").toExternalForm());
+        dpPane.getStylesheets().add(Objects.requireNonNull(Simulator.class.getResource("/dbps/dbps/css/sizeOfDisplayBoard.css")).toExternalForm());
 
         SpinnerValueFactory<Integer> valueFactoryForRow = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, SIZE_ROW);
         SpinnerValueFactory<Integer> valueFactoryForColumn = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, SIZE_COLUMN);

@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.collections.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="displaySignalAP" prefHeight="438.0" prefWidth="541.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplaySignalSettingController">
+<AnchorPane fx:id="displaySignalAP" prefHeight="399.0" prefWidth="541.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplaySignalSettingController">
     <children>
         <Label layoutX="29.0" layoutY="10.0" text="%displaySignal" />
         <Label layoutX="272.0" layoutY="11.0" text="%memo" />
@@ -62,7 +68,7 @@
             </items>
         </ListView>
         <TextArea fx:id="memo" layoutX="268.0" layoutY="36.0" prefHeight="186.0" prefWidth="248.0" />
-        <Button layoutX="29.0" layoutY="375.0" mnemonicParsing="false" onMouseClicked="#search" prefHeight="28.0" prefWidth="120.0" styleClass="newWindow-button" text="%searchSignal">
+        <Button layoutX="277.0" layoutY="228.0" mnemonicParsing="false" onMouseClicked="#search" prefHeight="28.0" prefWidth="120.0" styleClass="newWindow-button" text="%searchSignal">
         </Button>
         <Button layoutX="407.0" layoutY="228.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="28.0" prefWidth="110.0" text="%saveMemo" />
         <Label layoutX="286.0" layoutY="276.0" text="Color Order" />
@@ -87,11 +93,11 @@
                 </FXCollections>
             </items>
         </ComboBox>
-        <Button layoutX="438.0" layoutY="318.0" mnemonicParsing="false" onMouseClicked="#signalTransfer" prefHeight="28.0" prefWidth="79.0" text="%set" />
-        <Spinner fx:id="spinnerForSec" layoutX="368.0" layoutY="351.0" prefHeight="28.0" prefWidth="64.0" />
-        <Button fx:id="autoTransfer" layoutX="438.0" layoutY="351.0" mnemonicParsing="false" onMouseClicked="#autoTransfer" prefHeight="28.0" prefWidth="79.0" text="%autoTransfer" />
-        <Button layoutX="453.0" layoutY="389.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="28.0" prefWidth="64.0" text="%close" />
+        <Button layoutX="291.0" layoutY="359.0" mnemonicParsing="false" onMouseClicked="#signalTransfer" prefHeight="28.0" prefWidth="110.0" text="%set" />
+        <Spinner fx:id="spinnerForSec" layoutX="368.0" layoutY="321.0" prefHeight="28.0" prefWidth="64.0" />
+        <Button fx:id="autoTransfer" layoutX="438.0" layoutY="321.0" mnemonicParsing="false" onMouseClicked="#autoTransfer" prefHeight="28.0" prefWidth="79.0" text="%autoTransfer" />
+        <Button layoutX="410.0" layoutY="359.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="28.0" prefWidth="107.0" text="%close" />
         <ProgressIndicator fx:id="progressIndicator" layoutX="250.0" layoutY="150.0" visible="false" />
-      <Label layoutX="286.0" layoutY="358.0" text="설정 간격" />
+      <Label layoutX="289.0" layoutY="328.0" text="설정 간격" />
     </children>
 </AnchorPane>

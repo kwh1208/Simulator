@@ -450,79 +450,79 @@ public class FontSettingController {
 
     private void addItem() {
         fontGroup1fontSelected1.getItems().addAll(
-                new ComboItem("notUsed", bundle.getString("notUsed")),
-                new ComboItem("english", bundle.getString("english"))
+                new ComboItem("english", bundle.getString("english")),
+                new ComboItem("notUsed", bundle.getString("notUsed"))
         );
 
         fontGroup1fontSelected2.getItems().addAll(
-                new ComboItem("notUsed", bundle.getString("notUsed")),
+                new ComboItem("CombinationType", bundle.getString("combination")),
                 new ComboItem("UNI-KR", bundle.getString("UNI-KR")),
                 new ComboItem("UNI-JP", bundle.getString("UNI-JP")),
                 new ComboItem("UNI-CN", bundle.getString("UNI-CN")),
-                new ComboItem("CombinationType", bundle.getString("CombinationType")),
-                new ComboItem("UNI-all", bundle.getString("UNI-all"))
+                new ComboItem("UNI-all", bundle.getString("UNI-all")),
+                new ComboItem("notUsed", bundle.getString("notUsed"))
         );
 
         fontGroup1fontSelected3.getItems().addAll(
-                new ComboItem("notUsed", bundle.getString("notUsed")),
-                new ComboItem("userFont", bundle.getString("userFont"))
+                new ComboItem("userFont", bundle.getString("userFont")),
+                new ComboItem("notUsed", bundle.getString("notUsed"))
         );
 
         fontGroup2fontSelected1.getItems().addAll(
-                new ComboItem("notUsed", bundle.getString("notUsed")),
-                new ComboItem("english", bundle.getString("english"))
+                new ComboItem("english", bundle.getString("english")),
+                new ComboItem("notUsed", bundle.getString("notUsed"))
         );
 
         fontGroup2fontSelected2.getItems().addAll(
-                new ComboItem("notUsed", bundle.getString("notUsed")),
+                new ComboItem("CombinationType", bundle.getString("combination")),
                 new ComboItem("UNI-KR", bundle.getString("UNI-KR")),
                 new ComboItem("UNI-JP", bundle.getString("UNI-JP")),
                 new ComboItem("UNI-CN", bundle.getString("UNI-CN")),
-                new ComboItem("CombinationType", bundle.getString("CombinationType")),
-                new ComboItem("UNI-all", bundle.getString("UNI-all"))
+                new ComboItem("UNI-all", bundle.getString("UNI-all")),
+                new ComboItem("notUsed", bundle.getString("notUsed"))
         );
 
         fontGroup2fontSelected3.getItems().addAll(
-                new ComboItem("notUsed", bundle.getString("notUsed")),
-                new ComboItem("userFont", bundle.getString("userFont"))
+                new ComboItem("userFont", bundle.getString("userFont")),
+                new ComboItem("notUsed", bundle.getString("notUsed"))
         );
 
         fontGroup3fontSelected1.getItems().addAll(
-                new ComboItem("notUsed", bundle.getString("notUsed")),
-                new ComboItem("english", bundle.getString("english"))
+                new ComboItem("english", bundle.getString("english")),
+                new ComboItem("notUsed", bundle.getString("notUsed"))
         );
 
         fontGroup3fontSelected2.getItems().addAll(
-                new ComboItem("notUsed", bundle.getString("notUsed")),
+                new ComboItem("CombinationType", bundle.getString("combination")),
                 new ComboItem("UNI-KR", bundle.getString("UNI-KR")),
                 new ComboItem("UNI-JP", bundle.getString("UNI-JP")),
                 new ComboItem("UNI-CN", bundle.getString("UNI-CN")),
-                new ComboItem("CombinationType", bundle.getString("CombinationType")),
-                new ComboItem("UNI-all", bundle.getString("UNI-all"))
+                new ComboItem("UNI-all", bundle.getString("UNI-all")),
+                new ComboItem("notUsed", bundle.getString("notUsed"))
         );
 
         fontGroup3fontSelected3.getItems().addAll(
-                new ComboItem("notUsed", bundle.getString("notUsed")),
-                new ComboItem("userFont", bundle.getString("userFont"))
+                new ComboItem("userFont", bundle.getString("userFont")),
+                new ComboItem("notUsed", bundle.getString("notUsed"))
         );
 
         fontGroup4fontSelected1.getItems().addAll(
-                new ComboItem("notUsed", bundle.getString("notUsed")),
-                new ComboItem("english", bundle.getString("english"))
+                new ComboItem("english", bundle.getString("english")),
+                new ComboItem("notUsed", bundle.getString("notUsed"))
         );
 
         fontGroup4fontSelected2.getItems().addAll(
-                new ComboItem("notUsed", bundle.getString("notUsed")),
+                new ComboItem("CombinationType", bundle.getString("combination")),
                 new ComboItem("UNI-KR", bundle.getString("UNI-KR")),
                 new ComboItem("UNI-JP", bundle.getString("UNI-JP")),
                 new ComboItem("UNI-CN", bundle.getString("UNI-CN")),
-                new ComboItem("CombinationType", bundle.getString("CombinationType")),
-                new ComboItem("UNI-all", bundle.getString("UNI-all"))
+                new ComboItem("UNI-all", bundle.getString("UNI-all")),
+                new ComboItem("notUsed", bundle.getString("notUsed"))
         );
 
         fontGroup4fontSelected3.getItems().addAll(
-                new ComboItem("notUsed", bundle.getString("notUsed")),
-                new ComboItem("userFont", bundle.getString("userFont"))
+                new ComboItem("userFont", bundle.getString("userFont")),
+                new ComboItem("notUsed", bundle.getString("notUsed"))
         );
     }
 

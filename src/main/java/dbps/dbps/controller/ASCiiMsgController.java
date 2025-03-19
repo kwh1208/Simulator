@@ -9,10 +9,7 @@ import dbps.dbps.service.ResourceManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
@@ -35,9 +32,10 @@ public class ASCiiMsgController {
     ResourceBundle bundle;
 
     @FXML
-    private CheckBox utf_8;
+    private RadioButton utf_8;
     @FXML
-    public CheckBox utf_16;
+    public RadioButton utf_16;
+    public RadioButton euc_kr;
 
     ASCiiMsgService msgService;
     AsciiMsgTransceiver asciiMsgTransceiver;
@@ -45,6 +43,8 @@ public class ASCiiMsgController {
 
     private List<TextField> transmitMsgs;
     private List<String> transmitMsgContents;
+
+    ToggleGroup msgType = new ToggleGroup();
 
 
     @FXML
@@ -61,20 +61,16 @@ public class ASCiiMsgController {
 
         makeMsgContainer();
 
+        euc_kr.setToggleGroup(msgType);
+        utf_8.setToggleGroup(msgType);
+        utf_16.setToggleGroup(msgType);
+
         ASCiiMsgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/ASCiiMsg.css").toExternalForm());
         ASCiiMsgAnchorPane.setMinSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
 
-        utf_8.selectedProperty().addListener((observable, oldValue, newValue) -> handleEncodingSelection(newValue, false));
-        utf_16.selectedProperty().addListener((observable, oldValue, newValue) -> handleEncodingSelection(newValue, true));
+        euc_kr.setSelected(true);
     }
 
-    //utf8, 16 버튼 선택
-    private void handleEncodingSelection(boolean selected, boolean isUtf16) {
-        if (selected) {
-            utf_8.setSelected(!isUtf16);
-            utf_16.setSelected(isUtf16);
-        }
-    }
 
     public void saveMsg() {
         List<String> msgList = new ArrayList<>();

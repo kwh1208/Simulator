@@ -8,6 +8,7 @@ import dbps.dbps.service.connectManager.UDPManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -79,6 +80,8 @@ public class FirmwareUpgradeController {
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         logService = LogService.getLogService();
         firmwareService = FirmwareService.getFirmwareService();
+        firmwareInformation.setCache(true);
+        firmwareInformation.setCacheHint(CacheHint.SPEED);
         FirmwareService.setFirmwareInformation(firmwareInformation);
 
         fileLocation.focusedProperty().addListener((observable, oldValue, newValue) -> {

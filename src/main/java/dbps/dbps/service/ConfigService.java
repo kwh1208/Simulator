@@ -149,7 +149,7 @@ public class ConfigService {
                     defaultProperties.setProperty("displayControl"+i+j, "On");
                     defaultProperties.setProperty("displayMethod"+i+j, "Clear");
                     defaultProperties.setProperty("charCode"+i+j, "CombinationType");
-                    defaultProperties.setProperty("fontSize"+i+j, "16(Standard)");
+                    defaultProperties.setProperty("fontSize"+i+j, "16");
                     defaultProperties.setProperty("fontGroup"+i+j, "fontGroup1");
                     defaultProperties.setProperty("effectIn"+i+j, "staticEffect");
                     defaultProperties.setProperty("effectInDirection"+i+j, "noDirection");

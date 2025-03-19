@@ -8,7 +8,8 @@
             xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dbps.dbps.controller.ASCiiMsgController">
     <ProgressIndicator fx:id="progressIndicator" layoutX="320.0" layoutY="240.0" visible="false"/>
-    <CheckBox fx:id="utf_8" layoutX="14.0" layoutY="3.0" mnemonicParsing="false" text="UTF-8"/>
-    <CheckBox fx:id="utf_16" layoutX="100.0" layoutY="3.0" mnemonicParsing="false" text="UTF-16"/>
+    <RadioButton fx:id="euc_kr" layoutX="14.0" layoutY="6.0" mnemonicParsing="false" text="EUC-KR"/>
+    <RadioButton fx:id="utf_16" layoutX="100.0" layoutY="6.0" mnemonicParsing="false" text="UTF-16"/>
+    <RadioButton fx:id="utf_8" layoutX="186.0" layoutY="6.0" mnemonicParsing="false" text="UTF-8"/>
     <Button layoutX="367" onMouseClicked="#close" layoutY="441" prefWidth="59" prefHeight="28" text="%close"/>
 </AnchorPane>

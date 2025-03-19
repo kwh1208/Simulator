@@ -27,7 +27,6 @@ public class AsciiMsgTransceiver {
     private final SizeOfDisplayBoardService sizeOfDisplayBoardService;
     private final FirmwareService firmwareService;
     private final BoardSettingService boardSettingService;
-    private final ASCiiDefaultSettingService asciiDefaultSettingService;
     private final BTService btService;
     private final ResourceBundle bundle;
 
@@ -43,7 +42,6 @@ public class AsciiMsgTransceiver {
         sizeOfDisplayBoardService = SizeOfDisplayBoardService.getInstance();
         firmwareService = FirmwareService.getFirmwareService();
         boardSettingService = BoardSettingService.getInstance();
-        asciiDefaultSettingService = ASCiiDefaultSettingService.getInstance();
         bundle = ResourceManager.getInstance().getBundle();
     }
 
@@ -241,7 +239,6 @@ public class AsciiMsgTransceiver {
             return;
         }
         if (cmd.equals("33")) {
-            asciiDefaultSettingService.setProperties(receiveMsg);
             logService.updateInfoLog(bundle.getString("defaultSettingSuccess"));
             return;
         }

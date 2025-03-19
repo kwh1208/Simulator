@@ -10,6 +10,9 @@
     -fx-background-color: #1C1F26; /* 체크박스 배경색 */
     -fx-padding: 5px; /* 내부 여백 */
 }
+.root{
+    -fx-font-family: Gulim;
+}
 
 .radio-button:selected .radio {
     -fx-background-color: transparent, black; /* 선택된 상태의 색상 */
@@ -124,5 +127,4 @@
 
 .label{
     -fx-text-fill: #E0E0E0;
-
 }
