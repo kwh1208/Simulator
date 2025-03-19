@@ -53,6 +53,7 @@ public class HEXMessageController {
     public ImageView arrow;
     public Label previewLabel;
     public Button defaultBtn;
+    public Pane msgPropertyPane;
     HexMsgTransceiver hexMsgTransceiver;
     HexMsgService hexMsgService;
     AsciiMsgTransceiver asciiMsgTransceiver;
@@ -409,7 +410,7 @@ public class HEXMessageController {
             previewLabel.setVisible(false);
             defaultBtn.setVisible(false);
             preview.setVisible(false);
-
+            msgPropertyPane.setPrefHeight(400);
         }
         else {
             hexPane.setVisible(false);
@@ -421,6 +422,7 @@ public class HEXMessageController {
             previewLabel.setVisible(true);
             defaultBtn.setVisible(true);
             preview.setVisible(true);
+            msgPropertyPane.setPrefHeight(450);
         }
 
         charCodes.getItems().clear();

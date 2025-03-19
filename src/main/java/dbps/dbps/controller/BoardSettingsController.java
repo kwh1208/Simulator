@@ -20,11 +20,6 @@ public class BoardSettingsController {
     private static final String BOARD_SETTING_CSS = "/dbps/dbps/css/boardsetting.css";
     private static final String COMM_SETTING_FXML = "/dbps/dbps/fxmls/communicationSetting.fxml";
 
-
-    @FXML
-    public RadioButton settingRadio;
-    @FXML
-    public RadioButton readRadio;
     @FXML
     public Pane boardDisable;
     @FXML
@@ -45,8 +40,6 @@ public class BoardSettingsController {
     public Label rs_address;
 
     private AsciiMsgTransceiver asciiMsgTransceiver;
-    private ToggleGroup group = new ToggleGroup();
-    private BoardSettingService boardSettingService;
 
     private static final String[] BAUD_RATES = {"9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600"};
     private static final String[] BH1_OPTIONS = {
@@ -60,21 +53,12 @@ public class BoardSettingsController {
 
     @FXML
     public void initialize() {
-        // 그룹화 설정
-        settingRadio.setToggleGroup(group);
-        readRadio.setToggleGroup(group);
-        readRadio.setSelected(true);
 
         // CSS 추가
         boardAP.getStylesheets().add(Simulator.class.getResource(BOARD_SETTING_CSS).toExternalForm());
 
-        // Toggle 변경 리스너
-        group.selectedToggleProperty().addListener((observable, oldValue, newValue) ->
-                toggleDisableBoard(group.getSelectedToggle() == settingRadio)
-        );
-
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
-        boardSettingService = BoardSettingService.getInstance();
+        BoardSettingService boardSettingService = BoardSettingService.getInstance();
 
         boardSettingService.setDebugMethod(debugMethod);
         boardSettingService.setBH1_baud(BH1_baud);
@@ -100,37 +84,27 @@ public class BoardSettingsController {
         stage.close();
     }
 
-    public void Transfer() {
-        if (group.getSelectedToggle().equals(readRadio)) {
-            handleReadCommand();
-        } else {
-            handleSetCommand();
-        }
-    }
+    public void setTransfer() {
+        String msg = (isRS ? "![" + convertRS485AddrASCii() + "0B2 " : "![00B2 ") + (debugMethod.getValue().equals("Disable") ? "0," : debugMethod.getValue().replaceAll("[^0-9]", "") + ",") +
+                getComboBoxIndex(BH1_Func, BH1_OPTIONS) + "," +
+                getComboBoxIndex(J4_func, J4_OPTIONS) + "," +
+                getComboBoxIndex(J2_baud, BAUD_RATES) + "," +
+                getComboBoxIndex(J3_baud, BAUD_RATES) + "," +
+                getComboBoxIndex(BH1_baud, BAUD_RATES) + "!]";
 
-    private void handleReadCommand() {
-        String msg = "![00B30!]";
-        if (isRS){
-            msg = "!["+convertRS485AddrASCii()+"0B30!]";
-        }
         asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
-    }
-
-    private void handleSetCommand() {
-        StringBuilder msg = new StringBuilder(isRS ? "![" + convertRS485AddrASCii() + "0B2 " : "![00B2 ");
-
-        msg.append(debugMethod.getValue().equals("Disable") ? "0," : debugMethod.getValue().replaceAll("[^0-9]", "") + ",");
-        msg.append(getComboBoxIndex(BH1_Func, BH1_OPTIONS)).append(",");
-        msg.append(getComboBoxIndex(J4_func, J4_OPTIONS)).append(",");
-        msg.append(getComboBoxIndex(J2_baud, BAUD_RATES)).append(",");
-        msg.append(getComboBoxIndex(J3_baud, BAUD_RATES)).append(",");
-        msg.append(getComboBoxIndex(BH1_baud, BAUD_RATES)).append("!]");
-
-        asciiMsgTransceiver.sendMessages(msg.toString(), false, progressIndicator);
     }
 
     private String getComboBoxIndex(ComboBox<String> comboBox, String[] options) {
         int index = java.util.Arrays.asList(options).indexOf(comboBox.getValue());
         return index != -1 ? String.valueOf(index) : "0";
+    }
+
+    public void readTransfer() {
+        String msg = "![00B30!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"0B30!]";
+        }
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 }

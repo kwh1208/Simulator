@@ -6,118 +6,118 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressIndicator?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="boardAP" prefHeight="374.0" prefWidth="377.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BoardSettingsController">
-    <Label layoutX="13.0" layoutY="51.0" text="%cmdType" />
-    <Pane layoutX="212.0" layoutY="39.0" prefHeight="31.0" prefWidth="158.0" style="-fx-border-color: black;">
-        <RadioButton fx:id="settingRadio" layoutX="4.0" layoutY="6.0" mnemonicParsing="false" text="%setting" />
-        <RadioButton fx:id="readRadio" layoutX="95.0" layoutY="6.0" mnemonicParsing="false" text="%read" />
-    </Pane>
-    <Pane fx:id="boardDisable" layoutX="14.0" layoutY="69.0" prefHeight="188.0" prefWidth="352.0">
-        <Label disable="true" layoutX="-1.0" layoutY="13.0" text="%debug" />
-        <ComboBox fx:id="debugMethod" disable="true" layoutX="198.0" layoutY="9.0" prefHeight="21.0" prefWidth="158.0">
+<AnchorPane fx:id="boardAP" prefHeight="302.0" prefWidth="377.0" xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BoardSettingsController"
+            style="-fx-background-color: #333333">
+    <Pane fx:id="boardDisable" layoutX="13.0" layoutY="14.0" prefHeight="188.0" prefWidth="352.0">
+        <Label  layoutX="-1.0" layoutY="13.0" text="%debug"/>
+        <ComboBox fx:id="debugMethod"  layoutX="198.0" layoutY="9.0" prefHeight="21.0" prefWidth="158.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Disable" />
-                    <String fx:value="Enable1" />
-                    <String fx:value="Enable2" />
-                    <String fx:value="Enable3" />
-                    <String fx:value="Enable4" />
-                    <String fx:value="Enable5" />
-                    <String fx:value="Enable6" />
-                    <String fx:value="Enable7" />
-                    <String fx:value="Enable8" />
+                    <String fx:value="Disable"/>
+                    <String fx:value="Enable1"/>
+                    <String fx:value="Enable2"/>
+                    <String fx:value="Enable3"/>
+                    <String fx:value="Enable4"/>
+                    <String fx:value="Enable5"/>
+                    <String fx:value="Enable6"/>
+                    <String fx:value="Enable7"/>
+                    <String fx:value="Enable8"/>
                 </FXCollections>
             </items>
         </ComboBox>
-        <Label disable="true" layoutX="-1.0" layoutY="47.0" text="BH1(TTL/RS485) Function" />
-        <ComboBox fx:id="BH1_Func" disable="true" layoutX="198.0" layoutY="43.0" prefHeight="21.0" prefWidth="158.0">
+        <Label  layoutX="-1.0" layoutY="47.0" text="BH1(TTL/RS485) Function"/>
+        <ComboBox fx:id="BH1_Func"  layoutX="198.0" layoutY="43.0" prefHeight="21.0" prefWidth="158.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="TTL/RS485" />
-                    <String fx:value="CAN" />
-                    <String fx:value="12C" />
-                    <String fx:value="SPI" />
-                    <String fx:value="8Pin Input(HEX)" />
-                    <String fx:value="8Pin Input(BCD)" />
-                    <String fx:value="8Pin Input(Number)" />
-                    <String fx:value="8Pin Input(BIT BGSch)" />
+                    <String fx:value="TTL/RS485"/>
+                    <String fx:value="CAN"/>
+                    <String fx:value="12C"/>
+                    <String fx:value="SPI"/>
+                    <String fx:value="8Pin Input(HEX)"/>
+                    <String fx:value="8Pin Input(BCD)"/>
+                    <String fx:value="8Pin Input(Number)"/>
+                    <String fx:value="8Pin Input(BIT BGSch)"/>
                 </FXCollections>
             </items>
         </ComboBox>
 
-        <Label disable="true" layoutX="-1.0" layoutY="81.0" text="BH1(TTL/RS485) Baud Rate" />
-        <ComboBox fx:id="BH1_baud" disable="true" layoutX="198.0" layoutY="77.0" prefHeight="21.0" prefWidth="158.0">
+        <Label  layoutX="-1.0" layoutY="81.0" text="BH1(TTL/RS485) Baud Rate"/>
+        <ComboBox fx:id="BH1_baud"  layoutX="198.0" layoutY="77.0" prefHeight="21.0" prefWidth="158.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="9600" />
-                    <String fx:value="19200" />
-                    <String fx:value="38400" />
-                    <String fx:value="57600" />
-                    <String fx:value="115200" />
-                    <String fx:value="230400" />
-                    <String fx:value="460800" />
-                    <String fx:value="921600" />
+                    <String fx:value="9600"/>
+                    <String fx:value="19200"/>
+                    <String fx:value="38400"/>
+                    <String fx:value="57600"/>
+                    <String fx:value="115200"/>
+                    <String fx:value="230400"/>
+                    <String fx:value="460800"/>
+                    <String fx:value="921600"/>
                 </FXCollections>
             </items>
         </ComboBox>
 
 
-        <Label disable="true" layoutX="-1.0" layoutY="115.0" text="J2(RS232) Baud Rate" />
-        <ComboBox fx:id="J2_baud" disable="true" layoutX="198.0" layoutY="111.0" prefHeight="21.0" prefWidth="158.0">
+        <Label  layoutX="-1.0" layoutY="115.0" text="J2(RS232) Baud Rate"/>
+        <ComboBox fx:id="J2_baud"  layoutX="198.0" layoutY="111.0" prefHeight="21.0" prefWidth="158.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="9600" />
-                    <String fx:value="19200" />
-                    <String fx:value="38400" />
-                    <String fx:value="57600" />
-                    <String fx:value="115200" />
-                    <String fx:value="230400" />
-                    <String fx:value="460800" />
-                    <String fx:value="921600" />
+                    <String fx:value="9600"/>
+                    <String fx:value="19200"/>
+                    <String fx:value="38400"/>
+                    <String fx:value="57600"/>
+                    <String fx:value="115200"/>
+                    <String fx:value="230400"/>
+                    <String fx:value="460800"/>
+                    <String fx:value="921600"/>
                 </FXCollections>
             </items>
         </ComboBox>
-        <Label disable="true" layoutX="-1.0" layoutY="149.0" text="J3(TTL) Baud Rate" />
-        <ComboBox fx:id="J3_baud" disable="true" layoutX="198.0" layoutY="145.0" prefHeight="21.0" prefWidth="158.0">
+        <Label  layoutX="-1.0" layoutY="149.0" text="J3(TTL) Baud Rate"/>
+        <ComboBox fx:id="J3_baud"  layoutX="198.0" layoutY="145.0" prefHeight="21.0" prefWidth="158.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="9600" />
-                    <String fx:value="19200" />
-                    <String fx:value="38400" />
-                    <String fx:value="57600" />
-                    <String fx:value="115200" />
-                    <String fx:value="230400" />
-                    <String fx:value="460800" />
-                    <String fx:value="921600" />
+                    <String fx:value="9600"/>
+                    <String fx:value="19200"/>
+                    <String fx:value="38400"/>
+                    <String fx:value="57600"/>
+                    <String fx:value="115200"/>
+                    <String fx:value="230400"/>
+                    <String fx:value="460800"/>
+                    <String fx:value="921600"/>
                 </FXCollections>
             </items>
         </ComboBox>
-        <Label disable="true" layoutX="-1.0" layoutY="183.0" text="J4(4pin) Function" />
-        <ComboBox fx:id="J4_func" disable="true" layoutX="198.0" layoutY="179.0" prefWidth="158.0">
+        <Label  layoutX="-1.0" layoutY="183.0" text="J4(4pin) Function"/>
+        <ComboBox fx:id="J4_func"  layoutX="198.0" layoutY="179.0" prefWidth="158.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Relay Out" />
-                    <String fx:value="CDS" />
-                    <String fx:value="DHT22(ONLY NoLAN)" />
-                    <String fx:value="DS1302" />
-                    <String fx:value="SHT31(DB502)" />
-                    <String fx:value="2Port Input" />
-                    <String fx:value="Relay Out &amp; NoRTC" />
-                    <String fx:value="Relay 4Port" />
+                    <String fx:value="Relay Out"/>
+                    <String fx:value="CDS"/>
+                    <String fx:value="DHT22(ONLY NoLAN)"/>
+                    <String fx:value="DS1302"/>
+                    <String fx:value="SHT31(DB502)"/>
+                    <String fx:value="2Port Input"/>
+                    <String fx:value="Relay Out &amp; NoRTC"/>
+                    <String fx:value="Relay 4Port"/>
                 </FXCollections>
             </items>
         </ComboBox>
     </Pane>
-    <Label layoutX="13.0" layoutY="282.0" text="RS485 Address" />
-    <Label fx:id="rs_address" layoutX="213.0" layoutY="282.0" text="00" />
-
-    <Button layoutX="14.0" layoutY="320.0" mnemonicParsing="false" onMouseClicked="#openCommunicationSetting" prefHeight="31.0" prefWidth="124.0" styleClass="newWindow-button" text="%communicationSetting">
+    <Label layoutX="13.0" layoutY="225.0" text="RS485 Address"/>
+    <Label fx:id="rs_address" layoutX="213.0" layoutY="225.0" text="00"/>
+    <Button layoutX="14.0" layoutY="250.0" mnemonicParsing="false" onMouseClicked="#openCommunicationSetting"
+            prefHeight="31.0" prefWidth="85.0" styleClass="newWindow-button" text="%communicationSetting">
     </Button>
-    <Button layoutX="145.0" layoutY="320.0" mnemonicParsing="false" onMouseClicked="#Transfer" prefHeight="31.0" prefWidth="101.0" text="%sendButton" />
-    <Button layoutX="253.0" layoutY="320.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="31.0" prefWidth="101.0" text="%close" />
-    <ProgressIndicator fx:id="progressIndicator" layoutX="160.0" layoutY="150.0" visible="false" />
+    <Button layoutX="104.0" layoutY="250.0" mnemonicParsing="false" onMouseClicked="#readTransfer" prefHeight="31.0"
+            prefWidth="85.0" text="%read"/>
+    <Button layoutX="194.0" layoutY="250.0" mnemonicParsing="false" onMouseClicked="#setTransfer" prefHeight="31.0"
+            prefWidth="85.0" text="%sendButton"/>
+    <Button layoutX="284.0" layoutY="250.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="31.0"
+            prefWidth="85.0" text="%close"/>
+    <ProgressIndicator fx:id="progressIndicator" layoutX="160.0" layoutY="150.0" visible="false"/>
 </AnchorPane>
