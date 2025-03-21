@@ -484,9 +484,9 @@ public class HEXMessageController {
         charCodes.setValue(new ComboItem(configService.getProperty("charCode"+getMsgNum()), bundle.getString(configService.getProperty("charCode"+getMsgNum()))));
 
         fontSize.getItems().clear();
-        fontSize.getItems().add(new ComboItem("12", "12픽셀"));
-        fontSize.getItems().add(new ComboItem("14", "14픽셀"));
-        fontSize.getItems().add(new ComboItem("16", "16픽셀(기본)"));
+        fontSize.getItems().add(new ComboItem("12", "12"+bundle.getString("pixel")));
+        fontSize.getItems().add(new ComboItem("14", "14"+bundle.getString("pixel")));
+        fontSize.getItems().add(new ComboItem("16", "16"+bundle.getString("pixel")+bundle.getString("default")));
         for (int i = 1; i < 10; i++) {
             fontSize.getItems().add(new ComboItem(String.valueOf(4*(4+i)), 4*(4+i)+bundle.getString("pixel")));
         }
@@ -632,13 +632,14 @@ public class HEXMessageController {
         displayControl.setValue(new ComboItem(configService.getProperty("displayControl" + msgNum), bundle.getString(configService.getProperty("displayControl" + msgNum))));
         displayMethod.setValue(new ComboItem(configService.getProperty("displayMethod" + msgNum), bundle.getString(configService.getProperty("displayMethod" + msgNum))));
         charCodes.setValue(new ComboItem(configService.getProperty("charCode" + msgNum), bundle.getString(configService.getProperty("charCode" + msgNum))));
-        fontSize.setValue(new ComboItem(configService.getProperty("fontSize" + msgNum), configService.getProperty("fontSize" + msgNum)+bundle.getString("pixel")));
+        fontSize.setValue(new ComboItem(configService.getProperty("fontSize" + msgNum), configService.getProperty("fontSize" + msgNum) + bundle.getString("pixel") + ("16".equals(configService.getProperty("fontSize" + msgNum)) ? bundle.getString("default") : "")));
         fontGroup.setValue(new ComboItem(configService.getProperty("fontGroup" + msgNum), bundle.getString(configService.getProperty("fontGroup" + msgNum))));
         effectIn.setValue(new ComboItem(configService.getProperty("effectIn" + msgNum), bundle.getString(configService.getProperty("effectIn" + msgNum))));
         inDirection.setValue(new ComboItem(configService.getProperty("effectInDirection" + msgNum), bundle.getString(configService.getProperty("effectInDirection" + msgNum))));
         effectOut.setValue(new ComboItem(configService.getProperty("effectOut" + msgNum), bundle.getString(configService.getProperty("effectOut" + msgNum))));
         outDirection.setValue(new ComboItem(configService.getProperty("effectOutDirection" + msgNum), bundle.getString(configService.getProperty("effectOutDirection" + msgNum))));
         String speedKey = configService.getProperty("effectSpeed" + msgNum);
+
         String displayText;
         if (isNumeric(speedKey)) {
             displayText = speedKey;
@@ -1071,7 +1072,7 @@ public class HEXMessageController {
         configService.setProperty("displayControl" + msgNum, "On");
         configService.setProperty("displayMethod" + msgNum, "Clear");
         configService.setProperty("charCode" + msgNum, "CombinationType");
-        configService.setProperty("fontSize" + msgNum, "16(Standard)");
+        configService.setProperty("fontSize" + msgNum, "16");
         configService.setProperty("fontGroup" + msgNum, "fontGroup1");
         configService.setProperty("effectIn" + msgNum, "staticEffect");
         configService.setProperty("effectInDirection" + msgNum, "noDirection");
@@ -1188,7 +1189,8 @@ public class HEXMessageController {
             case "UTF8UNI" -> result += "03";
         }
 
-        if (value2.equals("16(Standard)")) {
+
+        if (value2.equals("16")) {
             result += "03";
         } else if (value2.equals("14")) {
             result += "01";

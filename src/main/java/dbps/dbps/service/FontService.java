@@ -80,6 +80,10 @@ public class FontService {
                 finalPacket[6] = (byte) groupNum;
                 int finalIdx = 7;
                 int[] groupPackets = new int[groupNum];
+                finalPacket[0] = 0x10;
+                finalPacket[1] = 0x02;
+                finalPacket[finalPacket.length-2] = 0x10;
+                finalPacket[finalPacket.length-1] = 0x03;
 
                 for (int i = 0; i < groupNum; i++) {
                     //몇번째 그룹인지 체크
@@ -109,10 +113,11 @@ public class FontService {
 
                                 Arrays.fill(fontData, 0, 16, (byte)0x00);
 
+
                                 fontData = Arrays.copyOf(fontData, fontData.length - 16);
                                 int fontSize = Integer.parseInt(width) * Integer.parseInt(height) / 8;
-                                if (fontType[3*i+j].contains("유니코드")){
-                                    if (fontType[3*i+j].contains("한국어")){
+                                if (fontType[3*i+j].contains("UNI")){
+                                    if (fontType[3*i+j].equals("UNI-KR")){
                                         int startUnicode = 0xAC00-33;
                                         int endUnicode = 0xD7A3;
 
@@ -121,7 +126,7 @@ public class FontService {
 
                                         // 유니코드 범위 내의 데이터만 복사
                                         fontData = Arrays.copyOfRange(fontData, startIndex, endIndex);
-                                    } else if (fontType[3 * i + j].contains("일본어")) {
+                                    } else if (fontType[3 * i + j].equals("UNI-JP")) {
                                         int startUnicode = 0x3040-33;  // U+3040의 유니코드 값
                                         int endUnicode = 0x30FF;    // U+30FF의 유니코드 값
 
@@ -130,7 +135,7 @@ public class FontService {
 
                                         // 유니코드 범위 내의 데이터만 복사
                                         fontData = Arrays.copyOfRange(fontData, startIndex, endIndex);
-                                    } else if (fontType[3 * i + j].contains("중국어")){
+                                    } else if (fontType[3 * i + j].equals("UNI-CN")){
                                         int startUnicode = 0x4E00-33;
                                         int endUnicode = 0x9FFF;
 
@@ -159,7 +164,7 @@ public class FontService {
 
                                         fontData = newFontData.array();
                                     }
-                                } else if (fontType[3*i+j].contains("영어")){
+                                } else if (fontType[3*i+j].equals("english")){
                                     int endUnicode = 0x7f;
 
                                     int startIndex = 0;
@@ -167,7 +172,7 @@ public class FontService {
 
                                     // 유니코드 범위 내의 데이터만 복사
                                     fontData = Arrays.copyOf(fontData, Math.min(fontData.length, endIndex));
-                                } else if (fontType[3*i+j].contains("사용자폰트")){
+                                } else if (fontType[3*i+j].equals("userFont")){
                                     int endUnicode = 0xe07f;
 
                                     int startIndex = 0;
@@ -201,24 +206,24 @@ public class FontService {
                                 else {
                                     tmp.clear();
                                     //사용안함, 영어, 유니코드 완성, 유니코드 일본어, 유니코드 중국어, 한글조합형, 사용자 폰트, 유니코드 전체
-                                    if (fontType[3*i+j].contains("영어")){
+                                    if (fontType[3*i+j].equals("english")){
                                         if (!now[0].contains("08")){
                                             tmp.putShort((short)0X0020);
                                         }
                                         else {
                                             tmp.putShort((short)fontKindAddr[0][1]);
                                         }
-                                    } else if (fontType[3*i+j].equals("유니코드 한국어")) {
+                                    } else if (fontType[3*i+j].equals("UNI-KR")) {
                                         tmp.putShort((short)fontKindAddr[0][2]);
-                                    } else if (fontType[3*i+j].equals("유니코드 일본어")) {
+                                    } else if (fontType[3*i+j].equals("UNI-JP")) {
                                         tmp.putShort((short)fontKindAddr[0][3]);
-                                    } else if (fontType[3*i+j].equals("유니코드 중국어")) {
+                                    } else if (fontType[3*i+j].equals("UNI-CN")) {
                                         tmp.putShort((short)fontKindAddr[0][4]);
-                                    } else if (fontType[3*i+j].equals("한글조합형")) {
+                                    } else if (fontType[3*i+j].equals("combination")) {
                                         tmp.putShort((short)fontKindAddr[0][5]);
-                                    } else if (fontType[3 * i + j].equals("사용자폰트")) {
+                                    } else if (fontType[3 * i + j].equals("userFont")) {
                                         tmp.putShort((short)fontKindAddr[0][6]);
-                                    } else if (fontType[3*i+j].equals("유니코드 전체")) {
+                                    } else if (fontType[3*i+j].equals("UNI-all")) {
                                         tmp.putShort((short)fontKindAddr[0][7]);
                                     } else{
                                         tmp.putShort((short)fontKindAddr[0][0]);
@@ -234,19 +239,19 @@ public class FontService {
                                 }
                                 else {
                                     tmp.clear();
-                                    if (fontType[3*i+j].equals("영어(ASCII)")){
+                                    if (fontType[3*i+j].equals("english")){
                                         tmp.putShort((short)fontKindAddr[1][1]);
-                                    } else if (fontType[3*i+j].equals("유니코드 한국어")) {
+                                    } else if (fontType[3*i+j].equals("UNI-KR")) {
                                         tmp.putShort((short)fontKindAddr[1][2]);
-                                    } else if (fontType[3*i+j].equals("유니코드 일본어")) {
+                                    } else if (fontType[3*i+j].equals("UNI-JP")) {
                                         tmp.putShort((short)fontKindAddr[1][3]);
-                                    } else if (fontType[3*i+j].equals("유니코드 중국어")) {
+                                    } else if (fontType[3*i+j].equals("UNI-CN")) {
                                         tmp.putShort((short)fontKindAddr[1][4]);
-                                    } else if (fontType[3*i+j].equals("한글조합형")) {
+                                    } else if (fontType[3*i+j].equals("combination")) {
                                         tmp.putShort((short)fontKindAddr[1][5]);
-                                    } else if (fontType[3 * i + j].equals("사용자폰트")) {
+                                    } else if (fontType[3 * i + j].equals("userFont")) {
                                         tmp.putShort((short)fontKindAddr[1][6]);
-                                    } else if (fontType[3*i+j].equals("유니코드 전체")) {
+                                    } else if (fontType[3*i+j].equals("UNI-all")) {
                                         tmp.putShort((short)fontKindAddr[1][7]);
                                     } else{
                                         tmp.putShort((short)fontKindAddr[1][0]);
@@ -277,6 +282,7 @@ public class FontService {
                     }
                     groupPackets[i] = (int) Math.ceil(fontPackets.size()/1024.0);
                     totalPackets+=groupPackets[i];
+                    System.out.println("totalPackets = " + totalPackets);
                     ByteBuffer buffer = ByteBuffer.allocate(4);
                     buffer.order(ByteOrder.LITTLE_ENDIAN);
                     buffer.putInt(groupPacketCnt*1024);
@@ -343,6 +349,13 @@ public class FontService {
 
                         if (isCancelled()){
                             logService.updateInfoLog(bundle.getString("transferCancel"));
+
+                            hexMsgTransceiver.sendByteMessagesNoLog(finalPacket);
+
+                            for (byte b : finalPacket) {
+                                System.out.printf("%02X ", b);
+                            }
+
                             msg = "10 02 00 00 02 45 01 10 03";
                             if (isRS){
                                 msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
@@ -392,11 +405,9 @@ public class FontService {
 
                 Thread.sleep(50);
 
-                //앞뒤로 붙이는거 추가
-                finalPacket[0] = 0x10;
-                finalPacket[1] = 0x02;
-                finalPacket[finalPacket.length-2] = 0x10;
-                finalPacket[finalPacket.length-1] = 0x03;
+                for (byte b : finalPacket) {
+                    System.out.printf("%02X ", b);
+                }
 
                 hexMsgTransceiver.sendByteMessagesNoLog(finalPacket);
 

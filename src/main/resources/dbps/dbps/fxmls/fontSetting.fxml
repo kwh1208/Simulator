@@ -13,7 +13,7 @@
 <AnchorPane fx:id="fontSettingAnchorPane" prefHeight="668.0" prefWidth="450.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.FontSettingController">
     <Pane layoutX="15.0" layoutY="14.0" prefHeight="136.0" prefWidth="420.0" style="-fx-border-color: black;">
         <CheckBox fx:id="fontGroup1ChkBox" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="112.0" selected="true" style="-fx-background-color: #333333;" text="%fontGroup1" />
-        <ComboBox fx:id="fontGroup1fontSelected1" disable="true" layoutX="14.0" layoutY="17.0" prefHeight="21.0" prefWidth="150.0" value="%english">
+        <ComboBox fx:id="fontGroup1fontSelected1" disable="true" layoutX="14.0" layoutY="17.0" prefHeight="21.0" prefWidth="150.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
@@ -21,7 +21,7 @@
         </ComboBox>
         <TextArea fx:id="fontGroup1fontPath1" layoutX="175.0" layoutY="18.0" maxHeight="10.0" prefWidth="200.0" />
         <Button layoutX="377.0" layoutY="16.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="15.0" text="Button" userData="fontGroup1fontPath1" />
-        <ComboBox fx:id="fontGroup1fontSelected2" layoutX="14.0" layoutY="53.0" prefWidth="150.0" value="%CombinationType">
+        <ComboBox fx:id="fontGroup1fontSelected2" layoutX="14.0" layoutY="53.0" prefWidth="150.0" >
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
@@ -49,7 +49,7 @@
         </ComboBox>
         <TextArea fx:id="fontGroup2fontPath1" layoutX="175.0" layoutY="18.0" maxHeight="10.0" prefWidth="200.0" />
         <Button layoutX="377.0" layoutY="16.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="15.0" text="Button" userData="fontGroup2fontPath1" />
-        <ComboBox fx:id="fontGroup2fontSelected2" layoutX="14.0" layoutY="53.0" prefWidth="150.0" value="%CombinationType">
+        <ComboBox fx:id="fontGroup2fontSelected2" layoutX="14.0" layoutY="53.0" prefWidth="150.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>

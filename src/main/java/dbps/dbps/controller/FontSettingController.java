@@ -23,7 +23,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
-import static dbps.dbps.Constants.OPEN_PORT_NAME;
+import static dbps.dbps.Constants.*;
+import static dbps.dbps.Constants.hexStringToByteArray;
 
 public class FontSettingController {
     public Label fontProgressLabel;
@@ -263,6 +264,7 @@ public class FontSettingController {
         moveCursorRight(fontGroup4fontPath1);
         moveCursorRight(fontGroup4fontPath2);
         moveCursorRight(fontGroup4fontPath3);
+        fontGroup1fontSelected1.setValue(new ComboItem("english", bundle.getString("english")));
 
         fontGroup1fontSelected2.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             configService.setProperty("fontGroup1FontType2", newValue.key());
@@ -455,7 +457,7 @@ public class FontSettingController {
         );
 
         fontGroup1fontSelected2.getItems().addAll(
-                new ComboItem("CombinationType", bundle.getString("combination")),
+                new ComboItem("combination", bundle.getString("combination")),
                 new ComboItem("UNI-KR", bundle.getString("UNI-KR")),
                 new ComboItem("UNI-JP", bundle.getString("UNI-JP")),
                 new ComboItem("UNI-CN", bundle.getString("UNI-CN")),
@@ -474,7 +476,7 @@ public class FontSettingController {
         );
 
         fontGroup2fontSelected2.getItems().addAll(
-                new ComboItem("CombinationType", bundle.getString("combination")),
+                new ComboItem("combination", bundle.getString("combination")),
                 new ComboItem("UNI-KR", bundle.getString("UNI-KR")),
                 new ComboItem("UNI-JP", bundle.getString("UNI-JP")),
                 new ComboItem("UNI-CN", bundle.getString("UNI-CN")),
@@ -493,7 +495,7 @@ public class FontSettingController {
         );
 
         fontGroup3fontSelected2.getItems().addAll(
-                new ComboItem("CombinationType", bundle.getString("combination")),
+                new ComboItem("combination", bundle.getString("combination")),
                 new ComboItem("UNI-KR", bundle.getString("UNI-KR")),
                 new ComboItem("UNI-JP", bundle.getString("UNI-JP")),
                 new ComboItem("UNI-CN", bundle.getString("UNI-CN")),
@@ -512,7 +514,7 @@ public class FontSettingController {
         );
 
         fontGroup4fontSelected2.getItems().addAll(
-                new ComboItem("CombinationType", bundle.getString("combination")),
+                new ComboItem("combination", bundle.getString("combination")),
                 new ComboItem("UNI-KR", bundle.getString("UNI-KR")),
                 new ComboItem("UNI-JP", bundle.getString("UNI-JP")),
                 new ComboItem("UNI-CN", bundle.getString("UNI-CN")),
@@ -582,8 +584,11 @@ public class FontSettingController {
         Stage stage = (Stage) fontGroup1ChkBox.getScene().getWindow();
         File selectedFont = fileChooser.showOpenDialog(stage);
 
+        if (!selectedFont.exists()) {
+            System.out.println(2222222);
+        }
         // 선택된 폰트 경로를 TextArea에 설정
-        if (selectedFont != null) {
+        else {
             fontPath.setText(selectedFont.getAbsolutePath());
             String target = (String) clickedBtn.getUserData();
             configService.setProperty(target, selectedFont.getAbsolutePath());
@@ -630,7 +635,7 @@ public class FontSettingController {
         }
         fontGroup1Path[0] = fontGroup1fontPath1.getText();
         configService.setProperty("fontGroup1FontPath1", Paths.get(fontGroup1Path[0]).getFileName().toString());
-        fontType[0] = "영어";
+        fontType[0] = fontGroup1fontSelected1.getValue().key();
 
         if (chkFont(fontGroup1fontPath2.getText(), fontGroup1fontSelected2.getValue().displayText())) {
             logService.warningLog(bundle.getString("fontGroup1")+bundle.getString("fontMismatch"));
@@ -638,7 +643,7 @@ public class FontSettingController {
         }
         if (!fontGroup1fontSelected2.getValue().displayText().equals(bundle.getString("notUsed"))) {
             fontGroup1Path[1] = fontGroup1fontPath2.getText();
-            fontType[1] = fontGroup1fontSelected2.getValue().displayText();
+            fontType[1] = fontGroup1fontSelected2.getValue().key();
             configService.setProperty("fontGroup1FontPath2", Paths.get(fontGroup1Path[1]).getFileName().toString());
         }
 
@@ -648,7 +653,7 @@ public class FontSettingController {
         }
         if (!fontGroup1fontSelected3.getValue().displayText().equals(bundle.getString("notUsed"))) {
             fontGroup1Path[2] = fontGroup1fontPath3.getText();
-            fontType[2] = fontGroup1fontSelected3.getValue().displayText();
+            fontType[2] = fontGroup1fontSelected3.getValue().key();
             configService.setProperty("fontGroup1FontPath3", Paths.get(fontGroup1Path[2]).getFileName().toString());
         }
 
@@ -662,7 +667,7 @@ public class FontSettingController {
             }
             if (!fontGroup2fontSelected1.getValue().displayText().equals(bundle.getString("notUsed"))) {
                 fontGroup2Path[0] = fontGroup2fontPath1.getText();
-                fontType[3] = fontGroup2fontSelected1.getValue().displayText();
+                fontType[3] = fontGroup2fontSelected1.getValue().key();
                 configService.setProperty("fontGroup2FontPath1", Paths.get(fontGroup2Path[0]).getFileName().toString());
             }
 
@@ -672,7 +677,7 @@ public class FontSettingController {
             }
             if (!fontGroup2fontSelected2.getValue().displayText().equals(bundle.getString("notUsed"))) {
                 fontGroup2Path[1] = fontGroup2fontPath2.getText();
-                fontType[4] = fontGroup2fontSelected2.getValue().displayText();
+                fontType[4] = fontGroup2fontSelected2.getValue().key();
                 configService.setProperty("fontGroup2FontPath2", Paths.get(fontGroup2Path[1]).getFileName().toString());
             }
 
@@ -682,7 +687,7 @@ public class FontSettingController {
             }
             if (!fontGroup2fontSelected3.getValue().displayText().equals(bundle.getString("notUsed"))) {
                 fontGroup2Path[2] = fontGroup2fontPath3.getText();
-                fontType[5] = fontGroup2fontSelected3.getValue().displayText();
+                fontType[5] = fontGroup2fontSelected3.getValue().key();
                 configService.setProperty("fontGroup2FontPath3", Paths.get(fontGroup2Path[2]).getFileName().toString());
             }
         }
@@ -697,7 +702,7 @@ public class FontSettingController {
             }
             if (!fontGroup3fontSelected1.getValue().displayText().equals(bundle.getString("notUsed"))) {
                 fontGroup3Path[0] = fontGroup3fontPath1.getText();
-                fontType[6] = fontGroup3fontSelected1.getValue().displayText();
+                fontType[6] = fontGroup3fontSelected1.getValue().key();
                 configService.setProperty("fontGroup3FontPath1", Paths.get(fontGroup3Path[0]).getFileName().toString());
             }
 
@@ -707,7 +712,7 @@ public class FontSettingController {
             }
             if (!fontGroup3fontSelected2.getValue().displayText().equals(bundle.getString("notUsed"))) {
                 fontGroup3Path[1] = fontGroup3fontPath2.getText();
-                fontType[7] = fontGroup3fontSelected2.getValue().displayText();
+                fontType[7] = fontGroup3fontSelected2.getValue().key();
                 configService.setProperty("fontGroup3FontPath2", Paths.get(fontGroup3Path[1]).getFileName().toString());
             }
 
@@ -717,7 +722,7 @@ public class FontSettingController {
             }
             if (!fontGroup3fontSelected3.getValue().displayText().equals(bundle.getString("notUsed"))) {
                 fontGroup3Path[2] = fontGroup3fontPath3.getText();
-                fontType[8] = fontGroup3fontSelected3.getValue().displayText();
+                fontType[8] = fontGroup3fontSelected3.getValue().key();
                 configService.setProperty("fontGroup3FontPath3", Paths.get(fontGroup3Path[2]).getFileName().toString());
             }
         }
@@ -732,7 +737,7 @@ public class FontSettingController {
             }
             if (!fontGroup4fontSelected1.getValue().displayText().equals(bundle.getString("notUsed"))) {
                 fontGroup4Path[0] = fontGroup4fontPath1.getText();
-                fontType[9] = fontGroup4fontSelected1.getValue().displayText();
+                fontType[9] = fontGroup4fontSelected1.getValue().key();
                 configService.setProperty("fontGroup4FontPath1", Paths.get(fontGroup4Path[0]).getFileName().toString());
             }
 
@@ -742,7 +747,7 @@ public class FontSettingController {
             }
             if (!fontGroup4fontSelected2.getValue().displayText().equals(bundle.getString("notUsed"))) {
                 fontGroup4Path[1] = fontGroup4fontPath2.getText();
-                fontType[10] = fontGroup4fontSelected2.getValue().displayText();
+                fontType[10] = fontGroup4fontSelected2.getValue().key();
                 configService.setProperty("fontGroup4FontPath2", Paths.get(fontGroup4Path[1]).getFileName().toString());
             }
 
@@ -752,7 +757,7 @@ public class FontSettingController {
             }
             if (!fontGroup4fontSelected3.getValue().displayText().equals(bundle.getString("notUsed"))) {
                 fontGroup4Path[2] = fontGroup4fontPath3.getText();
-                fontType[11] = fontGroup4fontSelected3.getValue().displayText();
+                fontType[11] = fontGroup4fontSelected3.getValue().key();
                 configService.setProperty("fontGroup4FontPath3", Paths.get(fontGroup4Path[2]).getFileName().toString());
             }
         }
@@ -808,9 +813,19 @@ public class FontSettingController {
 
     // ✅ 일정 시간이 지나면 진행 상태 창 닫기
     private void closeWindowAfterDelay(Stage stage) {
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        String msg = "10 02 00 00 02 45 01 10 03";
+        if (isRS){
+            msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
+        }
+        hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
         new Thread(() -> {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(300);
                 Platform.runLater(stage::close);
             } catch (InterruptedException ignored) {
             }
