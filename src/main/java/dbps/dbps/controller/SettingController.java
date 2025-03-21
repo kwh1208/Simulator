@@ -4,6 +4,7 @@ package dbps.dbps.controller;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import dbps.dbps.service.connectManager.MQTTManager;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -16,6 +17,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -110,6 +112,34 @@ public class SettingController {
 
 
     public void sendDisplayBright() {
+        if (ROAD){
+            long msgId = System.currentTimeMillis();
+
+            JSONObject moid = new JSONObject();
+            String tmp = "";
+            switch (displayBright.getValue()){
+                case "100%(기본)": tmp = "99"; break;
+                case "75%": tmp = "75"; break;
+                case "50%": tmp = "50"; break;
+                case "25%": tmp = "25"; break;
+                case "5%": tmp = "5"; break;
+            }
+
+            moid.put("2.RTE058.3.2", tmp);
+
+            JSONObject setRequest = new JSONObject();
+            setRequest.put("MSG_TYPE", "SET");
+            setRequest.put("MSG_VER", 20241028);
+            setRequest.put("MSG_ID", msgId);
+            setRequest.put("MOID", moid);
+
+            Task<String> stringTask = mqttManager.sendRoadMsg(setRequest.toString());
+
+            new Thread(stringTask).start();
+
+            return;
+        }
+
         if (IS_ASCII){
             String msg = "![0050";
             if (isRS){

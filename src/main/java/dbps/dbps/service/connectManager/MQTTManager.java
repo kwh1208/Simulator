@@ -169,6 +169,31 @@ public class MQTTManager {
         };
     }
 
+    public Task<String> sendRoadMsg(String payload) {
+        return new Task<>() {
+            @Override
+            protected String call() {
+                chkConnect();
+                System.out.println(1111);
+                try {
+                    client.publishWith()
+                            .topic("igw/tsc/dev")
+                            .payload(payload.getBytes(Charset.forName("MS949")))
+                            .qos(MqttQos.AT_MOST_ONCE)
+                            .send();
+                    logService.updateInfoLog("전송 메세지 (Road): " + payload);
+
+                    String result = receivedRoadMsg();
+                    logService.updateInfoLog("받은 메세지 (Road): " + result);
+                    return result;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "Error: " + e.getMessage();
+                }
+            }
+        };
+    }
+
     public Task<String> sendByteMsg(byte[] payload) {
         return new Task<>() {
             @Override
@@ -237,6 +262,28 @@ public class MQTTManager {
             // 구독 요청: receiveTopic에 대해 구독을 요청합니다.
             client.subscribeWith()
                     .topicFilter(receiveTopic)
+                    .send();
+
+            Optional<Mqtt5Publish> optionalPublish = client.publishes(MqttGlobalPublishFilter.SUBSCRIBED)
+                    .receive(5, TimeUnit.SECONDS);
+            if (optionalPublish.isEmpty()) {
+                return "Error: Timeout waiting for response";
+            }
+            Mqtt5Publish publish = optionalPublish.get();
+            return new String(publish.getPayloadAsBytes(), StandardCharsets.UTF_8);
+        } catch (InterruptedException e) {
+            return "Error: " + e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error: " + e.getMessage();
+        }
+    }
+
+    private String receivedRoadMsg() {
+        try {
+            // 구독 요청: receiveTopic에 대해 구독을 요청합니다.
+            client.subscribeWith()
+                    .topicFilter("feedback.20")
                     .send();
 
             Optional<Mqtt5Publish> optionalPublish = client.publishes(MqttGlobalPublishFilter.SUBSCRIBED)

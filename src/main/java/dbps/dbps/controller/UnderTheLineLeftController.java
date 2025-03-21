@@ -8,9 +8,11 @@ import dbps.dbps.service.UnderTheLineLeftService;
 import dbps.dbps.service.connectManager.MQTTManager;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.TCPManager;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -75,6 +77,25 @@ public class UnderTheLineLeftController {
 
     @FXML
     public void sendDisplayOn() {
+        if (ROAD){
+            long msgId = System.currentTimeMillis();
+
+            JSONObject moid = new JSONObject();
+            moid.put("2.RTE058.3.4", 1);
+
+            JSONObject setRequest = new JSONObject();
+            setRequest.put("MSG_TYPE", "SET");
+            setRequest.put("MSG_VER", 20241028);
+            setRequest.put("MSG_ID", msgId);
+            setRequest.put("MOID", moid);
+
+            Task<String> stringTask = mqttManager.sendRoadMsg(setRequest.toString());
+
+            new Thread(stringTask).start();
+
+            return;
+        }
+
         if (IS_ASCII) {
             String msg = "![00211!]";
             if (isRS) {
@@ -92,6 +113,25 @@ public class UnderTheLineLeftController {
 
     @FXML
     public void sendDisplayOff() {
+        if (ROAD){
+            long msgId = System.currentTimeMillis();
+
+            JSONObject moid = new JSONObject();
+            moid.put("2.RTE058.3.4", 0);
+
+            JSONObject setRequest = new JSONObject();
+            setRequest.put("MSG_TYPE", "SET");
+            setRequest.put("MSG_VER", 20241028);
+            setRequest.put("MSG_ID", msgId);
+            setRequest.put("MOID", moid);
+
+            Task<String> stringTask = mqttManager.sendRoadMsg(setRequest.toString());
+
+            new Thread(stringTask).start();
+
+            return;
+        }
+
         if (IS_ASCII) {
             String msg = "![00210!]";
             if (isRS) {
@@ -127,7 +167,27 @@ public class UnderTheLineLeftController {
         hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
     }
 
-    public void synchronizeTime() throws JsonProcessingException {
+    public void synchronizeTime() {
+        if (ROAD){
+            long currentTime = System.currentTimeMillis();
+            long msgId = currentTime; // 메시지 ID로도 사용 (유니크)
+
+            JSONObject moid = new JSONObject();
+            moid.put("2.RTE058.3.1", currentTime);
+
+            JSONObject setRequest = new JSONObject();
+            setRequest.put("MSG_TYPE", "SET");
+            setRequest.put("MSG_VER", 20241028);
+            setRequest.put("MSG_ID", msgId);
+            setRequest.put("MOID", moid);
+
+            Task<String> stringTask = mqttManager.sendRoadMsg(setRequest.toString());
+
+            new Thread(stringTask).start();
+
+            return;
+        }
+
         if (IS_ASCII) {
             String msg = "![0030";
             if (isRS) {

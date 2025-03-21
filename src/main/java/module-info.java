@@ -10,6 +10,7 @@ module DBPS.main {
     requires static lombok;
     requires org.fxmisc.richtext;
     requires com.hivemq.client.mqtt;
+    requires org.json;
 
     // ✅ 명시적으로 패키지 exports
     exports dbps.dbps;

@@ -6,11 +6,13 @@ import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.SizeOfDisplayBoardService;
 import dbps.dbps.service.connectManager.MQTTManager;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.Pane;
+import org.json.JSONObject;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -83,6 +85,37 @@ public class SizeOfDisplayBoardController {
 
 
     public void sendDisplaySize() throws ExecutionException, InterruptedException, JsonProcessingException {
+        if (ROAD){
+            long msgId = System.currentTimeMillis();
+            int arrangement = 0;
+             switch (howToArray.getValue()){
+                case "가로형(default)": arrangement = 0; break;
+                case "1줄 세로형": arrangement = 1; break;
+                case "2줄 세로형": arrangement = 2; break;
+                case "가로형 양면": arrangement = 3; break;
+                case "1줄 세로형 양면": arrangement = 4; break;
+                case "2줄 가로형": arrangement = 5; break;
+            }
+
+            // 설정 정보 배열 생성
+            int[] displayConfig = { spinnerForColumn.getValue(), spinnerForRow.getValue(), 0, arrangement };
+
+            JSONObject moid = new JSONObject();
+            moid.put("2.RTE058.3.3", displayConfig);
+
+            JSONObject setRequest = new JSONObject();
+            setRequest.put("MSG_TYPE", "SET");
+            setRequest.put("MSG_VER", 20241028);
+            setRequest.put("MSG_ID", msgId);
+            setRequest.put("MOID", moid);
+
+            Task<String> stringTask = mqttManager.sendRoadMsg(setRequest.toString());
+
+            new Thread(stringTask).start();
+
+            return;
+        }
+
         if (IS_ASCII){
             displaySizeASC();
         }

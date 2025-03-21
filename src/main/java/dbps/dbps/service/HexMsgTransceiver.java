@@ -12,8 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static dbps.dbps.Constants.CONNECT_TYPE;
-import static dbps.dbps.Constants.hexStringToByteArray;
+import static dbps.dbps.Constants.*;
 import static dbps.dbps.controller.FontNameController.getFontName;
 
 public class HexMsgTransceiver {

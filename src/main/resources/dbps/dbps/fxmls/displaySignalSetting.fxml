@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.collections.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="displaySignalAP" prefHeight="479.0" prefWidth="550.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplaySignalSettingController">
+<AnchorPane fx:id="displaySignalAP" prefHeight="479.0" prefWidth="550.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplaySignalSettingController">
    <children>
        <Label layoutX="29.0" layoutY="10.0" text="%displaySignal" />
        <Label layoutX="272.0" layoutY="11.0" text="%memo" />
@@ -18,15 +25,15 @@
                     <String fx:value="16D-P16D1S21" />
                     <String fx:value="16D-P16D1S31" />
                     <String fx:value="16D-P16D1S41" />
-                    <String fx:value="08D-P16D2S10-1^9"/>
-                    <String fx:value="08D-P16D2S11-1^9"/>
+                    <String fx:value="08D-P16D2S10-1^9" />
+                    <String fx:value="08D-P16D2S11-1^9" />
                     <String fx:value="08D-P16D2S21" />
                     <String fx:value="08D-P16D2S23-1^2" />
-                    <String fx:value="08D-P16D2S31-9^1"/>
+                    <String fx:value="08D-P16D2S31-9^1" />
                     <String fx:value="08D-P16D2S81" />
                     <String fx:value="08D-P32D1S11" />
                     <String fx:value="08D-P32D1S12" />
-                    <String fx:value="08D-P32D1S22-9&lt;1"/>
+                    <String fx:value="08D-P32D1S22-9&lt;1" />
                     <String fx:value="08D-P32D1S31" />
                     <String fx:value="08D-P32D1S32" />
                     <String fx:value="08D-P64D1S21" />
@@ -39,9 +46,9 @@
                     <String fx:value="08D-P128D1S51" />
                     <String fx:value="04D-P16D4S11-1^5^9^13" />
                     <String fx:value="04D-P16D4S21-1^5^9^13" />
-                    <String fx:value="04D-P32D2S11"/>
-                    <String fx:value="04D-P32D2S21"/>
-                    <String fx:value="04D-P32D2S31-2&lt;1^4&lt;3"/>
+                    <String fx:value="04D-P32D2S11" />
+                    <String fx:value="04D-P32D2S21" />
+                    <String fx:value="04D-P32D2S31-2&lt;1^4&lt;3" />
                     <String fx:value="04D-P32D2S41" />
                     <String fx:value="04D-P32D2S51" />
                     <String fx:value="04D-P32D2S61" />
@@ -101,6 +108,6 @@
            </children>
        </Pane>
        <Button layoutX="456.0" layoutY="419.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="28.0" prefWidth="64.0" text="%close" />
-       <ProgressIndicator fx:id="progressIndicator" layoutX="250.0" layoutY="150.0" visible="false"/>
+       <ProgressIndicator fx:id="progressIndicator" layoutX="250.0" layoutY="150.0" visible="false" />
    </children>
 </AnchorPane>

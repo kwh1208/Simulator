@@ -49,6 +49,7 @@ public class CommunicationSettingController {
     public Button testConnectBtn;
     public Label responseTimeLabel;
     public Button closeBtn;
+    public CheckBox road;
     SerialPortManager serialPortManager;
     TCPManager tcpManager;
 
@@ -158,6 +159,11 @@ public class CommunicationSettingController {
         configService = ConfigService.getInstance();
         serverTCPManager = ServerTCPManager.getInstance();
         logService = LogService.getLogService();
+
+        road.selectedProperty().addListener((o, old, newValue)->{
+            ROAD = newValue;
+        });
+
 
         //토글버튼 그룹화
         communicationGroup = new ToggleGroup();
@@ -325,7 +331,7 @@ public class CommunicationSettingController {
         clientIPPort.setText(configService.getProperty("clientTCPPort"));
 
         communicationSettingAP.addEventHandler(KeyEvent.KEY_PRESSED, event ->{
-            if (event.isAltDown() && event.getCode() == KeyCode.F10) {
+            if (event.isAltDown() && event.getCode() == KeyCode.M) {
                 toggleMqtt();
             }
         });

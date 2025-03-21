@@ -5,9 +5,13 @@ import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.connectManager.MQTTManager;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.Pane;
+import org.json.JSONObject;
+
+import java.awt.*;
 
 import static dbps.dbps.Constants.*;
 import static dbps.dbps.service.SettingService.commonProgressIndicator;
@@ -46,7 +50,28 @@ public class MessageSettingController {
         });
     }
 
-    public void sendMsgInitialize() throws JsonProcessingException {
+    public void sendMsgInitialize() {
+        if (ROAD){
+            long msgId = System.currentTimeMillis();
+
+            JSONObject moid = new JSONObject();
+            moid.put("2.RTE058.3.5", Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", "")));
+            moid.put("2.RTE058.3.6", 1);
+
+            JSONObject setRequest = new JSONObject();
+            setRequest.put("MSG_TYPE", "SET");
+            setRequest.put("MSG_VER", 20241028);
+            setRequest.put("MSG_ID", msgId);
+            setRequest.put("MOID", moid);
+
+            Task<String> stringTask = mqttManager.sendRoadMsg(setRequest.toString());
+
+            new Thread(stringTask).start();
+
+            return;
+        }
+
+
         if (IS_ASCII){
             String msg = "![0061";
             if (isRS){
@@ -80,6 +105,26 @@ public class MessageSettingController {
     }
 
     public void sendPageCnt() {
+       if (ROAD){
+           long msgId = System.currentTimeMillis();
+
+           JSONObject moid = new JSONObject();
+           moid.put("2.RTE058.3.5", Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", "")));
+           moid.put("2.RTE058.3.6", 0);
+
+           JSONObject setRequest = new JSONObject();
+           setRequest.put("MSG_TYPE", "SET");
+           setRequest.put("MSG_VER", 20241028);
+           setRequest.put("MSG_ID", msgId);
+           setRequest.put("MOID", moid);
+
+           Task<String> stringTask = mqttManager.sendRoadMsg(setRequest.toString());
+
+           new Thread(stringTask).start();
+
+           return;
+       }
+
         if (IS_ASCII){ //아스키 코드라면
 //            ![006003!]
             String msg = "![0060";

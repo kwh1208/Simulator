@@ -60,6 +60,8 @@ dependencies {
     // jSerialComm
     implementation 'com.fazecast:jSerialComm:2.11.0'
 
+    implementation 'org.json:json:20250107'
+
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
