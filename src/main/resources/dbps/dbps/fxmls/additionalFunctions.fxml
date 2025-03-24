@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.collections.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="additionalFunctionAp" prefHeight="440.0" prefWidth="400.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdditionalFunctionsController">
+<AnchorPane fx:id="additionalFunctionAp" prefHeight="440.0" prefWidth="400.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdditionalFunctionsController">
     <Pane layoutX="22.0" layoutY="138.0" prefHeight="62.0" prefWidth="367.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10" />
     <Label layoutX="28.0" layoutY="40.0" text="%displayRateSetting" />
     <ComboBox fx:id="displaySpeed" layoutX="175.0" layoutY="35.0" prefHeight="28.0" prefWidth="113.0" value="사용안함">
