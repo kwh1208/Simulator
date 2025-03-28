@@ -304,6 +304,21 @@ public class CommunicationSettingController {
 
         clientIPAddress.setText(configService.getProperty("clientTCPAddr"));
         clientIPPort.setText(configService.getProperty("clientTCPPort"));
+
+        pingTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                // 포커스가 들어왔을 때: 테두리 주황색
+                pingTextField.setStyle(
+                        "-fx-background-color: black; " +
+                                "-fx-text-fill: white; " +
+                                "-fx-border-color: orange; " +
+                                "-fx-border-width: 1px;"
+                );
+            } else {
+                // 포커스가 나갔을 때: 원래 스타일로 복원
+                pingTextField.setStyle("-fx-background-color: black; -fx-text-fill: white;");
+            }
+        });
     }
 
     //사용가능한 포트 가져오기
