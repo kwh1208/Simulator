@@ -39,41 +39,9 @@
         </ComboBox>
         <CheckBox fx:id="RS485ChkBox" layoutX="14.0" layoutY="91.0" mnemonicParsing="false" text="RS-485 Address"/>
         <ComboBox fx:id="RS485ComboBox" layoutX="255.0" layoutY="90.0" prefHeight="21.0" prefWidth="99.0"
-                  value="Dabit 00" visible="false">
+                  visible="false">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Dabit 00"/>
-                    <String fx:value="Dabit 01"/>
-                    <String fx:value="Dabit 02"/>
-                    <String fx:value="Dabit 03"/>
-                    <String fx:value="Dabit 04"/>
-                    <String fx:value="Dabit 05"/>
-                    <String fx:value="Dabit 06"/>
-                    <String fx:value="Dabit 07"/>
-                    <String fx:value="Dabit 08"/>
-                    <String fx:value="Dabit 09"/>
-                    <String fx:value="Dabit 10"/>
-                    <String fx:value="Dabit 11"/>
-                    <String fx:value="Dabit 12"/>
-                    <String fx:value="Dabit 13"/>
-                    <String fx:value="Dabit 14"/>
-                    <String fx:value="Dabit 15"/>
-                    <String fx:value="Dabit 16"/>
-                    <String fx:value="Dabit 17"/>
-                    <String fx:value="Dabit 18"/>
-                    <String fx:value="Dabit 19"/>
-                    <String fx:value="Dabit 20"/>
-                    <String fx:value="Dabit 21"/>
-                    <String fx:value="Dabit 22"/>
-                    <String fx:value="Dabit 23"/>
-                    <String fx:value="Dabit 24"/>
-                    <String fx:value="Dabit 25"/>
-                    <String fx:value="Dabit 26"/>
-                    <String fx:value="Dabit 27"/>
-                    <String fx:value="Dabit 28"/>
-                    <String fx:value="Dabit 29"/>
-                    <String fx:value="Dabit 30"/>
-                    <String fx:value="Dabit 31"/>
                 </FXCollections>
             </items>
         </ComboBox>

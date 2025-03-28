@@ -116,7 +116,7 @@
     <Button layoutX="104.0" layoutY="250.0" mnemonicParsing="false" onMouseClicked="#readTransfer" prefHeight="31.0"
             prefWidth="85.0" text="%read"/>
     <Button layoutX="194.0" layoutY="250.0" mnemonicParsing="false" onMouseClicked="#setTransfer" prefHeight="31.0"
-            prefWidth="85.0" text="%sendButton"/>
+            prefWidth="85.0" text="%set"/>
     <Button layoutX="284.0" layoutY="250.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="31.0"
             prefWidth="85.0" text="%close"/>
     <ProgressIndicator fx:id="progressIndicator" layoutX="160.0" layoutY="150.0" visible="false"/>

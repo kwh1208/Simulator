@@ -181,9 +181,7 @@ public class AdditionalFunctionsController {
         asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
-    public void fontName(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/fontName.fxml", "폰트 이름 설정", mouseEvent);
-    }
+
 
     public void sendFontWeight() {
         String sendMsg = "![0056 ";

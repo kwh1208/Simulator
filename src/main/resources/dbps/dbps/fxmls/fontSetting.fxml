@@ -13,7 +13,7 @@
 <AnchorPane fx:id="fontSettingAnchorPane" prefHeight="668.0" prefWidth="450.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.FontSettingController">
     <Pane layoutX="15.0" layoutY="14.0" prefHeight="136.0" prefWidth="420.0" style="-fx-border-color: black;">
         <CheckBox fx:id="fontGroup1ChkBox" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="112.0" selected="true" style="-fx-background-color: #333333;" text="%fontGroup1" />
-        <ComboBox fx:id="fontGroup1fontSelected1" disable="true" layoutX="14.0" layoutY="17.0" prefHeight="21.0" prefWidth="150.0" value="%english">
+        <ComboBox fx:id="fontGroup1fontSelected1" disable="true" layoutX="14.0" layoutY="17.0" prefHeight="21.0" prefWidth="150.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
@@ -21,7 +21,7 @@
         </ComboBox>
         <TextArea fx:id="fontGroup1fontPath1" layoutX="175.0" layoutY="18.0" maxHeight="10.0" prefWidth="200.0" />
         <Button layoutX="377.0" layoutY="16.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="15.0" text="Button" userData="fontGroup1fontPath1" />
-        <ComboBox fx:id="fontGroup1fontSelected2" layoutX="14.0" layoutY="53.0" prefWidth="150.0" value="%CombinationType">
+        <ComboBox fx:id="fontGroup1fontSelected2" layoutX="14.0" layoutY="53.0" prefWidth="150.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
@@ -49,7 +49,7 @@
         </ComboBox>
         <TextArea fx:id="fontGroup2fontPath1" layoutX="175.0" layoutY="18.0" maxHeight="10.0" prefWidth="200.0" />
         <Button layoutX="377.0" layoutY="16.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="15.0" text="Button" userData="fontGroup2fontPath1" />
-        <ComboBox fx:id="fontGroup2fontSelected2" layoutX="14.0" layoutY="53.0" prefWidth="150.0" value="%CombinationType">
+        <ComboBox fx:id="fontGroup2fontSelected2" layoutX="14.0" layoutY="53.0" prefWidth="150.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                 </FXCollections>
@@ -123,11 +123,15 @@
         <Button disable="true" layoutX="377.0" layoutY="86.0" mnemonicParsing="false" onAction="#groupFindFont" prefHeight="21.0" prefWidth="0.0" text="Button" userData="fontGroup4fontPath3" />
     </Pane>
 
-    <Label layoutX="16.0" layoutY="605.0" prefHeight="13.0" prefWidth="161.0" text="%fontFileSize" />
+    <Label layoutX="27.0" layoutY="605.0" prefHeight="13.0" prefWidth="161.0" text="%fontFileSize" />
+    <Label fx:id="fontCapacity" layoutX="112.0" layoutY="605.0" prefHeight="13.0" prefWidth="209.0" text="(0/3145727 Byte)" />
 
-    <Button layoutX="286.0" layoutY="630.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="21.0" prefWidth="69.0" text="%sendButton" />
+    <Button layoutX="25.0" layoutY="630.0" mnemonicParsing="false" onMouseClicked="#sendName" prefHeight="21.0" text="%saveFontName" />
+    <Button layoutX="116.0" layoutY="630.0" mnemonicParsing="false" onMouseClicked="#fontName" prefHeight="21.0" text="%openFontName" />
+    <Button layoutX="263.0" layoutY="630.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="21.0" text="%sendFontFile" />
     <Button layoutX="366.0" layoutY="630.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="21.0" prefWidth="69.0" text="%close" />
-    <Label fx:id="fontCapacity" layoutX="16.0" layoutY="623.0" prefHeight="13.0" prefWidth="209.0" text="0/3145727 Byte" />
-    <ProgressBar fx:id="fontProgressBar" layoutX="50.0" layoutY="170.0" prefWidth="350" visible="false" />
-    <Label fx:id="fontProgressLabel" layoutX="210.0" layoutY="200.0" style="-fx-background-color:black; -fx-text-fill: orange; -fx-font-size: 20px; -fx-font-weight: 700;" text="1/1" visible="false" />
+
+    <ProgressBar fx:id="fontProgressBar" layoutX="50.0" layoutY="170.0" prefWidth="350" visible="false"/>
+    <Label fx:id="fontProgressLabel" layoutX="210.0" layoutY="200.0" style="-fx-background-color:black; -fx-text-fill: orange; -fx-font-size: 20px; -fx-font-weight: 700;" text="1/1" visible="false"/>
+
 </AnchorPane>
