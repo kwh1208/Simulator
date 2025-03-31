@@ -7,26 +7,26 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="fontNameAP" prefHeight="327.0" prefWidth="359.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.FontNameController">
-    <Pane fx:id="group1Pane" layoutX="14.0" layoutY="14.0" prefHeight="126.0" prefWidth="335.0" style="-fx-border-color: black">
-        <Label layoutX="14.0" layoutY="-6.0" prefHeight="13.0" prefWidth="90.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%fontGroup1" />
-        <Label layoutX="31.0" layoutY="37.0" text="%font1" />
-        <Label layoutX="31.0" layoutY="62.0" text="%font2" />
-        <Label layoutX="31.0" layoutY="89.0" text="%font3" />
-        <TextField fx:id="group1font1" editable="false" layoutX="105.0" layoutY="30.0" prefHeight="22.0" prefWidth="208.0" />
-        <TextField fx:id="group1font2" editable="false" layoutX="105.0" layoutY="58.0" prefHeight="22.0" prefWidth="208.0" />
-        <TextField fx:id="group1font3" editable="false" layoutX="105.0" layoutY="86.0" prefHeight="22.0" prefWidth="208.0" />
+<AnchorPane fx:id="fontNameAP" prefHeight="310.0" prefWidth="340.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.FontNameController">
+    <Pane fx:id="group1Pane" layoutX="14.0" layoutY="14.0" prefHeight="116.0" prefWidth="311.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
+        <Label layoutX="14.0" layoutY="-10.0" prefHeight="13.0" prefWidth="90.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%fontGroup1" />
+        <Label layoutX="31.0" layoutY="30.0" text="%font1" />
+        <Label layoutX="31.0" layoutY="55.0" text="%font2" />
+        <Label layoutX="31.0" layoutY="82.0" text="%font3" />
+        <TextField fx:id="group1font1" editable="false" layoutX="85.0" layoutY="26.0" prefHeight="22.0" prefWidth="208.0" />
+        <TextField fx:id="group1font2" editable="false" layoutX="85.0" layoutY="54.0" prefHeight="22.0" prefWidth="208.0" />
+        <TextField fx:id="group1font3" editable="false" layoutX="85.0" layoutY="82.0" prefHeight="22.0" prefWidth="208.0" />
     </Pane>
-    <Pane fx:id="group2Pane" layoutX="14.0" layoutY="152.0" prefHeight="126.0" prefWidth="335.0" style="-fx-border-color: black">
-        <Label layoutX="14.0" layoutY="-6.0" prefHeight="13.0" prefWidth="90.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%fontGroup2" />
-        <Label layoutX="31.0" layoutY="37.0" text="%font1" />
-        <Label layoutX="31.0" layoutY="62.0" text="%font2" />
-        <Label layoutX="31.0" layoutY="89.0" text="%font3" />
-        <TextField fx:id="group2font1" editable="false" layoutX="105.0" layoutY="30.0" prefHeight="22.0" prefWidth="208.0" />
-        <TextField fx:id="group2font2" editable="false" layoutX="105.0" layoutY="58.0" prefHeight="22.0" prefWidth="208.0" />
-        <TextField fx:id="group2font3" editable="false" layoutX="105.0" layoutY="86.0" prefHeight="22.0" prefWidth="208.0" />
+    <Pane fx:id="group2Pane" layoutX="14.0" layoutY="142.0" prefHeight="116.0" prefWidth="311.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
+        <Label layoutX="14.0" layoutY="-10.0" prefHeight="13.0" prefWidth="90.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%fontGroup2" />
+        <Label layoutX="31.0" layoutY="30.0" text="%font1" />
+        <Label layoutX="31.0" layoutY="55.0" text="%font2" />
+        <Label layoutX="31.0" layoutY="82.0" text="%font3" />
+        <TextField fx:id="group2font1" editable="false" layoutX="85.0" layoutY="26.0" prefHeight="22.0" prefWidth="208.0" />
+        <TextField fx:id="group2font2" editable="false" layoutX="85.0" layoutY="54.0" prefHeight="22.0" prefWidth="208.0" />
+        <TextField fx:id="group2font3" editable="false" layoutX="85.0" layoutY="82.0" prefHeight="22.0" prefWidth="208.0" />
     </Pane>
-    <Button layoutX="164.0" layoutY="289.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="27.0" prefWidth="81.0" text="%read" />
-    <Button layoutX="260.0" layoutY="289.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="27.0" prefWidth="81.0" text="%close" />
-    <ProgressIndicator fx:id="progressIndicator" layoutX="157.0" layoutY="152.0" visible="false" />
+    <Button layoutX="134.0" layoutY="269.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="27.0" prefWidth="81.0" text="%read" />
+    <Button layoutX="230.0" layoutY="269.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="27.0" prefWidth="81.0" text="%close" />
+    <ProgressIndicator fx:id="progressIndicator" layoutX="157.0" layoutY="102.0" visible="false" />
 </AnchorPane>

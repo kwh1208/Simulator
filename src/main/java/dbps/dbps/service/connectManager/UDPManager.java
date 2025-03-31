@@ -429,7 +429,7 @@ public class UDPManager {
 
 
 
-    public void  connect300All(){
+    public void connect300All(){
         connect300Wifi(5107);
         connect300Ethernet(5108);
 
@@ -458,7 +458,6 @@ public class UDPManager {
             DatagramSocket tmpSocket = new DatagramSocket(new InetSocketAddress(wifiIP, 5109));
             tmpSocket.setBroadcast(true);
             tmpSocket.setSoTimeout(RESPONSE_LATENCY*1000);
-
             socketList.add(tmpSocket);
         } catch (SocketException e) {
             e.printStackTrace();
@@ -471,9 +470,17 @@ public class UDPManager {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
                 NetworkInterface networkInterface = interfaces.nextElement();
+                String displayName = networkInterface.getDisplayName().toLowerCase();
+                String name = networkInterface.getName().toLowerCase();
 
-                // Wi-Fi 인터페이스인지 확인 (이름이 보통 "wlan" 또는 "wi-fi" 포함)
-                if (networkInterface.isLoopback() || !networkInterface.isUp() || networkInterface.getDisplayName().toLowerCase().contains("virtual")) {
+                // 루프백, 비활성, 가상 인터페이스는 건너뜁니다.
+                if (networkInterface.isLoopback() || !networkInterface.isUp() || displayName.contains("virtual")) {
+                    continue;
+                }
+
+                // Wi-Fi 인터페이스로 판단할 수 있는 조건 추가
+                if (!(displayName.contains("wi-fi") || displayName.contains("wlan") || displayName.contains("무선")
+                        || name.contains("wi-fi") || name.contains("wlan") || name.contains("무선"))) {
                     continue;
                 }
 

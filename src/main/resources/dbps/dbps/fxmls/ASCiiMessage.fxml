@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="ASCiiMsgAnchorPane" prefHeight="444.0" prefWidth="440.0"
-            style="-fx-border-color: black; -fx-border-width: 1 0 0 0; -fx-background-color: #333333"
-            xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="dbps.dbps.controller.ASCiiMsgController">
-    <ProgressIndicator fx:id="progressIndicator" layoutX="320.0" layoutY="240.0" visible="false"/>
-    <RadioButton fx:id="euc_kr" layoutX="14.0" layoutY="6.0" mnemonicParsing="false" text="EUC-KR"/>
-    <RadioButton fx:id="utf_16" layoutX="100.0" layoutY="6.0" mnemonicParsing="false" text="UTF-16"/>
-    <RadioButton fx:id="utf_8" layoutX="186.0" layoutY="6.0" mnemonicParsing="false" text="UTF-8"/>
-    <Button layoutX="367" onMouseClicked="#close" layoutY="441" prefWidth="59" prefHeight="28" text="%close"/>
+<AnchorPane fx:id="ASCiiMsgAnchorPane" prefHeight="444.0" prefWidth="440.0" style="-fx-border-color: black; -fx-border-width: 1 0 0 0; -fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.ASCiiMsgController">
+    <ProgressIndicator fx:id="progressIndicator" layoutX="200.0" layoutY="190.0" visible="false"/>
+    <RadioButton fx:id="euc_kr" layoutX="14.0" layoutY="6.0" mnemonicParsing="false" text="EUC-KR" />
+    <RadioButton fx:id="utf_16" layoutX="100.0" layoutY="6.0" mnemonicParsing="false" text="UTF-16" />
+    <RadioButton fx:id="utf_8" layoutX="186.0" layoutY="6.0" mnemonicParsing="false" text="UTF-8" />
+    <Button layoutX="367" layoutY="441" onMouseClicked="#close" prefHeight="28" prefWidth="59" text="%close" />
 </AnchorPane>

@@ -1,6 +1,5 @@
 package dbps.dbps.service;
 
-import javafx.application.Platform;
 import javafx.scene.control.ProgressIndicator;
 
 public class SettingService {
@@ -16,22 +15,7 @@ public class SettingService {
 
     // 싱글톤 인스턴스 반환
     public static synchronized SettingService getInstance(ProgressIndicator progressIndicator) {
-        if (instance == null) {
-            instance = new SettingService(progressIndicator);
-        }
+        if (instance == null) instance = new SettingService(progressIndicator);
         return instance;
-    }
-
-    // ProgressIndicator 설정
-    public static void showProgress() {
-        if (commonProgressIndicator != null) {
-            Platform.runLater(() -> commonProgressIndicator.setVisible(true));
-        }
-    }
-
-    public static void hideProgress() {
-        if (commonProgressIndicator != null) {
-            Platform.runLater(() -> commonProgressIndicator.setVisible(false));
-        }
     }
 }

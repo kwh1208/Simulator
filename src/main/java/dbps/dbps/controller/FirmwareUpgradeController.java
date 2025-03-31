@@ -257,37 +257,40 @@ public class FirmwareUpgradeController {
         if (fileName.contains("502")){
             firmwareFileInformation.setText(fileName);
         } else {
-        try (RandomAccessFile file = new RandomAccessFile(selectedFile.getAbsolutePath(), "r")) {
-            int startByte = 0;
-            int length = 0;
-            if (!selectedFile.getName().contains("502")) {
-                startByte = 516;
-                length = 38;
-            } else {
-                startByte = 15796;
-                length = 38;
+        try {
+            assert selectedFile != null;
+            try (RandomAccessFile file = new RandomAccessFile(selectedFile.getAbsolutePath(), "r")) {
+                int startByte = 0;
+                int length = 0;
+                if (!selectedFile.getName().contains("502")) {
+                    startByte = 516;
+                    length = 38;
+                } else {
+                    startByte = 15796;
+                    length = 38;
+                }
+
+                // 앞 한 글자를 추가로 읽기 위해 startByte를 1 줄임
+                int extendedStartByte = startByte - 1;
+
+                // 파일의 해당 위치로 이동
+                file.seek(extendedStartByte);
+
+                // 읽을 바이트 배열 생성 (기존 길이 + 앞 한 글자)
+                byte[] buffer = new byte[length + 1];
+                int bytesRead = file.read(buffer);
+
+                if (bytesRead == length + 1) {
+                    // 앞 한 글자 (바이트) 읽어서 16진수 변환 후 10진수 변환
+                    int extraByte = buffer[0] & 0xFF;  // 부호 없는 값으로 변환
+                    hexToDecimal = String.valueOf(extraByte);  // 10진수 문자열로 변환
+
+                    // 기존 데이터 부분을 읽기 (1바이트 이후부터)
+                    result = new String(buffer, 1, length, "MS949");
+                    result=result.replaceAll("!]", "");
+                }
             }
-
-            // 앞 한 글자를 추가로 읽기 위해 startByte를 1 줄임
-            int extendedStartByte = startByte - 1;
-
-            // 파일의 해당 위치로 이동
-            file.seek(extendedStartByte);
-
-            // 읽을 바이트 배열 생성 (기존 길이 + 앞 한 글자)
-            byte[] buffer = new byte[length + 1];
-            int bytesRead = file.read(buffer);
-
-            if (bytesRead == length + 1) {
-                // 앞 한 글자 (바이트) 읽어서 16진수 변환 후 10진수 변환
-                int extraByte = buffer[0] & 0xFF;  // 부호 없는 값으로 변환
-                hexToDecimal = String.valueOf(extraByte);  // 10진수 문자열로 변환
-
-                // 기존 데이터 부분을 읽기 (1바이트 이후부터)
-                result = new String(buffer, 1, length, "MS949");
-                result=result.replaceAll("!]", "");
-            }
-        } catch (IOException e) {
+        } catch (IOException ignored) {
 
         }
 
@@ -319,7 +322,7 @@ public class FirmwareUpgradeController {
         if (index2 == -1) {
             index2 = firmwareFileInformationText.lastIndexOf("DB");
             result2 = firmwareFileInformationText.substring(index2 + "DB".length(), index2 + "DB".length() + 4);
-        } else if (index2 != -1 && index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
+        } else if (index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
             result2 = firmwareFileInformationText.substring(index2 + "DIBD".length(), index2 + "DIBD".length() + 4);
         } else {
             logService.errorLog(bundle.getString("errorDIBD"));

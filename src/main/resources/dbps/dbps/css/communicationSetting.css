@@ -21,6 +21,15 @@
      /* 글꼴 크기 */
     -fx-text-fill: white;
 }
+
+.text-field{
+    -fx-background-color: black;
+    -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
+    -fx-text-fill: white;
+}
+.text-field:focused{
+    -fx-border-color: orange;
+}
 .root{
     -fx-font-family: Gulim;
 }

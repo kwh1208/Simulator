@@ -55,6 +55,12 @@
     -fx-border-color: transparent;
 }
 
+.text-area .scroll-pane .viewport {
+    -fx-background-color: black;
+    -fx-border-color: black;
+    -fx-border-width: 0;
+}
+
 .list-cell{
     -fx-pref-height: 25px;
 }

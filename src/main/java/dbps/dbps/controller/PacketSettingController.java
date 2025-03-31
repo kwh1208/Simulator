@@ -19,19 +19,31 @@ public class PacketSettingController {
     public TextField timeOut;
     public AnchorPane psAP;
 
+    PacketSettingService packetSettingService;
+
     @FXML
     public void initialize(){
         psAP.getStylesheets().add(Objects.requireNonNull(Simulator.class.getResource("/dbps/dbps/css/dabitNet.css")).toExternalForm());
+        packetSettingService = PacketSettingService.getInstance();
+
+        packetSettingService.setAscFirst(ascFirst);
+        packetSettingService.setAscSecond(ascSecond);
+        packetSettingService.setHexFirst(hexFirst);
+        packetSettingService.setHexSecond(hexSecond);
+        packetSettingService.setTimeOut(timeOut);
     }
 
     public void setPacket() {
-        PacketSettingService packetSettingService = PacketSettingService.getInstance();
         packetSettingService.getOriAscFirst().setText(ascFirst.getText());
         packetSettingService.getOriAscSecond().setText(ascSecond.getText());
         packetSettingService.getOriHexFirst().setText(hexFirst.getText());
         packetSettingService.getOriHexSecond().setText(hexSecond.getText());
         packetSettingService.getOriTimeOut().setText(timeOut.getText());
+
+        packetSettingService.changeUI();
     }
+
+
 
     public void close(MouseEvent mouseEvent) {
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();

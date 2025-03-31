@@ -4,6 +4,8 @@ import javafx.scene.control.TextField;
 import lombok.Getter;
 import lombok.Setter;
 
+@Setter
+@Getter
 public class PacketSettingService {
 
     private static PacketSettingService instance;
@@ -18,19 +20,34 @@ public class PacketSettingService {
     public PacketSettingService() {
     }
 
-    @Setter
-    @Getter
-    public  TextField oriAscFirst;
-    @Setter
-    @Getter
-    public  TextField oriAscSecond;
-    @Setter
-    @Getter
-    public  TextField oriHexFirst;
-    @Setter
-    @Getter
-    public  TextField oriHexSecond;
-    @Setter
-    @Getter
-    public  TextField oriTimeOut;
+    //다빛넷의 textField
+    public TextField oriAscFirst;
+    public TextField oriAscSecond;
+    public TextField oriHexFirst;
+    public TextField oriHexSecond;
+    public TextField oriTimeOut;
+
+    //모달창의 textField
+    public TextField ascFirst;
+    public TextField ascSecond;
+    public TextField hexFirst;
+    public TextField hexSecond;
+    public TextField timeOut;
+
+    public void setUI(){
+        ascFirst.setText(oriAscFirst.getText());
+        ascSecond.setText(oriAscSecond.getText());
+        hexFirst.setText(oriHexFirst.getText());
+        hexSecond.setText(oriHexSecond.getText());
+        timeOut.setText(oriTimeOut.getText());
+    }
+
+
+    public void changeUI() {
+        oriAscFirst.setText(ascFirst.getText());
+        oriAscSecond.setText(ascSecond.getText());
+        hexFirst.setText(hexFirst.getText());
+        hexSecond.setText(hexSecond.getText());
+        timeOut.setText(timeOut.getText());
+    }
 }

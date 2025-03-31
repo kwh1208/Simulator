@@ -252,7 +252,7 @@ public class SerialPortManager {
                         throw e;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        logService.errorLog(bundle.getString("Error") + e.getMessage());
+                        logService.errorLog(bundle.getString("Error"));
                         throw e;
                     } finally {
                         closePort(portName); // 작업 후 포트 닫기

@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -547,10 +548,10 @@ public class FontSettingController {
     }
 
 
+
     private void moveCaretToEnd(TextArea textArea) {
         textArea.positionCaret(textArea.getText().length());  // 커서를 텍스트 끝으로 이동
     }
-
 
     //폰트선택창 띄우기
     @FXML
@@ -589,7 +590,7 @@ public class FontSettingController {
         File selectedFont = fileChooser.showOpenDialog(stage);
 
         if (!selectedFont.exists()) {
-            System.out.println(2222222);
+
         }
         // 선택된 폰트 경로를 TextArea에 설정
         else {
