@@ -11,93 +11,91 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="displaySignalAP" prefHeight="399.0" prefWidth="541.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplaySignalSettingController">
-    <children>
-        <Label layoutX="29.0" layoutY="10.0" text="%displaySignal" />
-        <Label layoutX="272.0" layoutY="11.0" text="%memo" />
-        <ListView fx:id="signalList" layoutX="29.0" layoutY="35.0" prefHeight="331.0" prefWidth="205.0">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="32D-P16D1S11" />
-                    <String fx:value="16D-P16D1S10-1" />
-                    <String fx:value="16D-P16D1S11" />
-                    <String fx:value="16D-P16D1S21" />
-                    <String fx:value="16D-P16D1S31" />
-                    <String fx:value="16D-P16D1S41" />
-                    <String fx:value="08D-P16D2S10-1^9" />
-                    <String fx:value="08D-P16D2S11-1^9" />
-                    <String fx:value="08D-P16D2S21" />
-                    <String fx:value="08D-P16D2S23-1^2" />
-                    <String fx:value="08D-P16D2S31-9^1" />
-                    <String fx:value="08D-P16D2S81" />
-                    <String fx:value="08D-P32D1S11" />
-                    <String fx:value="08D-P32D1S12" />
-                    <String fx:value="08D-P32D1S22-9&lt;1" />
-                    <String fx:value="08D-P32D1S31" />
-                    <String fx:value="08D-P32D1S32" />
-                    <String fx:value="08D-P64D1S21" />
-                    <String fx:value="08D-P64D1S31" />
-                    <String fx:value="08D-P64D1S41-11" />
-                    <String fx:value="08D-P64D1S61" />
-                    <String fx:value="08D-P64D1S71" />
-                    <String fx:value="08D-P64D1S91-11" />
-                    <String fx:value="08D-P128D1S42" />
-                    <String fx:value="08D-P128D1S51" />
-                    <String fx:value="04D-P16D4S11-1^5^9^13" />
-                    <String fx:value="04D-P16D4S21-1^5^9^13" />
-                    <String fx:value="04D-P32D2S11" />
-                    <String fx:value="04D-P32D2S21" />
-                    <String fx:value="04D-P32D2S31-2&lt;1^4&lt;3" />
-                    <String fx:value="04D-P32D2S41" />
-                    <String fx:value="04D-P32D2S51" />
-                    <String fx:value="04D-P32D2S61" />
-                    <String fx:value="04D-P32D2S71" />
-                    <String fx:value="04D-P32D4S11" />
-                    <String fx:value="04D-P64D1S11" />
-                    <String fx:value="04D-D2-SA1-A4E8A8E8A4" />
-                    <String fx:value="04D-D2-SA1-A4E8A8E8" />
-                    <String fx:value="02D-P64D2S21" />
-                    <String fx:value="02D-P64D2S31" />
-                    <String fx:value="02D-P64D2S41" />
-                    <String fx:value="02D-P128D2S21" />
-                    <String fx:value="02D-P256D2S41" />
-                    <String fx:value="01D-P64D4S21-4^8^12^16" />
-                    <String fx:value="01D-P128D2S21" />
-                    <String fx:value="01D-P128D2S31" />
-                </FXCollections>
-            </items>
-        </ListView>
-        <TextArea fx:id="memo" layoutX="268.0" layoutY="36.0" prefHeight="186.0" prefWidth="248.0" />
-        <Button layoutX="277.0" layoutY="228.0" mnemonicParsing="false" onMouseClicked="#search" prefHeight="28.0" prefWidth="120.0" styleClass="newWindow-button" text="%searchSignal">
-        </Button>
-        <Button layoutX="407.0" layoutY="228.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="28.0" prefWidth="110.0" text="%saveMemo" />
-        <Label layoutX="286.0" layoutY="276.0" text="Color Order" />
-        <ComboBox fx:id="colorScan" layoutX="410.0" layoutY="263.0" prefHeight="21.0" prefWidth="107.0" value="RGB">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="RGB" />
-                    <String fx:value="RBG" />
-                    <String fx:value="GRB" />
-                    <String fx:value="GBR" />
-                    <String fx:value="BRG" />
-                    <String fx:value="BGR" />
-                    <String fx:value="NC1" />
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <Label layoutX="286.0" layoutY="304.0" text="Scan Order" />
-        <ComboBox fx:id="scanOrder" disable="true" layoutX="410.0" layoutY="291.0" prefHeight="21.0" prefWidth="107.0" value="138 IC">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="138 IC" />
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <Button layoutX="291.0" layoutY="359.0" mnemonicParsing="false" onMouseClicked="#signalTransfer" prefHeight="28.0" prefWidth="110.0" text="%set" />
-        <Spinner fx:id="spinnerForSec" layoutX="368.0" layoutY="321.0" prefHeight="28.0" prefWidth="64.0" />
-        <Button fx:id="autoTransfer" layoutX="438.0" layoutY="321.0" mnemonicParsing="false" onMouseClicked="#autoTransfer" prefHeight="28.0" prefWidth="79.0" text="%autoTransfer" />
-        <Button layoutX="410.0" layoutY="359.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="28.0" prefWidth="107.0" text="%close" />
-        <ProgressIndicator fx:id="progressIndicator" layoutX="250.0" layoutY="150.0" visible="false" />
-      <Label layoutX="289.0" layoutY="328.0" text="설정 간격" />
-    </children>
+<AnchorPane fx:id="displaySignalAP" prefHeight="426.0" prefWidth="541.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplaySignalSettingController">
+    <Label layoutX="29.0" layoutY="10.0" text="%displaySignal" />
+    <Label layoutX="272.0" layoutY="11.0" text="%memo" />
+    <ListView fx:id="signalList" layoutX="29.0" layoutY="35.0" prefHeight="331.0" prefWidth="205.0">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="32D-P16D1S11" />
+                <String fx:value="16D-P16D1S10-1" />
+                <String fx:value="16D-P16D1S11" />
+                <String fx:value="16D-P16D1S21" />
+                <String fx:value="16D-P16D1S31" />
+                <String fx:value="16D-P16D1S41" />
+                <String fx:value="08D-P16D2S10-1^9" />
+                <String fx:value="08D-P16D2S11-1^9" />
+                <String fx:value="08D-P16D2S21" />
+                <String fx:value="08D-P16D2S23-1^2" />
+                <String fx:value="08D-P16D2S31-9^1" />
+                <String fx:value="08D-P16D2S81" />
+                <String fx:value="08D-P32D1S11" />
+                <String fx:value="08D-P32D1S12" />
+                <String fx:value="08D-P32D1S22-9&lt;1" />
+                <String fx:value="08D-P32D1S31" />
+                <String fx:value="08D-P32D1S32" />
+                <String fx:value="08D-P64D1S21" />
+                <String fx:value="08D-P64D1S31" />
+                <String fx:value="08D-P64D1S41-11" />
+                <String fx:value="08D-P64D1S61" />
+                <String fx:value="08D-P64D1S71" />
+                <String fx:value="08D-P64D1S91-11" />
+                <String fx:value="08D-P128D1S42" />
+                <String fx:value="08D-P128D1S51" />
+                <String fx:value="04D-P16D4S11-1^5^9^13" />
+                <String fx:value="04D-P16D4S21-1^5^9^13" />
+                <String fx:value="04D-P32D2S11" />
+                <String fx:value="04D-P32D2S21" />
+                <String fx:value="04D-P32D2S31-2&lt;1^4&lt;3" />
+                <String fx:value="04D-P32D2S41" />
+                <String fx:value="04D-P32D2S51" />
+                <String fx:value="04D-P32D2S61" />
+                <String fx:value="04D-P32D2S71" />
+                <String fx:value="04D-P32D4S11" />
+                <String fx:value="04D-P64D1S11" />
+                <String fx:value="04D-D2-SA1-A4E8A8E8A4" />
+                <String fx:value="04D-D2-SA1-A4E8A8E8" />
+                <String fx:value="02D-P64D2S21" />
+                <String fx:value="02D-P64D2S31" />
+                <String fx:value="02D-P64D2S41" />
+                <String fx:value="02D-P128D2S21" />
+                <String fx:value="02D-P256D2S41" />
+                <String fx:value="01D-P64D4S21-4^8^12^16" />
+                <String fx:value="01D-P128D2S21" />
+                <String fx:value="01D-P128D2S31" />
+            </FXCollections>
+        </items>
+    </ListView>
+    <TextArea fx:id="memo" layoutX="268.0" layoutY="36.0" prefHeight="215.0" prefWidth="248.0" promptText="여기에 메모를 입력하세요" />
+    <Button layoutX="277.0" layoutY="258.0" mnemonicParsing="false" onMouseClicked="#search" prefHeight="28.0" prefWidth="120.0" styleClass="newWindow-button" text="%searchSignal">
+    </Button>
+    <Button layoutX="407.0" layoutY="258.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="28.0" prefWidth="110.0" text="%saveMemo" />
+    <Label layoutX="285.0" layoutY="300.0" text="Color Order" />
+    <ComboBox fx:id="colorScan" layoutX="409.0" layoutY="296.0" prefHeight="21.0" prefWidth="108.0" value="RGB">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="RGB" />
+                <String fx:value="RBG" />
+                <String fx:value="GRB" />
+                <String fx:value="GBR" />
+                <String fx:value="BRG" />
+                <String fx:value="BGR" />
+                <String fx:value="NC1" />
+            </FXCollections>
+        </items>
+    </ComboBox>
+    <Label layoutX="285.0" layoutY="332.0" text="Scan Order" />
+    <ComboBox fx:id="scanOrder" disable="true" layoutX="409.0" layoutY="328.0" prefHeight="21.0" prefWidth="108.0" value="138 IC">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="138 IC" />
+            </FXCollections>
+        </items>
+    </ComboBox>
+    <Button layoutX="367.0" layoutY="381.0" mnemonicParsing="false" onMouseClicked="#signalTransfer" prefHeight="28.0" prefWidth="70.0" text="%set" />
+    <Spinner fx:id="spinnerForSec" layoutX="98.0" layoutY="381.0" prefHeight="28.0" prefWidth="64.0" />
+    <Button fx:id="autoTransfer" layoutX="178.0" layoutY="381.0" mnemonicParsing="false" onMouseClicked="#autoTransfer" prefHeight="28.0" prefWidth="79.0" text="%autoTransfer" />
+    <Button layoutX="447.0" layoutY="381.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="28.0" prefWidth="70.0" text="%close" />
+    <ProgressIndicator fx:id="progressIndicator" layoutX="250.0" layoutY="150.0" visible="false" />
+    <Label layoutX="29.0" layoutY="388.0" text="설정 간격" />
 </AnchorPane>

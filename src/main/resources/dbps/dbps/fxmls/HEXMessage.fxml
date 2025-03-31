@@ -15,14 +15,14 @@
 
 <AnchorPane fx:id="HEXMsgAP" prefHeight="599.0" prefWidth="500.0" style="-fx-border-color: black; -fx-border-width: 1 0 0 0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.HEXMessageController">
     <Pane fx:id="msgPropertyPane" layoutX="9.0" layoutY="34.0" prefHeight="400.0" prefWidth="507.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
-        <Label layoutX="36.0" layoutY="-20.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%ProtocolProperties" />
+        <Label layoutX="36.0" layoutY="-23.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%ProtocolProperties" />
         <Label layoutX="14.0" layoutY="10.0" text="%msgType" />
-        <Pane layoutX="137.0" layoutY="2" prefHeight="30.0" prefWidth="231.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
+        <Pane layoutX="125.0" layoutY="2" prefHeight="30.0" prefWidth="231.0">
             <RadioButton fx:id="realTimeMsg" layoutX="12.0" layoutY="5.0" mnemonicParsing="false" text="%realTimeMsg" />
             <RadioButton fx:id="pageMsg" layoutX="125.0" layoutY="5.0" mnemonicParsing="false" text="%pageMsg" />
         </Pane>
-        <Label fx:id="pageCntLabel" layoutX="385.0" layoutY="8.0" text="page" visible="false" />
-        <ComboBox fx:id="pageMsgCnt" layoutX="435.0" layoutY="4.0" prefHeight="21.0" prefWidth="60.0" value="1" visible="false">
+        <Label fx:id="pageCntLabel" layoutX="365.0" layoutY="10.0" text="%page" visible="false" />
+        <ComboBox fx:id="pageMsgCnt" layoutX="415.0" layoutY="6.0" prefHeight="21.0" prefWidth="60.0" value="1" visible="false">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="1" />
@@ -39,7 +39,7 @@
             </items>
         </ComboBox>
         <Label layoutX="14.0" layoutY="40.0" text="%sectionNum" />
-        <Pane layoutX="137.0" layoutY="35.0" prefHeight="30.0" prefWidth="231.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
+        <Pane layoutX="125.0" layoutY="35.0" prefHeight="30.0" prefWidth="231.0">
             <RadioButton fx:id="section0" layoutX="12.0" layoutY="5.0" mnemonicParsing="false" text="0" />
             <RadioButton fx:id="section1" layoutX="88.0" layoutY="5.0" mnemonicParsing="false" text="1" />
             <RadioButton fx:id="section2" layoutX="164.0" layoutY="5.0" mnemonicParsing="false" text="2" />
@@ -162,7 +162,7 @@
         <Button layoutX="411.0" layoutY="54.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="33.0" prefWidth="90.0" text="%PropertyInit" />
         <Button layoutX="411.0" layoutY="91.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="90.0" text="%sendButton" />
     </Pane>
-    <ProgressIndicator fx:id="progressIndicator" layoutX="242.0" layoutY="240.0" visible="false" />
+    <ProgressIndicator fx:id="progressIndicator" layoutX="242.0" layoutY="230.0" visible="false"/>
     <RadioButton fx:id="hexRadioBtn" layoutX="270.0" layoutY="7.0" text="%HexProtocol" />
     <RadioButton fx:id="ascRadioBtn" layoutX="395.0" layoutY="7.0" text="%ASCiiProtocol" />
 </AnchorPane>

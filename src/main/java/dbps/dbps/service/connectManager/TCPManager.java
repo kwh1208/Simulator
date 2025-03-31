@@ -150,7 +150,7 @@ public class TCPManager {
                     logService.updateInfoLog(bundle.getString("receivedMsg") + result);
                     return result;
                 } catch (IOException e) {
-                    e.getMessage();
+                    e.printStackTrace();
                     logService.errorLog(bundle.getString("connectionFail"));
                     throw e;
                 }finally {

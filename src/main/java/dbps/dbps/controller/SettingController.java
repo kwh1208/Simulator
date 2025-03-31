@@ -7,6 +7,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +20,7 @@ public class SettingController {
 
     @FXML
     public ProgressIndicator commonProgressIndicator;
-    public ComboBox<String> BGImgSelection;
+    public ComboBox<ComboItem> bGImgSelection;
     public ComboBox<String> fillColor;
     public ComboBox<String> displayBright;
 
@@ -72,13 +73,13 @@ public class SettingController {
         // 화면에 표시
         timeBoard.setText(formattedTime);
 
-        BGImgSelection.getItems().add(bundle.getString("notUsed"));
+        bGImgSelection.getItems().add(new ComboItem("notUsed", bundle.getString("notUsed")));
         for (int i = 1; i < 256; i++) {
-            BGImgSelection.getItems().add(String.valueOf(i));
+            bGImgSelection.getItems().add(new ComboItem(String.valueOf(i), MessageFormat.format(bundle.getString("Img"), i)));
         }
 
-        BGImgSelection.setVisibleRowCount(10);
-        BGImgSelection.setValue(bundle.getString("notUsed"));
+        bGImgSelection.setVisibleRowCount(10);
+        bGImgSelection.setValue(new ComboItem("notUsed", bundle.getString("notUsed")));
 
         addItems();
     }
@@ -176,7 +177,7 @@ public class SettingController {
     }
 
     public void sendBGImgSelection() {
-        String value = BGImgSelection.getValue();
+        String value = bGImgSelection.getValue().displayText();
         if (IS_ASCII){
             String result = "";
             if (value.equals(bundle.getString("notUsed")))
@@ -205,7 +206,7 @@ public class SettingController {
         }
     }
 
-    public void sendFillColor() {
+    public void sendFillColor() throws InterruptedException {
         String value = fillColor.getValue();
         if (IS_ASCII){
             String msg = "![0070"+getColorCode(value)+"!]";
@@ -215,6 +216,10 @@ public class SettingController {
             asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
         }
         else {
+            sendDisplayOff();
+
+            Thread.sleep(100);
+
             String msg = "10 02 00 00 06 42 08 "+getColorCodeHex(value)+"00 00 00 10 03";
             if (isRS){
                 msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 06 42 08 "+getColorCodeHex(value)+"00 00 00 10 03";
@@ -225,30 +230,28 @@ public class SettingController {
 
     private String getColorCode(String value) {
         Map<String, String> colorMap = new HashMap<>();
-        colorMap.put("검은색", "0");
-        colorMap.put("빨간색", "1");
-        colorMap.put("초록색", "2");
-        colorMap.put("노란색", "3");
-        colorMap.put("파란색", "4");
-        colorMap.put("분홍색", "5");
-        colorMap.put("청록색", "6");
-        colorMap.put("흰색", "7");
-        colorMap.put("보라색", "8");
-        colorMap.put("하늘색", "9");
+        colorMap.put(bundle.getString("black"), "0");
+        colorMap.put(bundle.getString("red"), "1");
+        colorMap.put(bundle.getString("green"), "2");
+        colorMap.put(bundle.getString("yellow"), "3");
+        colorMap.put(bundle.getString("blue"), "4");
+        colorMap.put(bundle.getString("pink"), "5");
+        colorMap.put(bundle.getString("cyan"), "6");
+        colorMap.put(bundle.getString("white"), "7");
 
         return colorMap.getOrDefault(value, "0"); // 기본값을 검은색("0")으로 설정
     }
 
     private String getColorCodeHex(String value) {
         Map<String, String> colorMap = new HashMap<>();
-        colorMap.put("검은색", "00 ");
-        colorMap.put("빨간색", "07 ");
-        colorMap.put("초록색", "38 ");
-        colorMap.put("노란색", "3F ");
-        colorMap.put("파란색", "C0 ");
-        colorMap.put("분홍색", "C7 ");
-        colorMap.put("청록색", "F8 ");
-        colorMap.put("흰색", "FF "); // 기본값을 흰색으로 지정
+        colorMap.put(bundle.getString("black"), "00 ");
+        colorMap.put(bundle.getString("red"), "07 ");
+        colorMap.put(bundle.getString("green"), "38 ");
+        colorMap.put(bundle.getString("yellow"), "3F ");
+        colorMap.put(bundle.getString("blue"), "C0 ");
+        colorMap.put(bundle.getString("pink"), "C7 ");
+        colorMap.put(bundle.getString("cyan"), "F8 ");
+        colorMap.put(bundle.getString("white"), "FF ");
 
         return colorMap.getOrDefault(value, "FF ");
     }

@@ -8,16 +8,16 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane fx:id="firmwareUpgradeAP" prefHeight="489.0" prefWidth="448.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.FirmwareUpgradeController">
-   <Label layoutX="19.0" layoutY="30.0" text="%controllerFirmwareInfo" />
+   <Label layoutX="22.0" layoutY="30.0" text="%controllerFirmwareInfo" />
    <TextArea fx:id="firmwareInformation" editable="false" layoutX="22.0" layoutY="65.0" prefHeight="177.0" prefWidth="400.0" />
-   <Label layoutX="19.0" layoutY="254.0" text="%uploadFirmwareInfo" />
+   <Label layoutX="22.0" layoutY="254.0" text="%uploadFirmwareInfo" />
    <TextArea fx:id="firmwareFileInformation" editable="false" layoutX="22.0" layoutY="286.0" prefHeight="55.0" prefWidth="400.0" />
-   <Label layoutX="19.0" layoutY="356.0" text="%filePath" />
-   <TextField fx:id="fileLocation" layoutX="19.0" layoutY="381.0" prefHeight="22.0" prefWidth="404.0" />
-   <Button layoutX="23.0" layoutY="425.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="30.0" prefWidth="85.0" text="%read" />
-   <Button layoutX="127.0" layoutY="425.0" mnemonicParsing="false" onMouseClicked="#open" prefHeight="30.0" prefWidth="85.0" text="%open" />
-   <Button layoutX="232.0" layoutY="425.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="85.0" text="%sendButton" />
-   <Button layoutX="336.0" layoutY="425.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="30.0" prefWidth="85.0" text="%close" />
-   <ProgressBar fx:id="firmwareProgressIndicator" layoutX="50.0" layoutY="170.0" prefWidth="400" style="-fx-text-fill: red" visible="false" />
-   <Label fx:id="firmwareProgressLabel" layoutX="220.0" layoutY="200.0" style="-fx-text-fill: orange; -fx-font-size : 17px;" text="0/0" visible="false" />
+   <Label layoutX="22.0" layoutY="356.0" text="%filePath" />
+   <TextField fx:id="fileLocation" editable="false" layoutX="22.0" layoutY="381.0" prefHeight="22.0" prefWidth="400.0" />
+   <Button layoutX="23.0" layoutY="425.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="30.0" prefWidth="90.0" text="%firmRead" />
+   <Button layoutX="126.0" layoutY="425.0" mnemonicParsing="false" onMouseClicked="#open" prefHeight="30.0" prefWidth="90.0" text="%open" />
+   <Button layoutX="230.0" layoutY="425.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="90.0" text="%fileSend" />
+   <Button layoutX="333.0" layoutY="425.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="30.0" prefWidth="90.0" text="%close" />
+   <ProgressBar fx:id="firmwareProgressIndicator" layoutX="30.0" layoutY="160.0" prefWidth="400" style="-fx-text-fill: red" visible="false"/>
+   <Label fx:id="firmwareProgressLabel" layoutX="220.0" layoutY="190.0" style="-fx-text-fill: orange; -fx-font-size : 17px;" text="0/0" visible="false"/>
 </AnchorPane>

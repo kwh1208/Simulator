@@ -26,7 +26,25 @@
     -fx-hbar-policy: never; /* 가로 스크롤바를 없앰 */
 }
 
+.text-area {
+    -fx-control-inner-background: #000000; /* 검은색 */
+    -fx-background-color: black;
+    -fx-text-fill: #ffffff; /* 흰색 */
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+}
 
+.text-area:focused {
+    /* 포커스가 잡혔을 때 테두리를 주황색으로 */
+    -fx-border-color: orange;
+    -fx-border-width: 1px;
+}
+
+.text-area .scroll-pane .viewport {
+    -fx-background-color: black;
+    -fx-border-color: black;
+    -fx-border-width: 0;
+}
 
 .root{
     -fx-font-family: Gulim;

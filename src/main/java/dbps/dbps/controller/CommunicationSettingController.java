@@ -40,7 +40,7 @@ public class CommunicationSettingController {
     @FXML
     public Button shutConnect;
     public Button keepOpenBtn;
-    public TextField pingTextField;
+//    public TextField pingTextField;
     SerialPortManager serialPortManager;
     TCPManager tcpManager;
 
@@ -255,9 +255,9 @@ public class CommunicationSettingController {
         });
 
         for (int i = 0; i < 32; i++) {
-            RS485ComboBox.getItems().add("Addr-"+i);
+            RS485ComboBox.getItems().add("Addr "+i);
         }
-        RS485ComboBox.setValue("Addr-"+RS485_ADDR_NUM);
+        RS485ComboBox.setValue("Addr "+RS485_ADDR_NUM);
 
         if (!serialPortComboBox.getItems().isEmpty()) {
             serialPortComboBox.setValue(serialPortComboBox.getItems().get(0));
@@ -305,20 +305,20 @@ public class CommunicationSettingController {
         clientIPAddress.setText(configService.getProperty("clientTCPAddr"));
         clientIPPort.setText(configService.getProperty("clientTCPPort"));
 
-        pingTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                // 포커스가 들어왔을 때: 테두리 주황색
-                pingTextField.setStyle(
-                        "-fx-background-color: black; " +
-                                "-fx-text-fill: white; " +
-                                "-fx-border-color: orange; " +
-                                "-fx-border-width: 1px;"
-                );
-            } else {
-                // 포커스가 나갔을 때: 원래 스타일로 복원
-                pingTextField.setStyle("-fx-background-color: black; -fx-text-fill: white;");
-            }
-        });
+//        pingTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+//            if (newValue) {
+//                // 포커스가 들어왔을 때: 테두리 주황색
+//                pingTextField.setStyle(
+//                        "-fx-background-color: black; " +
+//                                "-fx-text-fill: white; " +
+//                                "-fx-border-color: orange; " +
+//                                "-fx-border-width: 1px;"
+//                );
+//            } else {
+//                // 포커스가 나갔을 때: 원래 스타일로 복원
+//                pingTextField.setStyle("-fx-background-color: black; -fx-text-fill: white;");
+//            }
+//        });
     }
 
     //사용가능한 포트 가져오기
@@ -696,41 +696,41 @@ public class CommunicationSettingController {
         }
     }
 
-    public void pingTest() throws IOException {
-        pingTextField.setText("");
-        logService.updateInfoLog("핑 테스트를 시작합니다. 4개의 핑을 보냅니다. 잠시만 기다려주세요.");
-        Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                String ip = clientIPAddress.getText();
-                if(ip == null || ip.isEmpty()){
-                    updateMessage("IP 주소를 입력하세요.");
-                    return null;
-                }
-                InetAddress address = InetAddress.getByName(ip);
-                int successCnt = 0;
-                long totalTime = 0;
-                for (int i = 1; i <= 4; i++) {
-                    long startTime = System.currentTimeMillis();
-                    boolean reachable = address.isReachable(RESPONSE_LATENCY * 1000);
-                    long endTime = System.currentTimeMillis();
-                    long rtt = endTime - startTime;
-
-                    if (reachable) {
-                        logService.updateInfoLog((i)+"번째 패킷 응답 시간 : " +rtt+"ms");
-                        successCnt++;
-                        totalTime += rtt;
-                    } else {
-                        logService.updateInfoLog((i)+"번째 패킷 손실되었습니다.");
-                    }
-                }
-                double avgTime = (double) totalTime / 4;
-                String result = avgTime + "ms (" + successCnt + "/4)";
-                Platform.runLater(() -> {pingTextField.setText(result);logService.updateInfoLog("핑 테스트가 완료되었습니다.");});
-                return null;
-            }
-        };
-
-        new Thread(task).start();
-    }
+//    public void pingTest() throws IOException {
+//        pingTextField.setText("");
+//        logService.updateInfoLog("핑 테스트를 시작합니다. 4개의 핑을 보냅니다. 잠시만 기다려주세요.");
+//        Task<Void> task = new Task<Void>() {
+//            @Override
+//            protected Void call() throws Exception {
+//                String ip = clientIPAddress.getText();
+//                if(ip == null || ip.isEmpty()){
+//                    updateMessage("IP 주소를 입력하세요.");
+//                    return null;
+//                }
+//                InetAddress address = InetAddress.getByName(ip);
+//                int successCnt = 0;
+//                long totalTime = 0;
+//                for (int i = 1; i <= 4; i++) {
+//                    long startTime = System.currentTimeMillis();
+//                    boolean reachable = address.isReachable(RESPONSE_LATENCY * 1000);
+//                    long endTime = System.currentTimeMillis();
+//                    long rtt = endTime - startTime;
+//
+//                    if (reachable) {
+//                        logService.updateInfoLog((i)+"번째 패킷 응답 시간 : " +rtt+"ms");
+//                        successCnt++;
+//                        totalTime += rtt;
+//                    } else {
+//                        logService.updateInfoLog((i)+"번째 패킷 손실되었습니다.");
+//                    }
+//                }
+//                double avgTime = (double) totalTime / 4;
+//                String result = avgTime + "ms (" + successCnt + "/4)";
+//                Platform.runLater(() -> {pingTextField.setText(result);logService.updateInfoLog("핑 테스트가 완료되었습니다.");});
+//                return null;
+//            }
+//        };
+//
+//        new Thread(task).start();
+//    }
 }

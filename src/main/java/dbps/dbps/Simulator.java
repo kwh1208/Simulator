@@ -72,7 +72,7 @@ public class Simulator extends Application {
             Platform.runLater(() -> {
                 stage.setScene(scene);
                 stage.setResizable(false);
-                stage.setTitle("DBPS V1.2.4");
+                stage.setTitle("DBPS V1.2.5");
                 stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
                 stage.show();
             });

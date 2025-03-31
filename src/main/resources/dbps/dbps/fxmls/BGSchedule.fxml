@@ -16,12 +16,11 @@
         <Label layoutX="30.0" layoutY="220.0" text="%SelectItem"/>
 
         <!-- 스크롤 가능한 체크박스 리스트 -->
-        <ScrollPane layoutX="14.0" layoutY="239.0" prefHeight="275.0" prefWidth="370.0" style="-fx-border-color: #4A4A4A">
-            <content>
-                <Pane fx:id="checkboxPane" prefHeight="500.0" prefWidth="350.0" style="-fx-background-color: #333333">
-                    <!-- 체크박스는 동적으로 추가 -->
-                </Pane>
-            </content>
+        <ScrollPane layoutX="14.0" layoutY="239.0" prefHeight="275.0" prefWidth="370.0"
+                    style="-fx-border-color: #4A4A4A">
+            <Pane fx:id="checkboxPane" prefHeight="500.0" prefWidth="350.0" style="-fx-background-color: #333333">
+                <!-- 체크박스는 동적으로 추가 -->
+            </Pane>
         </ScrollPane>
         <Button layoutX="260.0" layoutY="518.0" mnemonicParsing="false" text="%sendButton" onMouseClicked="#send"/>
         <Button layoutX="330.0" layoutY="518.0" mnemonicParsing="false" text="%close" onMouseClicked="#close"/>

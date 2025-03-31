@@ -63,7 +63,7 @@ public class Constants {
     public static int SIZE_COLUMN;
     public static int BITS_PER_PIXEL;
     public static String howToArrange;
-    public static String uploadFirmwarePath = "";
+    public static String uploadFirmwarePath;
     public static int PageMsgCnt;
 
     static {
@@ -273,7 +273,7 @@ public class Constants {
             modalStage.setY(modalY);
         });
 
-        modalStage.showAndWait();
+        modalStage.show();
     }
 
     public static byte[] createPacket(String rawPacket) throws UnsupportedEncodingException {
@@ -291,7 +291,9 @@ public class Constants {
                     continue;
                 }
 
-                finalBaos.write("/".getBytes("MS949"));
+                if (tokens.length!=1){
+                    finalBaos.write("/".getBytes("MS949"));
+                }
 
                 int codeLen = getControlCodeLength(token);
                 String controlCode = token.substring(0, Math.min(codeLen, token.length()));
@@ -317,7 +319,7 @@ public class Constants {
             case 'F', 'P', 'X', 'Y', 'E', 'S', 'D' -> 5;
             case 'C', 'G', 'T' -> 2;
             case 'B', 'U' -> 4;
-            default -> 1;
+            default -> 0;
         };
     }
 
@@ -329,12 +331,15 @@ public class Constants {
         logMsg.append(header);
 
         String[] tokens = trimmed.split("/");
+
         for (String token : tokens) {
             if(token.isEmpty()){
                 continue;
             }
 
-            logMsg.append("/");
+            if (tokens.length!=1){
+                logMsg.append("/");
+            }
 
             int codeLen = getControlCodeLength(token);
             String controlCode = token.substring(0, Math.min(codeLen, token.length()));
@@ -342,7 +347,7 @@ public class Constants {
 
             logMsg.append(controlCode);
             if(!content.isEmpty()){
-                byte[] bytes = content.getBytes(StandardCharsets.UTF_16BE);
+                byte[] bytes = content.getBytes(StandardCharsets.UTF_16LE);
                 logMsg.append(bytesToHexUTF16(bytes, bytes.length));
             }
         }

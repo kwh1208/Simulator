@@ -125,6 +125,10 @@ public class DisplaySignalSettingController {
             signalList.getSelectionModel().select(index);
             signalList.scrollTo(index); // 선택한 항목으로 스크롤 이동
         }
+
+        if (index == -1){
+            signalList.getSelectionModel().select(0);
+        }
     }
 
     private void handleDoubleClick(MouseEvent event, ListView<String> listView) {

@@ -13,10 +13,15 @@
     -fx-control-inner-background: black;
     -fx-background-radius: 0;
     -fx-text-fill: white;
-    -fx-font-smoothing-type: lcd;
 }
 .text-area:focused{
     -fx-border-color: orange;
+}
+
+.text-area .scroll-pane .viewport {
+    -fx-background-color: black;
+    -fx-border-color: black;
+    -fx-border-width: 0;
 }
 
 .label{
