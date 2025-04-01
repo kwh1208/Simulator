@@ -30,8 +30,6 @@ public class Simulator extends Application {
     TCPManager tcpManager;
     UDPManager udpManager;
 
-    private Stage stage;
-
     @Override
     public void init() throws Exception {
         super.init();
@@ -51,7 +49,6 @@ public class Simulator extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         instance = this;  // 인스턴스를 저장
-        this.stage = stage;
 
         // 백그라운드에서 FXML 로드
         Task<Parent> loadTask = new Task<>() {
@@ -72,7 +69,7 @@ public class Simulator extends Application {
             Platform.runLater(() -> {
                 stage.setScene(scene);
                 stage.setResizable(false);
-                stage.setTitle("DBPS V1.2.5");
+                stage.setTitle("DBPS V1.2.6 - temporary");
                 stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
                 stage.show();
             });

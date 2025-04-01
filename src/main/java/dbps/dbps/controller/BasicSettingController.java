@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
 
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.IS_ASCII;
@@ -67,7 +68,7 @@ public class BasicSettingController {
             configService.setProperty("IS_ASCII", String.valueOf(IS_ASCII));
         });
 
-        basicPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/communicationSetting.css").toExternalForm());
+        basicPane.getStylesheets().add(Objects.requireNonNull(Simulator.class.getResource("/dbps/dbps/css/communicationSetting.css")).toExternalForm());
 
         programLanguage.setValue(configService.getProperty("PROGRAM_LANGUAGE"));
 
