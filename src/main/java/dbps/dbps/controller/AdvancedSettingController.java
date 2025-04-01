@@ -165,11 +165,12 @@ public class AdvancedSettingController {
         }
     }
 
-    public void ASPhoto() {
-        try {
-            Desktop.getDesktop().browse(new URI("https://forms.gle/zkt5ALsQKKZhbQnx9"));
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
+    public void ASPhoto(MouseEvent mouseEvent) throws IOException {
+        openModal("/dbps/dbps/fxmls/asCheck.fxml", "테스트중", mouseEvent);
+//        try {
+//            Desktop.getDesktop().browse(new URI("https://forms.gle/zkt5ALsQKKZhbQnx9"));
+//        } catch (IOException | URISyntaxException e) {
+//            e.printStackTrace();
+//        }
     }
 }

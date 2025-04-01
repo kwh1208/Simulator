@@ -11,7 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 
 public class LogService {
@@ -19,7 +21,7 @@ public class LogService {
     private static LogService logService = null;
     public ScrollPane scrollPane;
     public InlineCssTextArea logTextArea;
-    private String logFilePath;
+    private final String logFilePath;
 
     private LogService() {
         String currentDir = System.getProperty("user.dir");
@@ -137,6 +139,20 @@ public class LogService {
     private void scrollToBottom() {
         logTextArea.moveTo(logTextArea.getLength());
         logTextArea.requestFollowCaret();
+    }
+
+
+    public List<String> getLast10Lines() {
+        Path path = Paths.get(logFilePath);
+        try {
+            List<String> lines = Files.readAllLines(path);
+            int totalLines = lines.size();
+            int start = Math.max(totalLines - 10, 0);
+            return lines.subList(start, totalLines);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
 }
