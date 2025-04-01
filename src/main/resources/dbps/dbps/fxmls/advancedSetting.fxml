@@ -3,7 +3,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane fx:id="ASAP" layoutX="17.0" layoutY="50.0" prefWidth="278.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdvancedSettingController">
+<Pane fx:id="ASAP" layoutX="17.0" layoutY="50.0" prefWidth="278.0" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdvancedSettingController">
     <Button layoutX="15.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClicked" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%communicationSetting" />
     <Button layoutX="15.0" layoutY="60.0" mnemonicParsing="false" onMouseClicked="#fontSetting" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%fontSetting" />
     <Button layoutX="15.0" layoutY="110.0" mnemonicParsing="false" onMouseClicked="#transferSignalSetting" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%displaySignalSetting" />

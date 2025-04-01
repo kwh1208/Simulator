@@ -8,8 +8,8 @@
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane fx:id="dpPane" layoutX="220.0" layoutY="60.0" prefHeight="160.0" prefWidth="288.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.SizeOfDisplayBoardController">
-    <Label alignment="CENTER" layoutX="74.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%displaySize" textFill="WHITE" />
+<Pane fx:id="dpPane" layoutX="220.0" layoutY="60.0" prefHeight="160.0" prefWidth="288.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.SizeOfDisplayBoardController">
+    <Label alignment="CENTER" layoutX="10.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%displaySize" />
     <Label layoutX="20.0" layoutY="25.0" text="%height" />
     <Spinner fx:id="spinnerForRow" layoutX="120.0" layoutY="18.0" prefHeight="25.0" prefWidth="72.0" />
     <Label fx:id="rowPixel" layoutX="210.0" layoutY="26.0" prefHeight="13.0" prefWidth="80.0" />

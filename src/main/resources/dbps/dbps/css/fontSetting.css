@@ -181,3 +181,22 @@
 .check-box:selected .mark {
     -fx-background-color: orange;
 }
+
+.radio-button .radio,
+.check-box .box {
+    -fx-min-width: 16;
+    -fx-min-height: 16;
+    -fx-pref-width: 16;
+    -fx-pref-height: 16;
+    /* 필요한 경우 -fx-max-width, -fx-max-height도 지정 */
+}
+
+.check-box .mark {
+    -fx-shape: "M0 0 L1 0 1 1 0 1 Z";
+    -fx-min-width: 8;
+    -fx-min-height: 8;
+    -fx-pref-width: 8;
+    -fx-pref-height: 8;
+    -fx-max-width: 8;
+    -fx-max-height: 8;
+}

@@ -142,16 +142,16 @@ public class LogService {
     }
 
 
-    public List<String> getLast10Lines() {
+    public String getLast10Lines() {
         Path path = Paths.get(logFilePath);
         try {
             List<String> lines = Files.readAllLines(path);
             int totalLines = lines.size();
-            int start = Math.max(totalLines - 10, 0);
-            return lines.subList(start, totalLines);
+            int start = Math.max(totalLines - 15, 0);
+            return String.join(System.lineSeparator(), lines.subList(start, totalLines));
         } catch (IOException e) {
             e.printStackTrace();
-            return Collections.emptyList();
+            return "";
         }
     }
 

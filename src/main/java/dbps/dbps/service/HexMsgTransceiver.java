@@ -110,7 +110,7 @@ public class HexMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
-            case "UDP" -> //udp로 메세지 전송
+            case "UDP" -> //udp로 메시지 전송
             {
                 try {
                     udpManager.sendMsgAndGetMsgByteNoLog(msg);
@@ -118,7 +118,7 @@ public class HexMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
-            case "clientTCP" -> //tcp로 메세지 전송
+            case "clientTCP" -> //tcp로 메시지 전송
             {
                 try {
                     tcpManager.sendMsgAndGetMsgByteNoLog(msg);
@@ -149,7 +149,7 @@ public class HexMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
-            case "UDP" -> //udp로 메세지 전송
+            case "UDP" -> //udp로 메시지 전송
             {
                 try {
                     udpManager.sendMsgAndGetMsgByteShortLog(msg);
@@ -157,7 +157,7 @@ public class HexMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
-            case "clientTCP" -> //tcp로 메세지 전송
+            case "clientTCP" -> //tcp로 메시지 전송
             {
                 try {
                     tcpManager.sendMsgAndGetMsgByteShortLog(msg);
@@ -194,7 +194,7 @@ public class HexMsgTransceiver {
             chkErrorCode(receiveMsg, splitMsg);
         }
         if (splitMsg[5].equals("6A")) {
-            //특수 메세지
+            //특수 메시지
             for (int i = 6; i < 16; i++) {
                 if (splitMsg[i].equals("3" + i)) {
                     logService.errorLog(bundle.getString("unknownStatusCode"));

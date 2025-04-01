@@ -15,22 +15,6 @@ public class ConfigService extends AbstractSingleton<ConfigService> {
     // 싱글톤 인스턴스
     private static volatile ConfigService instance;
     
-    // 상수 정의
-    private static final String CONFIG_DIR = "config";
-    private static final String CONFIG_FILENAME = "config.properties";
-    private static final String DEFAULT_COMMENT = "Default configuration";
-    
-    // 속성 키 정의
-    private static final String PROP_IS_ASCII = "IS_ASCII";
-    private static final String PROP_CONNECT_TYPE = "connectType";
-    private static final String PROP_SERIAL_SPEED = "serialSpeed";
-    private static final String PROP_OPEN_PORT_NAME = "openPortName";
-    
-    // 기본 속성 값 정의
-    private static final String DEFAULT_SERIAL_PORT = "COM1";
-    private static final String DEFAULT_TCP_ADDR = "192.168.0.10";
-    private static final int DEFAULT_TCP_PORT = 5000;
-    
     // 멤버 변수
     private final Properties properties;
     public final Properties displayProperties;
@@ -40,7 +24,7 @@ public class ConfigService extends AbstractSingleton<ConfigService> {
      * 생성자 - 설정 파일 로드 및 초기화
      */
     private ConfigService() {
-        configFilePath = System.getProperty("user.dir") + File.separator + CONFIG_DIR + File.separator + CONFIG_FILENAME;
+        configFilePath = System.getProperty("user.dir") + File.separator + "config" + File.separator + "config.properties";
         properties = new Properties();
         displayProperties = new Properties();
         
@@ -73,38 +57,41 @@ public class ConfigService extends AbstractSingleton<ConfigService> {
      */
     @Override
     protected ConfigService createInstance() {
-        return instance; // 이미 생성된 인스턴스 반환
+        return instance;
     }
     
     /**
      * 전역 상수 초기화
      */
     private void initializeConstants() {
-        // 설정 값을 읽어 상수 초기화
-        IS_ASCII = Boolean.parseBoolean(getProperty(PROP_IS_ASCII));
-        CONNECT_TYPE = getProperty(PROP_CONNECT_TYPE);
-        OPEN_PORT_NAME = getProperty(PROP_OPEN_PORT_NAME);
-        SERIAL_BAUDRATE = parseInt(getProperty(PROP_SERIAL_SPEED), 115200);
-        RS485_ADDR_NUM = parseInt(getProperty("RS485_ADDR_NUM"), 0);
-        TCP_IP = getProperty("clientTCPAddr");
-        TCP_PORT = parseInt(getProperty("clientTCPPort"), DEFAULT_TCP_PORT);
-        UDP_IP = getProperty("UDPAddr");
-        UDP_PORT = parseInt(getProperty("UDPPort"), 5109);
-        SIZE_ROW = parseInt(getProperty("displayRowSize"), 32);
-        SIZE_COLUMN = parseInt(getProperty("displayColumnSize"), 64);
-        
-        // 비트 퍼 픽셀 처리
-        String bitsPerPixelStr = getProperty("bitsPerPixel");
-        BITS_PER_PIXEL = (bitsPerPixelStr != null && !bitsPerPixelStr.isEmpty()) ? 
-                          bitsPerPixelStr.charAt(0) - '0' : 1;
-        
-        howToArrange = getProperty("howToArrange");
-        isRS = Boolean.parseBoolean(getProperty("isRS"));
-        serverTCPPort = parseInt(getProperty("serverTCPPort"), DEFAULT_TCP_PORT);
+        try {
+            IS_ASCII = Boolean.parseBoolean(getProperty("IS_ASCII"));
+            CONNECT_TYPE = getProperty("connectType");
+            OPEN_PORT_NAME = getProperty("openPortName");
+            SERIAL_BAUDRATE = Integer.parseInt(getProperty("serialSpeed"));
+            RS485_ADDR_NUM = Integer.parseInt(getProperty("RS485_ADDR_NUM"));
+            TCP_IP = getProperty("clientTCPAddr");
+            TCP_PORT = Integer.parseInt(getProperty("clientTCPPort"));
+            UDP_IP = getProperty("UDPAddr");
+            UDP_PORT = Integer.parseInt(getProperty("UDPPort"));
+            SIZE_ROW = Integer.parseInt(getProperty("displayRowSize"));
+            SIZE_COLUMN = Integer.parseInt(getProperty("displayColumnSize"));
+            
+            String bitsPerPixel = getProperty("bitsPerPixel");
+            if (bitsPerPixel != null && !bitsPerPixel.isEmpty()) {
+                BITS_PER_PIXEL = bitsPerPixel.charAt(0) - '0';
+            }
+            
+            howToArrange = getProperty("howToArrange");
+            isRS = Boolean.parseBoolean(getProperty("isRS"));
+            serverTCPPort = Integer.parseInt(getProperty("serverTCPPort"));
 
-        // TCP 매니저 설정
-        TCPManager.getManager().setIP(TCP_IP);
-        TCPManager.getManager().setPORT(TCP_PORT);
+            // TCP 매니저 설정
+            TCPManager.getManager().setIP(TCP_IP);
+            TCPManager.getManager().setPORT(TCP_PORT);
+        } catch (NumberFormatException e) {
+            System.err.println("설정값 변환 중 오류 발생: " + e.getMessage());
+        }
     }
 
     /**
@@ -114,8 +101,9 @@ public class ConfigService extends AbstractSingleton<ConfigService> {
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream(configFilePath), StandardCharsets.UTF_8)) {
             properties.clear(); // 기존 값 초기화
             properties.load(reader);
+            initializeConstants(); // 상수 다시 초기화
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("설정 파일 로드 중 오류 발생: " + e.getMessage());
             throw new RuntimeException("설정 파일을 로드할 수 없습니다");
         }
     }
@@ -126,31 +114,30 @@ public class ConfigService extends AbstractSingleton<ConfigService> {
      * @param filePath 설정 파일 경로
      */
     private void createFileIfNotExists(String filePath) {
-        File configFile = new File(filePath);
-        
-        // 파일이 이미 존재하면 건너뜀
-        if (configFile.exists()) {
+        if (new File(filePath).exists()) {
             return;
         }
         
-        // 기본 속성 생성
         Properties defaultProperties = createDefaultProperties();
         
+        File configFile = new File(filePath);
         // 디렉토리 생성
         File parentDir = configFile.getParentFile();
         if (!parentDir.exists()) {
-            parentDir.mkdirs();
+            parentDir.mkdirs();  // 디렉토리가 없을 경우 생성
         }
         
-        // 파일 생성 및 저장
-        try {
-            configFile.createNewFile();
-            
-            try (Writer writer = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8)) {
-                defaultProperties.store(writer, DEFAULT_COMMENT);
+        if (!configFile.exists()) {
+            try {
+                configFile.createNewFile();  // 파일이 없을 경우 생성
+                // 기본 설정 값 저장
+                try (Writer writer = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8)) {
+                    defaultProperties.store(writer, "Default configuration");
+                }
+            } catch (IOException e) {
+                System.err.println("설정 파일 생성 중 오류 발생: " + e.getMessage());
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
     
@@ -175,34 +162,130 @@ public class ConfigService extends AbstractSingleton<ConfigService> {
             }
         }
         
-        // 기본 설정 값
-        defaultProperties.setProperty(PROP_IS_ASCII, "true");
-        defaultProperties.setProperty(PROP_CONNECT_TYPE, "serial");
-        defaultProperties.setProperty(PROP_SERIAL_SPEED, "115200");
+        // 기본 연결 설정
+        defaultProperties.setProperty("IS_ASCII", "true");
+        defaultProperties.setProperty("connectType", "serial");
+        defaultProperties.setProperty("serialSpeed", "115200");
         defaultProperties.setProperty("RS485_ADDR_NUM", "0");
-        defaultProperties.setProperty("serverTCPPort", String.valueOf(DEFAULT_TCP_PORT));
-        defaultProperties.setProperty("openPortNum", DEFAULT_SERIAL_PORT);
+        defaultProperties.setProperty("serverTCPPort", "5000");
+        defaultProperties.setProperty("openPortNum", "COM1");
         defaultProperties.setProperty("isRS", "false");
-        defaultProperties.setProperty("clientTCPAddr", DEFAULT_TCP_ADDR);
-        defaultProperties.setProperty(PROP_OPEN_PORT_NAME, DEFAULT_SERIAL_PORT);
-        defaultProperties.setProperty("clientTCPPort", String.valueOf(DEFAULT_TCP_PORT));
-        defaultProperties.setProperty("serverTCPAddr", DEFAULT_TCP_ADDR);
-        defaultProperties.setProperty("serverTCPPort", String.valueOf(DEFAULT_TCP_PORT));
+        defaultProperties.setProperty("clientTCPAddr", "192.168.0.10");
+        defaultProperties.setProperty("openPortName", "COM1");
+        defaultProperties.setProperty("clientTCPPort", "5100");
+        defaultProperties.setProperty("serverTCPAddr", "192.168.0.10");
+        defaultProperties.setProperty("serverTCPPort", "5000");
         defaultProperties.setProperty("UDPPort", "5109");
-        defaultProperties.setProperty("UDPAddr", DEFAULT_TCP_ADDR);
+        defaultProperties.setProperty("UDPAddr", "192.168.0.10");
         defaultProperties.setProperty("RESPONSE_LATENCY", "3");
         defaultProperties.setProperty("latency", "3");
         defaultProperties.setProperty("lastDisplaySignal", "16D-P16D1S11");
         defaultProperties.setProperty("PROGRAM_LANGUAGE", "한국어");
-        
-        // 페이지 메시지 관련 기본값
+
+        // 네트워크 설정
+        defaultProperties.setProperty("dbNetIP", "192.168.0.201");
+        defaultProperties.setProperty("dbNetPort", "5000");
+        defaultProperties.setProperty("dbNetGateway", "192.168.0.1");
+        defaultProperties.setProperty("dbNetSubnet", "255.255.255.0");
+
+        // 폰트 그룹 설정
+        defaultProperties.setProperty("fontGroup1FontPath1", "ENG 08x16-DABIT(표준).fnt");
+        defaultProperties.setProperty("fontGroup1FontType1", "english");
+        defaultProperties.setProperty("fontGroup1FontPath2", "KOR 16x16-DABIT(표준).fnt");
+        defaultProperties.setProperty("fontGroup1FontType2", "combination");
+        defaultProperties.setProperty("fontGroup1FontPath3", "USER 16x16-Special(표준).fnt");
+        defaultProperties.setProperty("fontGroup1FontType3", "userFont");
+
+        defaultProperties.setProperty("fontGroup2FontPath1", "ENG 08x16-DABIT(표준).fnt");
+        defaultProperties.setProperty("fontGroup2FontType1", "english");
+        defaultProperties.setProperty("fontGroup2FontPath2", "KOR 16x16-DABIT(표준).fnt");
+        defaultProperties.setProperty("fontGroup2FontType2", "combination");
+        defaultProperties.setProperty("fontGroup2FontPath3", "USER 16x16-Special(표준).fnt");
+        defaultProperties.setProperty("fontGroup2FontType3", "userFont");
+
+        defaultProperties.setProperty("fontGroup3FontType1", "english");
+        defaultProperties.setProperty("fontGroup3FontType2", "combination");
+        defaultProperties.setProperty("fontGroup3FontType3", "userFont");
+
+        defaultProperties.setProperty("fontGroup4FontType1", "english");
+        defaultProperties.setProperty("fontGroup4FontType2", "combination");
+        defaultProperties.setProperty("fontGroup4FontType3", "userFont");
+
+        defaultProperties.setProperty("fontGroup1selected", "True");
+        defaultProperties.setProperty("fontGroup2selected", "True");
+        defaultProperties.setProperty("fontGroup3selected", "False");
+        defaultProperties.setProperty("fontGroup4selected", "False");
+
+        defaultProperties.setProperty("isHexRealTime", "0");
+
+        // 디스플레이 설정 - 페이지 및 섹션별 설정
+        for (int i = 0; i <= 10; i++) { // 페이지 개수(0은 실시간)
+            for (int j = 0; j < 3; j++) { // 섹션 개수
+                defaultProperties.setProperty("displayControl" + i + j, "On");
+                defaultProperties.setProperty("displayMethod" + i + j, "Clear");
+                defaultProperties.setProperty("charCode" + i + j, "CombinationType");
+                defaultProperties.setProperty("fontSize" + i + j, "16");
+                defaultProperties.setProperty("fontGroup" + i + j, "fontGroup1");
+                defaultProperties.setProperty("effectIn" + i + j, "staticEffect");
+                defaultProperties.setProperty("effectInDirection" + i + j, "noDirection");
+                defaultProperties.setProperty("effectOut" + i + j, "staticEffect");
+                defaultProperties.setProperty("effectOutDirection" + i + j, "noDirection");
+                defaultProperties.setProperty("effectSpeed" + i + j, "5");
+                defaultProperties.setProperty("effectTime" + i + j, "2sec");
+                defaultProperties.setProperty("xStart" + i + j, "0");
+                defaultProperties.setProperty("xEnd" + i + j, "0");
+                defaultProperties.setProperty("yStart" + i + j, "0");
+                defaultProperties.setProperty("yEnd" + i + j, "0");
+                defaultProperties.setProperty("bgImg" + i + j, "notUsed");
+                defaultProperties.setProperty("textColor" + i + j, "1");
+                defaultProperties.setProperty("bgColor" + i + j, "0");
+                defaultProperties.setProperty("textColorASC" + i + j, "red");
+                defaultProperties.setProperty("bgColorASC" + i + j, "black");
+                if (i == 0) {
+                    defaultProperties.setProperty("text" + i + j, "realTime 메시지 " + j);
+                } else {
+                    defaultProperties.setProperty("text" + i + j, "page " + i + "-section " + j);
+                }
+            }
+        }
+
+        // 디스플레이 기본 설정
+        defaultProperties.setProperty("displayControlDefault", "On");
+        defaultProperties.setProperty("displaySignal", "32D-P161S11");
+        defaultProperties.setProperty("displayMethodDefault", "Clear");
+        defaultProperties.setProperty("charCodeDefault", "한글 조합형");
+        defaultProperties.setProperty("fontSizeDefault", "16");
+        defaultProperties.setProperty("fontGroupDefault", "폰트그룹1");
+        defaultProperties.setProperty("effectInDefault", "정지효과");
+        defaultProperties.setProperty("effectInDirectionDefault", "방향없음");
+        defaultProperties.setProperty("effectOutDefault", "사용안함");
+        defaultProperties.setProperty("effectOutDirectionDefault", "사용안함");
+        defaultProperties.setProperty("effectSpeedDefault", "5");
+        defaultProperties.setProperty("effectTimeDefault", "2초");
+        defaultProperties.setProperty("xStartDefault", "0");
+        defaultProperties.setProperty("xEndDefault", "0");
+        defaultProperties.setProperty("yStartDefault", "0");
+        defaultProperties.setProperty("yEndDefault", "0");
+        defaultProperties.setProperty("bgImgDefault", "사용안함");
+        defaultProperties.setProperty("textColorDefault", "1");
+        defaultProperties.setProperty("bgColorDefault", "2");
+        defaultProperties.setProperty("settingText", "![0032/P0000/D9901/F0003/E0101/S2002/X0000/Y0000/B000/C3/G0/T0!]");
+
+        // 기타 설정
         defaultProperties.setProperty("pageMsgCnt", "10");
-        
-        // 디스플레이 관련 기본값
+        defaultProperties.setProperty("pageMsgClear", "전체");
+        defaultProperties.setProperty("displayBrightness", "100");
+        defaultProperties.setProperty("realTimeMsg", "효과 동시표출");
         defaultProperties.setProperty("displayRowSize", "2");
         defaultProperties.setProperty("displayColumnSize", "6");
         defaultProperties.setProperty("bitsPerPixel", "8BPP");
         defaultProperties.setProperty("howToArrange", "가로형");
+        defaultProperties.setProperty("relay1", "None");
+        defaultProperties.setProperty("relay2", "None");
+        defaultProperties.setProperty("relay3", "None");
+        defaultProperties.setProperty("relay4", "None");
+        defaultProperties.setProperty("bgImg", "사용안함");
+        defaultProperties.setProperty("displayCover", "검은색");
         
         return defaultProperties;
     }
@@ -214,7 +297,7 @@ public class ConfigService extends AbstractSingleton<ConfigService> {
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream(configFilePath), StandardCharsets.UTF_8)) {
             properties.load(reader);
         } catch (IOException e) {
-            // 로그 처리
+            System.err.println("설정 파일 로드 중 오류 발생: " + e.getMessage());
         }
     }
 
@@ -274,26 +357,7 @@ public class ConfigService extends AbstractSingleton<ConfigService> {
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(configFilePath), StandardCharsets.UTF_8)) {
             properties.store(writer, null);
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    /**
-     * 문자열을 정수로 변환 (실패 시 기본값 사용)
-     * 
-     * @param value 변환할 문자열
-     * @param defaultValue 변환 실패시 사용할 기본값
-     * @return 변환된 정수 또는 기본값
-     */
-    private int parseInt(String value, int defaultValue) {
-        if (value == null || value.isEmpty()) {
-            return defaultValue;
-        }
-        
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            return defaultValue;
+            System.err.println("설정 파일 저장 중 오류 발생: " + e.getMessage());
         }
     }
 }

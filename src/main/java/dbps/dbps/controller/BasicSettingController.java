@@ -35,7 +35,7 @@ public class BasicSettingController {
     public void initialize() {
         bundle= ResourceManager.getInstance().getBundle();
         configService = ConfigService.getInstance();
-        //초기설정에 따라서 메세지 탭 변경
+        //초기설정에 따라서 메시지 탭 변경
         mainService = MainService.getInstance();
         hexRadioBtn.setToggleGroup(protocolType);
         ascRadioBtn.setToggleGroup(protocolType);

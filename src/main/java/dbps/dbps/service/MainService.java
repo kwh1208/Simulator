@@ -8,6 +8,8 @@ import javafx.scene.control.Tab;
 import lombok.Setter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -19,6 +21,7 @@ public class MainService {
     private static Tab settingTab;
 
     private static MainService instance;
+    LogService logService = LogService.getLogService();
 
     private Map<String, Node> cachedContent = new HashMap<>();
 
@@ -43,6 +46,10 @@ public class MainService {
                     loader.setResources(bundle);
                     return loader.load();
                 } catch (IOException e) {
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    logService.updateInfoLog(sw.toString());
                     throw new RuntimeException(e);
                 }
             });

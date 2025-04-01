@@ -36,6 +36,9 @@ public class FirmwareService {
 
     public void setFirmware(String firmware) {
         String replace = firmware.replace("!]", "");
+        if (firmwareInformation==null){
+            return;
+        }
         firmwareInformation.setText(replace);
     }
 

@@ -13,7 +13,7 @@ public class ASCiiMsgService extends AbstractSingleton<ASCiiMsgService> {
     // 싱글톤 인스턴스
     private static volatile ASCiiMsgService instance;
     
-    // final 키워드 제거 (필요시 나중에 초기화)
+    // ConfigService 의존성
     private ConfigService configService;
 
     /**
@@ -32,7 +32,7 @@ public class ASCiiMsgService extends AbstractSingleton<ASCiiMsgService> {
             synchronized (ASCiiMsgService.class) {
                 if (instance == null) {
                     instance = new ASCiiMsgService();
-                    instance.initialize(); // 초기화 메서드 분리
+                    instance.initialize();
                 }
             }
         }
@@ -51,7 +51,7 @@ public class ASCiiMsgService extends AbstractSingleton<ASCiiMsgService> {
      */
     @Override
     protected ASCiiMsgService createInstance() {
-        return instance; // 이미 생성된 인스턴스 반환
+        return instance;
     }
 
     /**

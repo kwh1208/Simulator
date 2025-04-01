@@ -7,7 +7,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane fx:id="msPane" prefHeight="135.0" prefWidth="290.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MessageSettingController">
+<Pane fx:id="msPane" prefHeight="135.0" prefWidth="290.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MessageSettingController">
     <Label layoutX="19.0" layoutY="26.0" text="%SetTotalCount" />
     <ComboBox fx:id="pageMsgCnt" layoutX="120.0" layoutY="20.0" prefHeight="25.0" prefWidth="94.0" value="10">
         <items>

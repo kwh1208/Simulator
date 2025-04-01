@@ -338,12 +338,12 @@ public class FirmwareUpgradeController {
             return;
         }
 
+        uploadFirmwarePath = fileLocation.getText();
+
         if (!Files.exists(Path.of(uploadFirmwarePath))) {
             logService.errorLog(bundle.getString("errorFileNotFound"));
             return;
         }
-
-        uploadFirmwarePath = fileLocation.getText();
 
         // 새로운 창 생성
         progressStage.show();

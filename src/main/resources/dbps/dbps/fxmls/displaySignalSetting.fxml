@@ -11,7 +11,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="displaySignalAP" prefHeight="426.0" prefWidth="541.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplaySignalSettingController">
+<AnchorPane fx:id="displaySignalAP" prefHeight="426.0" prefWidth="541.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplaySignalSettingController">
     <Label layoutX="29.0" layoutY="10.0" text="%displaySignal" />
     <Label layoutX="272.0" layoutY="11.0" text="%memo" />
     <ListView fx:id="signalList" layoutX="29.0" layoutY="35.0" prefHeight="331.0" prefWidth="205.0">

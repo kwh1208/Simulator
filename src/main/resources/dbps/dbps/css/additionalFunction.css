@@ -111,6 +111,8 @@
     -fx-text-fill: white;
 }
 
+
+
 .combo-box {
     -fx-background-color: #1C1F26;
     -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */

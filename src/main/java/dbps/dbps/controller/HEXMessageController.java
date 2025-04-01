@@ -737,7 +737,7 @@ public class HEXMessageController {
             msg.append("00 ").append(String.format("%02x", (textBytes.length * 2) + 17));
             msg.append(" 94 ");
 
-            //실시간메세지
+            //실시간메시지
             if (msgType.equals(bundle.getString("realTimeMsg"))) {
                 msg.append("00 ");
             } else {

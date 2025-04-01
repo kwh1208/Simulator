@@ -10,6 +10,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
@@ -38,6 +40,8 @@ public class AdvancedSettingController {
 
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
+
+
     }
 
 
@@ -106,7 +110,7 @@ public class AdvancedSettingController {
     }
 
     public void pageMsg(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/messageSetting.fxml", "페이지메세지 설정", mouseEvent);
+        openModal("/dbps/dbps/fxmls/messageSetting.fxml", "페이지메시지 설정", mouseEvent);
     }
 
     //펌웨어 모달창 열기
@@ -166,11 +170,11 @@ public class AdvancedSettingController {
     }
 
     public void ASPhoto(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/asCheck.fxml", "테스트중", mouseEvent);
-//        try {
-//            Desktop.getDesktop().browse(new URI("https://forms.gle/zkt5ALsQKKZhbQnx9"));
-//        } catch (IOException | URISyntaxException e) {
-//            e.printStackTrace();
-//        }
+//        openModal("/dbps/dbps/fxmls/asCheck.fxml", "테스트중", mouseEvent);
+        try {
+            Desktop.getDesktop().browse(new URI("https://forms.gle/zkt5ALsQKKZhbQnx9"));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 }
