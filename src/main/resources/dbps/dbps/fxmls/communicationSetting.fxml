@@ -12,9 +12,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="communicationSettingAP" prefHeight="616.0" prefWidth="400.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.CommunicationSettingController">
-    <Pane layoutX="15.0" layoutY="14.0" prefHeight="161.0" prefWidth="373.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
-        <RadioButton fx:id="serialRadioBtn" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="80.0" style="-fx-background-color: #333333;" text="Serial" />
+<AnchorPane fx:id="communicationSettingAP" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.CommunicationSettingController">
+    <Pane layoutX="15.0" layoutY="14.0" prefHeight="161.0" prefWidth="373.0" >
+        <RadioButton fx:id="serialRadioBtn" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="80.0" text="Serial" />
         <Label layoutX="14.0" layoutY="16.0" prefHeight="13.0" text="%comPort" />
         <ComboBox fx:id="serialPortComboBox" layoutX="235.0" layoutY="11.0" prefHeight="25.0" prefWidth="120.0" value="COM1">
             <items>
@@ -51,21 +51,18 @@
         </Button>
 
     </Pane>
-    <Pane layoutX="15.0" layoutY="191.0" prefHeight="110.0" prefWidth="373.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
-        <RadioButton fx:id="clientTCPRadioBtn" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="134.0" style="-fx-background-color: #333333;" text="Client TCP/IP" />
+    <Pane layoutX="15.0" layoutY="191.0" prefHeight="87.0" prefWidth="373.0" >
+        <RadioButton fx:id="clientTCPRadioBtn" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="134.0"  text="Client TCP/IP" />
         <Label layoutX="13.0" layoutY="21.0" text="IP Address" />
         <TextField fx:id="clientIPAddress" layoutX="210.0" layoutY="17.0" prefWidth="145.0" text="192.168.0.201">
         </TextField>
         <Label layoutX="13.0" layoutY="53.0" text="IP Port" />
         <TextField fx:id="clientIPPort" layoutX="210.0" layoutY="49.0" prefWidth="145.0" text="5000">
         </TextField>
-        <Label layoutX="13.0" layoutY="85.0" text="PingTest" />
-        <TextField fx:id="pingTextField" layoutX="210.0" layoutY="81.0" prefHeight="22.0" prefWidth="103.0" />
-        <Button layoutX="315.0" layoutY="81.0" mnemonicParsing="false" onMouseClicked="#pingTest" text="실행" />
     </Pane>
 
-    <Pane layoutX="15.0" layoutY="317.0" prefHeight="87.0" prefWidth="373.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
-        <RadioButton fx:id="serverTCPRadioBtn" layoutX="16.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" style="-fx-background-color: #333333;" text="Server TCP/IP" />
+    <Pane layoutX="15.0" layoutY="294.0" prefHeight="87.0" prefWidth="373.0" >
+        <RadioButton fx:id="serverTCPRadioBtn" layoutX="16.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" text="Server TCP/IP" />
         <Label layoutX="16.0" layoutY="22.0" text="IP Address" />
         <ComboBox fx:id="serverIPAddress" layoutX="210.0" layoutY="17.0" prefWidth="145.0">
             <items>
@@ -76,23 +73,23 @@
         <Label layoutX="16.0" layoutY="54.0" text="IP Port" />
         <TextField fx:id="serverIPPort" layoutX="210.0" layoutY="50.0" prefWidth="145.0" />
     </Pane>
-    <Pane layoutX="15.0" layoutY="418.0" prefHeight="87.0" prefWidth="373.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
-        <RadioButton fx:id="UDPRadioBtn" layoutX="18.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" style="-fx-background-color: #333333;" text="UDP" />
+    <Pane layoutX="15.0" layoutY="395.0" prefHeight="87.0" prefWidth="373.0" >
+        <RadioButton fx:id="UDPRadioBtn" layoutX="18.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0"  text="UDP" />
         <Label layoutX="16.0" layoutY="21.0" text="IP Address" />
         <TextField fx:id="UDPIPAddress" layoutX="210.0" layoutY="17.0" prefWidth="145.0" text="192.168.0.202" />
         <Label layoutX="16.0" layoutY="53.0" text="IP Port" />
         <TextField fx:id="UDPIPPort" layoutX="210.0" layoutY="49.0" prefWidth="145.0" text="5108" />
     </Pane>
-    <Button fx:id="connect" layoutX="17.0" layoutY="512.0" mnemonicParsing="false" onMouseClicked="#openSerialPort" prefHeight="27.0" prefWidth="115.0" text="%openPort" />
-    <Button fx:id="keepOpenBtn" layoutX="143.0" layoutY="512.0" mnemonicParsing="false" onMouseClicked="#keepOpen" prefHeight="27.0" prefWidth="115.0" text="포트 유지" />
-    <Button fx:id="shutConnect" layoutX="269.0" layoutY="512.0" mnemonicParsing="false" onMouseClicked="#closeSerialPort" prefHeight="27.0" prefWidth="115.0" text="%closePort" />
-    <Button layoutX="17.0" layoutY="544.0" mnemonicParsing="false" onMouseClicked="#openDabitNet" prefHeight="27.0" prefWidth="115.0" styleClass="newWindow-button" text="dBNet">
+    <Button fx:id="connect" layoutX="17.0" layoutY="492.0" mnemonicParsing="false" onMouseClicked="#openSerialPort" prefHeight="27.0" prefWidth="115.0" text="%openPort" />
+    <Button fx:id="keepOpenBtn" layoutX="143.0" layoutY="492.0" mnemonicParsing="false" onMouseClicked="#keepOpen" prefHeight="27.0" prefWidth="115.0" text="포트 유지" />
+    <Button fx:id="shutConnect" layoutX="269.0" layoutY="492.0" mnemonicParsing="false" onMouseClicked="#closeSerialPort" prefHeight="27.0" prefWidth="115.0" text="%closePort" />
+    <Button layoutX="17.0" layoutY="524.0" mnemonicParsing="false" onMouseClicked="#openDabitNet" prefHeight="27.0" prefWidth="115.0" styleClass="newWindow-button" text="dBNet">
     </Button>
-    <Button layoutX="143.0" layoutY="544.0" mnemonicParsing="false" onMouseClicked="#openBluetooth" prefHeight="27.0" prefWidth="115.0" styleClass="newWindow-button" text="dBBle">
+    <Button layoutX="143.0" layoutY="524.0" mnemonicParsing="false" onMouseClicked="#openBluetooth" prefHeight="27.0" prefWidth="115.0" styleClass="newWindow-button" text="dBBle">
     </Button>
-    <Button layoutX="269.0" layoutY="544.0" minWidth="115.0" mnemonicParsing="false" onMouseClicked="#controllerConnect" prefHeight="27.0" text="%connect" />
-    <Label layoutX="19.0" layoutY="584.0" text="%responseTime" />
-    <ComboBox fx:id="delayTime" layoutX="156.0" layoutY="580.0" prefHeight="27.0" prefWidth="54.0" value="3">
+    <Button layoutX="269.0" layoutY="524.0" minWidth="115.0" mnemonicParsing="false" onMouseClicked="#controllerConnect" prefHeight="27.0" text="%connect" />
+    <Label layoutX="19.0" layoutY="564.0" text="%responseTime" />
+    <ComboBox fx:id="delayTime" layoutX="156.0" layoutY="560.0" prefHeight="27.0" prefWidth="54.0" value="3">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="1" />
@@ -104,6 +101,6 @@
             </FXCollections>
         </items>
     </ComboBox>
-    <Button layoutX="310.0" layoutY="580.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClose" prefHeight="27.0" prefWidth="70.0" text="%close" />
+    <Button layoutX="310.0" layoutY="560.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClose" prefHeight="27.0" prefWidth="70.0" text="%close" />
     <ProgressIndicator fx:id="progressIndicator" layoutX="170.0" layoutY="240.0" visible="false" />
 </AnchorPane>
