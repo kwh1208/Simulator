@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.*;
 
 import static dbps.dbps.Constants.*;
@@ -41,7 +40,7 @@ public class CommunicationSettingController {
     @FXML
     public Button shutConnect;
     public Button keepOpenBtn;
-//    public TextField pingTextField;
+    public TextField pingTextField;
     SerialPortManager serialPortManager;
     TCPManager tcpManager;
 
@@ -127,15 +126,11 @@ public class CommunicationSettingController {
     private ProgressIndicator progressIndicator;
 
     public void showLoading() {
-        Platform.runLater(() -> {
-            progressIndicator.setVisible(true);
-        });
+        Platform.runLater(() -> progressIndicator.setVisible(true));
     }
 
     public void hideLoading() {
-        Platform.runLater(() -> {
-            progressIndicator.setVisible(false);
-        });
+        Platform.runLater(() -> progressIndicator.setVisible(false));
     }
 
     ToggleGroup communicationGroup;
@@ -278,12 +273,7 @@ public class CommunicationSettingController {
         RS485ChkBox.selectedProperty().addListener((observableValue, oldValue, newValue) ->
                 {
                     RS485ComboBox.setVisible(newValue);
-                    if (newValue){
-                        isRS = true;
-                    }
-                    else {
-                        isRS = false;
-                    }
+                    isRS = newValue;
                 }
         );
 
@@ -297,7 +287,7 @@ public class CommunicationSettingController {
 
         delayTime.setValue(configService.getProperty("RESPONSE_LATENCY"));
 
-        communicationSettingAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/communicationSetting.css").toExternalForm());
+        communicationSettingAP.getStylesheets().add(Objects.requireNonNull(Simulator.class.getResource("/dbps/dbps/css/communicationSetting.css")).toExternalForm());
 
         if (isRS){
             RS485ChkBox.setSelected(true);
@@ -308,20 +298,20 @@ public class CommunicationSettingController {
         clientIPAddress.setText(configService.getProperty("clientTCPAddr"));
         clientIPPort.setText(configService.getProperty("clientTCPPort"));
 
-//        pingTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-//            if (newValue) {
-//                // 포커스가 들어왔을 때: 테두리 주황색
-//                pingTextField.setStyle(
-//                        "-fx-background-color: black; " +
-//                                "-fx-text-fill: white; " +
-//                                "-fx-border-color: orange; " +
-//                                "-fx-border-width: 1px;"
-//                );
-//            } else {
-//                // 포커스가 나갔을 때: 원래 스타일로 복원
-//                pingTextField.setStyle("-fx-background-color: black; -fx-text-fill: white;");
-//            }
-//        });
+        pingTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                // 포커스가 들어왔을 때: 테두리 주황색
+                pingTextField.setStyle(
+                        "-fx-background-color: black; " +
+                                "-fx-text-fill: white; " +
+                                "-fx-border-color: orange; " +
+                                "-fx-border-width: 1px;"
+                );
+            } else {
+                // 포커스가 나갔을 때: 원래 스타일로 복원
+                pingTextField.setStyle("-fx-background-color: black; -fx-text-fill: white;");
+            }
+        });
     }
 
     //사용가능한 포트 가져오기
@@ -400,20 +390,6 @@ public class CommunicationSettingController {
         TCP_PORT = port;
     }
 
-    private void connectUDP(){
-        String IPAddress = UDPIPAddress.getText();
-        int port = Integer.parseInt(UDPIPPort.getText());
-
-        udpManager.setIP(IPAddress);
-        udpManager.setPORT(port);
-        configService.setProperty("UDPAddr", IPAddress);
-        configService.setProperty("UDPPort", String.valueOf(port));
-        udpManager.connect(IPAddress, port);
-
-        UDP_IP = IPAddress;
-        UDP_PORT = port;
-    }
-
     @FXML
     public void closeSerialPort() {
         if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
@@ -486,11 +462,10 @@ public class CommunicationSettingController {
 
             // 위치 계산
             double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
-            double modalY = parentY;
 
             // 위치 설정
             modalStage.setX(modalX);
-            modalStage.setY(modalY);
+            modalStage.setY(parentY);
         });
 
         modalStage.showAndWait();
@@ -541,11 +516,10 @@ public class CommunicationSettingController {
 
             // 위치 계산
             double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
-            double modalY = parentY;
 
             // 위치 설정
             modalStage.setX(modalX);
-            modalStage.setY(modalY);
+            modalStage.setY(parentY);
         });
 
         modalStage.showAndWait();
@@ -556,7 +530,7 @@ public class CommunicationSettingController {
     public void controllerConnect() {
         Task<Void> task = new Task<>() {
             @Override
-            protected Void call() throws IOException {
+            protected Void call() {
                 Platform.runLater(() -> showLoading()); // 로딩 애니메이션 시작
                 try {
                     // 시리얼일 때
@@ -608,9 +582,7 @@ public class CommunicationSettingController {
                     configService.setProperty("isRS", String.valueOf(isRS));
 
                 } finally {
-                    Platform.runLater(() -> {
-                        hideLoading();
-                    }); // 작업 완료 후 로딩 애니메이션 종료
+                    Platform.runLater(() -> hideLoading()); // 작업 완료 후 로딩 애니메이션 종료
                 }
                 return null;
             }
@@ -677,7 +649,7 @@ public class CommunicationSettingController {
                     }
                 }
             }
-        } catch (SocketException e) {
+        } catch (SocketException ignored) {
 
         }
 
@@ -699,41 +671,41 @@ public class CommunicationSettingController {
         }
     }
 
-//    public void pingTest() throws IOException {
-//        pingTextField.setText("");
-//        logService.updateInfoLog("핑 테스트를 시작합니다. 4개의 핑을 보냅니다. 잠시만 기다려주세요.");
-//        Task<Void> task = new Task<Void>() {
-//            @Override
-//            protected Void call() throws Exception {
-//                String ip = clientIPAddress.getText();
-//                if(ip == null || ip.isEmpty()){
-//                    updateMessage("IP 주소를 입력하세요.");
-//                    return null;
-//                }
-//                InetAddress address = InetAddress.getByName(ip);
-//                int successCnt = 0;
-//                long totalTime = 0;
-//                for (int i = 1; i <= 4; i++) {
-//                    long startTime = System.currentTimeMillis();
-//                    boolean reachable = address.isReachable(RESPONSE_LATENCY * 1000);
-//                    long endTime = System.currentTimeMillis();
-//                    long rtt = endTime - startTime;
-//
-//                    if (reachable) {
-//                        logService.updateInfoLog((i)+"번째 패킷 응답 시간 : " +rtt+"ms");
-//                        successCnt++;
-//                        totalTime += rtt;
-//                    } else {
-//                        logService.updateInfoLog((i)+"번째 패킷 손실되었습니다.");
-//                    }
-//                }
-//                double avgTime = (double) totalTime / 4;
-//                String result = avgTime + "ms (" + successCnt + "/4)";
-//                Platform.runLater(() -> {pingTextField.setText(result);logService.updateInfoLog("핑 테스트가 완료되었습니다.");});
-//                return null;
-//            }
-//        };
-//
-//        new Thread(task).start();
-//    }
+    public void pingTest() {
+        pingTextField.setText("");
+        logService.updateInfoLog("핑 테스트를 시작합니다. 4개의 핑을 보냅니다. 잠시만 기다려주세요.");
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                String ip = clientIPAddress.getText();
+                if(ip == null || ip.isEmpty()){
+                    updateMessage("IP 주소를 입력하세요.");
+                    return null;
+                }
+                InetAddress address = InetAddress.getByName(ip);
+                int successCnt = 0;
+                long totalTime = 0;
+                for (int i = 1; i <= 4; i++) {
+                    long startTime = System.currentTimeMillis();
+                    boolean reachable = address.isReachable(RESPONSE_LATENCY * 1000);
+                    long endTime = System.currentTimeMillis();
+                    long rtt = endTime - startTime;
+
+                    if (reachable) {
+                        logService.updateInfoLog((i)+"번째 패킷 응답 시간 : " +rtt+"ms");
+                        successCnt++;
+                        totalTime += rtt;
+                    } else {
+                        logService.updateInfoLog((i)+"번째 패킷 손실되었습니다.");
+                    }
+                }
+                double avgTime = (double) totalTime / 4;
+                String result = avgTime + "ms (" + successCnt + "/4)";
+                Platform.runLater(() -> {pingTextField.setText(result);logService.updateInfoLog("핑 테스트가 완료되었습니다.");});
+                return null;
+            }
+        };
+
+        new Thread(task).start();
+    }
 }
