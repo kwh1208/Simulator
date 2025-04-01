@@ -83,9 +83,9 @@
     <Button fx:id="connect" layoutX="17.0" layoutY="492.0" mnemonicParsing="false" onMouseClicked="#openSerialPort" prefHeight="27.0" prefWidth="115.0" text="%openPort" />
     <Button fx:id="keepOpenBtn" layoutX="143.0" layoutY="492.0" mnemonicParsing="false" onMouseClicked="#keepOpen" prefHeight="27.0" prefWidth="115.0" text="포트 유지" />
     <Button fx:id="shutConnect" layoutX="269.0" layoutY="492.0" mnemonicParsing="false" onMouseClicked="#closeSerialPort" prefHeight="27.0" prefWidth="115.0" text="%closePort" />
-    <Button layoutX="17.0" layoutY="524.0" mnemonicParsing="false" onMouseClicked="#openDabitNet" prefHeight="27.0" prefWidth="115.0" styleClass="newWindow-button" text="DBNet">
+    <Button layoutX="17.0" layoutY="524.0" mnemonicParsing="false" onMouseClicked="#openDabitNet" prefHeight="27.0" prefWidth="115.0" styleClass="newWindow-button" text="dBNet">
     </Button>
-    <Button layoutX="143.0" layoutY="524.0" mnemonicParsing="false" onMouseClicked="#openBluetooth" prefHeight="27.0" prefWidth="115.0" styleClass="newWindow-button" text="DBBle">
+    <Button layoutX="143.0" layoutY="524.0" mnemonicParsing="false" onMouseClicked="#openBluetooth" prefHeight="27.0" prefWidth="115.0" styleClass="newWindow-button" text="dBBle">
     </Button>
     <Button layoutX="269.0" layoutY="524.0" minWidth="115.0" mnemonicParsing="false" onMouseClicked="#controllerConnect" prefHeight="27.0" text="%connect" />
     <Label layoutX="19.0" layoutY="564.0" text="%responseTime" />
