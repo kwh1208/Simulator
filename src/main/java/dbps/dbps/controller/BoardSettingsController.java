@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.BoardSettingService;
@@ -67,10 +68,8 @@ public class BoardSettingsController {
         boardSettingService.setJ2_baud(J2_baud);
         boardSettingService.setJ3_baud(J3_baud);
         boardSettingService.setRs_address(rs_address);
-    }
 
-    private void toggleDisableBoard(boolean enable) {
-        boardDisable.getChildren().forEach(node -> node.setDisable(!enable));
+        boardAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
     @FXML

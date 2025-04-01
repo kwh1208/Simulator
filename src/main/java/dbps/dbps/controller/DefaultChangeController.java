@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ConfigService;
 import javafx.scene.Node;
@@ -26,6 +27,8 @@ public class DefaultChangeController {
         clientPortTF.setText(configService.getProperty("dbNetPort"));
         clientSubnetMaskTF.setText(configService.getProperty("dbNetSubnet"));
         clientGatewayTF.setText(configService.getProperty("dbNetGateway"));
+
+        defaultChangeAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
 

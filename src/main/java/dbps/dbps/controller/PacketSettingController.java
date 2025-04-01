@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.PacketSettingService;
 import javafx.fxml.FXML;
@@ -31,6 +32,8 @@ public class PacketSettingController {
         packetSettingService.setHexFirst(hexFirst);
         packetSettingService.setHexSecond(hexSecond);
         packetSettingService.setTimeOut(timeOut);
+
+        psAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
     public void setPacket() {

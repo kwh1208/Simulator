@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import javafx.animation.KeyFrame;
@@ -12,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -78,6 +80,15 @@ public class DisplaySignalSettingController {
                 scanOrder.setDisable(true);
             }
             memo.setText(configService.getDisplayProperty(signalList.getFocusModel().getFocusedItem()));
+        });
+
+        displaySignalAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
+        signalList.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                Stage stage = (Stage) displaySignalAP.getScene().getWindow();
+                stage.close();
+                event.consume();
+            }
         });
 
         SpinnerValueFactory<Integer> valueFactoryForSec = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 3);

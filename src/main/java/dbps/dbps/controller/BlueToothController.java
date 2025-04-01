@@ -1,6 +1,7 @@
 package dbps.dbps.controller;
 
 import com.fazecast.jSerialComm.SerialPort;
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.BTService;
 import dbps.dbps.service.ConfigService;
@@ -58,6 +59,8 @@ public class BlueToothController {
         });
 
         serialPortComboBox.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
+
+        bluetoothAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
     private void getSerialPortList() {

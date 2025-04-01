@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.ResourceManager;
@@ -64,6 +65,8 @@ public class BGScheduleController {
                 }
             });
         }
+
+        BGScheduleAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
     // 태그 추가

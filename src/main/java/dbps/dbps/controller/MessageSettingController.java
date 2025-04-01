@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import javafx.fxml.FXML;
@@ -52,6 +53,8 @@ public class MessageSettingController {
         msgInitialize.getItems().add(bundle.getString("All"));
         msgInitialize.setValue(bundle.getString("All"));
         configService=ConfigService.getInstance();
+
+        msPane.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
     public void sendMsgInitialize() {

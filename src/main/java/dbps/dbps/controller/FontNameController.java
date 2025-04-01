@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.FontNameService;
 import dbps.dbps.service.HexMsgTransceiver;
@@ -54,6 +55,8 @@ public class FontNameController {
         fontNameService.setGroup2font1(group2font1);
         fontNameService.setGroup2font2(group2font2);
         fontNameService.setGroup2font3(group2font3);
+
+        fontNameAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
 
         limitLength(group2font1);
         limitLength(group2font2);

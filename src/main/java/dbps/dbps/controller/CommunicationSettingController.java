@@ -2,6 +2,7 @@ package dbps.dbps.controller;
 
 
 import com.fazecast.jSerialComm.SerialPort;
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.HexMsgTransceiver;
@@ -158,6 +159,8 @@ public class CommunicationSettingController {
         serverTCPRadioBtn.setToggleGroup(communicationGroup);
         UDPRadioBtn.setToggleGroup(communicationGroup);
         serverIPPort.setText(configService.getProperty("serverTCPPort"));
+
+        communicationSettingAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
 
         switch (CONNECT_TYPE) {
             case "serial":

@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
@@ -11,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -19,6 +21,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ResourceBundle;
 
+import static dbps.dbps.Constants.*;
 import static dbps.dbps.Constants.convertRS485AddrASCii;
 import static dbps.dbps.Constants.isRS;
 import static dbps.dbps.service.SettingService.commonProgressIndicator;
@@ -91,6 +94,8 @@ public class AdditionalFunctionsController {
         pageMsgType.getItems().add(bundle.getString("simultaneousEffectDisplay"));
 
         pageMsgType.setValue(bundle.getString("simultaneousEffectDisplay"));
+
+        additionalFunctionAp.setOnKeyPressed(new EscapeKeyEventHandler());
     }
 
 

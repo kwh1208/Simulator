@@ -1,6 +1,7 @@
 package dbps.dbps.controller;
 
 import com.fazecast.jSerialComm.SerialPort;
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import dbps.dbps.service.connectManager.SerialPortManager;
@@ -10,6 +11,8 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -90,6 +93,7 @@ public class DabitNetController {
     @FXML
     public void initialize() {
         serialPortManager = SerialPortManager.getManager();
+        dabitNetAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
         udpManager = UDPManager.getUDPManager();
         db300InfoList = new HashMap<>();
         configService = ConfigService.getInstance();
@@ -102,6 +106,14 @@ public class DabitNetController {
         dabitNetService.setDb300InfoList(db300InfoList);
         dabitNetService.setDbList(dbList);
         dabitNetService.setSearchBtn(searchBtn);
+
+        dbList.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                Stage stage = (Stage) dabitNetAP.getScene().getWindow();
+                stage.close();
+                event.consume();
+            }
+        });
 
         getSerialPortList();
 

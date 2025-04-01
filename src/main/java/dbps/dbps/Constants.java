@@ -2,12 +2,15 @@ package dbps.dbps;
 
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.ResourceManager;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -383,4 +386,15 @@ public class Constants {
         logMsg.append("!]");
         return logMsg.toString();
     }
+
+    public static class EscapeKeyEventHandler implements EventHandler<KeyEvent> {
+        @Override
+        public void handle(KeyEvent event) {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.close();
+            }
+        }
+    }
+
 }

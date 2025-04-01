@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.service.*;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.ServerTCPManager;
@@ -209,6 +210,9 @@ public class FirmwareUpgradeController {
             progressStage.setX(parentX + parentWidth / 2 - 150); // 300px 창 기준 중앙 정렬
             progressStage.setY(parentY + (parentHeight / 2) - 75); // 150px 창 기준 중앙 정렬
         });
+
+
+        firmwareUpgradeAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
 

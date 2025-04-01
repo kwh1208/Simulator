@@ -1,6 +1,7 @@
 package dbps.dbps.controller;
 
 
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ASCiiMsgService;
 import dbps.dbps.service.AsciiMsgTransceiver;
@@ -69,6 +70,8 @@ public class ASCiiMsgController {
         ASCiiMsgAnchorPane.setMinSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
 
         euc_kr.setSelected(true);
+
+        ASCiiMsgAnchorPane.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
 

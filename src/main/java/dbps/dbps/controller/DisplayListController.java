@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -51,6 +52,8 @@ public class DisplayListController {
         moduleList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             displaySignal.setText(displayModuleMap.get(newValue));
         });
+
+        displayListAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
     private void handleDoubleClick(MouseEvent event, ListView<String> listView) {

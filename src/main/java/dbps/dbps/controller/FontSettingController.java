@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.service.*;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.ServerTCPManager;
@@ -453,6 +454,7 @@ public class FontSettingController {
             progressStage.setY(parentY + (parentHeight / 2) - 75); // 150px 창 기준 중앙 정렬
         });
 
+        fontSettingAnchorPane.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
     private void addItem() {

@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
 import javafx.fxml.FXML;
@@ -34,6 +35,8 @@ public class RelayController {
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
 
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
+
+        relayAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
 
