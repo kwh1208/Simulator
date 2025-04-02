@@ -727,8 +727,8 @@ public class CommunicationSettingController {
                         logService.updateInfoLog((i)+"번째 패킷 손실되었습니다.");
                     }
                 }
-                double avgTime = (double) totalTime / 4;
-                String result = avgTime + "ms (" + successCnt + "/4)";
+                double avgTime = (double) totalTime / successCnt;
+                String result = String.format("%.1fms (%d/4)", avgTime, successCnt);
                 Platform.runLater(() -> {pingTextField.setText(result);logService.updateInfoLog("핑 테스트가 완료되었습니다.");});
                 return null;
             }

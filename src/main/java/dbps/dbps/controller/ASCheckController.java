@@ -124,7 +124,17 @@ public class ASCheckController {
     }
 
     public void connectionTest() {
-        hexMsgTransceiver.sendByteMessages(CONNECT_START, null);
+        hexMsgTransceiver.sendByteMessages(CONNECT_START, null)
+                .exceptionally(ex -> {
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("경고");
+                        alert.setHeaderText("통신 실패");
+                        alert.setContentText("연결이 안되어있거나, 불안정합니다. 연결상태를 확인해주세요!");
+                        alert.showAndWait();
+                    });
+                    return null;
+                });
     }
 
     public void goDocs() throws URISyntaxException, IOException {

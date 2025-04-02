@@ -270,7 +270,6 @@ public class TCPManager {
                     return result;
                 } catch (IOException e) {
                     logService.errorLog(bundle.getString("connectionFail"));
-                    e.printStackTrace();
                     throw e;
                 }finally {
                     disconnect();

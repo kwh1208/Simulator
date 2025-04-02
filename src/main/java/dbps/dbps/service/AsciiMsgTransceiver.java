@@ -197,7 +197,6 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
                 processReceivedMessage(receivedMsg, origMsg);
                 resultFuture.complete(receivedMsg);
             } catch (Exception e) {
-                logService.errorLog("메시지 수신 처리 중 오류 발생: " + e.getMessage());
                 resultFuture.completeExceptionally(e);
             } finally {
                 hideProgressIndicator(progressIndicator);
@@ -207,7 +206,6 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
         // 실패 시 콜백
         sendTask.setOnFailed(event -> {
             Throwable exception = sendTask.getException();
-            logService.errorLog("메시지 전송 실패: " + exception.getMessage());
             resultFuture.completeExceptionally(exception);
             hideProgressIndicator(progressIndicator);
         });
@@ -216,7 +214,6 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
         try {
             new Thread(sendTask).start();
         } catch (Exception e) {
-            logService.errorLog("태스크 실행 실패: " + e.getMessage());
             resultFuture.completeExceptionally(e);
             hideProgressIndicator(progressIndicator);
         }
