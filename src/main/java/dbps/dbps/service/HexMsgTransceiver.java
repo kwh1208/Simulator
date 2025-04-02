@@ -55,7 +55,7 @@ public class HexMsgTransceiver {
         return instance;
     }
 
-    public void sendByteMessages(byte[] msg, ProgressIndicator progressIndicator) {
+    public CompletableFuture<String> sendByteMessages(byte[] msg, ProgressIndicator progressIndicator) {
         CompletableFuture<String> resultFuture = new CompletableFuture<>();
         Task<String> sendTask = switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> serialPortManager.sendMsgAndGetMsgByte(msg);
@@ -94,7 +94,7 @@ public class HexMsgTransceiver {
         } else {
             resultFuture.completeExceptionally(new IllegalStateException("Task is null."));
         }
-
+        return resultFuture;
     }
 
 
