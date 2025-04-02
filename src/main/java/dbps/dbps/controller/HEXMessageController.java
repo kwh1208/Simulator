@@ -253,8 +253,8 @@ public class HEXMessageController {
 
         setXY();
         doMsgSettings();
-        saveConfig();
         setUI();
+        saveConfig();
         COLOR_MAP = new HashMap<>();
 
         COLOR_MAP.put("black", 0);

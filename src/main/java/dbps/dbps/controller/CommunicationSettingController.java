@@ -268,8 +268,9 @@ public class CommunicationSettingController {
                 UDPRadioToggle(false);
                 RS485ChkBox.setSelected(false);
                 RS485ComboBox.setVisible(false);
+                configService.setProperty("connectType", "serverTCP");
                 CONNECT_TYPE = "serverTCP";
-            } else  {
+            } else if (selectedRadioButton.equals(UDPRadioBtn)) {
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(false);
@@ -277,6 +278,7 @@ public class CommunicationSettingController {
                 RS485ChkBox.setSelected(false);
                 RS485ComboBox.setVisible(false);
                 CONNECT_TYPE = "UDP";
+                configService.setProperty("connectType", "UDP");
             }
         });
 
@@ -293,17 +295,61 @@ public class CommunicationSettingController {
 
         serialPortComboBox.valueProperty().addListener((observableValue, oldValue, newValue) -> {
             serialPortComboBox.setValue(newValue);
+            OPEN_PORT_NAME = serialPortComboBox.getValue();
             configService.setProperty("openPortName", newValue);
         });
 
         serialPortComboBox.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
 
+        serialSpeedComboBox.valueProperty().addListener(((observable, oldValue, newValue) -> {
+            SERIAL_BAUDRATE = Integer.parseInt(serialSpeedComboBox.getValue());
+            configService.setProperty("serialSpeed", newValue);
+        }));
+
         RS485ChkBox.selectedProperty().addListener((observableValue, oldValue, newValue) ->
                 {
                     RS485ComboBox.setVisible(newValue);
                     isRS = newValue;
+                    if (newValue) CONNECT_TYPE = "rs485";
                 }
         );
+
+        RS485ComboBox.valueProperty().addListener(((observable, oldValue, newValue) -> {
+            RS485_ADDR_NUM = Integer.parseInt(newValue.replaceAll("[^0-9]", ""));
+            configService.setProperty("RS485_ADDR_NUM", String.valueOf(RS485_ADDR_NUM));
+        }));
+
+        clientIPAddress.textProperty().addListener((observable, oldValue, newValue) -> {
+            tcpManager.setIP(newValue);
+            configService.setProperty("clientTCPAddr", newValue);
+        });
+
+        clientIPPort.textProperty().addListener((observable, oldValue, newValue) -> {
+            int port = Integer.parseInt(newValue);
+            tcpManager.setPORT(port);
+            configService.setProperty("clientTCPPort", String.valueOf(port));
+        });
+
+        serverIPAddress.valueProperty().addListener((observable, oldValue, newValue)->{
+            hostIP = newValue;
+            configService.setProperty("serverTCPAddr", hostIP);
+        });
+
+        serverIPPort.textProperty().addListener((observable, oldValue, newValue)->{
+            serverTCPPort = Integer.parseInt(serverIPPort.getText());
+            configService.setProperty("serverTCPPort", String.valueOf(serverTCPPort));
+        });
+
+        UDPIPAddress.textProperty().addListener((observable, oldValue, newValue)->{
+            udpManager.setIP(newValue);
+            configService.setProperty("UDPAddr", newValue);
+        });
+
+        UDPIPPort.textProperty().addListener(((observable, oldValue, newValue) -> {
+            int port = Integer.parseInt(UDPIPPort.getText());
+            udpManager.setPORT(port);
+            configService.setProperty("UDPPort", String.valueOf(port));
+        }));
 
         //응답시간 변경
         delayTime.valueProperty().addListener((observableValue, oldValue, newValue) -> {
@@ -340,6 +386,8 @@ public class CommunicationSettingController {
                 pingTextField.setStyle("-fx-background-color: black; -fx-text-fill: white;");
             }
         });
+
+
     }
 
     //사용가능한 포트 가져오기
@@ -562,54 +610,14 @@ public class CommunicationSettingController {
                 Platform.runLater(() -> showLoading()); // 로딩 애니메이션 시작
                 try {
                     // 시리얼일 때
-                    if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
-                        if (RS485ChkBox.isSelected()) {
-                            CONNECT_TYPE = "rs485";
-                            OPEN_PORT_NAME = serialPortComboBox.getValue();
-                            SERIAL_BAUDRATE = Integer.parseInt(serialSpeedComboBox.getValue());
-                            RS485_ADDR_NUM = Integer.parseInt(RS485ComboBox.getValue().replaceAll("[^0-9]", ""));
-                            String msg = "10 02 " + convertRS485AddrASCii() + " 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
-                            hexMsgTransceiver.sendMessages(msg, progressIndicator);
-                            configService.setProperty("RS485_ADDR_NUM", String.valueOf(RS485_ADDR_NUM));
-                        } else {
-                            CONNECT_TYPE = "serial";
-                            OPEN_PORT_NAME = serialPortComboBox.getValue();
-                            SERIAL_BAUDRATE = Integer.parseInt(serialSpeedComboBox.getValue());
-                            hexMsgTransceiver.sendMessages("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03", progressIndicator);
-                        }
-                        configService.setProperty("openPortName", OPEN_PORT_NAME);
-                        configService.setProperty("serialSpeed", String.valueOf(SERIAL_BAUDRATE));
-                    } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn)) {
-                        CONNECT_TYPE = "clientTCP";
-                        String IPAddress = clientIPAddress.getText();
-                        int port = Integer.parseInt(clientIPPort.getText());
-                        tcpManager.setIP(IPAddress);
-                        tcpManager.setPORT(port);
-                        configService.setProperty("clientTCPAddr", IPAddress);
-                        configService.setProperty("clientTCPPort", String.valueOf(port));
-                        hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
-                    } else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)) {
-                        CONNECT_TYPE = "serverTCP";
-                        hostIP = serverIPAddress.getValue();
-                        serverTCPPort = Integer.parseInt(serverIPPort.getText());
-                        hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
-                        configService.setProperty("serverTCPAddr", hostIP);
-                        configService.setProperty("serverTCPPort", String.valueOf(serverTCPPort));
-                    } else {
-                        CONNECT_TYPE = "UDP";
-                        String IPAddress = UDPIPAddress.getText();
-                        int port = Integer.parseInt(UDPIPPort.getText());
-
-                        udpManager.setIP(IPAddress);
-                        udpManager.setPORT(port);
-                        configService.setProperty("UDPAddr", IPAddress);
-                        configService.setProperty("UDPPort", String.valueOf(port));
-                        hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
+                    if (communicationGroup.getSelectedToggle().equals(serialRadioBtn) && RS485ChkBox.isSelected()) {
+                        String msg = "10 02 " + convertRS485AddrASCii() + " 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                        hexMsgTransceiver.sendMessages(msg, progressIndicator);
                     }
-                    configService.setProperty("connectType", CONNECT_TYPE);
-                    configService.setProperty("isRS", String.valueOf(isRS));
 
-                } finally {
+                    hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
+                }
+                 finally {
                     Platform.runLater(() -> hideLoading()); // 작업 완료 후 로딩 애니메이션 종료
                 }
                 return null;

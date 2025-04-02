@@ -49,8 +49,8 @@
         <Button fx:id="findSpeedBtn" layoutX="100.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#findCommunicationSpeed" prefHeight="27.0" prefWidth="130.0" text="%findBaudrate" />
         <Button fx:id="openDeviceManagerBtn" layoutX="232.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#openDeviceManager" prefHeight="27.0" prefWidth="135.0" styleClass="newWindow-button" text="%deviceManager">
         </Button>
-
     </Pane>
+
     <Pane layoutX="15.0" layoutY="191.0" prefHeight="110.0" prefWidth="373.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
         <RadioButton fx:id="clientTCPRadioBtn" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="134.0" style="-fx-background-color: #333333;" text="Client TCP/IP" />
         <Label layoutX="13.0" layoutY="21.0" text="IP Address" />
@@ -60,7 +60,7 @@
         <TextField fx:id="clientIPPort" layoutX="210.0" layoutY="49.0" prefWidth="145.0" text="5000">
         </TextField>
         <Label layoutX="13.0" layoutY="85.0" text="PingTest" />
-        <TextField fx:id="pingTextField" layoutX="210.0" layoutY="81.0" prefHeight="22.0" prefWidth="103.0" />
+        <TextField fx:id="pingTextField" layoutX="210.0" layoutY="81.0" prefHeight="22.0" prefWidth="103.0" editable="false"/>
         <Button layoutX="315.0" layoutY="79.0" mnemonicParsing="false" onMouseClicked="#pingTest" text="실행" />
     </Pane>
 

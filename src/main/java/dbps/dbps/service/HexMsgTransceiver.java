@@ -99,7 +99,7 @@ public class HexMsgTransceiver {
 
 
 
-    public String sendByteMessagesNoLog(byte[] msg) {
+    public void sendByteMessagesNoLog(byte[] msg) {
         switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> {
                 try {
@@ -135,7 +135,6 @@ public class HexMsgTransceiver {
                 }
             }
         }
-        return null;
     }
 
     public String sendByteMessagesShortLog(byte[] msg) {

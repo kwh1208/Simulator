@@ -21,29 +21,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-/**
- * ASCII 메시지 전송 화면 컨트롤러
- */
 public class ASCiiMsgController {
 
-    // FXML 주입 필드
-    @FXML
-    private Button msgSaveBtn;
-
-    @FXML
-    private AnchorPane asciiMsgAnchorPane;
-    
+    public RadioButton utf8;
+    public RadioButton utf16;
+    public RadioButton eucKr;
+    public AnchorPane asciiMsgAnchorPane;
     @FXML
     private ProgressIndicator progressIndicator;
-    
-    @FXML
-    private RadioButton utf8;
-    
-    @FXML
-    private RadioButton utf16;
-    
-    @FXML
-    private RadioButton eucKr;
 
     // 서비스 필드
     private ASCiiMsgService msgService;
@@ -55,9 +40,6 @@ public class ASCiiMsgController {
     private List<String> transmitMsgContents;
     private final ToggleGroup msgType = new ToggleGroup();
 
-    /**
-     * 컨트롤러 초기화 메서드
-     */
     @FXML
     public void initialize() {
         Platform.runLater(() -> progressIndicator.toFront());
