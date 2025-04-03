@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="dabitNetAP" prefHeight="622.0" prefWidth="563.0" style="-fx-background:#333333" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DabitNetController">
+<AnchorPane fx:id="dabitNetAP" prefHeight="622.0" prefWidth="563.0" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DabitNetController">
     <Label layoutX="14.0" layoutY="21.0" text="BoardList" />
     <ListView fx:id="dbList" layoutX="14.0" layoutY="54.0" prefHeight="521.0" prefWidth="178.0" />
     <TabPane layoutX="194.0" layoutY="14.0" prefHeight="550.0" prefWidth="357.0" tabClosingPolicy="UNAVAILABLE">
@@ -34,7 +34,7 @@
                 <TextField fx:id="clientGatewayTF" layoutX="123.0" layoutY="242.0" prefHeight="22.0" prefWidth="132.0" />
                 <Button fx:id="defaultChange" layoutX="260.0" layoutY="206.0" mnemonicParsing="false" onMouseClicked="#changeDefault" prefHeight="40.0" prefWidth="82.0" text="Change&#10;Default IP" textAlignment="CENTER" wrapText="true" />
                 <Pane layoutX="9.0" layoutY="382.0" prefHeight="117.0" prefWidth="320.0">
-                    <CheckBox fx:id="isClient" layoutX="21.0" layoutY="-4.0" mnemonicParsing="false" style="-fx-background:#333333" text="Controller Client Mode(Server TCP/IP)" />
+                    <CheckBox fx:id="isClient" layoutX="21.0" layoutY="-4.0" mnemonicParsing="false" text="Controller Client Mode(Server TCP/IP)" />
                     <Label layoutX="22.0" layoutY="26.0" text="Server IP" />
                     <TextField fx:id="serverIPTF" layoutX="114.0" layoutY="22.0" prefHeight="22.0" prefWidth="132.0" />
                     <Label layoutX="22.0" layoutY="59.0" text="Server Port" />
@@ -45,7 +45,7 @@
                 <Button fx:id="defaultLoad" layoutX="260.0" layoutY="258.0" mnemonicParsing="false" onMouseClicked="#setDefault" prefHeight="40.0" prefWidth="82.0" text="Load&#10;Default IP" textAlignment="CENTER" wrapText="true" />
                 <Label layoutX="124.0" layoutY="304.0" prefHeight="14.0" prefWidth="220.0" text="(UDP-Ethernet: 5108, UDP-Wifi: 5107)" />
                 <Pane layoutX="9.0" layoutY="307.0" prefHeight="45.0" prefWidth="320.0">
-                    <Label layoutX="22.0" layoutY="16.0" style="-fx-background:#333333" text="IP Config Method" />
+                    <Label layoutX="22.0" layoutY="16.0" text="IP Config Method" />
                     <RadioButton fx:id="staticRadio" layoutX="152.0" layoutY="16.0" mnemonicParsing="false" text="Static" />
                     <RadioButton fx:id="DHCPRadio" layoutX="241.0" layoutY="16.0" mnemonicParsing="false" text="DHCP" />
                 </Pane>
@@ -82,7 +82,7 @@
         <Tab fx:id="db300Tab" style="-fx-padding:0 15px" text="DB300">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="523.0" prefWidth="357.0">
                 <Pane layoutX="9.0" layoutY="12.0" prefHeight="176.0" prefWidth="329.0">
-                    <Label layoutX="22.0" layoutY="12.0" prefHeight="13.0" style="-fx-background:#333333" text="Device Version" />
+                    <Label layoutX="22.0" layoutY="12.0" prefHeight="13.0" text="Device Version" />
                     <TextField fx:id="versionInfo" editable="false" layoutX="132.0" layoutY="8.0" prefHeight="22.0" prefWidth="180.0" />
                     <Label layoutX="22.0" layoutY="44.0" text="Debugging State" />
                     <ComboBox fx:id="debugging" layoutX="132.0" layoutY="40.0" prefWidth="180.0">

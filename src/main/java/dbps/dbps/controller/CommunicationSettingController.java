@@ -377,16 +377,15 @@ public class CommunicationSettingController {
                 // 포커스가 들어왔을 때: 테두리 주황색
                 pingTextField.setStyle(
                         "-fx-background-color: black; " +
-                                "-fx-text-fill: white; " +
+                                "-fx-text-fill: black; " +
                                 "-fx-border-color: orange; " +
                                 "-fx-border-width: 1px;"
                 );
             } else {
                 // 포커스가 나갔을 때: 원래 스타일로 복원
-                pingTextField.setStyle("-fx-background-color: black; -fx-text-fill: white;");
+                pingTextField.setStyle("-fx-text-fill: black;");
             }
         });
-
 
     }
 

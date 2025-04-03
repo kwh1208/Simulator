@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="displayListAP" prefHeight="600.0" prefWidth="400.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10; -fx-background-color: #333333;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplayListController">
+<AnchorPane fx:id="displayListAP" prefHeight="600.0" prefWidth="400.0" style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DisplayListController">
     <TextField fx:id="search" layoutX="13.0" layoutY="13.0" prefHeight="21.0" prefWidth="377.0" promptText="%modulePrompt" />
     <ListView fx:id="moduleList" layoutX="13.0" layoutY="61.0" prefHeight="449.0" prefWidth="377.0">
         <items>

@@ -10,17 +10,18 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="additionalFunctionAp" prefHeight="413.0" prefWidth="400.0" style="-fx-background-color: #333333" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdditionalFunctionsController">
-    <Pane layoutX="22.0" layoutY="155.0" prefHeight="77.0" prefWidth="367.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
-      <children>
-          <ComboBox fx:id="fontHeight" layoutX="193.0" layoutY="43.0" prefHeight="21.0" prefWidth="72.0" />
-          <ComboBox fx:id="fontWidth" layoutX="193.0" layoutY="11.0" prefHeight="21.0" prefWidth="72.0" />
-          <Button layoutX="299.0" layoutY="8.0" mnemonicParsing="false" onMouseClicked="#sendFontWeight" prefHeight="28.0" prefWidth="63.0" text="%set" />
-      
-          <Label layoutX="8.0" layoutY="14.0" prefHeight="13.0" prefWidth="92.0" text="%fontWeightSetting" />
-          <Label layoutX="136.0" layoutY="15.0" text="%width" />
-          <Label layoutX="136.0" layoutY="47.0" text="%height" />
-      </children></Pane>
+<AnchorPane fx:id="additionalFunctionAp" prefHeight="413.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdditionalFunctionsController">
+    <Pane layoutX="22.0" layoutY="155.0" prefHeight="77.0" prefWidth="367.0"
+          style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3">
+        <ComboBox fx:id="fontHeight" layoutX="193.0" layoutY="43.0" prefHeight="21.0" prefWidth="72.0"/>
+        <ComboBox fx:id="fontWidth" layoutX="193.0" layoutY="11.0" prefHeight="21.0" prefWidth="72.0"/>
+        <Button layoutX="299.0" layoutY="8.0" mnemonicParsing="false" onMouseClicked="#sendFontWeight" prefHeight="28.0"
+                prefWidth="63.0" text="%set"/>
+
+        <Label layoutX="8.0" layoutY="14.0" prefHeight="13.0" prefWidth="92.0" text="%fontWeightSetting"/>
+        <Label layoutX="136.0" layoutY="15.0" text="%width"/>
+        <Label layoutX="136.0" layoutY="47.0" text="%height"/>
+    </Pane>
     <Label layoutX="28.0" layoutY="20.0" text="%displayRateSetting" />
     <ComboBox fx:id="displaySpeed" layoutX="175.0" layoutY="15.0" prefHeight="28.0" prefWidth="113.0" value="사용안함">
         <items>
@@ -67,7 +68,7 @@
     <ProgressIndicator fx:id="progressIndicator" layoutX="180.0" layoutY="150.0" visible="false" />
     <Button layoutX="323.0" layoutY="374.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="28.0" prefWidth="63.0" text="%close" />
 
-    <Pane layoutX="22.0" layoutY="248.0" prefHeight="77.0" prefWidth="367.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
+    <Pane layoutX="22.0" layoutY="248.0" prefHeight="77.0" prefWidth="367.0" style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3">
         <Label layoutX="8.0" layoutY="14.0" prefHeight="13.0" prefWidth="107.0" text="%afterimageDelaySetting" />
         <Label layoutX="128.0" layoutY="15.0" text="Before" />
         <Label layoutX="128.0" layoutY="47.0" text="After" />

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="bluetoothAP" prefHeight="213.0" prefWidth="347.0" style="-fx-background-color: #333333;" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BlueToothController">
+<AnchorPane fx:id="bluetoothAP" prefHeight="213.0" prefWidth="347.0" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BlueToothController">
     <Pane layoutX="15.0" layoutY="15.0" prefHeight="196.0" prefWidth="315.0">
         <Label layoutX="27.0" layoutY="20.0" text="%comPort" />
         <ComboBox fx:id="serialPortComboBox" layoutX="152.0" layoutY="16.0" prefHeight="22.0" prefWidth="152.0">

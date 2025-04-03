@@ -38,6 +38,7 @@
 .root{
     -fx-font-family: Gulim;
 }
+
 .button {
      /* 폰트 크기 */
     -fx-background-color: linear-gradient(#444444, #222222); /* 위에서 아래로 밝아지는 배경색 */

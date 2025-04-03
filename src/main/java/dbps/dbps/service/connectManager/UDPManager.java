@@ -461,7 +461,7 @@ public class UDPManager {
             socketList.add(tmpSocket);
         } catch (SocketException e) {
             e.printStackTrace();
-            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, PORT));
+            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, String.valueOf(PORT)));
         }
     }
 
@@ -526,7 +526,7 @@ public class UDPManager {
             }
         } catch (SocketException e) {
             e.printStackTrace();
-            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, PORT));
+            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, String.valueOf(PORT)));
         }
     }
 
@@ -561,7 +561,7 @@ public class UDPManager {
 
     //접속하기
     public void connect(String IP, int PORT){
-        logService.updateInfoLog(MessageFormat.format(bundle.getString("udpServerConnection"), IP, PORT));
+        logService.updateInfoLog(MessageFormat.format(bundle.getString("udpServerConnection"), IP, String.valueOf(PORT)));
         this.IP = IP;
         this.PORT = PORT;
         try {
@@ -572,7 +572,7 @@ public class UDPManager {
             socket.setSoTimeout(RESPONSE_LATENCY*1000);
         } catch (SocketException e) {
             e.printStackTrace();
-            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, PORT));
+            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, String.valueOf(PORT)));
         }
     }
 
@@ -586,7 +586,7 @@ public class UDPManager {
             socket.setBroadcast(true);
             socket.setSoTimeout(RESPONSE_LATENCY*1000);
         } catch (SocketException e) {
-            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, PORT));
+            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, String.valueOf(PORT)));
         }
     }
 
@@ -612,7 +612,7 @@ public class UDPManager {
             socket.close();
             socket = null;
         }
-        logService.updateInfoLog(MessageFormat.format(bundle.getString("udpServerConnectionClosed"), IP, PORT));
+        logService.updateInfoLog(MessageFormat.format(bundle.getString("udpServerConnectionClosed"), IP, String.valueOf(PORT)));
     }
 
     public void disconnectNoLog() {

@@ -14,8 +14,8 @@
 <?import javafx.scene.text.TextFlow?>
 
 <AnchorPane fx:id="HEXMsgAP" prefHeight="599.0" prefWidth="500.0" style="-fx-border-color: black; -fx-border-width: 1 0 0 0" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.HEXMessageController">
-    <Pane fx:id="msgPropertyPane" layoutX="10.0" layoutY="33.0" prefHeight="386.0" prefWidth="507.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
-        <Label alignment="CENTER" layoutX="16.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%ProtocolProperties" />
+    <Pane fx:id="msgPropertyPane" layoutX="10.0" layoutY="33.0" prefHeight="386.0" prefWidth="507.0" style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3">
+        <Label alignment="CENTER" layoutX="16.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0" style="-fx-padding: 5px; -fx-font-weight: bolder" text="%ProtocolProperties" />
         <Label layoutX="14.0" layoutY="29.0" text="%msgType" />
         <Pane layoutX="125.0" layoutY="21.0" prefHeight="30.0" prefWidth="231.0">
             <RadioButton fx:id="realTimeMsg" layoutX="12.0" layoutY="5.0" mnemonicParsing="false" text="%realTimeMsg" />
@@ -139,7 +139,7 @@
         <Button fx:id="defaultBtn" layoutX="442.0" layoutY="414.0" mnemonicParsing="false" onMouseClicked="#sendDefault" prefHeight="30.0" prefWidth="58.0" text="%set" />
     </Pane>
     <Pane fx:id="ascPane" layoutX="16.0" layoutY="485.0" prefHeight="86.0" prefWidth="499.0" visible="false">
-        <TextField fx:id="sendMsgAsc" layoutY="14.0" prefHeight="33" prefWidth="491.0" promptText="%prompt" style="-fx-background-color: black; -fx-text-fill: white" />
+        <TextField fx:id="sendMsgAsc" layoutY="14.0" prefHeight="33" prefWidth="491.0" promptText="%prompt" />
         <Button layoutX="300.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="90.0" text="%sendButton" />
         <Button layoutX="395.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#openMulti" prefHeight="30.0" prefWidth="97.0" styleClass="newWindow-button" text="%MultiInput">
         </Button>
@@ -152,13 +152,13 @@
     </Pane>
 
     <Pane fx:id="hexPane" layoutX="19.0" layoutY="445.0" prefHeight="118.0" prefWidth="507.0">
-        <Label layoutX="6.0" layoutY="1.0" prefHeight="13.0" style="-fx-text-fill: #E0E0E0; " text="%colorCode" />
+        <Label layoutX="6.0" layoutY="1.0" prefHeight="13.0" text="%colorCode" />
         <Label layoutX="4.0" layoutY="26.0" text="%textColor" />
-        <TextField fx:id="textColor" layoutX="107.0" layoutY="20.0" prefHeight="33" prefWidth="296.0" style="-fx-background-color: black; -fx-text-fill: white" />
+        <TextField fx:id="textColor" layoutX="107.0" layoutY="20.0" prefHeight="33" prefWidth="296.0"/>
         <Label layoutX="4.0" layoutY="60.0" text="%textBgColor" />
-        <TextField fx:id="bgColor" layoutX="107.0" layoutY="55.0" prefHeight="33" prefWidth="296.0" style="-fx-background-color: black; -fx-text-fill: white" />
+        <TextField fx:id="bgColor" layoutX="107.0" layoutY="55.0" prefHeight="33" prefWidth="296.0"/>
         <Label layoutX="4.0" layoutY="98.0" text="%text" />
-        <TextField fx:id="sendMsg" layoutX="107.0" layoutY="90.0" prefHeight="33" prefWidth="296.0" style="-fx-background-color: black; -fx-text-fill: white" />
+        <TextField fx:id="sendMsg" layoutX="107.0" layoutY="90.0" prefHeight="33" prefWidth="296.0"/>
         <Button layoutX="411.0" layoutY="54.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="33.0" prefWidth="90.0" text="%PropertyInit" />
         <Button layoutX="411.0" layoutY="91.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="90.0" text="%sendButton" />
     </Pane>

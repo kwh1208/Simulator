@@ -166,7 +166,7 @@ public class TCPManager {
         if (bundle==null){
             bundle = ResourceManager.getInstance().getBundle();
         }
-        logService.updateInfoLog(MessageFormat.format(bundle.getString("tcpServerConnect"), IP, PORT));
+        logService.updateInfoLog(MessageFormat.format(bundle.getString("tcpServerConnect"), IP, String.valueOf(PORT)));
         this.IP = IP;
         this.PORT = PORT;
         try {
@@ -175,7 +175,7 @@ public class TCPManager {
             socket.connect(new InetSocketAddress(IP, PORT), RESPONSE_LATENCY*1000);
             socket.setSoTimeout(RESPONSE_LATENCY * 1000);
         } catch (IOException e) {
-            logService.errorLog(MessageFormat.format(bundle.getString("tcpServerConnectionFailed"), IP, PORT));
+            logService.errorLog(MessageFormat.format(bundle.getString("tcpServerConnectionFailed"), IP, String.valueOf(PORT)));
         }
     }
 
@@ -188,7 +188,7 @@ public class TCPManager {
             socket.connect(new InetSocketAddress(IP, PORT), RESPONSE_LATENCY*1000);
             socket.setSoTimeout(RESPONSE_LATENCY * 1000);
         } catch (IOException e) {
-            logService.errorLog(MessageFormat.format(bundle.getString("tcpServerConnectionFailed"), IP, PORT));
+            logService.errorLog(MessageFormat.format(bundle.getString("tcpServerConnectionFailed"), IP, String.valueOf(PORT)));
         }
     }
 
@@ -207,7 +207,7 @@ public class TCPManager {
             e.getStackTrace();
         }
 
-        logService.updateInfoLog(MessageFormat.format(bundle.getString("tcpServerConnectionClosed"), IP, PORT));
+        logService.updateInfoLog(MessageFormat.format(bundle.getString("tcpServerConnectionClosed"), IP, String.valueOf(PORT)));
     }
 
     public void disconnectNoLog(){

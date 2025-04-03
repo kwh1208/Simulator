@@ -8,33 +8,39 @@
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane fx:id="dpPane" layoutX="220.0" layoutY="60.0" prefHeight="160.0" prefWidth="288.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.SizeOfDisplayBoardController">
-    <Label alignment="CENTER" layoutX="10.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0" style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white; -fx-font-weight: bolder" text="%displaySize" />
-    <Label layoutX="20.0" layoutY="25.0" text="%height" />
-    <Spinner fx:id="spinnerForRow" layoutX="120.0" layoutY="18.0" prefHeight="25.0" prefWidth="72.0" />
-    <Label fx:id="rowPixel" layoutX="210.0" layoutY="26.0" prefHeight="13.0" prefWidth="80.0" />
+<Pane fx:id="dpPane" layoutX="220.0" layoutY="60.0" prefHeight="160.0" prefWidth="288.0"
+      style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3"
+      xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dbps.dbps.controller.SizeOfDisplayBoardController">
+    <Label alignment="CENTER" layoutX="10.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0"
+           style="-fx-padding: 5px; -fx-font-weight: bolder" text="%displaySize"/>
+    <Label layoutX="20.0" layoutY="25.0" text="%height"/>
+    <Spinner fx:id="spinnerForRow" layoutX="120.0" layoutY="18.0" prefHeight="25.0" prefWidth="72.0"/>
+    <Label fx:id="rowPixel" layoutX="210.0" layoutY="26.0" prefHeight="13.0" prefWidth="80.0"/>
 
-    <Label layoutX="20.0" layoutY="56.0" text="%width" />
-    <Spinner fx:id="spinnerForColumn" layoutX="120.0" layoutY="51.0" prefHeight="25.0" prefWidth="72.0" />
-    <Label fx:id="colPixel" layoutX="210.0" layoutY="58.0" prefHeight="13.0" prefWidth="80.0" />
+    <Label layoutX="20.0" layoutY="56.0" text="%width"/>
+    <Spinner fx:id="spinnerForColumn" layoutX="120.0" layoutY="51.0" prefHeight="25.0" prefWidth="72.0"/>
+    <Label fx:id="colPixel" layoutX="210.0" layoutY="58.0" prefHeight="13.0" prefWidth="80.0"/>
 
-    <Label layoutX="20.0" layoutY="117.0" text="%bitsPerPixel" />
-    <ComboBox fx:id="colorNum" layoutX="120.0" layoutY="113.0" prefHeight="25.0" prefWidth="102.0" value="3BPP(8Colors)">
+    <Label layoutX="20.0" layoutY="117.0" text="%bitsPerPixel"/>
+    <ComboBox fx:id="colorNum" layoutX="120.0" layoutY="113.0" prefHeight="25.0" prefWidth="102.0"
+              value="3BPP(8Colors)">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="2BPP(3Colors)" />
-                <String fx:value="3BPP(8Colors)" />
-                <String fx:value="8BPP(256Colors)" />
+                <String fx:value="2BPP(3Colors)"/>
+                <String fx:value="3BPP(8Colors)"/>
+                <String fx:value="8BPP(256Colors)"/>
             </FXCollections>
         </items>
     </ComboBox>
 
-    <Label layoutX="20.0" layoutY="86.0" text="%moduleArrangementMethod" />
+    <Label layoutX="20.0" layoutY="86.0" text="%moduleArrangementMethod"/>
     <ComboBox fx:id="howToArray" layoutX="120.0" layoutY="82.0" prefHeight="25.0" prefWidth="140.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
         </items>
     </ComboBox>
-    <Button layoutX="225.0" layoutY="113.0" mnemonicParsing="false" onMouseClicked="#sendDisplaySize" prefHeight="28.0" prefWidth="60.0" text="%set" />
+    <Button layoutX="225.0" layoutY="113.0" mnemonicParsing="false" onMouseClicked="#sendDisplaySize" prefHeight="28.0"
+            prefWidth="60.0" text="%set"/>
 </Pane>

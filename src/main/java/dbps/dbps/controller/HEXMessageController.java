@@ -297,7 +297,7 @@ public class HEXMessageController {
             String seg = newSegments.get(i);
 
             Label labelNode = new Label(seg);
-            labelNode.setTextFill(Color.WHITE);
+            labelNode.setTextFill(Color.BLACK);
 
             // 기본 배경을 투명으로 설정
             ObjectProperty<Color> bgColorProperty = new SimpleObjectProperty<>(Color.TRANSPARENT);
