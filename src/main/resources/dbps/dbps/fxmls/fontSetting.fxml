@@ -17,7 +17,7 @@
     <Pane layoutX="15.0" layoutY="14.0" prefHeight="136.0" prefWidth="420.0"
           style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3">
         <CheckBox fx:id="fontGroup1ChkBox" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0"
-                  prefWidth="112.0" selected="true" text="%fontGroup1"/>
+                  style="-fx-background-color: #F4F4F4; -fx-padding: 0 5 0 5px" selected="true" text="%fontGroup1"/>
         <ComboBox fx:id="fontGroup1fontSelected1" disable="true" layoutX="14.0" layoutY="17.0" prefHeight="21.0"
                   prefWidth="150.0">
             <items>
@@ -51,7 +51,7 @@
     <Pane layoutX="15.0" layoutY="163.0" prefHeight="136.0" prefWidth="420.0"
           style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3">
         <CheckBox fx:id="fontGroup2ChkBox" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0"
-                  prefWidth="112.0" selected="true" text="%fontGroup2"/>
+                  style="-fx-background-color: #F4F4F4; -fx-padding: 0 5 0 5px" selected="true" text="%fontGroup2"/>
         <ComboBox fx:id="fontGroup2fontSelected1" layoutX="14.0" layoutY="18.0" prefWidth="150.0" value="%english">
             <items>
                 <FXCollections fx:factory="observableArrayList">
@@ -84,7 +84,7 @@
     <Pane layoutX="16.0" layoutY="310.0" prefHeight="136.0" prefWidth="420.0"
           style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3">
         <CheckBox fx:id="fontGroup3ChkBox" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false" prefHeight="16.0"
-                  prefWidth="112.0" text="%fontGroup3"/>
+                  style="-fx-background-color: #F4F4F4; -fx-padding: 0 5 0 5px" text="%fontGroup3"/>
         <ComboBox fx:id="fontGroup3fontSelected1" disable="true" layoutX="14.0" layoutY="18.0" prefWidth="150.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
@@ -120,7 +120,7 @@
     <Pane layoutX="16.0" layoutY="455.0" prefHeight="136.0" prefWidth="420.0"
           style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3">
         <CheckBox fx:id="fontGroup4ChkBox" disable="true" layoutX="14.0" layoutY="-8.0" mnemonicParsing="false"
-                  prefHeight="16.0" prefWidth="112.0" text="%fontGroup4"/>
+                  style="-fx-background-color: #F4F4F4; -fx-padding: 0 5 0 5px" text="%fontGroup4"/>
         <ComboBox fx:id="fontGroup4fontSelected1" disable="true" layoutX="14.0" layoutY="18.0" prefWidth="150.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">

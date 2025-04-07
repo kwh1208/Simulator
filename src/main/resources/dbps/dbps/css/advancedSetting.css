@@ -15,12 +15,10 @@
 }
 
 .newWindow-button {
-    /* 위쪽은 조금 밝은 톤, 아래쪽은 어두운 톤으로 그라디언트 */
-    -fx-background-color: linear-gradient(#F0F0F0 , #AAAAAA);
     -fx-text-fill: black;
     -fx-font-weight: bold;
 
-    /* 둥근 모서리로 부드러운 느낌 */
+    -fx-border-color: dimgray;
     -fx-background-radius: 5;
     -fx-border-radius: 5;
 

@@ -120,37 +120,25 @@ public class FirmwareUpgradeController {
         Scene progressScene = new Scene(vbox, 300, 150);
         progressStage.setScene(progressScene);
 
-        vbox.setStyle("-fx-padding: 20px; -fx-background-color: #333333;");
+        vbox.setStyle("-fx-padding: 20px;");
         cancelButton.setStyle(
-                "" +
-                        "-fx-background-color: linear-gradient(#444444, #222222);" +
-                        "-fx-text-fill: white;" +
-                        "-fx-border-color: #4A4A4A;" +
-                        "-fx-border-radius: 10;" +
+                "-fx-border-radius: 10;" +
                         "-fx-padding: 5 10 5 10;" +
                         "-fx-background-radius: 10;"
         );
         cancelButton.setOnMousePressed(e -> {
             cancelButton.setStyle(
-                    "-fx-background-color: linear-gradient(#222222, #000000);" + // 눌린 효과 (어두운 색)
-                            "-fx-text-fill: white;" +
-                            "-fx-border-color: orange;" + // 눌렀을 때 테두리 주황색
-                            "-fx-border-radius: 10;" +
+                    "-fx-border-radius: 10;" +
                             "-fx-padding: 5 10 5 10;" +
-                            "-fx-background-radius: 10;" +
-                            "-fx-effect: innershadow(gaussian, rgba(255, 165, 0, 0.8), 5, 0, 0, 0);" // 안쪽 그림자 효과 추가
+                            "-fx-background-radius: 10;"
             );
         });
 
         cancelButton.setOnMouseEntered(e -> {
             cancelButton.setStyle(
-                    "-fx-background-color: linear-gradient(#444444, #222222);" +
-                            "-fx-text-fill: white;" +
-                            "-fx-border-color: orange;" + // 🔹 테두리 주황색 변경
-                            "-fx-border-radius: 10;" +
+                    "-fx-border-radius: 10;" +
                             "-fx-padding: 5 10 5 10;" +
                             "-fx-background-radius: 10;" +
-                            "-fx-effect: dropshadow(gaussian, rgba(255, 165, 0, 0.8), 5, 0, 1, 1);" + // 밝은 그림자 효과
                             "-fx-cursor: hand;" // 🔹 손가락 커서로 변경
             );
         });
@@ -158,13 +146,9 @@ public class FirmwareUpgradeController {
 // 🔹 마우스를 벗어나면 원래 스타일로 복구
         cancelButton.setOnMouseExited(e -> {
             cancelButton.setStyle(
-                    "-fx-background-color: linear-gradient(#444444, #222222);" +
-                            "-fx-text-fill: white;" +
-                            "-fx-border-color: #4A4A4A;" + // 원래 테두리 색상으로 복귀
                             "-fx-border-radius: 10;" +
                             "-fx-padding: 5 10 5 10;" +
                             "-fx-background-radius: 10;" +
-                            "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 1, 1);" + // 기본 그림자 효과
                             "-fx-cursor: default;" // 기본 커서로 변경
             );
         });
@@ -172,28 +156,21 @@ public class FirmwareUpgradeController {
 // 버튼에서 손을 뗄 때 원래 스타일로 복구
         cancelButton.setOnMouseReleased(e -> {
             cancelButton.setStyle(
-                    "-fx-background-color: linear-gradient(#444444, #222222);" +
-                            "-fx-text-fill: white;" +
-                            "-fx-border-color: #4A4A4A;" +
                             "-fx-border-radius: 10;" +
                             "-fx-padding: 5 10 5 10;" +
                             "-fx-background-radius: 10;" +
                             "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 1, 1);"
             );
         });
-        cancelButton.setOnAction(e->{
-            if (firmwareUploadTask != null){
+        cancelButton.setOnAction(e -> {
+            if (firmwareUploadTask != null) {
                 firmwareUploadTask.cancel();
                 progressBar.setProgress(0);
                 closeWindowAfterDelay(progressStage, 1000);
             }
         });
         progressLabel.setStyle(
-                " " +
-                        "-fx-text-fill: white; " +
-                        "-fx-background-color: #222222; " +
                         "-fx-padding: 5; " +
-                        "-fx-border-color: #4A4A4A; " +
                         "-fx-background-radius: 5; " +
                         "-fx-border-radius: 5;"
         );
@@ -217,17 +194,16 @@ public class FirmwareUpgradeController {
 
 
     public void read() throws ExecutionException, InterruptedException {
-        if (IS_ASCII){
+        if (IS_ASCII) {
             String msg = "![0081!]";
-            if (isRS){
-                msg = "!["+convertRS485AddrASCii()+"081!]";
+            if (isRS) {
+                msg = "![" + convertRS485AddrASCii() + "081!]";
             }
             asciiMsgTransceiver.sendMessages(msg, false, firmwareProgressIndicator);
-        }
-        else {
+        } else {
             String msg = "10 02 00 00 02 6F F1 10 03";
-            if (isRS){
-                msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+ "00 02 6F F1 10 03";
+            if (isRS) {
+                msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 02 6F F1 10 03";
             }
             hexMsgTransceiver.sendMessages(msg, firmwareProgressIndicator);
         }
@@ -258,48 +234,49 @@ public class FirmwareUpgradeController {
         String filePath = fileLocation.getText();
         String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
         fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
-        if (fileName.contains("502")){
+        if (fileName.contains("502")) {
             firmwareFileInformation.setText(fileName);
         } else {
-        try {
-            assert selectedFile != null;
-            try (RandomAccessFile file = new RandomAccessFile(selectedFile.getAbsolutePath(), "r")) {
-                int startByte = 0;
-                int length = 0;
-                if (!selectedFile.getName().contains("502")) {
-                    startByte = 516;
-                    length = 38;
-                } else {
-                    startByte = 15796;
-                    length = 38;
+            try {
+                assert selectedFile != null;
+                try (RandomAccessFile file = new RandomAccessFile(selectedFile.getAbsolutePath(), "r")) {
+                    int startByte = 0;
+                    int length = 0;
+                    if (!selectedFile.getName().contains("502")) {
+                        startByte = 516;
+                        length = 38;
+                    } else {
+                        startByte = 15796;
+                        length = 38;
+                    }
+
+                    // 앞 한 글자를 추가로 읽기 위해 startByte를 1 줄임
+                    int extendedStartByte = startByte - 1;
+
+                    // 파일의 해당 위치로 이동
+                    file.seek(extendedStartByte);
+
+                    // 읽을 바이트 배열 생성 (기존 길이 + 앞 한 글자)
+                    byte[] buffer = new byte[length + 1];
+                    int bytesRead = file.read(buffer);
+
+                    if (bytesRead == length + 1) {
+                        // 앞 한 글자 (바이트) 읽어서 16진수 변환 후 10진수 변환
+                        int extraByte = buffer[0] & 0xFF;  // 부호 없는 값으로 변환
+                        hexToDecimal = String.valueOf(extraByte);  // 10진수 문자열로 변환
+
+                        // 기존 데이터 부분을 읽기 (1바이트 이후부터)
+                        result = new String(buffer, 1, length, "MS949");
+                        result = result.replaceAll("!]", "");
+                    }
                 }
+            } catch (IOException ignored) {
 
-                // 앞 한 글자를 추가로 읽기 위해 startByte를 1 줄임
-                int extendedStartByte = startByte - 1;
-
-                // 파일의 해당 위치로 이동
-                file.seek(extendedStartByte);
-
-                // 읽을 바이트 배열 생성 (기존 길이 + 앞 한 글자)
-                byte[] buffer = new byte[length + 1];
-                int bytesRead = file.read(buffer);
-
-                if (bytesRead == length + 1) {
-                    // 앞 한 글자 (바이트) 읽어서 16진수 변환 후 10진수 변환
-                    int extraByte = buffer[0] & 0xFF;  // 부호 없는 값으로 변환
-                    hexToDecimal = String.valueOf(extraByte);  // 10진수 문자열로 변환
-
-                    // 기존 데이터 부분을 읽기 (1바이트 이후부터)
-                    result = new String(buffer, 1, length, "MS949");
-                    result=result.replaceAll("!]", "");
-                }
             }
-        } catch (IOException ignored) {
 
+            // UI에 표시
+            firmwareFileInformation.setText("<" + hexToDecimal + ">" + result);
         }
-
-        // UI에 표시
-        firmwareFileInformation.setText("<"+hexToDecimal+">"+result);}
     }
 
     public Task<Void> firmwareUploadTask;
@@ -398,7 +375,7 @@ public class FirmwareUpgradeController {
         end();
     }
 
-    private void end(){
+    private void end() {
         tcpManager.disconnectNoLog();
         serverTCPManager.disconnectNoLog();
         udpManager.disconnectNoLog();
@@ -407,7 +384,7 @@ public class FirmwareUpgradeController {
 
 
     public void close(MouseEvent mouseEvent) {
-        ((Stage)(((Node) mouseEvent.getSource()).getScene().getWindow())).close();
+        ((Stage) (((Node) mouseEvent.getSource()).getScene().getWindow())).close();
         end();
     }
 }

@@ -2,7 +2,6 @@
     -fx-background-radius: 0; /* 모서리를 둥글게 하지 않음 */
 }
 
-
 /* 스크롤바 썸(잡아당기는 부분) */
 .scroll-bar .thumb {
     -fx-background-radius: 5px; /* 둥근 모서리 */

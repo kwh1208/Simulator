@@ -310,6 +310,10 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
             return;
         }
 
+        if (cmd.equals("D1")){
+            return;
+        }
+
         if (cmd.equals("B3")) {
             boardSettingService.setUI(receiveMsg.substring(7, 21));
             logService.updateInfoLog(bundle.getString("boardSettingSuccess"));

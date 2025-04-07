@@ -13,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import lombok.Getter;
 
@@ -35,6 +36,8 @@ public class Simulator extends Application {
         super.init();
         ConfigService.getInstance();
         resourceManager = ResourceManager.getInstance();
+        Font.loadFont(getClass().getResourceAsStream("/NanumGothic.ttf"), 12);
+        Font.loadFont(getClass().getResourceAsStream("/NanumGothicBold.ttf"), 12);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {

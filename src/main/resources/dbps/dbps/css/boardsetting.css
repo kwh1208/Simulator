@@ -35,8 +35,6 @@
 
 /* ComboBox 팝업 안에 있는 각 ListCell 스타일 */
 .combo-box-popup .list-cell {
-    -fx-background-color: #1C1F26;
-
     /* 테두리/경계선 관련 설정 */
     -fx-border-color: transparent;
     -fx-border-width: 0;
