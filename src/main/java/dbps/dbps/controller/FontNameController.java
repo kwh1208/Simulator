@@ -9,6 +9,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -56,6 +57,13 @@ public class FontNameController {
         fontNameService.setGroup2font2(group2font2);
         fontNameService.setGroup2font3(group2font3);
 
+        extracted(group1font1);
+        extracted(group1font2);
+        extracted(group1font3);
+        extracted(group2font1);
+        extracted(group2font2);
+        extracted(group2font3);
+
         fontNameAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
 
         limitLength(group2font1);
@@ -69,6 +77,15 @@ public class FontNameController {
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
 
         read();
+    }
+
+    private void extracted(TextField textField) {
+        textField.setOnKeyPressed(event -> {
+            if (event.getCode()== KeyCode.ESCAPE){
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.close();
+            }
+        });
     }
 
     private void limitLength(TextField field) {
@@ -105,7 +122,7 @@ public class FontNameController {
                 @Override
                 protected String call() throws Exception {
                     // 메시지 송신 및 응답 대기
-                    String response = asciiMsgTransceiver.sendMessages(finalMsg, false, progressIndicator).get();
+                    String response = asciiMsgTransceiver.sendMessages(finalMsg, false, null).get();
 
                     // 응답 데이터 가공
                     return response.substring(8, response.length() - 2);

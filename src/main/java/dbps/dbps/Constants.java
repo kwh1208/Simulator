@@ -321,6 +321,7 @@ public class Constants {
         return switch (firstChar) {
             case 'F', 'P', 'X', 'Y', 'E', 'S', 'D' -> 5;
             case 'C', 'G', 'T' -> 2;
+            case 'I', 'i' ->3;
             case 'B', 'U' -> 4;
             default -> 0;
         };

@@ -10,13 +10,8 @@
     -fx-shape: "M0 0 L1 0 1 1 0 1 Z";
 }
 
-
 .root{
     -fx-font-family: Gulim;
-}
-
-.scroll-bar {
-    -fx-background-color: #1C1C1C; /* 전체 스크롤바 배경색 */
 }
 
 /* 스크롤바 썸(잡아당기는 부분) */

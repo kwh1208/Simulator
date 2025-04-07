@@ -12,8 +12,8 @@
       style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3"
       xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="dbps.dbps.controller.SizeOfDisplayBoardController">
-    <Label alignment="CENTER" layoutX="10.0" layoutY="-14.0" prefHeight="18.0" prefWidth="140.0"
-           style="-fx-padding: 5px; -fx-font-weight: bolder" text="%displaySize"/>
+    <Label alignment="CENTER" layoutX="10.0" layoutY="-14.0" prefHeight="18.0"
+           style="-fx-background-color: #F4F4F4; -fx-padding: 0 5 0 5px" text="%displaySize"/>
     <Label layoutX="20.0" layoutY="25.0" text="%height"/>
     <Spinner fx:id="spinnerForRow" layoutX="120.0" layoutY="18.0" prefHeight="25.0" prefWidth="72.0"/>
     <Label fx:id="rowPixel" layoutX="210.0" layoutY="26.0" prefHeight="13.0" prefWidth="80.0"/>

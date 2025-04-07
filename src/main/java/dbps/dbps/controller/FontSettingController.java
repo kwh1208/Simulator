@@ -370,37 +370,25 @@ public class FontSettingController {
             }
         });
 
-        vbox.setStyle("-fx-padding: 20px; -fx-background-color: #333333;");
+        vbox.setStyle("-fx-padding: 20px; ");
         cancelButton.setStyle(
-                "" +
-                        "-fx-background-color: linear-gradient(#444444, #222222);" +
-                        "-fx-text-fill: white;" +
-                        "-fx-border-color: #4A4A4A;" +
-                        "-fx-border-radius: 10;" +
+                "-fx-border-radius: 10;" +
                         "-fx-padding: 5 10 5 10;" +
                         "-fx-background-radius: 10;"
         );
         cancelButton.setOnMousePressed(e -> {
             cancelButton.setStyle(
-                    "-fx-background-color: linear-gradient(#222222, #000000);" + // 눌린 효과 (어두운 색)
-                            "-fx-text-fill: white;" +
-                            "-fx-border-color: orange;" + // 눌렀을 때 테두리 주황색
-                            "-fx-border-radius: 10;" +
+                    "-fx-border-radius: 10;" +
                             "-fx-padding: 5 10 5 10;" +
-                            "-fx-background-radius: 10;" +
-                            "-fx-effect: innershadow(gaussian, rgba(255, 165, 0, 0.8), 5, 0, 0, 0);"// 안쪽 그림자 효과 추가
+                            "-fx-background-radius: 10;"
             );
         });
 
         cancelButton.setOnMouseEntered(e -> {
             cancelButton.setStyle(
-                    "-fx-background-color: linear-gradient(#444444, #222222);" +
-                            "-fx-text-fill: white;" +
-                            "-fx-border-color: orange;" + // 🔹 테두리 주황색 변경
                             "-fx-border-radius: 10;" +
                             "-fx-padding: 5 10 5 10;" +
                             "-fx-background-radius: 10;" +
-                            "-fx-effect: dropshadow(gaussian, rgba(255, 165, 0, 0.8), 5, 0, 1, 1);" + // 밝은 그림자 효과
                             "-fx-cursor: hand;" // 🔹 손가락 커서로 변경
             );
         });
@@ -408,13 +396,9 @@ public class FontSettingController {
 // 🔹 마우스를 벗어나면 원래 스타일로 복구
         cancelButton.setOnMouseExited(e -> {
             cancelButton.setStyle(
-                    "-fx-background-color: linear-gradient(#444444, #222222);" +
-                            "-fx-text-fill: white;" +
-                            "-fx-border-color: #4A4A4A;" + // 원래 테두리 색상으로 복귀
                             "-fx-border-radius: 10;" +
                             "-fx-padding: 5 10 5 10;" +
                             "-fx-background-radius: 10;" +
-                            "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 1, 1);" + // 기본 그림자 효과
                             "-fx-cursor: default;" // 기본 커서로 변경
             );
         });
@@ -422,21 +406,13 @@ public class FontSettingController {
 // 버튼에서 손을 뗄 때 원래 스타일로 복구
         cancelButton.setOnMouseReleased(e -> {
             cancelButton.setStyle(
-                    "-fx-background-color: linear-gradient(#444444, #222222);" +
-                            "-fx-text-fill: white;" +
-                            "-fx-border-color: #4A4A4A;" +
                             "-fx-border-radius: 10;" +
                             "-fx-padding: 5 10 5 10;" +
-                            "-fx-background-radius: 10;" +
-                            "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 1, 1);"
+                            "-fx-background-radius: 10;"
             );
         });
         progressLabel.setStyle(
-                " " +
-                        "-fx-text-fill: white; " +
-                        "-fx-background-color: #222222; " +
                         "-fx-padding: 5; " +
-                        "-fx-border-color: #4A4A4A; " +
                         "-fx-background-radius: 5; " +
                         "-fx-border-radius: 5;"
         );
@@ -550,7 +526,6 @@ public class FontSettingController {
     }
 
 
-
     private void moveCaretToEnd(TextArea textArea) {
         textArea.positionCaret(textArea.getText().length());  // 커서를 텍스트 끝으로 이동
     }
@@ -637,7 +612,7 @@ public class FontSettingController {
 
         //첫번째 그룹
         if (chkFont(fontGroup1fontPath1.getText(), "영어")) {
-            logService.warningLog(bundle.getString("fontGroup1")+bundle.getString("fontMismatch"));
+            logService.warningLog(bundle.getString("fontGroup1") + bundle.getString("fontMismatch"));
             return;
         }
         fontGroup1Path[0] = fontGroup1fontPath1.getText();
@@ -645,7 +620,7 @@ public class FontSettingController {
         fontType[0] = fontGroup1fontSelected1.getValue().key();
 
         if (chkFont(fontGroup1fontPath2.getText(), fontGroup1fontSelected2.getValue().displayText())) {
-            logService.warningLog(bundle.getString("fontGroup1")+bundle.getString("fontMismatch"));
+            logService.warningLog(bundle.getString("fontGroup1") + bundle.getString("fontMismatch"));
             return;
         }
         if (!fontGroup1fontSelected2.getValue().displayText().equals(bundle.getString("notUsed"))) {
@@ -655,7 +630,7 @@ public class FontSettingController {
         }
 
         if (chkFont(fontGroup1fontPath3.getText(), fontGroup1fontSelected3.getValue().displayText())) {
-            logService.warningLog(bundle.getString("fontGroup1")+bundle.getString("fontMismatch"));
+            logService.warningLog(bundle.getString("fontGroup1") + bundle.getString("fontMismatch"));
             return;
         }
         if (!fontGroup1fontSelected3.getValue().displayText().equals(bundle.getString("notUsed"))) {
@@ -669,7 +644,7 @@ public class FontSettingController {
             fontGroup2Path = new String[3];
 
             if (chkFont(fontGroup2fontPath1.getText(), fontGroup2fontSelected1.getValue().displayText())) {
-                logService.warningLog(bundle.getString("fontGroup2")+bundle.getString("fontMismatch"));
+                logService.warningLog(bundle.getString("fontGroup2") + bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup2fontSelected1.getValue().displayText().equals(bundle.getString("notUsed"))) {
@@ -679,7 +654,7 @@ public class FontSettingController {
             }
 
             if (chkFont(fontGroup2fontPath2.getText(), fontGroup2fontSelected2.getValue().displayText())) {
-                logService.warningLog(bundle.getString("fontGroup2")+bundle.getString("fontMismatch"));
+                logService.warningLog(bundle.getString("fontGroup2") + bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup2fontSelected2.getValue().displayText().equals(bundle.getString("notUsed"))) {
@@ -689,7 +664,7 @@ public class FontSettingController {
             }
 
             if (chkFont(fontGroup2fontPath3.getText(), fontGroup2fontSelected3.getValue().displayText())) {
-                logService.warningLog(bundle.getString("fontGroup2")+bundle.getString("fontMismatch"));
+                logService.warningLog(bundle.getString("fontGroup2") + bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup2fontSelected3.getValue().displayText().equals(bundle.getString("notUsed"))) {
@@ -704,7 +679,7 @@ public class FontSettingController {
             fontGroup3Path = new String[3];
 
             if (chkFont(fontGroup3fontPath1.getText(), fontGroup3fontSelected1.getValue().displayText())) {
-                logService.warningLog(bundle.getString("fontGroup3")+bundle.getString("fontMismatch"));
+                logService.warningLog(bundle.getString("fontGroup3") + bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup3fontSelected1.getValue().displayText().equals(bundle.getString("notUsed"))) {
@@ -714,7 +689,7 @@ public class FontSettingController {
             }
 
             if (chkFont(fontGroup3fontPath2.getText(), fontGroup3fontSelected2.getValue().displayText())) {
-                logService.warningLog(bundle.getString("fontGroup3")+bundle.getString("fontMismatch"));
+                logService.warningLog(bundle.getString("fontGroup3") + bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup3fontSelected2.getValue().displayText().equals(bundle.getString("notUsed"))) {
@@ -724,7 +699,7 @@ public class FontSettingController {
             }
 
             if (chkFont(fontGroup3fontPath3.getText(), fontGroup3fontSelected3.getValue().displayText())) {
-                logService.warningLog(bundle.getString("fontGroup3")+bundle.getString("fontMismatch"));
+                logService.warningLog(bundle.getString("fontGroup3") + bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup3fontSelected3.getValue().displayText().equals(bundle.getString("notUsed"))) {
@@ -739,7 +714,7 @@ public class FontSettingController {
             fontGroup4Path = new String[3];
 
             if (chkFont(fontGroup4fontPath1.getText(), fontGroup4fontSelected1.getValue().displayText())) {
-                logService.warningLog(bundle.getString("fontGroup4")+bundle.getString("fontMismatch"));
+                logService.warningLog(bundle.getString("fontGroup4") + bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup4fontSelected1.getValue().displayText().equals(bundle.getString("notUsed"))) {
@@ -749,7 +724,7 @@ public class FontSettingController {
             }
 
             if (chkFont(fontGroup4fontPath2.getText(), fontGroup4fontSelected2.getValue().displayText())) {
-                logService.warningLog(bundle.getString("fontGroup4")+bundle.getString("fontMismatch"));
+                logService.warningLog(bundle.getString("fontGroup4") + bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup4fontSelected2.getValue().displayText().equals(bundle.getString("notUsed"))) {
@@ -759,7 +734,7 @@ public class FontSettingController {
             }
 
             if (chkFont(fontGroup4fontPath3.getText(), fontGroup4fontSelected3.getValue().displayText())) {
-                logService.warningLog(bundle.getString("fontGroup4")+bundle.getString("fontMismatch"));
+                logService.warningLog(bundle.getString("fontGroup4") + bundle.getString("fontMismatch"));
                 return;
             }
             if (!fontGroup4fontSelected3.getValue().displayText().equals(bundle.getString("notUsed"))) {
@@ -811,7 +786,7 @@ public class FontSettingController {
             }
             return !fileName.contains("KOR");
         }
-        if (fontType.equals(bundle.getString("UNI-all"))||fontType.equals(bundle.getString("UNI-KR"))||fontType.equals(bundle.getString("UNI-JP"))||fontType.equals(bundle.getString("UNI-CN"))) {
+        if (fontType.equals(bundle.getString("UNI-all")) || fontType.equals(bundle.getString("UNI-KR")) || fontType.equals(bundle.getString("UNI-JP")) || fontType.equals(bundle.getString("UNI-CN"))) {
             return !(fileName.toLowerCase()).contains("uni");
         }
 
@@ -826,18 +801,21 @@ public class FontSettingController {
             throw new RuntimeException(e);
         }
         String msg = "10 02 00 00 02 45 01 10 03";
-        if (isRS){
-            msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
+        if (isRS) {
+            msg = "10 02 " + RS485_ADDR_NUM + " 00 02 45 01 10 03";
         }
-        hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
-        new Thread(() -> {
-            try {
-                Thread.sleep(300);
-                Platform.runLater(stage::close);
-            } catch (InterruptedException ignored) {
-            }
-        }).start();
-        end();
+        try {
+            hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
+        }finally {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(300);
+                    Platform.runLater(stage::close);
+                } catch (InterruptedException ignored) {
+                }
+            }).start();
+            end();
+        }
     }
 
     public void close(MouseEvent mouseEvent) {
@@ -943,7 +921,7 @@ public class FontSettingController {
                 }
             }
 
-            fontCapacity.setText("("+totalFileSize + "/3145727) Byte");
+            fontCapacity.setText("(" + totalFileSize + "/3145727) Byte");
 
             if (totalFileSize > 3145727) {
                 fontCapacity.setStyle("-fx-text-fill: red");
@@ -1011,12 +989,12 @@ public class FontSettingController {
     }
 
     public void sendName() throws Exception {
-        if (IS_ASCII){
+        if (IS_ASCII) {
             byte[] sendMsg = new byte[216 + 10];
             sendMsg[0] = "!".getBytes(Charset.forName("MS949"))[0];
             sendMsg[1] = "[".getBytes(Charset.forName("MS949"))[0];
             sendMsg[2] = "0".getBytes(Charset.forName("MS949"))[0];
-            if (isRS){
+            if (isRS) {
                 sendMsg[2] = (convertRS485AddrASCii().getBytes("MS949"))[0];
             }
             sendMsg[3] = "0".getBytes(Charset.forName("MS949"))[0];
@@ -1031,40 +1009,39 @@ public class FontSettingController {
             byte[] tmp1 = configService.getProperty("fontGroup1FontPath1").getBytes("MS949");
             System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
             System.arraycopy(tmp2, 0, sendMsg, idx, 36);
-            idx+=36;
+            idx += 36;
             tmp1 = configService.getProperty("fontGroup1FontPath2").getBytes("MS949");
             tmp2 = new byte[36];
             System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
             System.arraycopy(tmp2, 0, sendMsg, idx, 36);
-            idx+=36;
+            idx += 36;
             tmp1 = configService.getProperty("fontGroup1FontPath3").getBytes("MS949");
             tmp2 = new byte[36];
             System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
             System.arraycopy(tmp2, 0, sendMsg, idx, 36);
-            idx+=36;
+            idx += 36;
             tmp1 = configService.getProperty("fontGroup2FontPath1").getBytes("MS949");
             tmp2 = new byte[36];
             System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
             System.arraycopy(tmp2, 0, sendMsg, idx, 36);
-            idx+=36;
+            idx += 36;
             tmp1 = configService.getProperty("fontGroup2FontPath2").getBytes("MS949");
             tmp2 = new byte[36];
             System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
             System.arraycopy(tmp2, 0, sendMsg, idx, 36);
-            idx+=36;
+            idx += 36;
             tmp1 = configService.getProperty("fontGroup2FontPath3").getBytes("MS949");
             tmp2 = new byte[36];
             System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
             System.arraycopy(tmp2, 0, sendMsg, idx, 36);
 
             asciiMsgTransceiver.sendMessages(new String(sendMsg, "MS949"), false, null);
-        }
-        else {
+        } else {
             byte[] sendMsg = new byte[216 + 10];
             sendMsg[0] = (byte) 0x10;
             sendMsg[1] = (byte) 0x02;
             sendMsg[2] = (byte) 0x00;
-            if (isRS){
+            if (isRS) {
                 sendMsg[2] = (byte) RS485_ADDR_NUM;
             }
             sendMsg[3] = (byte) 0x00;
@@ -1079,27 +1056,27 @@ public class FontSettingController {
             byte[] tmp1 = configService.getProperty("fontGroup1FontPath1").getBytes("MS949");
             System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
             System.arraycopy(tmp2, 0, sendMsg, idx, 36);
-            idx+=36;
+            idx += 36;
             tmp1 = configService.getProperty("fontGroup1FontPath2").getBytes("MS949");
             tmp2 = new byte[36];
             System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
             System.arraycopy(tmp2, 0, sendMsg, idx, 36);
-            idx+=36;
+            idx += 36;
             tmp1 = configService.getProperty("fontGroup1FontPath3").getBytes("MS949");
             tmp2 = new byte[36];
             System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
             System.arraycopy(tmp2, 0, sendMsg, idx, 36);
-            idx+=36;
+            idx += 36;
             tmp1 = configService.getProperty("fontGroup2FontPath1").getBytes("MS949");
             tmp2 = new byte[36];
             System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
             System.arraycopy(tmp2, 0, sendMsg, idx, 36);
-            idx+=36;
+            idx += 36;
             tmp1 = configService.getProperty("fontGroup2FontPath2").getBytes("MS949");
             tmp2 = new byte[36];
             System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);
             System.arraycopy(tmp2, 0, sendMsg, idx, 36);
-            idx+=36;
+            idx += 36;
             tmp1 = configService.getProperty("fontGroup2FontPath3").getBytes("MS949");
             tmp2 = new byte[36];
             System.arraycopy(tmp1, 0, tmp2, 0, tmp1.length);

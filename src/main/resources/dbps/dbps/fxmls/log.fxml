@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="logVBoX" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.LogController">
-    <Pane prefHeight="30.0" prefWidth="560.0">
-        <Label layoutX="8.0" prefHeight="23.0" prefWidth="560.0" text="%viewLog" />
-        <Button fx:id="clearBtn" layoutX="464.0" mnemonicParsing="false" onMouseClicked="#clearBtnClicked" style="-fx-background-color: transparent;">
+<VBox fx:id="logVBoX" style="-fx-border-color: black; -fx-border-width: 1 0 0 0px;"
+      xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dbps.dbps.controller.LogController">
+    <Pane prefHeight="30.0" prefWidth="560.0" style="-fx-background-color: dimgray">
+        <Label layoutX="8.0" layoutY="3.0" prefHeight="23.0" styleClass="bold-label" text="%viewLog" textFill="white"/>
+        <Button fx:id="clearBtn" layoutX="464.0" mnemonicParsing="false" onMouseClicked="#clearLog"
+                style="-fx-background-color: transparent; -fx-border-color: lightgray; -fx-border-width: 1px">
             <graphic>
-                <ImageView fx:id="trashCanImage" fitHeight="20.0" fitWidth="23" />
+                <ImageView fx:id="trashCanImage" fitHeight="20.0" fitWidth="23"/>
             </graphic>
         </Button>
     </Pane>
-    <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="130.0" prefWidth="200.0" style="-fx-background-color: transparent;">
+    <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="130.0" prefWidth="200.0"
+                style="-fx-background-color: transparent;">
     </ScrollPane>
 </VBox>

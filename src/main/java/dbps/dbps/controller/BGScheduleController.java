@@ -76,6 +76,7 @@ public class BGScheduleController {
         tag.setPrefWidth(TAG_WIDTH);
         tag.setPrefHeight(TAG_HEIGHT);
         tag.setOnMouseClicked(event -> checkBox.setSelected(false)); // 태그 클릭 시 체크 해제
+        tag.setStyle("-fx-background-color: lightgray");
         tagPane.getChildren().add(tag);
 
         // Map에 추가
