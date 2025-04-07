@@ -282,136 +282,116 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
         String cmd = receiveMsg.substring(4, 6);
         char status = receiveMsg.charAt(6);
 
-        if (cmd.equals("31")) {
-            String time = receiveMsg.substring(6, 19);
+        switch (cmd) {
+            case "31" -> {
+                String time = receiveMsg.substring(6, 19);
 
-            // 한글과 영어 요일을 다국어 지원하도록 변경
-            String[] weekdaysKorean = {"일", "월", "화", "수", "목", "금", "토"};
-            String[] weekdaysEnglish = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+                // 한글과 영어 요일을 다국어 지원하도록 변경
+                String[] weekdaysKorean = {"일", "월", "화", "수", "목", "금", "토"};
+                String[] weekdaysEnglish = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
-            // 현재 설정된 언어 확인
-            boolean isKorean = bundle.getLocale().getLanguage().equals("ko");
+                // 현재 설정된 언어 확인
+                boolean isKorean = bundle.getLocale().getLanguage().equals("ko");
 
-            // 숫자 요일을 언어별 요일로 변환
-            char weekdayChar = time.charAt(6);
-            int weekdayIndex = Character.getNumericValue(weekdayChar);
-            String weekday = isKorean ? weekdaysKorean[weekdayIndex] : weekdaysEnglish[weekdayIndex];
+                // 숫자 요일을 언어별 요일로 변환
+                char weekdayChar = time.charAt(6);
+                int weekdayIndex = Character.getNumericValue(weekdayChar);
+                String weekday = isKorean ? weekdaysKorean[weekdayIndex] : weekdaysEnglish[weekdayIndex];
 
-            // 다국어 형식 문자열 생성
-            String formattedTime = String.format(
-                    "%s-%s-%s (%s) %s:%s:%s",
-                    time.substring(0, 2), time.substring(2, 4), time.substring(4, 6),
-                    weekday,
-                    time.substring(7, 9), time.substring(9, 11), time.substring(11, 13)
-            );
+                // 다국어 형식 문자열 생성
+                String formattedTime = String.format(
+                        "%s-%s-%s (%s) %s:%s:%s",
+                        time.substring(0, 2), time.substring(2, 4), time.substring(4, 6),
+                        weekday,
+                        time.substring(7, 9), time.substring(9, 11), time.substring(11, 13)
+                );
 
-            logService.updateInfoLog(MessageFormat.format(bundle.getString("controllerTimeInfo"), formattedTime));
-            underTheLineLeftService.setTime(formattedTime);
-            return;
-        }
-
-        if (cmd.equals("D1")){
-            return;
-        }
-
-        if (cmd.equals("B3")) {
-            boardSettingService.setUI(receiveMsg.substring(7, 21));
-            logService.updateInfoLog(bundle.getString("boardSettingSuccess"));
-            return;
-        }
-        if (cmd.equals("B2")) {
-            return;
-        }
-        if (cmd.equals("33")) {
-            logService.updateInfoLog(bundle.getString("defaultSettingSuccess"));
-            return;
-        }
-        if (cmd.equals("81")) {
-            logService.updateInfoLog(bundle.getString("firmwareInfoReadSuccess"));
-            firmwareService.setFirmware(receiveMsg.substring(6));
-            return;
-        }
-        if (cmd.equals("96")) {
-            if (receiveMsg.equals("![0096F!]")){
-                logService.warningLog(bundle.getString("fontNameReadFail"));
+                logService.updateInfoLog(MessageFormat.format(bundle.getString("controllerTimeInfo"), formattedTime));
+                underTheLineLeftService.setTime(formattedTime);
                 return;
             }
-            logService.updateInfoLog(bundle.getString("fontNameReadSuccess"));
-            return;
-        }
-        if (cmd.equals("95")) {
-            logService.updateInfoLog(bundle.getString("fontNameSettingSuccess"));
-            return;
-        }
-        if (cmd.equals("40")) {
-            int sendRow = Integer.parseInt(sentMsg.substring(6, 8));
-            int sendColumn = Integer.parseInt(sentMsg.substring(8, 10));
-            int receiveRow = Integer.parseInt(receiveMsg.substring(6, 8));
-            int receiveColumn = Integer.parseInt(receiveMsg.substring(8, 10));
+            case "D1", "B2" -> {
+                return;
+            }
+            case "B3" -> {
+                boardSettingService.setUI(receiveMsg.substring(7, 21));
+                logService.updateInfoLog(bundle.getString("boardSettingSuccess"));
+                return;
+            }
+            case "33" -> {
+                logService.updateInfoLog(bundle.getString("defaultSettingSuccess"));
+                return;
+            }
+            case "81" -> {
+                logService.updateInfoLog(bundle.getString("firmwareInfoReadSuccess"));
+                firmwareService.setFirmware(receiveMsg.substring(6));
+                return;
+            }
+            case "96" -> {
+                if (receiveMsg.equals("![0096F!]")) {
+                    logService.warningLog(bundle.getString("fontNameReadFail"));
+                    return;
+                }
+                logService.updateInfoLog(bundle.getString("fontNameReadSuccess"));
+                return;
+            }
+            case "95" -> {
+                logService.updateInfoLog(bundle.getString("fontNameSettingSuccess"));
+                return;
+            }
+            case "40" -> {
+                int sendRow = Integer.parseInt(sentMsg.substring(6, 8));
+                int sendColumn = Integer.parseInt(sentMsg.substring(8, 10));
+                int receiveRow = Integer.parseInt(receiveMsg.substring(6, 8));
+                int receiveColumn = Integer.parseInt(receiveMsg.substring(8, 10));
 
-            if (sendRow == receiveRow && sendColumn == receiveColumn) {
-                logService.updateInfoLog(bundle.getString("displaySizeSettingSuccess"));
-            } else {
-                logService.warningLog(bundle.getString("displaySizeSettingFailed"));
-                logService.warningLog(MessageFormat.format(bundle.getString("displaySizeLimit"), receiveRow, receiveColumn));
-                sizeOfDisplayBoardService.setDisplaySize(receiveRow, receiveColumn);
+                if (sendRow == receiveRow && sendColumn == receiveColumn) {
+                    logService.updateInfoLog(bundle.getString("displaySizeSettingSuccess"));
+                } else {
+                    logService.warningLog(bundle.getString("displaySizeSettingFailed"));
+                    logService.warningLog(MessageFormat.format(bundle.getString("displaySizeLimit"), receiveRow, receiveColumn));
+                    sizeOfDisplayBoardService.setDisplaySize(receiveRow, receiveColumn);
+                }
             }
         }
 
         if (status == '0') { // 정상 처리
-            if (cmd.equals("20")) {
-                logService.updateInfoLog(bundle.getString("backgroundImageDisplaySuccess"));
-            }
-            if (cmd.equals("21")) {
-                logService.updateInfoLog(bundle.getString("screenPowerToggleSuccess"));
-            }
-            if (cmd.equals("22")) {
-                logService.updateInfoLog(bundle.getString("externalSignalOutputSuccess"));
-            }
-            if (cmd.equals("30")) {
-                logService.updateInfoLog(bundle.getString("timeSyncSuccess"));
-            }
-            if (cmd.equals("41")) {
-                logService.updateInfoLog(bundle.getString("controllerResetSuccess"));
-            }
-            if (cmd.equals("42")) {
-                logService.updateInfoLog(bundle.getString("factoryResetSuccess"));
-            }
-            if (cmd.equals("50")) {
-                logService.updateInfoLog(bundle.getString("brightnessControlSuccess"));
-            }
-            if (cmd.equals("52")) {
-                logService.updateInfoLog(bundle.getString("receivedMsg") + receiveMsg);
-            }
-            if (cmd.equals("54")) {
-                logService.updateInfoLog(bundle.getString("displaySpeedChangeSuccess"));
-            }
-            if (cmd.equals("56")) {
-                logService.updateInfoLog(bundle.getString("fontThicknessSettingSuccess"));
-            }
-            if (cmd.equals("60")) {
-                logService.updateInfoLog(bundle.getString("pageMessageCountSettingSuccess"));
-            }
-            if (cmd.equals("61")) {
-                logService.updateInfoLog(bundle.getString("pageMessageDeletionSuccess"));
-            }
-            if (cmd.equals("62")) {
-                logService.updateInfoLog(bundle.getString("sectionEffectSettingSuccess"));
-            }
-            if (cmd.equals("70")) {
-                logService.updateInfoLog(bundle.getString("fillDisplaySuccess"));
-            }
-            if (cmd.equals("32")) {
-                logService.updateInfoLog(bundle.getString("defaultSettingSuccess"));
-            }
-            if (cmd.equals("82")) {
-                logService.updateInfoLog(bundle.getString("macAddressSettingSuccess"));
-            }
-            if (cmd.equals("85")) {
-                logService.updateInfoLog(bundle.getString("heartbeatSettingSuccess"));
-            }
-            if (cmd.equals("B4")) {
-                logService.updateInfoLog(bundle.getString("afterimageDelaySettingSuccess"));
+            switch (cmd) {
+                case "20" -> logService.updateInfoLog(bundle.getString("backgroundImageDisplaySuccess"));
+
+                case "21" -> logService.updateInfoLog(bundle.getString("screenPowerToggleSuccess"));
+
+                case "22" -> logService.updateInfoLog(bundle.getString("externalSignalOutputSuccess"));
+
+                case "30" -> logService.updateInfoLog(bundle.getString("timeSyncSuccess"));
+
+                case "41" -> logService.updateInfoLog(bundle.getString("controllerResetSuccess"));
+
+                case "42" -> logService.updateInfoLog(bundle.getString("factoryResetSuccess"));
+
+                case "50" -> logService.updateInfoLog(bundle.getString("brightnessControlSuccess"));
+
+                case "52" -> logService.updateInfoLog(bundle.getString("receivedMsg") + receiveMsg);
+
+                case "54" -> logService.updateInfoLog(bundle.getString("displaySpeedChangeSuccess"));
+
+                case "56" -> logService.updateInfoLog(bundle.getString("fontThicknessSettingSuccess"));
+
+                case "60" -> logService.updateInfoLog(bundle.getString("pageMessageCountSettingSuccess"));
+
+                case "61" -> logService.updateInfoLog(bundle.getString("pageMessageDeletionSuccess"));
+
+                case "62" -> logService.updateInfoLog(bundle.getString("sectionEffectSettingSuccess"));
+
+                case "70" -> logService.updateInfoLog(bundle.getString("fillDisplaySuccess"));
+
+                case "32" -> logService.updateInfoLog(bundle.getString("defaultSettingSuccess"));
+
+                case "82" -> logService.updateInfoLog(bundle.getString("macAddressSettingSuccess"));
+
+                case "85" -> logService.updateInfoLog(bundle.getString("heartbeatSettingSuccess"));
+
+                case "B4" -> logService.updateInfoLog(bundle.getString("afterimageDelaySettingSuccess"));
             }
 
 
