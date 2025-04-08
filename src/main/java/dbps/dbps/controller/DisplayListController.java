@@ -66,19 +66,29 @@ public class DisplayListController {
     }
 
     private void inputData() {
-        displayModuleMap.put("04N008P2H1200A1", "08D-P16D2S21");
-        displayModuleMap.put("DABIT_P10_1R2C_4S_4500cd", "04D-P32D2S71");
-        displayModuleMap.put("DABIT_P10_1R2C_4S_4500cd(BGR)", "04D-P32D2S51");
         displayModuleMap.put("DABIT_P3_1R4C_16S_900cd", "16D-P16D1S21");
-        displayModuleMap.put("DABIT_P3_2R6C_16S_2700cd", "16D-P16D1S11");
         displayModuleMap.put("DABIT_P3_4R4C_16S_900cd", "32D-P16D1S11");
-        displayModuleMap.put("DABIT_P4_2R2C_16S_2200cd", "16D-P16D1S11");
+        displayModuleMap.put("DABIT_P3_2R6C_16S_2700cd", "16D-P16D1S11");
+
         displayModuleMap.put("DABIT_P4_2R2C_16S_900cd", "16D-P16D1S11");
+        displayModuleMap.put("DABIT_P4_2R2C_16S_2200cd", "16D-P16D1S11");
         displayModuleMap.put("DABIT_P4_2R4C_8S_6000cd", "08D-P32D1S31");
-        displayModuleMap.put("DABIT_P6_2R2C_8S_6500cd", "08D-P64D1S61");
+
+        displayModuleMap.put("DABIT_P6_1R2C_8S_900cd", "08D-P16D2S11-1^9");
+        displayModuleMap.put("DABIT_P6_1R2C_8S_6000cd", "08D-P16D2S31-9^1");
         displayModuleMap.put("DABIT_P6_2R2C_8S_6500cd(BGR)", "08D-P64D1S21");
+        displayModuleMap.put("DABIT_P6_2R2C_8S_6500cd", "08D-P64D1S61");
+        displayModuleMap.put("DABIT_P6_2R2C_8S_5500cd", "08D-P64D1S61");
+
         displayModuleMap.put("DABIT_P8_1R2C_4S_6500cd", "04D-P32D2S61");
+
+        displayModuleMap.put("DABIT_P10_1R2C_4S_4500cd(BGR)", "04D-P32D2S51");
+        displayModuleMap.put("DABIT_P10_1R2C_4S_4500cd", "04D-P32D2S71");
+
+
         displayModuleMap.put("ECO_T10_1R2C_4S_8000cd", "04D-P32D2S61");
+        displayModuleMap.put("L800-32X16-4S-V3.0~2022(L800)", "04D-P32D2S61");
+
         displayModuleMap.put("GMSFCM4_240_111 GP22LED_81210", "04D-P16D4S11-1^5^9^13");
         displayModuleMap.put("HS-64W1-CFN-0801", "08D-P64D1S71");
         displayModuleMap.put("HS-P3-192-CFH-1601", "16D-P16D1S41");
@@ -109,6 +119,7 @@ public class DisplayListController {
         displayModuleMap.put("SD-83N11(8D)", "08D-P16D2S23-1^2");
         displayModuleMap.put("CM8D-D83N-A", "08D-P16D2S23-1^2");
         displayModuleMap.put("GMSFCD4-80102", "04D-P16D4S11-1^5^9^13");
+        displayModuleMap.put("04N008P2H1200A1", "08D-P16D2S21");
         displayModuleMap.put("CM80-M8FN-320B-2014.11.05", "04D-P16D4S11-1^5^9^13");
     }
 

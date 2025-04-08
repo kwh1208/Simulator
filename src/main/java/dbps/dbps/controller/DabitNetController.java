@@ -43,7 +43,7 @@ public class DabitNetController {
     public TextField serverIPTF;
     public TextField serverPortTF;
     public RadioButton staticRadio;
-    public CheckBox isClient;
+    public RadioButton isClient;
     public TextField boardNameTF;
     public RadioButton wifiStation;
     public TextField wifiSSID;
@@ -712,7 +712,7 @@ public class DabitNetController {
     }
 
     public void changeDefault(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/defaultChange.fxml", "기본 설정 변경", mouseEvent);
+        openModal("/dbps/dbps/fxmls/defaultChange.fxml", "기본 IP 변경", mouseEvent);
     }
 
     public void openDeviceManager() {

@@ -61,6 +61,8 @@ public class HEXMessageController {
 
     public static final BooleanProperty isAsc = new SimpleBooleanProperty(IS_ASCII);
 
+    LogService logService;
+
     @FXML
     private AnchorPane HEXMsgAP;
 
@@ -167,6 +169,7 @@ public class HEXMessageController {
         hexMsgService.setYEnd(yEnd);
         hexRadioBtn.setToggleGroup(protocolType);
         ascRadioBtn.setToggleGroup(protocolType);
+        logService = LogService.getLogService();
 
         if (IS_ASCII){
             ascRadioBtn.setSelected(true);
@@ -204,20 +207,21 @@ public class HEXMessageController {
         realTimeMsg.setToggleGroup(msgTypeGroup);
         pageMsg.setToggleGroup(msgTypeGroup);
 
+        section0.setUserData("0");
+        section1.setUserData("1");
+        section2.setUserData("2");
+
         section0.setToggleGroup(sectionGroup);
         section1.setToggleGroup(sectionGroup);
         section2.setToggleGroup(sectionGroup);
 
-        realTimeMsg.setSelected(true);
-        if (configService.getProperty("isHexRealTime").equals("0")) {
-            realTimeMsg.setSelected(true);
+        if (configService.getProperty("lastSection").equals("0")){
+            section0.setSelected(true);
+        } else if (configService.getProperty("lastSection").equals("1")) {
+            section1.setSelected(true);
         } else {
-            pageMsg.setSelected(true);
-            pageMsgCnt.setVisible(true);
-            pageCntLabel.setVisible(true);
-            pageMsgCnt.setValue(configService.getProperty("isHexRealTime"));
+            section2.setSelected(true);
         }
-        section0.setSelected(true);
 
         if (configService.getProperty("textAsc"+getMsgNum())!=null){
             sendMsgAsc.setText(configService.getProperty("textAsc"+getMsgNum()));
@@ -229,23 +233,31 @@ public class HEXMessageController {
                 if (selectedRadioButton.getId().equals("realTimeMsg")) {
                     pageMsgCnt.setVisible(false);
                     pageCntLabel.setVisible(false);
+                    configService.setProperty("lastPage", "0");
                 } else {
                     pageMsgCnt.setVisible(true);
                     pageCntLabel.setVisible(true);
+                    configService.setProperty("lastPage", pageMsgCnt.getValue());
                 }
                 doMsgSettings();
             }
         });
+
+        if (configService.getProperty("lastPage").equals("0")){
+            realTimeMsg.setSelected(true);
+        } else {
+            pageMsg.setSelected(true);
+            pageMsgCnt.setValue(configService.getProperty("lastPage"));
+        }
 
         bgImg.getItems().add(new ComboItem("notUsed", bundle.getString("notUsed")));
         for (int i = 1; i < 11; i++) {
             bgImg.getItems().add(new ComboItem(String.valueOf(i), MessageFormat.format(bundle.getString("Img"), i)));
         }
 
-        pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> doMsgSettings());
+        pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {doMsgSettings();configService.setProperty("lastPage", pageMsgCnt.getValue());});
 
-        sectionGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> doMsgSettings());
-
+        sectionGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {doMsgSettings();configService.setProperty("lastSection", newValue.getUserData().toString());});
         effectOut.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateOutDirections(newValue.displayText()));
         effectIn.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateInDirections(newValue.displayText()));
 
@@ -583,6 +595,9 @@ public class HEXMessageController {
                 new ComboItem("cyan", bundle.getString("cyan")),
                 new ComboItem("white", bundle.getString("white")));
         bgColorASC.setValue(new ComboItem(configService.getProperty("bgColorASC"+getMsgNum()), bundle.getString(configService.getProperty("bgColorASC"+getMsgNum()))));
+
+        textColor.setText(configService.getProperty("textColor"+getMsgNum()));
+        bgColor.setText(configService.getProperty("bgColor"+getMsgNum()));
     }
 
     private void setXY() {
@@ -674,6 +689,7 @@ public class HEXMessageController {
     public void send() {
         if (IS_ASCII) {
             String msg = sendMsgAsc.getText();
+            checkASCColor(msg);
             if (msg.contains("/F01")||msg.contains("/f01")){
                 asciiMsgTransceiver.sendMessages(msg, false, true, progressIndicator);
                 return;
@@ -684,6 +700,7 @@ public class HEXMessageController {
             else asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
         } else {
             String msg = makeHexMsg();
+
             hexMsgTransceiver.sendMessages(msg, progressIndicator);
         }
     }
@@ -713,6 +730,8 @@ public class HEXMessageController {
             String bgColorValue = bgColor.getText();
             String text = sendMsg.getText();
 
+            checkHexColor(textColorValue);
+            checkHexColor(bgColorValue);
 
             StringBuilder msg = new StringBuilder("10 02 ");
 
@@ -851,6 +870,18 @@ public class HEXMessageController {
         return null;
     }
 
+    private void checkHexColor(String text) {
+        if (text.contains("8")||text.contains("9")) {
+            logService.warningLog("표출불가능한 색상 코드가 포함되어있습니다.\n설정을 다시 한번 확인해주세요.");
+        }
+    }
+
+    private void checkASCColor(String text) {
+        if (text.contains("/C8")||text.contains("/C9")||text.contains("/G8")||text.contains("/G9")) {
+            logService.warningLog("표출불가능한 색상 코드가 포함되어있습니다.\n설정을 다시 한번 확인해주세요.");
+        }
+    }
+
     private String makeEffectTime(String effectTimeValue) {
         if (effectTimeValue.contains(bundle.getString("sec"))) {
             return String.format("%02x ", Integer.parseInt(effectTimeValue.replaceAll("[^0-9]", "")) * 2);
@@ -973,7 +1004,7 @@ public class HEXMessageController {
                 return "31 ";
             } else if (direction.equals(bundle.getString("green"))) {
                 return "32 ";
-            } else if (direction.equals(bundle.getString("blue"))) {
+            } else if (direction.equals(bundle.getString("yellow"))) {
                 return "33 ";
             } else if (direction.equals(bundle.getString("white"))) {
                 return "34 ";
@@ -1154,6 +1185,10 @@ public class HEXMessageController {
         sendMsg.textProperty().addListener((observable, oldValue, newValue)-> configService.setProperty("text"+getMsgNum(), newValue));
 
         sendMsgAsc.textProperty().addListener((observable, oldValue, newValue)-> configService.setProperty("textAsc"+getMsgNum(), newValue));
+
+        textColor.textProperty().addListener((observable, oldValue, newValue)->{ configService.setProperty("textColor"+getMsgNum(), newValue);});
+
+        bgColor.textProperty().addListener((observable, oldValue, newValue)->{ configService.setProperty("bgColor"+getMsgNum(), newValue);});
     }
 
     private String setDText(String value1, String value2) {

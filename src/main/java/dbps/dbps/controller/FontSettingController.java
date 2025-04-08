@@ -527,7 +527,7 @@ public class FontSettingController {
 
 
     private void moveCaretToEnd(TextArea textArea) {
-        textArea.positionCaret(textArea.getText().length());  // 커서를 텍스트 끝으로 이동
+        textArea.positionCaret(textArea.getText().length());
     }
 
     //폰트선택창 띄우기
@@ -567,7 +567,7 @@ public class FontSettingController {
         File selectedFont = fileChooser.showOpenDialog(stage);
 
         if (!selectedFont.exists()) {
-
+            logService.errorLog("해당 파일을 찾을 수 없습니다.");
         }
         // 선택된 폰트 경로를 TextArea에 설정
         else {
@@ -576,7 +576,7 @@ public class FontSettingController {
             configService.setProperty(target, selectedFont.getAbsolutePath());
         }
 
-        moveCaretToEnd(fontPath);
+        Platform.runLater(() -> moveCaretToEnd(fontPath));
         updateFontSize();
     }
 
@@ -926,7 +926,7 @@ public class FontSettingController {
             if (totalFileSize > 3145727) {
                 fontCapacity.setStyle("-fx-text-fill: red");
             } else {
-                fontCapacity.setStyle("-fx-text-fill: white");
+                fontCapacity.setStyle("-fx-text-fill: black");
             }
 
         } catch (Exception e) {

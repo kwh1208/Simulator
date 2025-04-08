@@ -177,13 +177,10 @@ public class SettingController {
     }
 
     public void sendBGImgSelection() {
-        String value = bGImgSelection.getValue().displayText();
+        String value = bGImgSelection.getValue().key();
         if (IS_ASCII){
             String result = "";
-            if (value.equals(bundle.getString("notUsed")))
-            {
-                result = "000";
-            }
+            if (value.equals("notUsed")) result = "000";
             else result = String.format("%03d", Integer.parseInt(value));
             {
                 String msg = "![0020"+result+"!]";
@@ -195,7 +192,7 @@ public class SettingController {
         }
         else {
             int result = 0;
-            if (!value.equals(bundle.getString("notUsed"))){
+            if (!value.equals("notUsed")){
                 result = Integer.parseInt(value);
             }
             String msg = "10 02 00 00 02 4F "+String.format("%02X ", result)+"10 03";

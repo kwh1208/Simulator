@@ -12,18 +12,18 @@
       style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3"
       xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="dbps.dbps.controller.SizeOfDisplayBoardController">
-    <Label alignment="CENTER" layoutX="10.0" layoutY="-14.0" prefHeight="18.0"
+    <Label alignment="CENTER" layoutX="10.0" layoutY="-10.0" prefHeight="18.0"
            style="-fx-background-color: #F4F4F4; -fx-padding: 0 5 0 5px" text="%displaySize"/>
     <Label layoutX="20.0" layoutY="25.0" text="%height"/>
-    <Spinner fx:id="spinnerForRow" layoutX="120.0" layoutY="18.0" prefHeight="25.0" prefWidth="72.0"/>
+    <Spinner fx:id="spinnerForRow" layoutX="120.0" layoutY="18.0" prefHeight="28.0" prefWidth="72.0"/>
     <Label fx:id="rowPixel" layoutX="210.0" layoutY="26.0" prefHeight="13.0" prefWidth="80.0"/>
 
     <Label layoutX="20.0" layoutY="56.0" text="%width"/>
-    <Spinner fx:id="spinnerForColumn" layoutX="120.0" layoutY="51.0" prefHeight="25.0" prefWidth="72.0"/>
+    <Spinner fx:id="spinnerForColumn" layoutX="120.0" layoutY="51.0" prefHeight="28.0" prefWidth="72.0"/>
     <Label fx:id="colPixel" layoutX="210.0" layoutY="58.0" prefHeight="13.0" prefWidth="80.0"/>
 
     <Label layoutX="20.0" layoutY="117.0" text="%bitsPerPixel"/>
-    <ComboBox fx:id="colorNum" layoutX="120.0" layoutY="113.0" prefHeight="25.0" prefWidth="102.0"
+    <ComboBox fx:id="colorNum" layoutX="120.0" layoutY="113.0" prefHeight="28.0" prefWidth="102.0"
               value="3BPP(8Colors)">
         <items>
             <FXCollections fx:factory="observableArrayList">
@@ -35,7 +35,7 @@
     </ComboBox>
 
     <Label layoutX="20.0" layoutY="86.0" text="%moduleArrangementMethod"/>
-    <ComboBox fx:id="howToArray" layoutX="120.0" layoutY="82.0" prefHeight="25.0" prefWidth="140.0">
+    <ComboBox fx:id="howToArray" layoutX="120.0" layoutY="82.0" prefHeight="28.0" prefWidth="140.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>

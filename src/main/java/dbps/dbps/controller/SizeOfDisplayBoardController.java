@@ -89,6 +89,7 @@ public class SizeOfDisplayBoardController {
         howToArray.setValue(bundle.getString("horizontalDefault"));
     }
 
+
     private void setInitialValues() {
         SIZE_ROW = spinnerForRow.getValue();
         SIZE_COLUMN = spinnerForColumn.getValue();
@@ -97,7 +98,6 @@ public class SizeOfDisplayBoardController {
         configService.setProperty("displayColumnSize", String.valueOf(SIZE_COLUMN));
     }
 
-
     public void sendDisplaySize() {
         if (IS_ASCII){
             displaySizeASC();
@@ -105,9 +105,8 @@ public class SizeOfDisplayBoardController {
         else {
             displaySizeHEX();
         }
-        setInitialValues();
 
-        hexMsgService.changeXY(SIZE_COLUMN,SIZE_ROW);
+        BITS_PER_PIXEL = Integer.parseInt(String.valueOf(colorNum.getValue()).substring(0,1));
     }
 
     private void displaySizeASC() {

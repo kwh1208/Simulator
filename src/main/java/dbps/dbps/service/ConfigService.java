@@ -161,6 +161,9 @@ public class ConfigService extends AbstractSingleton<ConfigService> {
                 defaultProperties.setProperty("ASCMsg" + i, "");
             }
         }
+
+        defaultProperties.setProperty("lastPage", "0");
+        defaultProperties.setProperty("lastSection", "0");
         
         // 기본 연결 설정
         defaultProperties.setProperty("IS_ASCII", "true");

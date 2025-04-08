@@ -3,6 +3,7 @@ package dbps.dbps.controller;
 import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ConfigService;
+import dbps.dbps.service.LogService;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -16,6 +17,7 @@ public class DefaultChangeController {
     public TextField clientGatewayTF;
     public AnchorPane defaultChangeAP;
     ConfigService configService;
+    LogService logService;
 
 
     public void initialize() {
@@ -29,6 +31,9 @@ public class DefaultChangeController {
         clientGatewayTF.setText(configService.getProperty("dbNetGateway"));
 
         defaultChangeAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
+
+
+        logService = LogService.getLogService();
     }
 
 
@@ -37,7 +42,7 @@ public class DefaultChangeController {
         stage.close();
     }
 
-    public void confirm(MouseEvent mouseEvent) {
+    public void confirm() {
         configService.setProperty("dbNetIP", clientIPTF.getText());
         configService.setProperty("dbNetPort", clientPortTF.getText());
         configService.setProperty("dbNetGateway", clientGatewayTF.getText());
@@ -45,6 +50,6 @@ public class DefaultChangeController {
 
         configService.reloadConfigProperties();
 
-        close(mouseEvent);
+        logService.updateInfoLog("기본 IP가 변경되었습니다.");
     }
 }
