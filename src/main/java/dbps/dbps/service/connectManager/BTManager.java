@@ -63,7 +63,7 @@ public class BTManager {
     }
 
     public void end(String password) {
-        String msg = "++SET++![BT " + padPassword(password) + " BEGIN!]";
+        String msg = "++SET++![BT " + padPassword(password) + " END!]";
         asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 

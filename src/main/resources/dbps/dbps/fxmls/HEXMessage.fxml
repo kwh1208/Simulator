@@ -141,7 +141,7 @@
     <Pane fx:id="ascPane" layoutX="16.0" layoutY="485.0" prefHeight="86.0" prefWidth="499.0">
         <TextField fx:id="sendMsgAsc" layoutY="14.0" prefHeight="33" prefWidth="491.0" promptText="%prompt" />
         <Button layoutX="401.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#send" prefHeight="30.0" prefWidth="90.0" text="%sendButton" />
-        <Button layoutX="296.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#openMulti" prefHeight="30.0" prefWidth="97.0" styleClass="newWindow-button" text="%MultiInput">
+        <Button layoutX="296.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#openMulti" prefHeight="30.0" prefWidth="97.0" styleClass="newWindow-button" text="%MultiInput" focusTraversable="false">
         </Button>
         <Button layoutX="137.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#reset" prefHeight="30.0" prefWidth="90.0" text="%PropertyInit" />
         <Button layoutX="1.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#copy" prefHeight="30.0" prefWidth="130.0" text="%GetPreview">

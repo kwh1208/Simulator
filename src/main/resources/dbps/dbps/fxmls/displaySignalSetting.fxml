@@ -70,7 +70,7 @@
     <TextArea fx:id="memo" layoutX="268.0" layoutY="36.0" prefHeight="215.0" prefWidth="248.0"
               promptText="여기에 메모를 입력하세요"/>
     <Button layoutX="277.0" layoutY="258.0" mnemonicParsing="false" onMouseClicked="#search" prefHeight="28.0"
-            prefWidth="120.0" styleClass="newWindow-button" text="%searchSignal">
+            prefWidth="120.0" styleClass="newWindow-button" text="%searchSignal" focusTraversable="false">
     </Button>
     <Button layoutX="407.0" layoutY="258.0" mnemonicParsing="false" onMouseClicked="#save" prefHeight="28.0"
             prefWidth="110.0" text="%saveMemo"/>

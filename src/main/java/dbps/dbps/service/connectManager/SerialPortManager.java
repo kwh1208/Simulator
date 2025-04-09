@@ -54,7 +54,7 @@ public class SerialPortManager {
             }
             SerialPort port = SerialPort.getCommPort(portName);
             port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000, RESPONSE_LATENCY * 1000);
+            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY*1000, 1000);
 
             if (!port.openPort()) {
                 logService.errorLog(portName + bundle.getString("portCantOpen"));
@@ -158,12 +158,15 @@ public class SerialPortManager {
                                 if (dataReceivedIsComplete(buffer, totalBytesRead)) {
                                     break;
                                 }
-                            } else {
-                                break; // 타임아웃
+                            }
+
+                            if (inputStream.read()==-1){
+                                break;
                             }
                         }
 
                         String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+
                         if (result.contains("TX") && result.contains("![") && result.contains("!]")) {
                             int indexTX = result.indexOf("TX");
                             result = result.substring(indexTX);
@@ -175,7 +178,6 @@ public class SerialPortManager {
                         logService.errorLog(bundle.getString("connectionFail"));
                         throw e;
                     } catch (Exception e) {
-                        e.printStackTrace();
                         logService.errorLog(bundle.getString("Error") + e.getMessage());
                         throw e;
                     } finally {
@@ -251,7 +253,6 @@ public class SerialPortManager {
                         logService.errorLog(bundle.getString("connectionFail"));
                         throw e;
                     } catch (Exception e) {
-                        e.printStackTrace();
                         logService.errorLog(bundle.getString("Error"));
                         throw e;
                     } finally {
@@ -298,6 +299,7 @@ public class SerialPortManager {
                         inputStream.skip(inputStream.available());
                         outputStream.write(msg);
                         outputStream.flush();
+
                         byte[] buffer = new byte[1024];
                         int totalBytesRead = 0;
                         while (true) {
@@ -383,7 +385,7 @@ public class SerialPortManager {
             }
             bytesToHex(buffer, totalBytesRead);
         } catch (Exception e) {
-            e.printStackTrace();
+            logService.errorLog(bundle.getString("connectionFail"));
             throw e;
         }
     }
@@ -429,6 +431,7 @@ public class SerialPortManager {
             }
             bytesToHex(buffer, totalBytesRead);
         } catch (Exception e) {
+            logService.errorLog(bundle.getString("connectionFail"));
             throw e;
         }
     }
@@ -549,7 +552,6 @@ public class SerialPortManager {
                 }
                 catch (Exception e) {
                     logService.errorLog(bundle.getString("connectionFail"));
-                    e.printStackTrace();
                     throw e;
                 } finally {
                     port.closePort();

@@ -43,6 +43,7 @@ public class CommunicationSettingController {
     public Button shutConnect;
     public Button keepOpenBtn;
     public TextField pingTextField;
+    public Button pingTestBtn;
     SerialPortManager serialPortManager;
     TCPManager tcpManager;
 
@@ -372,21 +373,6 @@ public class CommunicationSettingController {
         clientIPAddress.setText(configService.getProperty("clientTCPAddr"));
         clientIPPort.setText(configService.getProperty("clientTCPPort"));
 
-        pingTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                // 포커스가 들어왔을 때: 테두리 주황색
-                pingTextField.setStyle(
-                        "-fx-background-color: black; " +
-                                "-fx-text-fill: black; " +
-                                "-fx-border-color: orange; " +
-                                "-fx-border-width: 1px;"
-                );
-            } else {
-                // 포커스가 나갔을 때: 원래 스타일로 복원
-                pingTextField.setStyle("-fx-text-fill: black;");
-            }
-        });
-
     }
 
     //사용가능한 포트 가져오기
@@ -649,7 +635,7 @@ public class CommunicationSettingController {
     }
 
     private void clientTCPRadioToggle(boolean isClient) {
-        toggleComponents(isClient, clientIPAddress, clientIPPort);
+        toggleComponents(isClient, clientIPAddress, clientIPPort, pingTextField, pingTestBtn);
     }
 
     private void serverTCPRadioToggle(boolean isServer) {
@@ -699,9 +685,11 @@ public class CommunicationSettingController {
         KEEP_OPEN = !KEEP_OPEN;
         if (KEEP_OPEN) {
             logService.updateInfoLog(bundle.getString("portAlwaysOpen"));
+            keepOpenBtn.setText("유지 해제");
             openSerialPort();
         } else {
             logService.updateInfoLog(bundle.getString("portOpenClose"));
+            keepOpenBtn.setText("포트 유지");
             closeSerialPort();
         }
     }

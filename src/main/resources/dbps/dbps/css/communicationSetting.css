@@ -20,6 +20,9 @@
     -fx-padding: 5 10 5 10; /* 버튼 내부 여백 */
     -fx-background-radius: 10; /* 배경 둥글기 */
 }
+.button:focused {
+    -fx-effect: none;
+}
 
 .radio-button .radio,
 .check-box .box {
@@ -60,4 +63,15 @@
 }
 .check-box .mark {
     -fx-shape: "M0 0 L1 0 1 1 0 1 Z";
+}
+
+.newWindow-button {
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+
+    -fx-border-color: dimgray;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+
+    -fx-cursor: hand;
 }

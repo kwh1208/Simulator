@@ -3,16 +3,16 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane fx:id="ASAP" layoutX="17.0" layoutY="50.0" prefWidth="278.0" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdvancedSettingController">
-    <Button layoutX="15.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClicked" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%communicationSetting" />
-    <Button layoutX="15.0" layoutY="60.0" mnemonicParsing="false" onMouseClicked="#fontSetting" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%fontSetting" />
-    <Button layoutX="15.0" layoutY="110.0" mnemonicParsing="false" onMouseClicked="#transferSignalSetting" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%displaySignalSetting" />
-    <Button layoutX="15.0" layoutY="160.0" mnemonicParsing="false" onMouseClicked="#boardSetting" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%boardSetting" />
-    <Button layoutX="15.0" layoutY="210.0" mnemonicParsing="false" onMouseClicked="#firmwareInfo" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%firmwareUpgrade" />
-    <Button layoutX="15.0" layoutY="260.0" mnemonicParsing="false" onMouseClicked="#pageMsg" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%pageMsgSetting" />
-    <Button layoutX="15.0" layoutY="310.0" mnemonicParsing="false" onMouseClicked="#openAdditionalFunction" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%additionalFunction" />
+<Pane fx:id="ASAP" layoutX="17.0" layoutY="50.0" prefWidth="278.0" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdvancedSettingController" >
+    <Button layoutX="15.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClicked" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%communicationSetting" focusTraversable="false"/>
+    <Button layoutX="15.0" layoutY="60.0" mnemonicParsing="false" onMouseClicked="#fontSetting" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%fontSetting" focusTraversable="false"/>
+    <Button layoutX="15.0" layoutY="110.0" mnemonicParsing="false" onMouseClicked="#transferSignalSetting" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%displaySignalSetting" focusTraversable="false"/>
+    <Button layoutX="15.0" layoutY="160.0" mnemonicParsing="false" onMouseClicked="#boardSetting" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%boardSetting" focusTraversable="false"/>
+    <Button layoutX="15.0" layoutY="210.0" mnemonicParsing="false" onMouseClicked="#firmwareInfo" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%firmwareUpgrade" focusTraversable="false"/>
+    <Button layoutX="15.0" layoutY="260.0" mnemonicParsing="false" onMouseClicked="#pageMsg" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%pageMsgSetting" focusTraversable="false"/>
+    <Button layoutX="15.0" layoutY="310.0" mnemonicParsing="false" onMouseClicked="#openAdditionalFunction" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%additionalFunction" focusTraversable="false"/>
     <Button layoutX="15.0" layoutY="360.0" mnemonicParsing="false" onMouseClicked="#resetController" prefHeight="40.0" prefWidth="75.0" text="%CPUReboot" />
     <Button layoutX="90.0" layoutY="360.0" mnemonicParsing="false" onMouseClicked="#hardReset" prefHeight="40.0" prefWidth="85.0" text="%FactoryReset" />
-     <Button layoutX="15.0" layoutY="410.0" mnemonicParsing="false" onMouseClicked="#ASPhoto" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%asPhotoAttachment" />
-     <Button layoutX="15.0" layoutY="460.0" mnemonicParsing="false" onMouseClicked="#docs" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%officialDocument" />
+     <Button layoutX="15.0" layoutY="410.0" mnemonicParsing="false" onMouseClicked="#ASPhoto" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%asPhotoAttachment" focusTraversable="false"/>
+     <Button layoutX="15.0" layoutY="460.0" mnemonicParsing="false" onMouseClicked="#docs" prefHeight="40.0" prefWidth="160.0" styleClass="newWindow-button" text="%officialDocument" focusTraversable="false"/>
 </Pane>

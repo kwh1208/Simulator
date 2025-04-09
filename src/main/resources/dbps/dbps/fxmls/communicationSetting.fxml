@@ -45,8 +45,8 @@
                 </FXCollections>
             </items>
         </ComboBox>
-        <Button fx:id="findSpeedBtn" layoutX="100.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#findCommunicationSpeed" prefHeight="27.0" prefWidth="130.0" text="%findBaudrate" />
-        <Button fx:id="openDeviceManagerBtn" layoutX="232.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#openDeviceManager" prefHeight="27.0" prefWidth="135.0" styleClass="newWindow-button" text="%deviceManager">
+        <Button fx:id="findSpeedBtn" layoutX="100.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#findCommunicationSpeed" prefHeight="27.0" prefWidth="130.0" text="%findBaudrate" focusTraversable="false"/>
+        <Button fx:id="openDeviceManagerBtn" layoutX="232.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#openDeviceManager" prefHeight="27.0" prefWidth="135.0" styleClass="newWindow-button" text="%deviceManager" focusTraversable="false">
         </Button>
 
     </Pane>
@@ -60,7 +60,7 @@
         </TextField>
         <Label layoutX="13.0" layoutY="85.0" text="PingTest" />
         <TextField fx:id="pingTextField" layoutX="210.0" layoutY="81.0" prefHeight="22.0" prefWidth="103.0" />
-        <Button layoutX="315.0" layoutY="79.0" mnemonicParsing="false" onMouseClicked="#pingTest" text="실행" />
+        <Button fx:id="pingTestBtn" layoutX="315.0" layoutY="79.0" mnemonicParsing="false" onMouseClicked="#pingTest" text="실행" focusTraversable="false" />
     </Pane>
 
     <Pane layoutX="15.0" layoutY="317.0" prefHeight="87.0" prefWidth="373.0" style="-fx-border-color: #A0A0A0; -fx-border-radius: 10; -fx-border-width: 0.3">
@@ -82,14 +82,14 @@
         <Label layoutX="16.0" layoutY="53.0" text="IP Port" />
         <TextField fx:id="UDPIPPort" layoutX="210.0" layoutY="49.0" prefWidth="145.0" text="5108" />
     </Pane>
-    <Button fx:id="connect" layoutX="17.0" layoutY="512.0" mnemonicParsing="false" onMouseClicked="#openSerialPort" prefHeight="27.0" prefWidth="115.0" text="%openPort" />
-    <Button fx:id="keepOpenBtn" layoutX="143.0" layoutY="512.0" mnemonicParsing="false" onMouseClicked="#keepOpen" prefHeight="27.0" prefWidth="115.0" text="포트 유지" />
-    <Button fx:id="shutConnect" layoutX="269.0" layoutY="512.0" mnemonicParsing="false" onMouseClicked="#closeSerialPort" prefHeight="27.0" prefWidth="115.0" text="%closePort" />
-    <Button layoutX="17.0" layoutY="544.0" mnemonicParsing="false" onMouseClicked="#openDabitNet" prefHeight="27.0" prefWidth="115.0" styleClass="newWindow-button" text="dBNet">
+    <Button fx:id="connect" layoutX="17.0" layoutY="512.0" mnemonicParsing="false" onMouseClicked="#openSerialPort" prefHeight="27.0" prefWidth="115.0" text="%openPort" focusTraversable="false"/>
+    <Button fx:id="keepOpenBtn" layoutX="143.0" layoutY="512.0" mnemonicParsing="false" onMouseClicked="#keepOpen" prefHeight="27.0" prefWidth="115.0" text="포트 유지" focusTraversable="false"/>
+    <Button fx:id="shutConnect" layoutX="269.0" layoutY="512.0" mnemonicParsing="false" onMouseClicked="#closeSerialPort" prefHeight="27.0" prefWidth="115.0" text="%closePort" focusTraversable="false"/>
+    <Button layoutX="17.0" layoutY="544.0" mnemonicParsing="false" onMouseClicked="#openDabitNet"  prefHeight="27.0" prefWidth="115.0" styleClass="newWindow-button" text="dBNet" focusTraversable="false">
     </Button>
-    <Button layoutX="143.0" layoutY="544.0" mnemonicParsing="false" onMouseClicked="#openBluetooth" prefHeight="27.0" prefWidth="115.0" styleClass="newWindow-button" text="dBBle">
+    <Button layoutX="143.0" layoutY="544.0" mnemonicParsing="false" onMouseClicked="#openBluetooth" prefHeight="27.0" prefWidth="115.0" styleClass="newWindow-button" text="dBBle" focusTraversable="false">
     </Button>
-    <Button layoutX="269.0" layoutY="544.0" minWidth="115.0" mnemonicParsing="false" onMouseClicked="#controllerConnect" prefHeight="27.0" text="%connect" />
+    <Button layoutX="269.0" layoutY="544.0" minWidth="115.0" mnemonicParsing="false" onMouseClicked="#controllerConnect" prefHeight="27.0" text="%connect" focusTraversable="false"/>
     <Label layoutX="19.0" layoutY="584.0" text="%responseTime" />
     <ComboBox fx:id="delayTime" layoutX="156.0" layoutY="580.0" prefHeight="27.0" prefWidth="54.0" value="3">
         <items>
@@ -103,6 +103,6 @@
             </FXCollections>
         </items>
     </ComboBox>
-    <Button layoutX="310.0" layoutY="580.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClose" prefHeight="27.0" prefWidth="70.0" text="%close" />
+    <Button layoutX="310.0" layoutY="580.0" mnemonicParsing="false" onMouseClicked="#communicationSettingClose" prefHeight="27.0" prefWidth="70.0" text="%close" focusTraversable="false"/>
     <ProgressIndicator fx:id="progressIndicator" layoutX="170.0" layoutY="240.0" visible="false" />
 </AnchorPane>
