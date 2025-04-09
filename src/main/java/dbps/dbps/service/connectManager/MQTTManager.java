@@ -10,9 +10,18 @@ import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.LogService;
 import javafx.concurrent.Task;
 import lombok.Setter;
+import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -127,6 +136,9 @@ public class MQTTManager {
         try {
             client.subscribeWith()
                     .topicFilter("/sch_r")
+                    .send();
+            client.subscribeWith()
+                    .topicFilter("file/transfer")
                     .send();
             Optional<Mqtt5Publish> optionalPublish = client.publishes(MqttGlobalPublishFilter.SUBSCRIBED)
                     .receive(5, TimeUnit.SECONDS);
@@ -281,7 +293,6 @@ public class MQTTManager {
 
     private String receivedRoadMsg() {
         try {
-            // 구독 요청: receiveTopic에 대해 구독을 요청합니다.
             client.subscribeWith()
                     .topicFilter("feedback.20")
                     .send();
@@ -300,4 +311,89 @@ public class MQTTManager {
             return "Error: " + e.getMessage();
         }
     }
+
+    public Task<String> sendFileMsg(File file) {
+        return new Task<>() {
+            @Override
+            protected String call() {
+                chkConnect();
+                try {
+                    // 파일을 byte 배열로 읽기
+                    byte[] fileBytes = Files.readAllBytes(file.toPath());
+                    logService.updateInfoLog("파일 읽기 성공: " + file.getName());
+
+                    // 파일 데이터를 Base64로 인코딩
+                    String base64Data = Base64.getEncoder().encodeToString(fileBytes);
+
+                    // JSON 객체 생성: 파일명과 Base64 인코딩 데이터를 담음
+                    JSONObject json = new JSONObject();
+                    json.put("fileName", file.getName());
+                    json.put("data", base64Data);
+                    String jsonPayload = json.toString();
+                    logService.updateInfoLog("JSON 생성 완료: " + jsonPayload);
+
+                    // MQTT 전송 (sendTopic 사용)
+                    client.publishWith()
+                            .topic(sendTopic)
+                            .payload(jsonPayload.getBytes(StandardCharsets.UTF_8))
+                            .qos(MqttQos.AT_MOST_ONCE)
+                            .send();
+                    logService.updateInfoLog("파일 메시지 전송 성공: " + file.getName());
+
+                    // 응답 메시지 대기 (기존의 receivedMsg() 사용)
+                    String result = receivedMsg();
+                    return result;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return "Error: " + e.getMessage();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "Error: " + e.getMessage();
+                }
+            }
+        };
+    }
+
+    String fileReceiveTopic = "/msg";
+
+    public String subscribeAndSaveFile(String saveDir) {
+        chkConnect();
+        try {
+            // 파일 수신 토픽 구독 (예시: fileReceiveTopic)
+            client.subscribeWith()
+                    .topicFilter(fileReceiveTopic)
+                    .send();
+
+            // 최대 10초 동안 대기하여 메시지 수신
+            Optional<Mqtt5Publish> optionalPublish = Optional.of(client.publishes(MqttGlobalPublishFilter.SUBSCRIBED)
+                    .receive());
+            Mqtt5Publish publish = optionalPublish.get();
+            String payload = new String(publish.getPayloadAsBytes(), StandardCharsets.UTF_8);
+            logService.updateInfoLog("수신된 JSON: " + payload);
+
+            // JSON 파싱
+            JSONObject json = new JSONObject(payload);
+            String fileName = json.getString("fileName");
+            String base64Data = json.getString("data");
+
+            // 파일 데이터를 Base64 디코딩
+            byte[] fileBytes = Base64.getDecoder().decode(base64Data);
+
+            // 저장할 디렉토리 준비 (존재하지 않으면 생성)
+            Path directory = Paths.get(saveDir);
+            if (!directory.toFile().exists()) {
+                directory.toFile().mkdirs();
+            }
+            // JSON의 파일 이름으로 파일 저장
+            Path filePath = directory.resolve(fileName);
+            Files.write(filePath, fileBytes, StandardOpenOption.CREATE);
+            return "File saved to: " + filePath.toAbsolutePath().toString();
+        } catch (InterruptedException e) {
+            return "Error: " + e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error: " + e.getMessage();
+        }
+    }
+
 }

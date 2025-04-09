@@ -336,6 +336,47 @@ public class CommunicationSettingController {
             }
         });
 
+        communicationSettingAP.addEventHandler(KeyEvent.KEY_PRESSED, event ->{
+            if (event.isAltDown() && event.getCode() == KeyCode.F) {
+                FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/fileTransfer.fxml"));
+                fxmlLoader.setResources(ResourceManager.getInstance().getBundle());
+                Parent root = null;
+                try {
+                    root = fxmlLoader.load();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                Stage modalStage = new Stage();
+                modalStage.setTitle("파일 송수신");
+                modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
+                modalStage.initModality(Modality.APPLICATION_MODAL);
+
+                Stage parentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                modalStage.initOwner(parentStage);
+
+                Scene scene = new Scene(root);
+                modalStage.setScene(scene);
+                modalStage.setResizable(false);
+
+
+                    double parentX = parentStage.getX();
+                    double parentY = parentStage.getY();
+                    double parentWidth = parentStage.getWidth();
+
+                    // 모달 창 크기 계산
+                    double modalWidth = modalStage.getWidth();
+
+                    // 위치 계산
+                    double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
+
+                // 위치 설정
+                    modalStage.setX(modalX);
+                    modalStage.setY(parentY);
+
+                modalStage.showAndWait();
+            }
+        });
     }
 
     private void toggleMqtt() {
