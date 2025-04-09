@@ -139,7 +139,7 @@
     <Button fx:id="searchBtn" layoutX="215.0" layoutY="557.0" mnemonicParsing="false" onMouseClicked="#search" prefWidth="63.0" text="Search" />
     <Button layoutX="283.0" layoutY="557.0" mnemonicParsing="false" onMouseClicked="#set" prefWidth="63.0" text="Set" />
     <Button layoutX="351.0" layoutY="557.0" mnemonicParsing="false" onMouseClicked="#add" prefWidth="63.0" text="Add" />
-    <Button layoutX="419.0" layoutY="557.0" mnemonicParsing="false" onMouseClicked="#reboot" prefWidth="63.0" text="Reboot" />
+    <Button layoutX="419.0" layoutY="557.0" mnemonicParsing="false" onMouseClicked="#reboot" prefWidth="63.0" text="Reset" />
     <Button layoutX="487.0" layoutY="557.0" mnemonicParsing="false" onMouseClicked="#close" prefWidth="63.0" text="Close" />
     <ProgressBar fx:id="dbNetProgressBar" layoutX="15.0" layoutY="593.0" prefHeight="18.0" prefWidth="536.0" progress="0.0" visible="false" />
     <Pane layoutX="14.0" layoutY="228.0" prefHeight="163.0" prefWidth="350.0" visible="false">

@@ -321,7 +321,7 @@ public class HEXMessageController {
             if (previousSegments != null && previousSegments.size() > i && !previousSegments.get(i).equals(seg)) {
                 Timeline timeline = new Timeline(
                         new KeyFrame(Duration.ZERO, new KeyValue(bgColorProperty, Color.DARKORANGE)),
-                        new KeyFrame(Duration.seconds(4), new KeyValue(bgColorProperty, Color.TRANSPARENT))
+                        new KeyFrame(Duration.seconds(2), new KeyValue(bgColorProperty, Color.TRANSPARENT))
                 );
                 timeline.play();
             }
@@ -689,7 +689,6 @@ public class HEXMessageController {
     public void send() {
         if (IS_ASCII) {
             String msg = sendMsgAsc.getText();
-            checkASCColor(msg);
             if (msg.contains("/F01")||msg.contains("/f01")){
                 asciiMsgTransceiver.sendMessages(msg, false, true, progressIndicator);
                 return;
@@ -698,10 +697,13 @@ public class HEXMessageController {
                 asciiMsgTransceiver.sendMessages(msg, true,false, progressIndicator);
             }
             else asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
+            checkASCColor(msg);
         } else {
             String msg = makeHexMsg();
 
             hexMsgTransceiver.sendMessages(msg, progressIndicator);
+            checkHexColor(textColor.getText());
+            checkHexColor(bgColor.getText());
         }
     }
 
@@ -729,9 +731,6 @@ public class HEXMessageController {
             String textColorValue = textColor.getText();
             String bgColorValue = bgColor.getText();
             String text = sendMsg.getText();
-
-            checkHexColor(textColorValue);
-            checkHexColor(bgColorValue);
 
             StringBuilder msg = new StringBuilder("10 02 ");
 

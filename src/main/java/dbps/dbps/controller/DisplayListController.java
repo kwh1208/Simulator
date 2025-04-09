@@ -44,9 +44,6 @@ public class DisplayListController {
 
         moduleList.setOnMouseClicked(event -> handleDoubleClick(event, moduleList));
 
-        ObservableList<String> items = FXCollections.observableArrayList(displayModuleMap.keySet());
-        moduleList.setItems(items);
-
         displayListAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/displayList.css").toExternalForm());
 
         moduleList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {

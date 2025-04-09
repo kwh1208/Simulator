@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="530.0" style="-fx-border-color: black; -fx-border-width: 1 0 0 0" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.SettingController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="530.0" style="-fx-border-color: black; -fx-border-width: 1 0 0 0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.SettingController">
     <!--프로그램 설정-->
     <fx:include source="basicSetting.fxml" />
     <!--고급 설정-->
@@ -20,12 +20,11 @@
     <fx:include source="sizeOfDisplayBoard.fxml" />
 
     <Pane layoutX="220.0" layoutY="435.0" prefHeight="110.0" prefWidth="288.0" style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3">
-        <Label alignment="CENTER" layoutX="10.0" layoutY="-10.0" prefHeight="18.0" style="-fx-background-color: #F4F4F4; -fx-padding: 0 5 0 5px" text="%timeSet"/>
+        <Label alignment="CENTER" layoutX="10.0" layoutY="-10.0" prefHeight="18.0" style="-fx-background-color: #F4F4F4; -fx-padding: 0 5 0 5px" text="%timeSet" />
         <TextField fx:id="timeBoard" alignment="CENTER" editable="false" layoutX="22.0" layoutY="24.0" prefHeight="30.0" prefWidth="240.0" />
         <Button layoutX="44.0" layoutY="60.0" mnemonicParsing="false" onMouseClicked="#getControllerTime" prefHeight="40.0" prefWidth="90.0" text="%controllerTime" />
         <Button layoutX="154.0" layoutY="60.0" mnemonicParsing="false" onMouseClicked="#synchronizeTime" prefHeight="40.0" prefWidth="90.0" text="%syncWithPcTime" />
     </Pane>
-    <ProgressIndicator fx:id="commonProgressIndicator" layoutX="242.0" layoutY="240.0" visible="false" />
 
     <Pane layoutX="220.0" layoutY="245.0" prefHeight="165.0" prefWidth="288.0" style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3">
         <Label layoutX="20.0" layoutY="24.0" text="%displayBrightness" />
@@ -54,7 +53,7 @@
         </ComboBox>
         <Button layoutX="225.0" layoutY="87.0" mnemonicParsing="false" onMouseClicked="#sendBGImgSelection" prefHeight="28.0" prefWidth="60.0" text="%sendButton" />
 
-        <Label alignment="CENTER" layoutX="10.0" layoutY="-10.0" prefHeight="18.0" style="-fx-background-color: #F4F4F4; -fx-padding: 0 5 0 5px" text="%displaySet"/>
+        <Label alignment="CENTER" layoutX="10.0" layoutY="-10.0" prefHeight="18.0" style="-fx-background-color: #F4F4F4; -fx-padding: 0 5 0 5px" text="%displaySet" />
         <Label layoutX="20.0" layoutY="126.0" text="%fillDisplay" />
         <ComboBox fx:id="fillColor" layoutX="120.0" layoutY="121.0" prefHeight="28.0" prefWidth="102.0" value="%black">
             <items>
@@ -64,4 +63,5 @@
         </ComboBox>
         <Button layoutX="225.0" layoutY="121.0" mnemonicParsing="false" onMouseClicked="#sendFillColor" prefHeight="28.0" prefWidth="60.0" text="%sendButton" />
     </Pane>
+     <ProgressIndicator fx:id="commonProgressIndicator" layoutX="242.0" layoutY="232.0" visible="false"/>
 </AnchorPane>

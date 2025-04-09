@@ -451,8 +451,25 @@ public class CommunicationSettingController {
         TCP_PORT = port;
     }
 
+    private void changeConnectType(){
+        if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
+            CONNECT_TYPE="serial";
+            if (RS485ChkBox.isSelected()) {
+                CONNECT_TYPE="rs485";
+            }
+        }
+        else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn))
+            CONNECT_TYPE="clientTCP";
+        else if (communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn))
+            CONNECT_TYPE="serverTCP";
+        else if (communicationGroup.getSelectedToggle().equals(UDPRadioBtn)){
+            CONNECT_TYPE="UDP";
+        }
+    }
+
     @FXML
     public void closeSerialPort() {
+        changeConnectType();
         if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
             closePort(serialPortComboBox.getValue());
         }
@@ -467,6 +484,7 @@ public class CommunicationSettingController {
 
     @FXML
     public void openSerialPort(){
+        changeConnectType();
         if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
             openPort(serialPortComboBox.getValue());
         }
@@ -589,6 +607,7 @@ public class CommunicationSettingController {
     //컨트롤러 연결하고 확인신호 보내기
     @FXML
     public void controllerConnect() {
+        changeConnectType();
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {

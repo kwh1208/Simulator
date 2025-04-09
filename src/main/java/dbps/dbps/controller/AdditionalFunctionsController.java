@@ -2,6 +2,7 @@ package dbps.dbps.controller;
 
 import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
+import dbps.dbps.service.AdditionalService;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.ResourceManager;
@@ -12,7 +13,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -40,6 +40,7 @@ public class AdditionalFunctionsController {
     public Spinner<Integer> spinnerForAfter;
     AsciiMsgTransceiver asciiMsgTransceiver;
     ResourceBundle bundle;
+    AdditionalService additionalService;
 
     HexMsgTransceiver hexMsgTransceiver;
     @FXML
@@ -47,6 +48,9 @@ public class AdditionalFunctionsController {
         additionalFunctionAp.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/additionalFunction.css").toExternalForm());
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         bundle = ResourceManager.getInstance().getBundle();
+        additionalService=AdditionalService.getInstance();
+        additionalService.setSpinnerForAfter(spinnerForAfter);
+        additionalService.setSpinnerForBefore(spinnerForBefore);
 
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
 

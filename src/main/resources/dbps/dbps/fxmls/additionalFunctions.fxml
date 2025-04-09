@@ -10,20 +10,18 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="additionalFunctionAp" prefHeight="413.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdditionalFunctionsController">
-    <Pane layoutX="22.0" layoutY="155.0" prefHeight="77.0" prefWidth="367.0"
-          style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3">
-        <ComboBox fx:id="fontHeight" layoutX="193.0" layoutY="43.0" prefHeight="21.0" prefWidth="72.0"/>
-        <ComboBox fx:id="fontWidth" layoutX="193.0" layoutY="11.0" prefHeight="21.0" prefWidth="72.0"/>
-        <Button layoutX="299.0" layoutY="8.0" mnemonicParsing="false" onMouseClicked="#sendFontWeight" prefHeight="28.0"
-                prefWidth="63.0" text="%set"/>
+<AnchorPane fx:id="additionalFunctionAp" prefHeight="413.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.AdditionalFunctionsController">
+    <Pane layoutX="22.0" layoutY="155.0" prefHeight="77.0" prefWidth="367.0" style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3">
+        <ComboBox fx:id="fontHeight" layoutX="194.0" layoutY="43.0" prefHeight="21.0" prefWidth="72.0" />
+        <ComboBox fx:id="fontWidth" layoutX="194.0" layoutY="11.0" prefHeight="21.0" prefWidth="72.0" />
+        <Button layoutX="299.0" layoutY="8.0" mnemonicParsing="false" onMouseClicked="#sendFontWeight" prefHeight="28.0" prefWidth="63.0" text="%set" />
 
-        <Label layoutX="8.0" layoutY="14.0" prefHeight="13.0" prefWidth="92.0" text="%fontWeightSetting"/>
-        <Label layoutX="136.0" layoutY="15.0" text="%width"/>
-        <Label layoutX="136.0" layoutY="47.0" text="%height"/>
+        <Label layoutX="8.0" layoutY="14.0" prefHeight="13.0" prefWidth="92.0" text="%fontWeightSetting" />
+        <Label layoutX="136.0" layoutY="15.0" text="%width" />
+        <Label layoutX="136.0" layoutY="47.0" text="%height" />
     </Pane>
     <Label layoutX="28.0" layoutY="20.0" text="%displayRateSetting" />
-    <ComboBox fx:id="displaySpeed" layoutX="175.0" layoutY="15.0" prefHeight="28.0" prefWidth="113.0" value="사용안함">
+    <ComboBox fx:id="displaySpeed" layoutX="165.0" layoutY="15.0" prefHeight="28.0" prefWidth="123.0" value="사용안함">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
@@ -33,7 +31,7 @@
 
 
     <Label layoutX="28.0" layoutY="55.0" text="%blinkCount" />
-    <ComboBox fx:id="blinkCnt" layoutX="175.0" layoutY="50.0" prefHeight="28.0" prefWidth="113.0" value="8회(기본값)">
+    <ComboBox fx:id="blinkCnt" layoutX="165.0" layoutY="50.0" prefHeight="28.0" prefWidth="123.0" value="8회(기본값)">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
@@ -42,7 +40,7 @@
     <Button layoutX="321.0" layoutY="50.0" mnemonicParsing="false" onMouseClicked="#sendBlinkCnt" prefHeight="28.0" prefWidth="63.0" text="%set" />
 
     <Label layoutX="28.0" layoutY="90.0" text="%offsetChange" />
-    <ComboBox fx:id="offset" layoutX="175.0" layoutY="85.0" prefHeight="28.0" prefWidth="113.0" value="4(default)">
+    <ComboBox fx:id="offset" layoutX="165.0" layoutY="85.0" prefHeight="28.0" prefWidth="123.0" value="4(default)">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="1" />
@@ -55,7 +53,7 @@
     <Button layoutX="321.0" layoutY="85.0" mnemonicParsing="false" onMouseClicked="#sendoffSet" prefHeight="28.0" prefWidth="63.0" text="%set" />
 
     <Label layoutX="30.0" layoutY="125.0" text="%sectionEffect" />
-    <ComboBox fx:id="pageMsgType" layoutX="175.0" layoutY="120.0" prefHeight="25.0" prefWidth="113.0">
+    <ComboBox fx:id="pageMsgType" layoutX="165.0" layoutY="120.0" prefHeight="25.0" prefWidth="123.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
@@ -72,8 +70,8 @@
         <Label layoutX="8.0" layoutY="14.0" prefHeight="13.0" prefWidth="107.0" text="%afterimageDelaySetting" />
         <Label layoutX="128.0" layoutY="15.0" text="Before" />
         <Label layoutX="128.0" layoutY="47.0" text="After" />
-        <Spinner fx:id="spinnerForBefore" layoutX="203.0" layoutY="11.0" prefHeight="21.0" prefWidth="60.0" />
-        <Spinner fx:id="spinnerForAfter" layoutX="203.0" layoutY="43.0" prefHeight="21.0" prefWidth="60.0" />
+        <Spinner fx:id="spinnerForBefore" layoutX="206.0" layoutY="11.0" prefHeight="21.0" prefWidth="60.0" />
+        <Spinner fx:id="spinnerForAfter" layoutX="206.0" layoutY="43.0" prefHeight="21.0" prefWidth="60.0" />
         <Button layoutX="299.0" layoutY="40.0" mnemonicParsing="false" onMouseClicked="#setting" prefHeight="28.0" prefWidth="63.0" text="%set" />
         <Button layoutX="299.0" layoutY="8.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="28.0" prefWidth="63.0" text="%read" />
     </Pane>

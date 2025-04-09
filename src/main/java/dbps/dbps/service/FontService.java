@@ -42,7 +42,6 @@ public class FontService {
         return new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                int progress = -1;
                 String msg = "10 02 00 00 02 45 00 10 03";
                 if (isRS){
                     msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 00 10 03";
@@ -52,7 +51,9 @@ public class FontService {
                 int packetSize = 1024;
                 int totalPackets = 0;
                 byte[] combinedData;
-                List<Byte> fontPackets = new ArrayList<>();
+
+                // ArrayList 대신 ByteBuffer 사용으로 변경
+                ByteBuffer fontDataBuffer = ByteBuffer.allocate(1024 * 1024 * 10); // 초기 크기 할당 (10MB)
 
                 int groupNum = 1;
                 if (fontGroup2 != null){
@@ -65,7 +66,7 @@ public class FontService {
                     groupNum++;
                 }
 
-                Map<Integer, List<Byte>> groupFontPackets = new HashMap<>();
+                Map<Integer, byte[]> groupFontData = new HashMap<>();
                 byte[] finalPacket = new byte[28*Math.max(2, groupNum)+9];
 
                 if (groupNum<=2){
@@ -99,10 +100,15 @@ public class FontService {
                     }
                     StringBuilder groupPacket = new StringBuilder();
                     int groupPacketCnt = 0;
+                    
+                    // 각 그룹별 버퍼 초기화
+                    fontDataBuffer.clear();
+                    
                     for (int j = 0; j < 3; j++) {
                         if (now[j]!=null){
                             byte[] fontData;
                             try {
+                                // try-with-resources를 사용해 자원 자동 해제
                                 try (InputStream fontFile = new FileInputStream(now[j])) {
                                     fontData = fontFile.readAllBytes();
                                 }
@@ -113,7 +119,6 @@ public class FontService {
 
                                 Arrays.fill(fontData, 0, 16, (byte)0x00);
 
-
                                 fontData = Arrays.copyOf(fontData, fontData.length - 16);
                                 int fontSize = Integer.parseInt(width) * Integer.parseInt(height) / 8;
                                 if (fontType[3*i+j].contains("UNI")){
@@ -121,19 +126,18 @@ public class FontService {
                                         int startUnicode = 0xAC00-33;
                                         int endUnicode = 0xD7A3;
 
-                                        int startIndex = (startUnicode) * fontSize;  // 유니코드의 시작 위치 계산
-                                        int endIndex = (endUnicode + 1) * fontSize;  // 유니코드의 끝 위치 계산 (포함하려면 +1)
+                                        int startIndex = (startUnicode) * fontSize;
+                                        int endIndex = (endUnicode + 1) * fontSize;
 
                                         // 유니코드 범위 내의 데이터만 복사
                                         fontData = Arrays.copyOfRange(fontData, startIndex, endIndex);
                                     } else if (fontType[3 * i + j].equals("UNI-JP")) {
-                                        int startUnicode = 0x3040-33;  // U+3040의 유니코드 값
-                                        int endUnicode = 0x30FF;    // U+30FF의 유니코드 값
+                                        int startUnicode = 0x3040-33;
+                                        int endUnicode = 0x30FF;
 
-                                        int startIndex = (startUnicode) * fontSize;  // 유니코드의 시작 위치 계산
-                                        int endIndex = (endUnicode + 1) * fontSize;  // 유니코드의 끝 위치 계산 (포함하려면 +1)
+                                        int startIndex = (startUnicode) * fontSize;
+                                        int endIndex = (endUnicode + 1) * fontSize;
 
-                                        // 유니코드 범위 내의 데이터만 복사
                                         fontData = Arrays.copyOfRange(fontData, startIndex, endIndex);
                                     } else if (fontType[3 * i + j].equals("UNI-CN")){
                                         int startUnicode = 0x4E00-33;
@@ -142,7 +146,6 @@ public class FontService {
                                         int startIndex = (startUnicode) * fontSize;
                                         int endIndex = (endUnicode + 1) * fontSize;
 
-                                        // 유니코드 범위 내의 데이터만 복사
                                         fontData = Arrays.copyOfRange(fontData, startIndex, endIndex);
                                     } else {
                                         int endUnicode = 0xd7a3+33;
@@ -150,14 +153,12 @@ public class FontService {
                                         int startIndex = 0;
                                         int endIndex = (endUnicode + 1) * fontSize;
 
-                                        // 기존 데이터 크기 계산
                                         byte[] trimmedFontData = Arrays.copyOfRange(fontData, startIndex, endIndex);
 
-                                        // 앞쪽에 33개의 문자 크기만큼 0x00 추가 (33 * fontSize)
                                         byte[] dummyData = new byte[33 * fontSize];
                                         Arrays.fill(dummyData, (byte) 0x00);
 
-                                        // 새롭게 결합된 폰트 데이터 만들기 (더미 데이터 + 기존 폰트 데이터)
+                                        // 버퍼 크기 확인 및 조정
                                         ByteBuffer newFontData = ByteBuffer.allocate(dummyData.length + trimmedFontData.length);
                                         newFontData.put(dummyData);
                                         newFontData.put(trimmedFontData);
@@ -170,7 +171,6 @@ public class FontService {
                                     int startIndex = 0;
                                     int endIndex = (endUnicode + 1) * fontSize * 4;
 
-                                    // 유니코드 범위 내의 데이터만 복사
                                     fontData = Arrays.copyOf(fontData, Math.min(fontData.length, endIndex));
                                 } else if (fontType[3*i+j].equals("userFont")){
                                     int endUnicode = 0xe07f;
@@ -178,17 +178,17 @@ public class FontService {
                                     int startIndex = 0;
                                     int endIndex = (endUnicode + 1) * fontSize;
 
-                                    // 유니코드 범위 내의 데이터만 복사
                                     fontData = Arrays.copyOf(fontData, fontData.length - 16 - 1024);
                                 }
 
+                                // 1024의 배수로 패딩
                                 if (fontData.length % 1024 != 0) {
                                     int newLength = ((fontData.length / 1024) + 1) * 1024;
                                     fontData = Arrays.copyOf(fontData, newLength);
                                 }
 
-                                //pos start end w h 순서로 추가
-                                //pos
+                                // pos start end w h 순서로 추가
+                                // pos
                                 ByteBuffer tmp = ByteBuffer.allocate(2);
                                 tmp.order(ByteOrder.LITTLE_ENDIAN);
                                 tmp.putShort((short)groupPacketCnt);
@@ -199,13 +199,13 @@ public class FontService {
                                 for (int k = 0; k < 2; k++) {
                                     groupPacket.append(String.format("%02X ", tmpArray[k]));
                                 }
-                                //start
+                                
+                                // start
                                 if (j==0&&i==0){
                                     groupPacket.append("00 00 ");
                                 }
                                 else {
                                     tmp.clear();
-                                    //사용안함, 영어, 유니코드 완성, 유니코드 일본어, 유니코드 중국어, 한글조합형, 사용자 폰트, 유니코드 전체
                                     if (fontType[3*i+j].equals("english")){
                                         if (!now[0].contains("08")){
                                             tmp.putShort((short)0X0020);
@@ -233,7 +233,7 @@ public class FontService {
                                     }
                                 }
 
-                                //end
+                                // end
                                 if (j==0&&i==0){
                                     groupPacket.append("FF 00 ");
                                 }
@@ -261,16 +261,12 @@ public class FontService {
                                     }
                                 }
 
-
-                                //w&h
-                                //사이즈따라서 groupPacket에 추가
-
+                                // w&h
                                 groupPacket.append(String.format("%02X ", Integer.parseInt(width)));
                                 groupPacket.append(String.format("%02X ", Integer.parseInt(height)));
 
-                                for (byte fontDatum : fontData) {
-                                    fontPackets.add(fontDatum);
-                                }
+                                // ArrayList 대신 ByteBuffer에 직접 추가
+                                fontDataBuffer.put(fontData);
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
@@ -280,8 +276,15 @@ public class FontService {
                             }
                         }
                     }
-                    groupPackets[i] = (int) Math.ceil(fontPackets.size()/1024.0);
-                    totalPackets+=groupPackets[i];
+                    
+                    // ByteBuffer에서 바이트 배열로 변환
+                    fontDataBuffer.flip();
+                    byte[] fontDataArray = new byte[fontDataBuffer.remaining()];
+                    fontDataBuffer.get(fontDataArray);
+                    
+                    groupPackets[i] = (int) Math.ceil(fontDataArray.length/1024.0);
+                    totalPackets += groupPackets[i];
+                    
                     ByteBuffer buffer = ByteBuffer.allocate(4);
                     buffer.order(ByteOrder.LITTLE_ENDIAN);
                     buffer.putInt(groupPacketCnt*1024);
@@ -289,8 +292,9 @@ public class FontService {
                     for (byte b : buffer.array()) {
                         finalPacket[finalIdx++] = b;
                     }
-                    groupFontPackets.put(i, new ArrayList<>(fontPackets));
-                    fontPackets.clear();
+                    
+                    // HashMap에 바이트 배열 직접 저장
+                    groupFontData.put(i, fontDataArray);
 
                     byte[] bytes = hexStringToByteArray(String.valueOf(groupPacket));
 
@@ -298,23 +302,22 @@ public class FontService {
                         finalPacket[finalIdx++] = byteData;
                     }
                 }
+                
                 int sentPacket = 0;
-                int index = 0;
 
+                // 전송 전에 모든 패킷을 미리 구성하여 메모리에 저장
+                List<byte[]> allPacketsToSend = new ArrayList<>();
+                
                 for (int i = 0; i < groupNum; i++) {
-                    combinedData = new byte[groupFontPackets.get(i).size()];
-                    for (Byte b : groupFontPackets.get(i)) {
-                        combinedData[index++] = b;
-                    }
-                    index = 0;
+                    combinedData = groupFontData.get(i);
+                    
                     for (int j = 0; j < groupPackets[i]; j++) {
                         byte[] sendPacket = new byte[1041];
                         int currentPacketSize = packetSize;
-                        if (j == groupPackets[i] - 1) {
-                            if (combinedData.length % packetSize!=0){
-                                currentPacketSize = combinedData.length % packetSize;
-                            }
+                        if (j == groupPackets[i] - 1 && combinedData.length % packetSize != 0) {
+                            currentPacketSize = combinedData.length % packetSize;
                         }
+                        
                         sendPacket[0] = 0X10;
                         sendPacket[1] = 0X02;
                         sendPacket[2] = 0X00;
@@ -335,6 +338,7 @@ public class FontService {
                         sendPacket[13] = (byte) (j>>8);
                         sendPacket[14] = (byte) (i+1);
                         sentPacket++;
+                        
                         if (j == groupPackets[i] - 1){
                             System.arraycopy(combinedData, j*packetSize+16, sendPacket, 15, currentPacketSize-16);
                         }
@@ -342,60 +346,66 @@ public class FontService {
                             System.arraycopy(combinedData, j*packetSize+16, sendPacket, 15, currentPacketSize);
                         }
 
-
                         sendPacket[sendPacket.length-2] = 0x10;
                         sendPacket[sendPacket.length-1] = 0x03;
-
-                        if (isCancelled()){
-                            logService.updateInfoLog(bundle.getString("transferCancel"));
-
-                            hexMsgTransceiver.sendByteMessagesNoLog(finalPacket);
-
-                            msg = "10 02 00 00 02 45 01 10 03";
-                            if (isRS){
-                                msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
-                            }
-                            hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
-                            return null;
-                        }
-
-                        boolean success = false;
-                        int retryCount = 0;
-                        while (!success) {
-
-                            try {
-                                hexMsgTransceiver.sendByteMessagesShortLog(sendPacket);
-                                success = true;
-                            } catch (Exception e) {
-                                if (isCancelled()){
-                                    logService.updateInfoLog(bundle.getString("transferCancel"));
-                                    msg = "10 02 00 00 02 45 01 10 03";
-                                    if (isRS){
-                                        msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
-                                    }
-                                    hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
-                                    return null;
-                                }
-                                retryCount++;
-                                logService.warningLog(MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount));
-                                if (retryCount >= 3) {
-                                    logService.errorLog(bundle.getString("packetTransmissionFailedAfterRetries"));
-                                    return null;
-                                }
-                                Thread.sleep(1000); // 재시도 전 대기 (1000ms)
-                            }
-                        }
-
-                        int finalI = progress++;
-                        int total = totalPackets;
-                        Platform.runLater(() -> {
-                            // ProgressBar 업데이트 (0 ~ 1.0 범위)
-                            progressBar.setProgress((double) finalI / total);
-
-                            // Label 업데이트 (i/totalPackets)
-                            progressLabel.setText((int)((((double)finalI + 1)/total)*100) +"%");
-                        });
+                        
+                        allPacketsToSend.add(sendPacket);
                     }
+                }
+                
+                // 실제 패킷 전송
+                for (int packetIndex = 0; packetIndex < allPacketsToSend.size(); packetIndex++) {
+                    byte[] sendPacket = allPacketsToSend.get(packetIndex);
+                    
+                    if (isCancelled()){
+                        logService.updateInfoLog(bundle.getString("transferCancel"));
+
+                        hexMsgTransceiver.sendByteMessagesNoLog(finalPacket);
+
+                        msg = "10 02 00 00 02 45 01 10 03";
+                        if (isRS){
+                            msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
+                        }
+                        hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
+                        return null;
+                    }
+
+                    boolean success = false;
+                    int retryCount = 0;
+                    
+                    // 재시도 로직 최적화
+                    while (!success && retryCount < 3) {
+                        try {
+                            hexMsgTransceiver.sendByteMessagesShortLog(sendPacket);
+                            success = true;
+                        } catch (Exception e) {
+                            if (isCancelled()){
+                                logService.updateInfoLog(bundle.getString("transferCancel"));
+                                msg = "10 02 00 00 02 45 01 10 03";
+                                if (isRS){
+                                    msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
+                                }
+                                hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
+                                return null;
+                            }
+                            retryCount++;
+                            logService.warningLog(MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount));
+                            if (retryCount >= 3) {
+                                logService.errorLog(bundle.getString("packetTransmissionFailedAfterRetries"));
+                                return null;
+                            }
+                            // 지수 백오프로 재시도 대기 시간 증가
+                            Thread.sleep(300 * retryCount);
+                        }
+                    }
+
+                    int currentProgress = packetIndex;
+                    int totalPacketsCount = allPacketsToSend.size();
+                    Platform.runLater(() -> {
+                        // UI 업데이트는 한 번의 runLater로 처리
+                        progressBar.setProgress((double) currentProgress / totalPacketsCount);
+                        progressLabel.setText((int)(((double)(currentProgress + 1)/totalPacketsCount)*100) +"%");
+                    });
                 }
 
                 Thread.sleep(50);

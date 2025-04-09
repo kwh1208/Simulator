@@ -107,11 +107,11 @@
         </ComboBox>
        <Label layoutX="-1.0" layoutY="217.0" text="RS485 Address" />
        <Label fx:id="rs_address" layoutX="159.0" layoutY="217.0" text="00" />
+       <ProgressIndicator fx:id="progressIndicator" layoutX="135.0" layoutY="77.0" visible="false"/>
     </Pane>
-    <Button layoutX="10.0" layoutY="255.0" mnemonicParsing="false" onMouseClicked="#openCommunicationSetting" prefHeight="31.0" prefWidth="78.0" styleClass="newWindow-button" text="%communicationSetting" focusTraversable="false">
+    <Button focusTraversable="false" layoutX="10.0" layoutY="255.0" mnemonicParsing="false" onMouseClicked="#openCommunicationSetting" prefHeight="31.0" prefWidth="78.0" styleClass="newWindow-button" text="%communicationSetting">
     </Button>
     <Button layoutX="95.0" layoutY="255.0" mnemonicParsing="false" onMouseClicked="#readTransfer" prefHeight="31.0" prefWidth="78.0" text="%read" />
     <Button layoutX="181.0" layoutY="255.0" mnemonicParsing="false" onMouseClicked="#setTransfer" prefHeight="31.0" prefWidth="78.0" text="%set" />
     <Button layoutX="267.0" layoutY="255.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="31.0" prefWidth="78.0" text="%close" />
-    <ProgressIndicator fx:id="progressIndicator" layoutX="160.0" layoutY="150.0" visible="false" />
 </AnchorPane>

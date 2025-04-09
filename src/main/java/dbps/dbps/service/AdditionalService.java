@@ -1,5 +1,6 @@
 package dbps.dbps.service;
 
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,10 +19,12 @@ public class AdditionalService {
         return instance;
     }
 
-    public TextField firmwareVer;
-    public TextField CPURate;
-    public TextField column;
-    public TextField bright;
-    public TextField row;
-    public TextField array;
+    public Spinner<Integer> spinnerForBefore;
+    public Spinner<Integer> spinnerForAfter;
+
+    public void changeUI(String result){
+        String[] split = result.split(" ");
+        spinnerForBefore.getValueFactory().setValue(Integer.valueOf(split[0]));
+        spinnerForAfter.getValueFactory().setValue(Integer.valueOf(split[1]));
+    }
 }

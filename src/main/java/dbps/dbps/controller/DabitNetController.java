@@ -481,15 +481,18 @@ public class DabitNetController {
     @FXML
     public void reboot() {
         udpManager.disconnectNoLog();
-        if (networkSelection.getValue().equals("UDP")) {
+
+        if (!networkSelection.getValue().equals("UDP")) {
             Task<String> reboot = serialPortManager.send300MsgAndGetMsg("++SET++![RESET  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", networkSelection.getValue(), Integer.parseInt(baudRateComboBox.getValue()));
 
-            new Thread(reboot);
+            new Thread(reboot).start();
         } else {
             Task<String> reboot = udpManager.send300MsgAndGetMsgByte(("RESET  " + dbList.getSelectionModel().getSelectedItem() + "\r\n").getBytes());
 
             new Thread(reboot).start();
         }
+
+        logService.updateInfoLog(dbList.getSelectionModel().getSelectedItem()+" 네트워크 초기화 완료");
     }
 
 

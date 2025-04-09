@@ -10,6 +10,9 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 
 import java.text.MessageFormat;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
@@ -34,6 +37,7 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
     private BoardSettingService boardSettingService;
     private BTService btService;
     private ResourceBundle bundle;
+    private AdditionalService additionalService;
 
     /**
      * 생성자
@@ -73,6 +77,7 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
         firmwareService = FirmwareService.getFirmwareService();
         boardSettingService = BoardSettingService.getInstance();
         bundle = ResourceManager.getInstance().getBundle();
+        additionalService = AdditionalService.getInstance();
     }
     
     /**
@@ -261,12 +266,74 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
         processSpecificCommandCode(sentMsg, receivedMsg);
     }
 
-    /**
-     * 특정 명령 코드 처리
-     * 
-     * @param sentMsg 보낸 메시지
-     * @param receiveMsg 받은 메시지
-     */
+
+    public static boolean isValidCustomTime(String timeStr) {
+        // 문자열 길이 13자리여야 함
+        if (timeStr == null || timeStr.length() != 13) {
+            return false;
+        }
+
+        // 모든 문자가 숫자인지 체크
+        if (!timeStr.matches("\\d{13}")) {
+            return false;
+        }
+
+        try {
+            // 각 부분 자르기
+            String strYear = timeStr.substring(0, 2);    // 예: "25"
+            String strMonth = timeStr.substring(2, 4);     // 예: "04"
+            String strDay = timeStr.substring(4, 6);       // 예: "09"
+            String strWeekday = timeStr.substring(6, 7);   // 예: "3"
+            String strHour = timeStr.substring(7, 9);        // 예: "17"
+            String strMinute = timeStr.substring(9, 11);     // 예: "39"
+            String strSecond = timeStr.substring(11, 13);      // 예: "57"
+
+            // 파싱: 연도는 2000년대 기준으로 처리 (필요시 다른 기준 적용)
+            int year = 2000 + Integer.parseInt(strYear);
+            int month = Integer.parseInt(strMonth);
+            int day = Integer.parseInt(strDay);
+            int weekdayInput = Integer.parseInt(strWeekday);
+            int hour = Integer.parseInt(strHour);
+            int minute = Integer.parseInt(strMinute);
+            int second = Integer.parseInt(strSecond);
+
+            // 각 숫자 범위 체크
+            if (month < 1 || month > 12) {
+                return false;
+            }
+            // day는 LocalDate.of에서 검증
+            if (hour < 0 || hour > 23) {
+                return false;
+            }
+            if (minute < 0 || minute > 59) {
+                return false;
+            }
+            if (second < 0 || second > 59) {
+                return false;
+            }
+            // 요일은 1~7
+            if (weekdayInput >= 7) {
+                return false;
+            }
+
+            // 날짜의 유효성 체크 (윤년 등 포함)
+            LocalDate date = LocalDate.of(year, month, day);
+
+            // 실제 요일 계산 (Java에서는 MONDAY=1, ... SUNDAY=7)
+            int computedWeekday = date.getDayOfWeek().getValue();
+            if (computedWeekday != weekdayInput) {
+                return false;
+            }
+
+            // 시간 유효성 체크 (LocalTime을 이용)
+            LocalTime.of(hour, minute, second);
+
+            return true;  // 모든 체크 통과
+        } catch (NumberFormatException | DateTimeException ex) {
+            // 파싱 또는 날짜/시간 생성 중 예외 발생하면 형식 오류
+            return false;
+        }}
+
     private void processSpecificCommandCode(String sentMsg, String receiveMsg) {
         // BT DIBD 관련 처리
         if (receiveMsg.contains("BT DIBD")) {
@@ -282,9 +349,17 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
         String cmd = receiveMsg.substring(4, 6);
         char status = receiveMsg.charAt(6);
 
+        if (status == 'F') { // 오류 발생
+            errorLog(cmd, receiveMsg);
+            return;
+        }
+
         switch (cmd) {
             case "31" -> {
                 String time = receiveMsg.substring(6, 19);
+                if (isValidCustomTime(time)){
+                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                }
 
                 // 한글과 영어 요일을 다국어 지원하도록 변경
                 String[] weekdaysKorean = {"일", "월", "화", "수", "목", "금", "토"};
@@ -310,6 +385,24 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
                 underTheLineLeftService.setTime(formattedTime);
                 return;
             }
+            case "B5" ->{
+                String result = receiveMsg.substring(6);
+                if (!result.contains(" ")){
+                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                }
+                String[] split = result.split(" ");
+                for (int i = 0; i < split.length; i++) {
+                    try {
+                        int tmp = Integer.parseInt(split[i]);
+                        if (tmp < 0 || tmp > 99) {
+                            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                        }
+                    } catch (Exception e) {
+                        logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                    }
+                }
+                additionalService.changeUI(receiveMsg.substring(6));
+            }
             case "D1", "B2" -> {
                 return;
             }
@@ -318,19 +411,19 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
                 logService.updateInfoLog(bundle.getString("boardSettingSuccess"));
                 return;
             }
-            case "33" -> {
+            case "32" -> {
                 logService.updateInfoLog(bundle.getString("defaultSettingSuccess"));
                 return;
             }
             case "81" -> {
+                //Todo 일단 둡시다.
                 logService.updateInfoLog(bundle.getString("firmwareInfoReadSuccess"));
                 firmwareService.setFirmware(receiveMsg.substring(6));
                 return;
             }
             case "96" -> {
-                if (receiveMsg.equals("![0096F!]")) {
-                    logService.warningLog(bundle.getString("fontNameReadFail"));
-                    return;
+                if (receiveMsg.substring(8).length()>218){
+                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
                 }
                 logService.updateInfoLog(bundle.getString("fontNameReadSuccess"));
                 return;
@@ -385,8 +478,6 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
 
                 case "70" -> logService.updateInfoLog(bundle.getString("fillDisplaySuccess"));
 
-                case "32" -> logService.updateInfoLog(bundle.getString("defaultSettingSuccess"));
-
                 case "82" -> logService.updateInfoLog(bundle.getString("macAddressSettingSuccess"));
 
                 case "85" -> logService.updateInfoLog(bundle.getString("heartbeatSettingSuccess"));
@@ -395,9 +486,7 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
             }
 
 
-        } else if (status == 'F') { // 오류 발생
-            errorLog(cmd, receiveMsg);
-        } else {
+        }  else {
             logService.warningLog(bundle.getString("unknownStatusCode"));
             logService.warningLog(bundle.getString("receivedMsg") + receiveMsg);
         }
