@@ -239,7 +239,7 @@ public class UDPManager {
         };
     }
 
-    public String sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
+    public void sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
         if (socket == null||socket.isClosed()) {
             connectNoLog(IP, PORT);
         }
@@ -277,7 +277,6 @@ public class UDPManager {
                     result = matcher.group(0); // 전체 매칭된 부분을 추출
                 }
             }
-            return result;
         } catch (IOException e) {
             throw e;
         }
@@ -328,7 +327,6 @@ public class UDPManager {
         } catch (IOException e) {
             e.printStackTrace();
             throw e;
-        } finally {
         }
     }
 
