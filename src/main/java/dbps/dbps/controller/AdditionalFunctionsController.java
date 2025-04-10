@@ -1,6 +1,8 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
+import dbps.dbps.service.AdditionalService;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.ResourceManager;
@@ -9,9 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -22,19 +22,25 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
+import static dbps.dbps.Constants.convertRS485AddrASCii;
+import static dbps.dbps.Constants.isRS;
+import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class AdditionalFunctionsController {
 
     public ComboBox<String> displaySpeed;
     public ComboBox<String> blinkCnt;
-    public ChoiceBox<String> fillColor;
-    public ChoiceBox<String> offset;
-    public ChoiceBox<Double> fontWidth;
-    public ChoiceBox<Double> fontHeight;
+    public ComboBox<String> offset;
+    public ComboBox<Double> fontWidth;
+    public ComboBox<Double> fontHeight;
     public ProgressIndicator progressIndicator;
     public AnchorPane additionalFunctionAp;
+    public ComboBox<String> pageMsgType;
+    public Spinner<Integer> spinnerForBefore;
+    public Spinner<Integer> spinnerForAfter;
     AsciiMsgTransceiver asciiMsgTransceiver;
     ResourceBundle bundle;
+    AdditionalService additionalService;
 
     HexMsgTransceiver hexMsgTransceiver;
     @FXML
@@ -42,23 +48,40 @@ public class AdditionalFunctionsController {
         additionalFunctionAp.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/additionalFunction.css").toExternalForm());
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         bundle = ResourceManager.getInstance().getBundle();
+        additionalService=AdditionalService.getInstance();
+        additionalService.setSpinnerForAfter(spinnerForAfter);
+        additionalService.setSpinnerForBefore(spinnerForBefore);
 
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
 
-        displaySpeed.getItems().add("사용안함");
+
+        SpinnerValueFactory<Integer> valueFactoryForBefore = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 0);
+        SpinnerValueFactory<Integer> valueFactoryForAfter = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 0);
+
+
+        spinnerForBefore.setValueFactory(valueFactoryForBefore);
+        spinnerForAfter.setValueFactory(valueFactoryForAfter);
+
+
+        spinnerForBefore.setEditable(true);
+        spinnerForAfter.setEditable(true);
+
+        displaySpeed.getItems().add(bundle.getString("notUsed"));
         for (int i = 1; i < 100; i++) {
             if (i==1){
-                displaySpeed.getItems().add("1(빠름)");
+                displaySpeed.getItems().add(bundle.getString("1(fast)"));
             } else if (i==99) {
-                displaySpeed.getItems().add("99(빠름)");
+                displaySpeed.getItems().add(bundle.getString("99(slow)"));
             }
             else displaySpeed.getItems().add(String.valueOf(i));
         }
+        displaySpeed.setValue(bundle.getString("notUsed"));
 
         for (int i = 1; i < 21; i++) {
-            if (i==8) blinkCnt.getItems().add("8회(기본값)");
-            else blinkCnt.getItems().add(i + "회");
+            if (i==8) blinkCnt.getItems().add("8"+bundle.getString("times")+bundle.getString("default"));
+            else blinkCnt.getItems().add(i +bundle.getString("times"));
         }
+        blinkCnt.setValue("8"+bundle.getString("times")+bundle.getString("default"));
 
         for (double i = 1.0; i <= 3.1; i += 0.1) {
             fontWidth.getItems().add(Double.parseDouble(String.format("%.1f", i)));
@@ -71,21 +94,15 @@ public class AdditionalFunctionsController {
 
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
 
-        addItems();
+        pageMsgType.getItems().add(bundle.getString("individualEffectDisplay"));
+        pageMsgType.getItems().add(bundle.getString("simultaneousEffectDisplay"));
+
+        pageMsgType.setValue(bundle.getString("simultaneousEffectDisplay"));
+
+        additionalFunctionAp.setOnKeyPressed(new EscapeKeyEventHandler());
     }
 
-    private void addItems() {
-        fillColor.getItems().addAll(
-                bundle.getString("black"),
-                bundle.getString("red"),
-                bundle.getString("green"),
-                bundle.getString("yellow"),
-                bundle.getString("blue"),
-                bundle.getString("pink"),
-                bundle.getString("cyan"),
-                bundle.getString("white")
-        );
-    }
+
 
     public void openBGSchedule(MouseEvent mouseEvent) throws IOException {
         openModal("/dbps/dbps/fxmls/BGSchedule.fxml", "배경화면 스케쥴", mouseEvent);
@@ -97,7 +114,11 @@ public class AdditionalFunctionsController {
 
     public void sendoffSet() {
         String value = offset.getValue().replaceAll("[^0-9]", "");
-        asciiMsgTransceiver.sendMessages("![0058 "+value+"!]", false, progressIndicator);
+        String msg = "![0058 "+value+"!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"058 "+value+"!]";
+        }
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     private void openModal(String fxmlPath, String title, MouseEvent mouseEvent) throws IOException {
@@ -143,83 +164,39 @@ public class AdditionalFunctionsController {
         modalStage.showAndWait();
     }
 
-    public void sendFillColor() throws InterruptedException {
-        String value = fillColor.getValue();
-        if (IS_ASCII){
-            String result = "";
-            if (value.equals("검은색")){
-                result = "0";
-            }else if (value.equals("빨간색")){
-                result = "1";
-            } else if (value.equals("초록색")){
-                result = "2";
-            } else if (value.equals("노란색")){
-                result = "3";
-            } else if (value.equals("파란색")){
-                result = "4";
-            } else if (value.equals("분홍색")){
-                result = "5";
-            } else if (value.equals("청록색")){
-                result = "6";
-            } else result = "7";
-            String msg = "![0070"+result+"!]";
-            if (isRS){
-                msg = "!["+convertRS485AddrASCii()+"070"+result+"!]";
-            }
-            asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
-        }
-        else {
-            hexMsgTransceiver.sendMessages("10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 02 45 00 10 03", progressIndicator);
-
-            String msg;
-            String result;
-            if (value.equals("검은색")){
-                result = "00 ";
-            }else if (value.equals("빨간색")){
-                result = "07 ";
-            } else if (value.equals("초록색")){
-                result = "38 ";
-            } else if (value.equals("노란색")){
-                result = "3F ";
-            } else if (value.equals("파란색")){
-                result = "C0 ";
-            } else if (value.equals("분홍색")){
-                result = "C7 ";
-            } else if (value.equals("청록색")){
-                result = "F8 ";
-            } else result = "FF ";
-            msg = "10 02 00 00 06 42 08 "+result+"00 00 00 10 03";
-            if (isRS){
-                msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 06 42 08 "+result+"00 00 00 10 03";
-            }
-            hexMsgTransceiver.sendMessages(msg, progressIndicator);
-        }
-    }
 
     public void sendBlinkCnt() {
         int cnt = Integer.parseInt(blinkCnt.getValue().replaceAll("[^0-9]", ""));
+        String msg = "![0055 "+String.format("%2d", cnt)+"!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"055 "+String.format("%2d", cnt)+"!]";
+        }
 
-        asciiMsgTransceiver.sendMessages("![0055 "+String.format("%2d", cnt)+"!]", false, progressIndicator);
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     public void sendDisplaySpeed() {
         int speed;
-        if (displaySpeed.getValue().equals("사용안함")){
+        if (displaySpeed.getValue().equals(bundle.getString("notUsed"))){
             speed = 0;
         }
         else{
             speed = Integer.parseInt(displaySpeed.getValue().replaceAll("[^0-9]", ""));
         }
-
-        asciiMsgTransceiver.sendMessages("![0054 "+String.format("%2d", speed)+"!]", false, progressIndicator);
+        String msg = "![0054 "+String.format("%2d", speed)+"!]";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"054 "+String.format("%2d", speed)+"!]";
+        }
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
-    public void fontName(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/fontName.fxml", "폰트 이름 설정", mouseEvent);
-    }
+
 
     public void sendFontWeight() {
         String sendMsg = "![0056 ";
+        if (isRS){
+            sendMsg = "!["+convertRS485AddrASCii()+"056 ";
+        }
         sendMsg+= (int) (fontWidth.getValue() * 10) +" ";
         sendMsg+= (int) (fontHeight.getValue() * 10) +"!]";
         asciiMsgTransceiver.sendMessages(sendMsg, false, progressIndicator);
@@ -228,5 +205,45 @@ public class AdditionalFunctionsController {
     public void close(MouseEvent mouseEvent) {
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();
+    }
+
+    public void sendPageMsgType() {
+        //![0062N!] : 동시, ![0062Y!] : 개별
+        String msg = "![0062";
+        if (isRS){
+            msg = "!["+convertRS485AddrASCii()+"062";
+        }
+        if (pageMsgType.getValue().contains("동시")){
+            msg += "N";
+        } else{
+            msg += "Y";
+        }
+        msg += "!]";
+        asciiMsgTransceiver.sendMessages(msg, false, commonProgressIndicator);
+    }
+
+    @FXML
+    public void setting() {
+        Integer before = spinnerForBefore.getValue();
+        Integer after = spinnerForAfter.getValue();
+
+        String beforeStr = (before < 10) ? " " + before : before.toString();
+        String afterStr = (after < 10) ? " " + after : after.toString();
+
+        String msg = "![00B4" + beforeStr + " " + afterStr + "!]";
+        if (isRS) {
+            msg = "![" + convertRS485AddrASCii() + "0B4" + beforeStr + " " + afterStr + "!]";
+        }
+
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
+    }
+
+    @FXML
+    public void read() {
+        String msg = "![00B50!]";
+        if (isRS) {
+            msg = "![" + convertRS485AddrASCii() + "0B50!]";
+        }
+        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 }

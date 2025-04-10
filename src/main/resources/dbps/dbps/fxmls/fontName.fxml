@@ -1,42 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="fontNameAP" style="-fx-background-color: #333333" prefHeight="400.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.FontNameController">
-   <children>
-       <Pane fx:id="group1Pane" layoutX="14.0" layoutY="14.0" prefHeight="140.0" prefWidth="452.0" style="-fx-border-color: black">
-         <children>
-             <Label layoutX="14.0" layoutY="-6.0" prefHeight="13.0" prefWidth="90.0" text="%fontGroup1"
-                    style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white;-fx-font-size: 17; -fx-font-weight: bolder"/>
-             <Label layoutX="31.0" layoutY="37.0" text="%font1" />
-             <Label layoutX="31.0" layoutY="62.0" text="%font2" />
-             <Label layoutX="31.0" layoutY="89.0" text="%font3" />
-             <TextField fx:id="group1font1" layoutX="115.0" layoutY="30.0" prefWidth="300" />
-             <TextField fx:id="group1font2" layoutX="115.0" layoutY="58.0" prefWidth="300" />
-             <TextField fx:id="group1font3" layoutX="115.0" layoutY="86.0" prefWidth="300" />
-         </children>
-       </Pane>
-       <Pane fx:id="group2Pane" layoutX="14.0" layoutY="178.0" prefHeight="140.0" prefWidth="452.0" style="-fx-border-color: black">
-         <children>
-            <Label layoutX="14.0" layoutY="-6.0" prefHeight="13.0" prefWidth="90.0" text="%fontGroup2"
-                   style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white;-fx-font-size: 17; -fx-font-weight: bolder"/>
-             <Label layoutX="31.0" layoutY="37.0" text="%font1" />
-             <Label layoutX="31.0" layoutY="62.0" text="%font2" />
-             <Label layoutX="31.0" layoutY="89.0" text="%font3" />
-            <TextField fx:id="group2font1" layoutX="115.0" layoutY="30.0" prefWidth="300" />
-            <TextField fx:id="group2font2" layoutX="115.0" layoutY="58.0" prefWidth="300" />
-            <TextField fx:id="group2font3" layoutX="115.0" layoutY="86.0" prefWidth="300" />
-         </children>
-       </Pane>
-      <Pane layoutX="14.0" layoutY="338.0" prefHeight="43.0" prefWidth="242.0" style="-fx-border-color: black">
-         <children>
-            <RadioButton fx:id="readRadio" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="%read" />
-            <RadioButton fx:id="sendRadio" layoutX="121.0" layoutY="14.0" mnemonicParsing="false" text="%setting" />
-         </children>
-      </Pane>
-      <Button layoutX="284.0" layoutY="347.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="81.0" onMouseClicked="#send" text="%sendButton" />
-      <Button layoutX="380.0" layoutY="347.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="81.0" onMouseClicked="#close" text="%close" />
-       <ProgressIndicator fx:id="progressIndicator" layoutX="210.0" layoutY="150.0" visible="false"/>
-   </children>
+<AnchorPane fx:id="fontNameAP" prefHeight="310.0" prefWidth="340.0" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.FontNameController">
+    <Pane fx:id="group1Pane" layoutX="14.0" layoutY="14.0" prefHeight="116.0" prefWidth="311.0" style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3">
+        <Label layoutX="14.0" layoutY="-10.0" prefHeight="13.0" prefWidth="90.0" style="-fx-background-color: #F4F4F4; -fx-padding: 0 5 0 5px" text="%fontGroup1" />
+        <Label layoutX="31.0" layoutY="30.0" text="%font1" />
+        <Label layoutX="31.0" layoutY="55.0" text="%font2" />
+        <Label layoutX="31.0" layoutY="82.0" text="%font3" />
+        <TextField fx:id="group1font1" editable="false" layoutX="85.0" layoutY="26.0" prefHeight="22.0" prefWidth="208.0" />
+        <TextField fx:id="group1font2" editable="false" layoutX="85.0" layoutY="54.0" prefHeight="22.0" prefWidth="208.0" />
+        <TextField fx:id="group1font3" editable="false" layoutX="85.0" layoutY="82.0" prefHeight="22.0" prefWidth="208.0" />
+    </Pane>
+    <Pane fx:id="group2Pane" layoutX="14.0" layoutY="142.0" prefHeight="116.0" prefWidth="311.0" style="-fx-border-color: #A0A0A0 ; -fx-border-radius: 10; -fx-border-width: 0.3">
+        <Label layoutX="14.0" layoutY="-10.0" prefHeight="13.0" prefWidth="90.0" style="-fx-background-color: #F4F4F4; -fx-padding: 0 5 0 5px" text="%fontGroup2" />
+        <Label layoutX="31.0" layoutY="30.0" text="%font1" />
+        <Label layoutX="31.0" layoutY="55.0" text="%font2" />
+        <Label layoutX="31.0" layoutY="82.0" text="%font3" />
+        <TextField fx:id="group2font1" editable="false" layoutX="85.0" layoutY="26.0" prefHeight="22.0" prefWidth="208.0" />
+        <TextField fx:id="group2font2" editable="false" layoutX="85.0" layoutY="54.0" prefHeight="22.0" prefWidth="208.0" />
+        <TextField fx:id="group2font3" editable="false" layoutX="85.0" layoutY="82.0" prefHeight="22.0" prefWidth="208.0" />
+    </Pane>
+    <Button layoutX="134.0" layoutY="269.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="27.0" prefWidth="81.0" text="%read" />
+    <Button layoutX="230.0" layoutY="269.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="27.0" prefWidth="81.0" text="%close" />
+    <ProgressIndicator fx:id="progressIndicator" layoutX="157.0" layoutY="102.0" visible="false" />
 </AnchorPane>

@@ -1,22 +1,24 @@
 package dbps.dbps.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 
+import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.*;
 import static dbps.dbps.service.SettingService.commonProgressIndicator;
 
 public class SizeOfDisplayBoardController {
 
+    public ComboBox<String> displayBright;
+    public ComboBox<String> colorNum;
+    public Label rowPixel;
+    public Label colPixel;
     AsciiMsgTransceiver asciiMsgTransceiver;
 
     HexMsgTransceiver hexMsgTransceiver;
@@ -26,13 +28,10 @@ public class SizeOfDisplayBoardController {
     ConfigService configService;
 
     HexMsgService hexMsgService;
-
-
-    @FXML
-    public ChoiceBox<String> colorNum;
+    ResourceBundle bundle;
 
     @FXML
-    public ChoiceBox<String> howToArray;
+    public ComboBox<String> howToArray;
 
     @FXML
     public Pane dpPane;
@@ -48,8 +47,11 @@ public class SizeOfDisplayBoardController {
     public void initialize(){
         configService = ConfigService.getInstance();
         hexMsgService = HexMsgService.getInstance();
+        bundle = ResourceManager.getInstance().getBundle();
+        rowPixel.setText("x 16"+bundle.getString("pixel"));
+        colPixel.setText("x 16"+bundle.getString("pixel"));
 
-        dpPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/sizeOfDisplayBoard.css").toExternalForm());
+        dpPane.getStylesheets().add(Objects.requireNonNull(Simulator.class.getResource("/dbps/dbps/css/sizeOfDisplayBoard.css")).toExternalForm());
 
         SpinnerValueFactory<Integer> valueFactoryForRow = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, SIZE_ROW);
         SpinnerValueFactory<Integer> valueFactoryForColumn = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, SIZE_COLUMN);
@@ -76,7 +78,17 @@ public class SizeOfDisplayBoardController {
         sizeOfDisplayBoardService.setHowToArray(howToArray);
         sizeOfDisplayBoardService.setSpinnerForRow(spinnerForRow);
         sizeOfDisplayBoardService.setSpinnerForColumn(spinnerForColumn);
+
+        howToArray.getItems().addAll(
+                bundle.getString("horizontalDefault"),
+                bundle.getString("singleVertical"),
+                bundle.getString("doubleVertical"),
+                bundle.getString("horizontalTwin"),
+                bundle.getString("singleVerticalTwin"),
+                bundle.getString("doubleHorizontal"));
+        howToArray.setValue(bundle.getString("horizontalDefault"));
     }
+
 
     private void setInitialValues() {
         SIZE_ROW = spinnerForRow.getValue();
@@ -86,46 +98,40 @@ public class SizeOfDisplayBoardController {
         configService.setProperty("displayColumnSize", String.valueOf(SIZE_COLUMN));
     }
 
-
-    public void sendDisplaySize() throws ExecutionException, InterruptedException, JsonProcessingException {
+    public void sendDisplaySize() {
         if (IS_ASCII){
             displaySizeASC();
         }
         else {
             displaySizeHEX();
         }
-        setInitialValues();
 
-        hexMsgService.changeXY(SIZE_COLUMN,SIZE_ROW);
+        BITS_PER_PIXEL = Integer.parseInt(String.valueOf(colorNum.getValue()).substring(0,1));
     }
 
-    private void displaySizeASC() throws ExecutionException, InterruptedException {
+    private void displaySizeASC() {
         String msg = "![0040";
         if (isRS){
             msg = "!["+convertRS485AddrASCii()+"040";
         }
         msg+=String.format("%02d",spinnerForRow.getValue());
         msg+=String.format("%02d",spinnerForColumn.getValue());
-        switch (howToArray.getValue()){
-            case "가로형(default)":
-                msg+="0";
-                break;
-            case "1줄 세로형":
-                msg+="1";
-                break;
-            case "2줄 세로형":
-                msg+="2";
-                break;
-            case "가로형 양면":
-                msg+="3";
-                break;
-            case "1줄 세로형 양면":
-                msg+="4";
-                break;
-            case "2줄 가로형":
-                msg+="5";
-                break;
+        if (howToArray.getValue().equals(bundle.getString("horizontalDefault"))) {
+            msg += "0";
+        } else if (howToArray.getValue().equals(bundle.getString("singleVertical"))) {
+            msg += "1";
+        } else if (howToArray.getValue().equals(bundle.getString("doubleVertical"))) {
+            msg += "2";
+        } else if (howToArray.getValue().equals(bundle.getString("horizontalTwin"))) {
+            msg += "3";
+        } else if (howToArray.getValue().equals(bundle.getString("singleVerticalTwin"))) {
+            msg += "4";
+        } else if (howToArray.getValue().equals(bundle.getString("doubleHorizontal"))) {
+            msg += "5";
         }
+
+
+
         msg+="!]";
         String finalMsg = msg;
         CompletableFuture.supplyAsync(() -> asciiMsgTransceiver.sendMessages(finalMsg, false, commonProgressIndicator)).join();
@@ -138,7 +144,6 @@ public class SizeOfDisplayBoardController {
             msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+"00 07 40";
 
         }
-
         switch (String.valueOf(colorNum.getValue()).charAt(0)){
             case 50:
                 msg+=" 02";
@@ -150,31 +155,25 @@ public class SizeOfDisplayBoardController {
                 msg+=" 08";
                 break;
         }
+
         msg += " "+Integer.toHexString(spinnerForRow.getValue());
         msg += " "+Integer.toHexString(spinnerForColumn.getValue());
-        switch (howToArray.getValue()){
-            case "가로형(default)":
-                msg+=" 00";
-                break;
-            case "1줄 세로형":
-                msg+=" 01";
-                break;
-            case "2줄 세로형":
-                msg+=" 02";
-                break;
-            case "가로형 양면":
-                msg+=" 03";
-                break;
-            case "1줄 세로형 양면":
-                msg+=" 04";
-                break;
-            case "2줄 가로형":
-                msg+=" 05";
-                break;
+        if (howToArray.getValue().equals(bundle.getString("horizontalDefault"))) {
+            msg += " 00";
+        } else if (howToArray.getValue().equals(bundle.getString("singleVertical"))) {
+            msg += " 01";
+        } else if (howToArray.getValue().equals(bundle.getString("doubleVertical"))) {
+            msg += " 02";
+        } else if (howToArray.getValue().equals(bundle.getString("horizontalTwin"))) {
+            msg += " 03";
+        } else if (howToArray.getValue().equals(bundle.getString("singleVerticalTwin"))) {
+            msg += " 04";
+        } else if (howToArray.getValue().equals(bundle.getString("doubleHorizontal"))) {
+            msg += " 05";
         }
         msg+=" 00 F1 10 03";
 
         hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
-
     }
+
 }

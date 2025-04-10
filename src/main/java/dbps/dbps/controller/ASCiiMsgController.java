@@ -1,231 +1,232 @@
 package dbps.dbps.controller;
 
-
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ASCiiMsgService;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.ResourceManager;
+import dbps.dbps.service.UIConstants;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
-
-import static dbps.dbps.Constants.ascUTF16;
-
 
 public class ASCiiMsgController {
 
+    public RadioButton utf8;
+    public RadioButton utf16;
+    public RadioButton eucKr;
+    public AnchorPane asciiMsgAnchorPane;
     @FXML
-    public Button msgSaveBtn;
+    private ProgressIndicator progressIndicator;
 
-    @FXML
-    private AnchorPane ASCiiMsgAnchorPane;
-    @FXML
-    ProgressIndicator progressIndicator;
-    ResourceBundle bundle;
+    // 서비스 필드
+    private ASCiiMsgService msgService;
+    private AsciiMsgTransceiver asciiMsgTransceiver;
+    private ResourceBundle bundle;
 
-    @FXML
-    private CheckBox utf_8;
-    @FXML
-    public CheckBox utf_16;
-
-    ASCiiMsgService msgService;
-    AsciiMsgTransceiver asciiMsgTransceiver;
-    ConfigService configService;
-
+    // UI 관련 필드
     private List<TextField> transmitMsgs;
     private List<String> transmitMsgContents;
-
+    private final ToggleGroup msgType = new ToggleGroup();
 
     @FXML
     public void initialize() {
         Platform.runLater(() -> progressIndicator.toFront());
-        bundle= ResourceManager.getInstance().getBundle();
-
-        msgService = ASCiiMsgService.getInstance();
-        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
-        transmitMsgContents = msgService.loadMessages();
-        configService = ConfigService.getInstance();
-
-        transmitMsgs = new ArrayList<>();
-
-        makeMsgContainer();
-
-        ASCiiMsgAnchorPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/ASCiiMsg.css").toExternalForm());
-
-        utf_8.selectedProperty().addListener((observable, oldValue, newValue) -> handleEncodingSelection(newValue, false));
-        utf_16.selectedProperty().addListener((observable, oldValue, newValue) -> handleEncodingSelection(newValue, true));
+        
+        initializeServices();
+        initializeUIComponents();
+        setupEventListeners();
     }
 
-    //utf8, 16 버튼 선택
-    private void handleEncodingSelection(boolean selected, boolean isUtf16) {
-        if (selected) {
-            utf_8.setSelected(!isUtf16);
-            utf_16.setSelected(isUtf16);
-            ascUTF16 = isUtf16;
+    /**
+     * 서비스 초기화
+     */
+    private void initializeServices() {
+        bundle = ResourceManager.getInstance().getBundle();
+        msgService = ASCiiMsgService.getInstance();
+        asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
+        
+        transmitMsgContents = msgService.loadMessages();
+        transmitMsgs = new ArrayList<>();
+    }
+
+    /**
+     * UI 컴포넌트 초기화
+     */
+    private void initializeUIComponents() {
+        createMessageContainers();
+        
+        asciiMsgAnchorPane.getStylesheets().add(
+            Objects.requireNonNull(Simulator.class.getResource("/dbps/dbps/css/ASCiiMsg.css")).toExternalForm()
+        );
+        asciiMsgAnchorPane.setMinSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+    }
+
+    /**
+     * 이벤트 리스너 설정
+     */
+    private void setupEventListeners() {
+        eucKr.setToggleGroup(msgType);
+        utf8.setToggleGroup(msgType);
+        utf16.setToggleGroup(msgType);
+        
+        eucKr.setSelected(true);
+        
+        asciiMsgAnchorPane.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
+    }
+
+    /**
+     * 메시지 컨테이너 생성
+     */
+    private void createMessageContainers() {
+        for (int i = 1; i <= UIConstants.MAX_MESSAGES; i++) {
+            addMessageRow(i);
         }
     }
 
-    //text파일에 저장
+    /**
+     * 단일 메시지 행 추가
+     * 
+     * @param index 행 인덱스
+     */
+    private void addMessageRow(int index) {
+        TextField textField = createTextField(index);
+        Button sendButton = createSendButton(index);
+        
+        asciiMsgAnchorPane.getChildren().addAll(textField, sendButton);
+        transmitMsgs.add(textField);
+    }
+
+    /**
+     * 텍스트 필드 생성
+     * 
+     * @param index 텍스트필드 인덱스
+     * @return 생성된, 설정된 TextField
+     */
+    private TextField createTextField(int index) {
+        TextField textField = new TextField();
+        int rowIndex = index - 1; // 0부터 시작하는 인덱스로 변환
+        
+        textField.setLayoutX(UIConstants.TEXT_FIELD_MARGIN_LEFT);
+        textField.setLayoutY(UIConstants.TEXT_FIELD_MARGIN_TOP + 
+                             rowIndex * UIConstants.TEXT_FIELD_VERTICAL_SPACING);
+        textField.setPrefWidth(UIConstants.TEXT_FIELD_WIDTH);
+        textField.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
+        textField.setId("transmitMsg" + index);
+        
+        // 메시지 내용 설정 (빈 문자열 방지)
+        String content = (rowIndex < transmitMsgContents.size() && transmitMsgContents.get(rowIndex) != null) 
+                           ? transmitMsgContents.get(rowIndex) : "";
+        textField.setText(content);
+        
+        return textField;
+    }
+
+    /**
+     * 전송 버튼 생성
+     * 
+     * @param index 버튼 인덱스
+     * @return 생성된, 설정된 Button
+     */
+    private Button createSendButton(int index) {
+        Button sendButton = new Button(bundle.getString("sendButton"));
+        int rowIndex = index - 1; // 0부터 시작하는 인덱스로 변환
+        
+        sendButton.setLayoutX(UIConstants.BUTTON_MARGIN_LEFT);
+        sendButton.setLayoutY(UIConstants.TEXT_FIELD_MARGIN_TOP + 
+                              rowIndex * UIConstants.TEXT_FIELD_VERTICAL_SPACING);
+        sendButton.setPrefWidth(UIConstants.BUTTON_WIDTH);
+        sendButton.setPrefHeight(UIConstants.BUTTON_HEIGHT);
+        sendButton.setId("msgSendBtn" + index);
+        sendButton.setOnMouseClicked(this::sendMsg);
+        
+        return sendButton;
+    }
+
+    /**
+     * 메시지 저장 메서드
+     */
     @FXML
     public void saveMsg() {
         List<String> msgList = new ArrayList<>();
-        for (int i = 1; i < transmitMsgs.size(); i++) {
-            msgList.add(transmitMsgs.get(i-1).getText());
+        
+        for (TextField textField : transmitMsgs) {
+            msgList.add(textField.getText());
         }
-
+        
         msgService.saveMessages(msgList);
     }
 
-    //기기에 메세지 전송
-    public void sendMsg(MouseEvent event) {
-        Button clickedBtn = (Button) event.getSource();
-        int num = Integer.parseInt(clickedBtn.getId().substring(10));
-        TextField targetTextField = transmitMsgs.get(num - 1);
-        asciiMsgTransceiver.sendMessages(targetTextField.getText(), utf_8.isSelected(), progressIndicator);
-    }
-
-    //메세지 초기화
+    /**
+     * 기기에 메시지 전송
+     * 
+     * @param event 마우스 이벤트
+     */
     @FXML
-    public void resetMsg() {
-        msgService.resetMsg();
-        for (int i = 0; i < transmitMsgs.size(); i++) {
-            transmitMsgs.get(i).setText(configService.getProperty("ASCMsg"+(i+1)));
+    public void sendMsg(MouseEvent event) {
+        if (!(event.getSource() instanceof Button clickedBtn)) {
+            return;
+        }
+
+        int num = extractButtonNumber(clickedBtn.getId());
+        
+        if (num > 0 && num <= transmitMsgs.size()) {
+            TextField targetTextField = transmitMsgs.get(num - 1);
+            sendMessageToDevice(targetTextField.getText());
+            saveMsg();
         }
     }
-
-    //기본 속성 설정 창
-    @FXML
-    public void setDefault(MouseEvent mouseEvent) throws IOException {
-        ResourceBundle bundle = ResourceManager.getInstance().getBundle();
-        FXMLLoader fxmlLoader = new FXMLLoader(Simulator.class.getResource("/dbps/dbps/fxmls/asciiDefaultSetting.fxml"), bundle);
-        Parent root = fxmlLoader.load();
-
-        Stage modalStage = new Stage();
-
-        modalStage.setTitle("기본값 설정");
-        modalStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
-        modalStage.initModality(Modality.APPLICATION_MODAL);
-
-        Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-        modalStage.initOwner(parentStage);
-
-        Scene scene = new Scene(root, 550, 550);
-        modalStage.setScene(scene);
-        modalStage.setResizable(false);
-
-        modalStage.setOnShown(event -> {
-            // 부모 창 위치와 크기 가져오기
-            double parentX = parentStage.getX();
-            double parentY = parentStage.getY();
-            double parentWidth = parentStage.getWidth();
-
-            // 모달 창 크기 계산
-            double modalWidth = modalStage.getWidth();
-
-            // 위치 계산
-            double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
-            double modalY = parentY;
-
-            // 위치 설정
-            modalStage.setX(modalX);
-            modalStage.setY(modalY);
-        });
-
-        modalStage.showAndWait();
-    }
-
-    //미리보기
-//    @FXML
-//    public void preview(MouseEvent event) {
-//        Button clickedBtn = (Button) event.getSource();
-//        int num = Integer.parseInt(clickedBtn.getId().substring(10));
-//        TextField targetTextField = transmitMsgs.get(num - 1);
-//        //구현 계획
-//        //기본표시 설정 창에서 먼저 가져오고 추가된 값 있으면 기존값에서 갈아끼움.
-//
-//        HashMap<String, String> textEffect = new HashMap<>();
-//        textEffect.put("textSize", "16");
-//        textEffect.put("fontGroup", "1");
-//        textEffect.put("effectIn", "정지효과");
-//        textEffect.put("effectInDirection", "효과방향");
-//        textEffect.put("effectOut", "정지효과");
-//        textEffect.put("effectOutDirection", "효과방향");
-//        textEffect.put("effectTime", "15");
-//        textEffect.put("xStart", "00");
-//        textEffect.put("yStart", "00");
-//        textEffect.put("xEnd", "00");
-//        textEffect.put("yEnd", "00");
-//        textEffect.put("textColor", "yellow");
-//        textEffect.put("bgColor", "black");
-//
-//
-//
-//        //화면설정 크기에서 가져와서 크기 만들고.
-//
-//        //그렇게 메세지 완성된거 기준으로 미리보기 띄우면 됨.
-//
-//        //한픽셀 = 10
-//
-////        String fullText = targetTextField.getText().substring(5, targetTextField.getText().length()-2);
-////        String[] split = fullText.split("/");
-////        String text = "";
-////        String[] deco = new String[split.length];
-////        for (int i = 0; i < split.length; i++) {
-////            if (split[i].startsWith("/")){
-////
-////            }
-////        }
-//
-//
-//        previewService.preview(targetTextField.getText(), textEffect);
-//    }
-
 
     /**
-     * 시작시 textField와 버튼을 만들어주는 메소드
+     * 버튼 ID에서 숫자 부분 추출
+     * 
+     * @param buttonId 버튼 ID
+     * @return 추출된 숫자
      */
-    private void makeMsgContainer() {
-        for (int i = 1; i < 10; i++) {
-            TextField textField = new TextField();
-            textField.setMaxHeight(45.0);
-            textField.setMaxWidth(565.0);
-            AnchorPane.setLeftAnchor(textField, 11.0);
-            AnchorPane.setTopAnchor(textField, 27.0 + (i - 1) * 55.0);
-            AnchorPane.setRightAnchor(textField, 91.0);
-            AnchorPane.setBottomAnchor(textField, 538 - (i - 1) * 55.0);
-            textField.setId("transmitMsg" + i);
-            textField.setText(transmitMsgContents.get(i - 1));
-            transmitMsgs.add(textField);
-
-            Button sendButton = new Button(bundle.getString("sendButton"));
-            sendButton.setPrefHeight(45.0);
-            sendButton.setPrefWidth(61.0);
-            AnchorPane.setLeftAnchor(sendButton, 620.0);
-            AnchorPane.setTopAnchor(sendButton, 27.0 + (i - 1) * 55.0);
-            AnchorPane.setBottomAnchor(sendButton, 538 - (i - 1) * 55.0);
-            AnchorPane.setRightAnchor(sendButton, 8.0);
-            sendButton.setId("msgSendBtn" + i);
-            sendButton.setOnMouseClicked(this::sendMsg);
-
-            ASCiiMsgAnchorPane.getChildren().addAll(textField,  sendButton);
+    private int extractButtonNumber(String buttonId) {
+        try {
+            return Integer.parseInt(buttonId.substring(10));
+        } catch (NumberFormatException | IndexOutOfBoundsException e) {
+            return -1;
         }
+    }
+
+    /**
+     * 실제 메시지 전송 로직
+     * 
+     * @param message 전송할 메시지
+     */
+    private void sendMessageToDevice(String message) {
+        boolean isUtf8Selected = utf8.isSelected();
+        boolean isUtf16Selected = utf16.isSelected();
+        
+        asciiMsgTransceiver.sendMessages(
+            message, 
+            isUtf8Selected, 
+            isUtf16Selected, 
+            progressIndicator
+        );
+    }
+
+    /**
+     * 화면 닫기
+     * 
+     * @param mouseEvent 마우스 이벤트
+     */
+    @FXML
+    public void close(MouseEvent mouseEvent) {
+        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        stage.close();
     }
 }

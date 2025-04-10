@@ -1,9 +1,7 @@
 package dbps.dbps.controller;
 
-import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.FirmwareService;
-import dbps.dbps.service.HexMsgTransceiver;
-import dbps.dbps.service.LogService;
+import dbps.dbps.Constants;
+import dbps.dbps.service.*;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.ServerTCPManager;
 import dbps.dbps.service.connectManager.TCPManager;
@@ -11,6 +9,7 @@ import dbps.dbps.service.connectManager.UDPManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -25,6 +24,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.*;
@@ -48,6 +48,7 @@ public class FirmwareUpgradeController {
 
     @FXML
     public Label firmwareProgressLabel;
+    ResourceBundle bundle;
 
     AsciiMsgTransceiver asciiMsgTransceiver;
     HexMsgTransceiver hexMsgTransceiver;
@@ -74,11 +75,14 @@ public class FirmwareUpgradeController {
         udpManager = UDPManager.getUDPManager();
         serverTCPManager = ServerTCPManager.getInstance();
         serialPortmanager = SerialPortManager.getManager();
+        bundle = ResourceManager.getInstance().getBundle();
 
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         logService = LogService.getLogService();
         firmwareService = FirmwareService.getFirmwareService();
+        firmwareInformation.setCache(true);
+        firmwareInformation.setCacheHint(CacheHint.SPEED);
         FirmwareService.setFirmwareInformation(firmwareInformation);
 
         fileLocation.focusedProperty().addListener((observable, oldValue, newValue) -> {
@@ -116,50 +120,92 @@ public class FirmwareUpgradeController {
         Scene progressScene = new Scene(vbox, 300, 150);
         progressStage.setScene(progressScene);
 
-        vbox.setStyle("-fx-padding: 20px; -fx-background-color: #333333;");
+        vbox.setStyle("-fx-padding: 20px;");
         cancelButton.setStyle(
-                "-fx-font-size: 16px;" +
-                        "-fx-background-color: linear-gradient(#444444, #222222);" +
-                        "-fx-text-fill: white;" +
-                        "-fx-border-color: #4A4A4A;" +
-                        "-fx-border-radius: 10;" +
+                "-fx-border-radius: 10;" +
                         "-fx-padding: 5 10 5 10;" +
                         "-fx-background-radius: 10;"
         );
+        cancelButton.setOnMousePressed(e -> {
+            cancelButton.setStyle(
+                    "-fx-border-radius: 10;" +
+                            "-fx-padding: 5 10 5 10;" +
+                            "-fx-background-radius: 10;"
+            );
+        });
+
+        cancelButton.setOnMouseEntered(e -> {
+            cancelButton.setStyle(
+                    "-fx-border-radius: 10;" +
+                            "-fx-padding: 5 10 5 10;" +
+                            "-fx-background-radius: 10;" +
+                            "-fx-cursor: hand;" // 🔹 손가락 커서로 변경
+            );
+        });
+
+// 🔹 마우스를 벗어나면 원래 스타일로 복구
+        cancelButton.setOnMouseExited(e -> {
+            cancelButton.setStyle(
+                            "-fx-border-radius: 10;" +
+                            "-fx-padding: 5 10 5 10;" +
+                            "-fx-background-radius: 10;" +
+                            "-fx-cursor: default;" // 기본 커서로 변경
+            );
+        });
+
+// 버튼에서 손을 뗄 때 원래 스타일로 복구
+        cancelButton.setOnMouseReleased(e -> {
+            cancelButton.setStyle(
+                            "-fx-border-radius: 10;" +
+                            "-fx-padding: 5 10 5 10;" +
+                            "-fx-background-radius: 10;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 1, 1);"
+            );
+        });
+        cancelButton.setOnAction(e -> {
+            if (firmwareUploadTask != null) {
+                firmwareUploadTask.cancel();
+                progressBar.setProgress(0);
+                closeWindowAfterDelay(progressStage, 1000);
+            }
+        });
         progressLabel.setStyle(
-                "-fx-font-size: 15px; " +
-                        "-fx-text-fill: white; " +
-                        "-fx-background-color: #222222; " +
                         "-fx-padding: 5; " +
-                        "-fx-border-color: #4A4A4A; " +
                         "-fx-background-radius: 5; " +
                         "-fx-border-radius: 5;"
         );
 
+        Platform.runLater(() -> {
+            Stage parentStage = (Stage) firmwareUpgradeAP.getScene().getWindow();
+
+            double parentX = parentStage.getX();
+            double parentY = parentStage.getY();
+            double parentWidth = parentStage.getWidth();
+            double parentHeight = parentStage.getHeight();
+
+            // 진행 창 위치 설정 (세로는 부모와 동일, 가로는 절반 위치)
+            progressStage.setX(parentX + parentWidth / 2 - 150); // 300px 창 기준 중앙 정렬
+            progressStage.setY(parentY + (parentHeight / 2) - 75); // 150px 창 기준 중앙 정렬
+        });
+
+
+        firmwareUpgradeAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
 
     public void read() throws ExecutionException, InterruptedException {
-        if (IS_ASCII){
+        if (IS_ASCII) {
             String msg = "![0081!]";
-            if (isRS){
-                msg = "!["+convertRS485AddrASCii()+"081!]";
+            if (isRS) {
+                msg = "![" + convertRS485AddrASCii() + "081!]";
             }
             asciiMsgTransceiver.sendMessages(msg, false, firmwareProgressIndicator);
-        }
-        else {
+        } else {
             String msg = "10 02 00 00 02 6F F1 10 03";
-            if (isRS){
-                msg = "10 02 "+String.format("%02X ", RS485_ADDR_NUM)+ "00 02 6F F1 10 03";
+            if (isRS) {
+                msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 02 6F F1 10 03";
             }
-            String version = hexMsgTransceiver.sendMessages(msg, firmwareProgressIndicator);
-            String[] version_split = version.split(" ");
-            StringBuilder result = new StringBuilder();
-
-            for (int i = 7; i < version_split.length; i++) {
-                result.append((char) Integer.parseInt(version_split[i], 16));
-            }
-            firmwareInformation.setText(result.toString());
+            hexMsgTransceiver.sendMessages(msg, firmwareProgressIndicator);
         }
     }
 
@@ -185,48 +231,59 @@ public class FirmwareUpgradeController {
 
         String result = "";
         String hexToDecimal = "";
-        try (RandomAccessFile file = new RandomAccessFile(selectedFile.getAbsolutePath(), "r")) {
-            int startByte = 0;
-            int length = 0;
-            if (!selectedFile.getName().contains("502")) {
-                startByte = 516;
-                length = 38;
-            } else {
-                startByte = 15796;
-                length = 38;
+        String filePath = fileLocation.getText();
+        String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
+        fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
+        if (fileName.contains("502")) {
+            firmwareFileInformation.setText(fileName);
+        } else {
+            try {
+                assert selectedFile != null;
+                try (RandomAccessFile file = new RandomAccessFile(selectedFile.getAbsolutePath(), "r")) {
+                    int startByte = 0;
+                    int length = 0;
+                    if (!selectedFile.getName().contains("502")) {
+                        startByte = 516;
+                        length = 38;
+                    } else {
+                        startByte = 15796;
+                        length = 38;
+                    }
+
+                    // 앞 한 글자를 추가로 읽기 위해 startByte를 1 줄임
+                    int extendedStartByte = startByte - 1;
+
+                    // 파일의 해당 위치로 이동
+                    file.seek(extendedStartByte);
+
+                    // 읽을 바이트 배열 생성 (기존 길이 + 앞 한 글자)
+                    byte[] buffer = new byte[length + 1];
+                    int bytesRead = file.read(buffer);
+
+                    if (bytesRead == length + 1) {
+                        // 앞 한 글자 (바이트) 읽어서 16진수 변환 후 10진수 변환
+                        int extraByte = buffer[0] & 0xFF;  // 부호 없는 값으로 변환
+                        hexToDecimal = String.valueOf(extraByte);  // 10진수 문자열로 변환
+
+                        // 기존 데이터 부분을 읽기 (1바이트 이후부터)
+                        result = new String(buffer, 1, length, "MS949");
+                        result = result.replaceAll("!]", "");
+                    }
+                }
+            } catch (IOException ignored) {
+
             }
 
-            // 앞 한 글자를 추가로 읽기 위해 startByte를 1 줄임
-            int extendedStartByte = startByte - 1;
-
-            // 파일의 해당 위치로 이동
-            file.seek(extendedStartByte);
-
-            // 읽을 바이트 배열 생성 (기존 길이 + 앞 한 글자)
-            byte[] buffer = new byte[length + 1];
-            int bytesRead = file.read(buffer);
-
-            if (bytesRead == length + 1) {
-                // 앞 한 글자 (바이트) 읽어서 16진수 변환 후 10진수 변환
-                int extraByte = buffer[0] & 0xFF;  // 부호 없는 값으로 변환
-                hexToDecimal = String.valueOf(extraByte);  // 10진수 문자열로 변환
-
-                // 기존 데이터 부분을 읽기 (1바이트 이후부터)
-                result = new String(buffer, 1, length, "MS949"); // ASCII 호환 인코딩
-
-
-            }
-        } catch (IOException e) {
-
+            // UI에 표시
+            firmwareFileInformation.setText("<" + hexToDecimal + ">" + result);
         }
-
-        // UI에 표시
-        firmwareFileInformation.setText("<"+hexToDecimal+">"+result);
     }
+
+    public Task<Void> firmwareUploadTask;
 
     public void send() {
         if (firmwareInformation.getText().isEmpty()) {
-            logService.warningLog("컨트롤러의 펌웨어 버전을 먼저 읽어주세요.");
+            logService.warningLog(bundle.getString("readFirmwareFirst"));
             return;
         }
 
@@ -240,36 +297,36 @@ public class FirmwareUpgradeController {
         if (index1 != -1 && index1 + "DIBD".length() + 4 <= firmwareInformationText.length()) {
             result1 = firmwareInformationText.substring(index1 + "DIBD".length(), index1 + "DIBD".length() + 4);
         } else {
-            logService.errorLog("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
+            logService.errorLog(bundle.getString("errorDIBD"));
             return;
         }
         if (index2 == -1) {
             index2 = firmwareFileInformationText.lastIndexOf("DB");
             result2 = firmwareFileInformationText.substring(index2 + "DB".length(), index2 + "DB".length() + 4);
-        } else if (index2 != -1 && index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
+        } else if (index2 + "DIBD".length() + 4 <= firmwareFileInformationText.length()) {
             result2 = firmwareFileInformationText.substring(index2 + "DIBD".length(), index2 + "DIBD".length() + 4);
         } else {
-            logService.errorLog("DIBD를 찾을 수 없거나 4자리를 가져올 수 없습니다.");
+            logService.errorLog(bundle.getString("errorDIBD"));
             return;
         }
 
         if (!result1.equals(result2)) {
-            logService.errorLog("업로드할 수 없습니다. 컨트롤러의 펌웨어와 동일한 펌웨어를 업로드해주세요.");
-            return;
-        }
-
-        if (!Files.exists(Path.of(uploadFirmwarePath))) {
-            logService.errorLog("파일을 찾을 수 없습니다.");
+            logService.errorLog(bundle.getString("errorFirmwareMismatch"));
             return;
         }
 
         uploadFirmwarePath = fileLocation.getText();
 
+        if (!Files.exists(Path.of(uploadFirmwarePath))) {
+            logService.errorLog(bundle.getString("errorFileNotFound"));
+            return;
+        }
+
         // 새로운 창 생성
         progressStage.show();
 
         // 펌웨어 업로드 Task 실행
-        Task<Void> firmwareUploadTask = firmwareService.firmwareUpload(progressBar, progressLabel);
+        firmwareUploadTask = firmwareService.firmwareUpload(progressBar, progressLabel);
 
         firmwareUploadTask.setOnRunning(e -> {
             progressLabel.setText("펌웨어 업로드 중...");
@@ -318,7 +375,7 @@ public class FirmwareUpgradeController {
         end();
     }
 
-    private void end(){
+    private void end() {
         tcpManager.disconnectNoLog();
         serverTCPManager.disconnectNoLog();
         udpManager.disconnectNoLog();
@@ -327,7 +384,7 @@ public class FirmwareUpgradeController {
 
 
     public void close(MouseEvent mouseEvent) {
-        ((Stage)(((Node) mouseEvent.getSource()).getScene().getWindow())).close();
+        ((Stage) (((Node) mouseEvent.getSource()).getScene().getWindow())).close();
         end();
     }
 }

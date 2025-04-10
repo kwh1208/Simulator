@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.ResourceManager;
@@ -15,6 +16,9 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.util.*;
+
+import static dbps.dbps.Constants.convertRS485AddrASCii;
+import static dbps.dbps.Constants.isRS;
 
 public class BGScheduleController {
 
@@ -61,6 +65,8 @@ public class BGScheduleController {
                 }
             });
         }
+
+        BGScheduleAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
     // 태그 추가
@@ -70,6 +76,7 @@ public class BGScheduleController {
         tag.setPrefWidth(TAG_WIDTH);
         tag.setPrefHeight(TAG_HEIGHT);
         tag.setOnMouseClicked(event -> checkBox.setSelected(false)); // 태그 클릭 시 체크 해제
+        tag.setStyle("-fx-background-color: lightgray");
         tagPane.getChildren().add(tag);
 
         // Map에 추가
@@ -137,6 +144,9 @@ public class BGScheduleController {
 
     public void send() {
         String sendMsg = "![0020";
+        if (isRS){
+            sendMsg = "!["+convertRS485AddrASCii()+"020";
+        }
         for (CheckBox value : tagMap.keySet()) {
             sendMsg += String.format("%03d", Integer.parseInt(value.getText().replaceAll("[^0-9]", "")))+" ";
         }

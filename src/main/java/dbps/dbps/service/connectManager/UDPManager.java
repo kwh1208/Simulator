@@ -2,6 +2,7 @@ package dbps.dbps.service.connectManager;
 
 import dbps.dbps.service.DabitNetService;
 import dbps.dbps.service.LogService;
+import dbps.dbps.service.ResourceManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import lombok.Getter;
@@ -11,7 +12,10 @@ import java.io.IOException;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static dbps.dbps.Constants.*;
 
@@ -31,11 +35,13 @@ public class UDPManager {
     private static UDPManager udpManager = null;
     private static LogService logService;
     private static DabitNetService dabitNetService;
+    ResourceBundle bundle;
 
 
     private UDPManager() {
         logService = LogService.getLogService();
         dabitNetService = DabitNetService.getInstance();
+        bundle= ResourceManager.getInstance().getBundle();
         setIP(UDP_IP);
         setPORT(UDP_PORT);
     }
@@ -60,9 +66,8 @@ public class UDPManager {
                     byte[] sendByte = msg.getBytes(Charset.forName("MS949"));
 
                     if (utf8) sendByte = msg.getBytes(StandardCharsets.UTF_8);
-                    else if (ascUTF16) sendByte = msg.getBytes(StandardCharsets.UTF_16BE);
                     DatagramPacket sendPacket = new DatagramPacket(sendByte, sendByte.length, serverAddr, PORT);
-                    logService.updateInfoLog("전송 메세지 :"+msg);
+                    logService.updateInfoLog(bundle.getString("sendMsg")+msg);
                     socket.send(sendPacket);
                     int totalBytesRead = 0;
                     byte[] receiveBuffer = new byte[1024];
@@ -81,7 +86,7 @@ public class UDPManager {
                                 }
                             }
                         } catch (java.net.SocketTimeoutException e) {
-                            logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                            logService.errorLog(bundle.getString("connectionFail"));
                             throw e;
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -95,11 +100,83 @@ public class UDPManager {
                         result = result.substring(indexTX);
                         result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
                     }
-                    logService.updateInfoLog("받은 메세지 :"+result);
+                    if (result.contains("init_rtcTimeDate Start")){
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                    }
+                    logService.updateInfoLog(bundle.getString("receivedMsg")+result);
                     return result;
                 }catch (IOException e){
                     //에러 처리
-                    logService.errorLog(msg+"전송에 실패했습니다.");
+                    logService.errorLog(bundle.getString("connectionFail"));
+                    throw e;
+                } finally {
+                    disconnect();
+                }
+            }
+        };
+    }
+
+    public Task<String> sendASCMsg(String msg, boolean utf8, boolean utf16){
+        return new Task<String>() {
+            @Override
+            protected String call() throws Exception {
+                if (socket == null||socket.isClosed()) {
+                    connect(IP, PORT);
+                }
+                DatagramPacket receivePacket;
+                try{
+                    InetAddress serverAddr = InetAddress.getByName(IP);
+                    byte[] sendByte = msg.getBytes(Charset.forName("MS949"));
+
+                    if (utf8) sendByte = msg.getBytes(StandardCharsets.UTF_8);
+                    if (utf16) sendByte = createPacket(msg);
+                    DatagramPacket sendPacket = new DatagramPacket(sendByte, sendByte.length, serverAddr, PORT);
+                    if (utf8){
+                        logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF8(msg));
+                    } else if (utf16) {
+                        logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF16(msg));
+                    }
+                    else logService.updateInfoLog(bundle.getString("sendMsg") + msg);
+                    socket.send(sendPacket);
+                    int totalBytesRead = 0;
+                    byte[] receiveBuffer = new byte[1024];
+                    receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+                    while (true) {
+                        try {
+                            // 패킷 수신
+                            socket.receive(receivePacket);
+                            int bytesRead = receivePacket.getLength(); // 수신된 바이트 수
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
+
+                                // 데이터 처리 로직
+                                if (dataReceivedIsComplete(receiveBuffer, totalBytesRead)) {
+                                    break; // 수신 완료 조건 만족 시 루프 종료
+                                }
+                            }
+                        } catch (java.net.SocketTimeoutException e) {
+                            logService.errorLog(bundle.getString("connectionFail"));
+                            throw e;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            break;
+                        }
+                    }
+
+                    String result = new String(receiveBuffer, 0, totalBytesRead);
+                    if (result.contains("RX") && result.contains("![") && result.contains("!]")) {
+                        int indexTX = result.indexOf("TX");
+                        result = result.substring(indexTX);
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                    }
+                    if (result.contains("init_rtcTimeDate Start")){
+                        result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                    }
+                    logService.updateInfoLog(bundle.getString("receivedMsg")+result);
+                    return result;
+                }catch (IOException e){
+                    //에러 처리
+                    logService.errorLog(bundle.getString("connectionFail"));
                     throw e;
                 } finally {
                     disconnect();
@@ -118,7 +195,7 @@ public class UDPManager {
                 DatagramPacket receivePacket;
                 try {
                     InetAddress serverAddr = InetAddress.getByName(IP);
-                    logService.updateInfoLog("전송 메세지 :"+bytesToHex(msg, msg.length));
+                    logService.updateInfoLog(bundle.getString("sendMsg")+bytesToHex(msg, msg.length));
                     DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
                     socket.send(sendPacket);
 
@@ -137,15 +214,20 @@ public class UDPManager {
                                 }
                             }
                         } catch (SocketTimeoutException e) {
-                            logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                            logService.errorLog(bundle.getString("connectionFail"));
                             throw new RuntimeException();
                         }
                     }
                     String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
                     if (result.contains("52 58 28")) {
-                        result = result.substring(result.indexOf("10 02"));
+                        Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                        Matcher matcher = pattern.matcher(result);
+
+                        if (matcher.find()) {
+                            result = matcher.group(0); // 전체 매칭된 부분을 추출
+                        }
                     }
-                    logService.updateInfoLog("받은 메세지 :"+result);
+                    logService.updateInfoLog(bundle.getString("receivedMsg")+result);
                     return result;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -182,23 +264,75 @@ public class UDPManager {
                         }
                     }
                 } catch (SocketTimeoutException e) {
-                    logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                    logService.errorLog(bundle.getString("connectionFail"));
                     throw new RuntimeException();
                 }
             }
             String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
             if (result.contains("52 58 28")) {
-                result = result.substring(result.indexOf("10 02"));
+                Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                Matcher matcher = pattern.matcher(result);
+
+                if (matcher.find()) {
+                    result = matcher.group(0); // 전체 매칭된 부분을 추출
+                }
             }
             return result;
         } catch (IOException e) {
             throw e;
-        } finally {
-            disconnectNoLog();
         }
     }
 
-    List<DatagramSocket> socketList = new ArrayList<>();
+    public void sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
+        if (socket == null||socket.isClosed()) {
+            connectNoLog(IP, PORT);
+        }
+        DatagramPacket receivePacket;
+        try {
+            InetAddress serverAddr = InetAddress.getByName(IP);
+            DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
+            socket.send(sendPacket);
+
+            String log = bytesToHex(msg, 32);
+            log+=" ~ 10 03";
+            logService.updateInfoLog(log);
+
+            byte[] receiveBuffer = new byte[1024];
+            int totalBytesRead = 0;
+            receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+            while (true) {
+                try {
+                    socket.receive(receivePacket);
+                    int bytesRead = receivePacket.getLength();
+                    if (bytesRead > 0) {
+                        totalBytesRead += bytesRead;
+                        // 데이터 처리 로직
+                        if (dataReceivedIsCompleteHex(receiveBuffer, totalBytesRead)) {
+                            break; // 수신 완료 조건 만족 시 루프 종료
+                        }
+                    }
+                } catch (SocketTimeoutException e) {
+                    logService.errorLog(bundle.getString("connectionFail"));
+                    throw new RuntimeException();
+                }
+            }
+            String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
+            if (result.contains("52 58 28")) {
+                Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                Matcher matcher = pattern.matcher(result);
+
+                if (matcher.find()) {
+                    result = matcher.group(0); // 전체 매칭된 부분을 추출
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+        }
+    }
+
+    public static List<DatagramSocket> socketList = new ArrayList<>();
 
     boolean WifiOnly;
     boolean etherNetOnly;
@@ -208,12 +342,11 @@ public class UDPManager {
             @Override
             protected String call() throws IOException {
                 if (socketList == null || socketList.isEmpty()) {
-                    throw new IOException("연결된 소켓이 없습니다.");
+                    connect300All();
                 }
 
                 List<String> receivedMessages = new ArrayList<>();
                 InetAddress serverAddr = InetAddress.getByName(IP);
-
 
                 try {
                     for (DatagramSocket socket : socketList) {
@@ -223,27 +356,40 @@ public class UDPManager {
 
                         InetAddress localAddr = socket.getLocalAddress();
                         NetworkInterface netInterface = NetworkInterface.getByInetAddress(localAddr);
-                        String interfaceName = (netInterface != null) ? netInterface.getDisplayName().toLowerCase() : "unknown";
 
-                        boolean isWifi = interfaceName.contains("wi-fi") || interfaceName.contains("wlan");
-                        boolean isEthernet = (interfaceName.contains("ethernet") || interfaceName.contains("eth") || interfaceName.contains("usb") || interfaceName.contains("thunderbolt"))
-                                && !interfaceName.contains("vmware")
-                                && !interfaceName.contains("virtualbox")
-                                && !interfaceName.contains("hyper-v");
-
-                        if (isWifi) {
-                            if (!WifiOnly) {
-                                continue;
-                            }
-                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5107));
-                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
-                        } else if (isEthernet) {
-                            if (!etherNetOnly) {
-                                continue;
-                            }
-                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
+                        if (netInterface == null || !netInterface.isUp() || netInterface.isLoopback()) {
+                            continue; // 사용 불가능한 네트워크 인터페이스 제외
                         }
 
+                        boolean hasIpAddress = false;
+                        Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
+                        while (addresses.hasMoreElements()) {
+                            InetAddress addr = addresses.nextElement();
+                            if (!(addr instanceof Inet6Address)) { // IPv6 제외 가능
+                                hasIpAddress = true;
+                                break;
+                            }
+                        }
+                        if (!hasIpAddress) {
+                            continue; // IP가 없는 경우 제외
+                        }
+
+                        String interfaceName = netInterface.getDisplayName().toLowerCase();
+
+                        boolean isWifi = interfaceName.contains("wi-fi") ||
+                                interfaceName.contains("wifi") ||
+                                interfaceName.contains("wlan") ||
+                                interfaceName.contains("wireless") ||
+                                interfaceName.contains("airport") ||
+                                interfaceName.startsWith("wlp");
+
+                        if (isWifi && WifiOnly) {
+                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5107));
+                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
+                        } else if (!isWifi && etherNetOnly) {
+                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5107));
+                            socket.send(new DatagramPacket(msg, msg.length, serverAddr, 5108));
+                        }
 
                         byte[] receiveBuffer = new byte[1024];
                         while (true) {
@@ -253,7 +399,16 @@ public class UDPManager {
                                 int bytesRead = receivePacket.getLength();
                                 if (bytesRead > 0) {
                                     String message = new String(receivePacket.getData(), 0, bytesRead);
-                                    Platform.runLater(() -> dabitNetService.updateUI(message));
+                                    if (message.contains("52 58 28")) {
+                                        Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                                        Matcher matcher = pattern.matcher(message);
+
+                                        if (matcher.find()) {
+                                            message = matcher.group(0); // 전체 매칭된 부분을 추출
+                                        }
+                                    }
+                                    String finalMessage = message;
+                                    Platform.runLater(() -> dabitNetService.updateUI(finalMessage));
                                     receivedMessages.add(message);
                                 }
                             } catch (SocketTimeoutException e) {
@@ -261,7 +416,6 @@ public class UDPManager {
                             }
                         }
                     }
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -273,7 +427,7 @@ public class UDPManager {
 
 
 
-    public void  connect300All(){
+    public void connect300All(){
         connect300Wifi(5107);
         connect300Ethernet(5108);
 
@@ -302,11 +456,10 @@ public class UDPManager {
             DatagramSocket tmpSocket = new DatagramSocket(new InetSocketAddress(wifiIP, 5109));
             tmpSocket.setBroadcast(true);
             tmpSocket.setSoTimeout(RESPONSE_LATENCY*1000);
-
             socketList.add(tmpSocket);
         } catch (SocketException e) {
             e.printStackTrace();
-            logService.errorLog("IP: " + IP + ", PORT: " + PORT+"열기에 실패했습니다.");
+            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, String.valueOf(PORT)));
         }
     }
 
@@ -315,9 +468,17 @@ public class UDPManager {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
                 NetworkInterface networkInterface = interfaces.nextElement();
+                String displayName = networkInterface.getDisplayName().toLowerCase();
+                String name = networkInterface.getName().toLowerCase();
 
-                // Wi-Fi 인터페이스인지 확인 (이름이 보통 "wlan" 또는 "wi-fi" 포함)
-                if (networkInterface.isLoopback() || !networkInterface.isUp() || networkInterface.getDisplayName().toLowerCase().contains("virtual")) {
+                // 루프백, 비활성, 가상 인터페이스는 건너뜁니다.
+                if (networkInterface.isLoopback() || !networkInterface.isUp() || displayName.contains("virtual")) {
+                    continue;
+                }
+
+                // Wi-Fi 인터페이스로 판단할 수 있는 조건 추가
+                if (!(displayName.contains("wi-fi") || displayName.contains("wlan") || displayName.contains("무선")
+                        || name.contains("wi-fi") || name.contains("wlan") || name.contains("무선"))) {
                     continue;
                 }
 
@@ -363,7 +524,7 @@ public class UDPManager {
             }
         } catch (SocketException e) {
             e.printStackTrace();
-            logService.errorLog("IP: " + IP + ", PORT: " + PORT + " 열기에 실패했습니다.");
+            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, String.valueOf(PORT)));
         }
     }
 
@@ -398,7 +559,7 @@ public class UDPManager {
 
     //접속하기
     public void connect(String IP, int PORT){
-        logService.updateInfoLog("UDP 서버에 연결합니다. IP: " + IP + ", PORT: " + PORT);
+        logService.updateInfoLog(MessageFormat.format(bundle.getString("udpServerConnection"), IP, String.valueOf(PORT)));
         this.IP = IP;
         this.PORT = PORT;
         try {
@@ -409,7 +570,7 @@ public class UDPManager {
             socket.setSoTimeout(RESPONSE_LATENCY*1000);
         } catch (SocketException e) {
             e.printStackTrace();
-            logService.errorLog("IP: " + IP + ", PORT: " + PORT+"열기에 실패했습니다.");
+            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, String.valueOf(PORT)));
         }
     }
 
@@ -423,19 +584,21 @@ public class UDPManager {
             socket.setBroadcast(true);
             socket.setSoTimeout(RESPONSE_LATENCY*1000);
         } catch (SocketException e) {
-            logService.errorLog("IP: " + IP + ", PORT: " + PORT+"열기에 실패했습니다.");
+            logService.errorLog(MessageFormat.format(bundle.getString("udpServerConnectionFailed"), IP, String.valueOf(PORT)));
         }
     }
 
     //접속끊기
     public void disconnect() {
+        if (KEEP_OPEN){
+            return;
+        }
         if (socket == null && socketList.isEmpty()){
             return;
         }
 
         if (!socketList.isEmpty()){
             for (DatagramSocket datagramSocket : socketList) {
-                System.out.println(datagramSocket.getInetAddress());
                 datagramSocket.disconnect();
                 datagramSocket.close();
             }
@@ -447,10 +610,13 @@ public class UDPManager {
             socket.close();
             socket = null;
         }
-        logService.updateInfoLog("UDP 서버를 종료합니다. IP: " + IP + ", PORT: " + PORT);
+        logService.updateInfoLog(MessageFormat.format(bundle.getString("udpServerConnectionClosed"), IP, String.valueOf(PORT)));
     }
 
     public void disconnectNoLog() {
+        if (KEEP_OPEN){
+            return;
+        }
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
@@ -477,7 +643,7 @@ public class UDPManager {
         };
 
         Thread thread = new Thread(task);
-        thread.setDaemon(true); // UI 종료 시 자동 종료되도록 설정
+        thread.setDaemon(true);
         thread.start();
     }
 }

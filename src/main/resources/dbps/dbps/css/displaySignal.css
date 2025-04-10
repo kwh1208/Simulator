@@ -1,106 +1,82 @@
-.choice-box .context-menu {
-    -fx-background-color: #1C1F26;
-    -fx-pref-width: 100;
-}
-
-.wide-choice-box .list-cell {
-    -fx-pref-width: 150px;
-    -fx-background-color: #1C1F26;
-}
-.choice-box .menu-item:focused {
-    -fx-background-color: orange;
-}
-.choice-box .menu-item > .label {
-    -fx-text-fill: white;
-    -fx-padding: 0 0 0 20px;
-}
-.choice-box .menu-item:focused > .label {
-    -fx-text-fill: black;
-}
-.choice-box {
-    -fx-background-color: #1C1F26;
-    -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
-}
-.choice-box .label {
-    -fx-text-fill: white;
-}
-.label{
-    -fx-text-fill: #E0E0E0;
-    -fx-font-size: 16px;
-}
-.spinner .increment-arrow-button, .spinner .decrement-arrow-button {
-    -fx-background-color: #1C1F26; /* 배경색 설정 */
-    -fx-text-fill: white; /* 텍스트 색상 설정 */
-    -fx-border-color: #5A5A5A; /* 테두리 색상 설정 */
-}
-
-.spinner .increment-arrow-button:hover, .spinner .decrement-arrow-button:hover {
-    -fx-background-color: #2A2E35; /* 마우스 오버 시 배경색 */
-}
 .root{
     -fx-font-family: Gulim;
 }
-.spinner .increment-arrow-button:pressed, .spinner .decrement-arrow-button:pressed {
-    -fx-background-color: orange; /* 클릭 시 배경색 */
-}
-
-.spinner .text-field {
-    -fx-background-color: #1C1F26; /* 텍스트 필드 배경색 */
-    -fx-text-fill: white; /* 텍스트 색상 */
-    -fx-border-color: #5A5A5A; /* 테두리 색상 */
-}
 
 .button {
-    -fx-font-size: 16px; /* 폰트 크기 */
-    -fx-background-color: linear-gradient(#444444, #222222); /* 위에서 아래로 밝아지는 배경색 */
-    -fx-text-fill: white; /* 텍스트 색상 */
-    -fx-border-color: #4A4A4A; /* 버튼 테두리 색상 */
+     /* 폰트 크기 */
     -fx-border-radius: 10; /* 버튼 모서리 둥글기 */
     -fx-padding: 5 10 5 10; /* 버튼 내부 여백 */
     -fx-background-radius: 10; /* 배경 둥글기 */
 }
 
-.button:hover {
-    -fx-background-color: linear-gradient(orange, darkorange); /* 마우스 올렸을 때 배경색 */
-    -fx-border-color: orange; /* 마우스 올렸을 때 테두리 색상 */
-    -fx-text-fill: black; /* 마우스 올렸을 때 텍스트 색상 */
+.button:pressed {
+    -fx-translate-y: 2px; /* 눌렀을 때 버튼이 살짝 내려가는 효과 */
 }
 
-.button:pressed {
-    -fx-background-color: linear-gradient(darkorange, orange); /* 눌렀을 때 오렌지 계열 색상 */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 2, 0.1, 0, 0); /* 눌렀을 때 그림자 약화 */
-    -fx-translate-y: 2px; /* 눌렀을 때 버튼이 살짝 내려가는 효과 */
-    -fx-text-fill: white; /* 눌렀을 때 텍스트 색상 */
-    -fx-border-color: darkorange; /* 눌렀을 때 테두리 색상 */
-}
-.text-area{
-    -fx-background-color: black;
-    -fx-control-inner-background: black;
-    -fx-text-fill: white;
-}
-.text-area:focused{
-    -fx-border-color: transparent;
+.text-area .scroll-pane .viewport {
+    -fx-border-width: 0;
 }
 
 .list-cell{
     -fx-pref-height: 25px;
 }
 
-.list-view {
-    -fx-background-color: #1C1F26; /* 전체 ListView 배경색 */
+.combo-box {
+    -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
+}
+.combo-box .list-view .list-cell {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+.combo-box .list-view .list-cell:hover {
 }
 
-.list-cell:odd {
-    -fx-background-color: #2B2B2B; /* 홀수 셀의 배경색 */
-    -fx-text-fill: white; /* 홀수 셀의 텍스트 색상 */
+.combo-box .scroll-bar:vertical {
+    -fx-opacity: 0; /* 스크롤바를 완전히 숨김 */
+    -fx-pref-width: 0; /* 수직 스크롤바 너비를 0으로 설정 */
+    -fx-pref-height: 0; /* 수평 스크롤바 높이를 0으로 설정 */
 }
 
-.list-cell:even {
-    -fx-background-color: #3C3C3C; /* 짝수 셀의 배경색 */
-    -fx-text-fill: white; /* 짝수 셀의 텍스트 색상 */
+.combo-box-popup .list-view {
+    -fx-border-width: 0;
+    -fx-cell-border-color: transparent;  /* 셀 사이 경계선 제거 */
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
 }
 
-.list-cell:filled:selected, .list-cell:filled:selected:focused {
-    -fx-background-color: orange; /* 선택된 항목의 배경색 */
-    -fx-text-fill: black; /* 선택된 항목의 텍스트 색상 */
+/* ComboBox 팝업 안에 있는 각 ListCell 스타일 */
+.combo-box-popup .list-cell {
+    /* 테두리/경계선 관련 설정 */
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-cell-border-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
+/* 마우스 오버 시 스타일 */
+.combo-box-popup .list-cell:hover {
+    -fx-border-color: transparent;
+    -fx-cell-border-color: transparent;
+}
+
+/* 선택된 항목 스타일 */
+.combo-box-popup .list-cell:filled:selected,
+.combo-box-popup .list-cell:filled:selected:focused {
+    -fx-border-color: transparent;
+    -fx-cell-border-color: transparent;
+}
+
+/* 스크롤바 썸(잡아당기는 부분) */
+.scroll-bar .thumb {
+    -fx-background-radius: 5px; /* 둥근 모서리 */
+}
+/* 스크롤바 화살표 버튼 */
+.scroll-bar:horizontal .increment-button,
+.scroll-bar:horizontal .decrement-button,
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-radius: 5px; /* 둥근 모서리 */
+    -fx-padding: 5px;
 }

@@ -1,5 +1,6 @@
 package dbps.dbps.controller;
 
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.*;
 import javafx.animation.KeyFrame;
@@ -12,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -38,19 +40,13 @@ public class DisplaySignalSettingController {
     private ListView<String> signalList;
 
     @FXML
-    private ChoiceBox<String> colorScan;
+    private ComboBox<String> colorScan;
 
     @FXML
-    private ChoiceBox<String> scanOrder;
+    private ComboBox<String> scanOrder;
 
     @FXML
     private Spinner<Integer> spinnerForSec;
-
-    @FXML
-    private Spinner<Integer> spinnerForBefore;
-
-    @FXML
-    private Spinner<Integer> spinnerForAfter;
 
     @FXML
     private Button autoTransfer;
@@ -67,37 +63,37 @@ public class DisplaySignalSettingController {
 
     @FXML
     private void initialize() {
-        SpinnerValueFactory<Integer> valueFactoryForSec = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 3);
-        SpinnerValueFactory<Integer> valueFactoryForBefore = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 0);
-        SpinnerValueFactory<Integer> valueFactoryForAfter = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 0);
-
-        spinnerForSec.setValueFactory(valueFactoryForSec);
-        spinnerForBefore.setValueFactory(valueFactoryForBefore);
-        spinnerForAfter.setValueFactory(valueFactoryForAfter);
-
-        spinnerForSec.setEditable(true);
-        spinnerForBefore.setEditable(true);
-        spinnerForAfter.setEditable(true);
-
         signalList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.equals("08D-P64D1S21")){
+            if (newValue.equals("08D-P64D1S21")) {
                 scanOrder.getItems().clear();
                 scanOrder.getItems().addAll("138 IC", "L800", "NO IC");
                 scanOrder.setValue("138 IC");
                 scanOrder.setDisable(false);
-            }else if (newValue.equals("04D-P32D2S61")){
+            } else if (newValue.equals("04D-P32D2S61")) {
                 scanOrder.getItems().clear();
                 scanOrder.getItems().addAll("138 IC", "595 IC", "SUM2017TD IC");
                 scanOrder.getStyleClass().add("wide-choice-box");
                 scanOrder.setValue("138 IC");
                 scanOrder.setDisable(false);
-            }
-            else {
+            } else {
                 scanOrder.setValue("138 IC");
                 scanOrder.setDisable(true);
             }
             memo.setText(configService.getDisplayProperty(signalList.getFocusModel().getFocusedItem()));
         });
+
+        displaySignalAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
+        signalList.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                Stage stage = (Stage) displaySignalAP.getScene().getWindow();
+                stage.close();
+                event.consume();
+            }
+        });
+
+        SpinnerValueFactory<Integer> valueFactoryForSec = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 3);
+        spinnerForSec.setValueFactory(valueFactoryForSec);
+        spinnerForSec.setEditable(true);
 
         signalList.setOnMouseClicked(event -> handleDoubleClick(event, signalList));
 
@@ -110,12 +106,40 @@ public class DisplaySignalSettingController {
             }
         });
 
+        signalList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)->{
+            if (configService.getProperty(newValue+"-color")==null){
+                colorScan.setValue("RGB");
+            }
+            else {
+                colorScan.setValue(configService.getProperty(configService.getProperty("displaySignal")+"-color"));
+            }
+        });
+
 
         displaySignalAP.getStylesheets().add(getClass().getResource("/dbps/dbps/css/displaySignal.css").toExternalForm());
         displaySignal = DisplaySignal.getInstance();
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         configService = ConfigService.getInstance();
+
+        int index = signalList.getItems().indexOf(configService.getProperty("displaySignal"));
+
+        signalList.getFocusModel().focus(index);
+        signalList.getSelectionModel().select(index);
+
+        if (configService.getProperty(configService.getProperty("displaySignal")+"-color")!=null){
+            colorScan.setValue(configService.getProperty(configService.getProperty("displaySignal")+"-color"));
+        }
+
+
+        if (index != -1) { // 유효한 인덱스인지 확인
+            signalList.getSelectionModel().select(index);
+            signalList.scrollTo(index); // 선택한 항목으로 스크롤 이동
+        }
+
+        if (index == -1){
+            signalList.getSelectionModel().select(0);
+        }
     }
 
     private void handleDoubleClick(MouseEvent event, ListView<String> listView) {
@@ -130,35 +154,45 @@ public class DisplaySignalSettingController {
     //현재창 닫기
     @FXML
     void closeWindow() {
+        if (timeline != null) {
+            timeline.stop();
+            timeline = null;
+        }
+
         Stage stage = (Stage) spinnerForSec.getScene().getWindow();
         stage.close();
     }
 
     @FXML
     public void signalTransfer() {
-        if (IS_ASCII||signalList.getSelectionModel().getSelectedItem().equals("08D-P64D1S71")){
-        String selectedSignal = signalList.getSelectionModel().getSelectedItem();
-        String signalProtocol = makePerfectProtocol(selectedSignal);
-        String transferProtocol;
-        if (isRS){
-            transferProtocol = "!["+convertRS485AddrASCii()+signalProtocol+"!]";
-        }else transferProtocol = "![0"+signalProtocol+"!]";
-        asciiMsgTransceiver.sendMessages(transferProtocol, false, progressIndicator);
-        }
-        else {
+        if (IS_ASCII || signalList.getSelectionModel().getSelectedItem().equals("08D-P64D1S71")) {
+            String selectedSignal = signalList.getSelectionModel().getSelectedItem();
+            String signalProtocol = makePerfectProtocol(selectedSignal);
+            String transferProtocol;
+            if (isRS) {
+                transferProtocol = "![" + convertRS485AddrASCii() + signalProtocol + "!]";
+            } else transferProtocol = "![0" + signalProtocol + "!]";
+            asciiMsgTransceiver.sendMessages(transferProtocol, false, progressIndicator);
+
+            configService.setProperty("displaySignal", selectedSignal);
+            configService.setProperty(selectedSignal+"-color", colorScan.getValue());
+        } else {
             String selectedSignal = signalList.getSelectionModel().getSelectedItem();
             String signalProtocol = makePerfectProtocolHEX(selectedSignal);
             hexMsgTransceiver.sendMessages(signalProtocol, progressIndicator);
+
+            configService.setProperty("displaySignal", selectedSignal);
+            configService.setProperty(selectedSignal+"-color", colorScan.getValue());
         }
     }
 
     private String makePerfectProtocolHEX(String selectedSignal) {
         String result = "10 02 00 ";
-        if (isRS){
+        if (isRS) {
             result = "10 02 " + String.format("%02X ", RS485_ADDR_NUM);
         }
         result += SignalMap_HEX.get(selectedSignal);
-        switch (colorScan.getValue()){
+        switch (colorScan.getValue()) {
             case "RGB":
                 result = result + " 01";
                 break;
@@ -182,7 +216,7 @@ public class DisplaySignalSettingController {
                 break;
         }
         if (selectedSignal.equals("08D-P64D1S21")) {
-            switch (scanOrder.getValue()){
+            switch (scanOrder.getValue()) {
                 case "138 IC":
                     result = result + " 01";
                     break;
@@ -194,7 +228,7 @@ public class DisplaySignalSettingController {
                     break;
             }
         } else if (selectedSignal.equals("04D-P32D2S61")) {
-            switch (scanOrder.getValue()){
+            switch (scanOrder.getValue()) {
                 case "138 IC":
                     result = result + " 01";
                     break;
@@ -208,13 +242,13 @@ public class DisplaySignalSettingController {
         } else {
             result = result + " 01";
         }
-        result+=" 10 03";
+        result += " 10 03";
         return result;
     }
 
     private String makePerfectProtocol(String selectedSignal) {
         String result = SignalMap_ASC.get(selectedSignal);
-        switch (colorScan.getValue()){
+        switch (colorScan.getValue()) {
             case "RGB":
                 result = result + "1";
                 break;
@@ -238,7 +272,7 @@ public class DisplaySignalSettingController {
                 break;
         }
         if (selectedSignal.equals("08D-P64D1S21")) {
-            switch (scanOrder.getValue()){
+            switch (scanOrder.getValue()) {
                 case "138 IC":
                     result = result + "1";
                     break;
@@ -250,7 +284,7 @@ public class DisplaySignalSettingController {
                     break;
             }
         } else if (selectedSignal.equals("04D-P32D2S61")) {
-            switch (scanOrder.getValue()){
+            switch (scanOrder.getValue()) {
                 case "138 IC":
                     result = result + "1";
                     break;
@@ -269,7 +303,7 @@ public class DisplaySignalSettingController {
 
     @FXML
     public void autoTransfer() {
-        if(autoTransfer.getText().equals("해제")){
+        if (autoTransfer.getText().equals("해제")) {
             timeline.stop(); // Timeline 중지
             timeline = null; // 객체 초기화
             autoTransfer.setText("자동전송"); // 버튼 텍스트를 원래대로 변경
@@ -283,7 +317,6 @@ public class DisplaySignalSettingController {
         timeline = new Timeline();
         timeline.setCycleCount(signalCount); // 각 신호에 대해 반복
 
-        long ctime = System.currentTimeMillis();
         for (int i = startIdx; i < signalCount; i++) {
             int index = i; // 람다식 내부에서 사용될 인덱스
             KeyFrame keyFrame = new KeyFrame(Duration.seconds((i - startIdx) * time), event -> {
@@ -304,31 +337,6 @@ public class DisplaySignalSettingController {
 
         autoTransfer.setText("해제"); // 자동 전송 시작 시 버튼 텍스트 변경
         timeline.play(); // 타임라인 시작
-    }
-
-    @FXML
-    public void setting() {
-        Integer before = spinnerForBefore.getValue();
-        Integer after = spinnerForAfter.getValue();
-
-        String beforeStr = (before < 10) ? " " + before : before.toString();
-        String afterStr = (after < 10) ? " " + after : after.toString();
-
-        String msg = "![00B4" + beforeStr + " " + afterStr + "!]";
-        if (isRS) {
-            msg = "![" + convertRS485AddrASCii() + "0B4" + beforeStr + " " + afterStr + "!]";
-        }
-
-        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
-    }
-
-    @FXML
-    public void read() {
-        String msg = "![00B50!]";
-        if (isRS){
-            msg = "!["+convertRS485AddrASCii()+"0B50!]";
-        }
-        asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
     }
 
     public void save() {
@@ -357,7 +365,10 @@ public class DisplaySignalSettingController {
 
         modalStage.setOnHiding(event -> {
             int targetIndex = signalList.getItems().indexOf(SELECTED_SIGNAL);
-            signalList.getSelectionModel().select(targetIndex);
+            if (targetIndex != -1) { // 유효한 인덱스인지 확인
+                signalList.getSelectionModel().select(targetIndex);
+                signalList.scrollTo(targetIndex); // 선택한 항목으로 스크롤 이동
+            }
         });
 
         modalStage.setOnShown(event -> {

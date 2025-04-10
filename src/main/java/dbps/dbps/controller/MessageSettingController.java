@@ -1,12 +1,16 @@
 package dbps.dbps.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
-import dbps.dbps.service.AsciiMsgTransceiver;
-import dbps.dbps.service.HexMsgTransceiver;
+import dbps.dbps.service.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
 import static dbps.dbps.service.SettingService.commonProgressIndicator;
@@ -16,41 +20,50 @@ public class MessageSettingController {
     HexMsgTransceiver hexMsgTransceiver = HexMsgTransceiver.getInstance();
     
     AsciiMsgTransceiver asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
-
-
-    @FXML
-    public ChoiceBox<String> msgInitialize;
+    ResourceBundle bundle;
+    ConfigService configService;
 
     @FXML
-    public ChoiceBox<String> pageMsgCnt;
+    public ComboBox<String> msgInitialize;
+
+    @FXML
+    public ComboBox<String> pageMsgCnt;
 
     @FXML
     public Pane msPane;
 
+    private ComboBox<String> pageMsgComboBox;
+
     @FXML
     public void initialize() {
         msPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/messageSetting.css").toExternalForm());
+        bundle= ResourceManager.getInstance().getBundle();
 
         pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             int selectedCount = Integer.parseInt(newValue.replace("개", ""));
             msgInitialize.getItems().clear();
-            msgInitialize.getItems().add("전체");
+            msgInitialize.getItems().add(bundle.getString("All"));
 
             for (int i = 1; i <= selectedCount; i++) {
                 msgInitialize.getItems().add("page "+i);
             }
 
-            msgInitialize.setValue("전체");
+            msgInitialize.setValue(bundle.getString("All"));
         });
+        msgInitialize.getItems().add(bundle.getString("All"));
+        msgInitialize.setValue(bundle.getString("All"));
+        configService=ConfigService.getInstance();
+
+        msPane.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
     }
 
-    public void sendMsgInitialize() throws JsonProcessingException {
+    public void sendMsgInitialize() {
         if (IS_ASCII){
             String msg = "![0061";
             if (isRS){
                 msg = "!["+convertRS485AddrASCii()+"061";
             }
-            if (msgInitialize.getValue().equals("전체")){
+            if (msgInitialize.getValue().equals(bundle.getString("All"))){
                 msg += "99";
             }
             else{
@@ -65,7 +78,7 @@ public class MessageSettingController {
             if (isRS){
                 msg = "10 02 "+String.format("%02X", RS485_ADDR_NUM)+" 00 02 4B ";
             }
-            if (msgInitialize.getValue().equals("전체")){
+            if (msgInitialize.getValue().equals(bundle.getString("All"))){
                 msg += "80";
             }
             else{
@@ -98,5 +111,15 @@ public class MessageSettingController {
 
             hexMsgTransceiver.sendMessages(msg, commonProgressIndicator);
         }
+
+        PageMsgCnt= Integer.parseInt(pageMsgCnt.getValue().replaceAll("[^0-9]", ""));
+        configService.setProperty("pageMsgCnt", String.valueOf(PageMsgCnt));
+
+        HexMsgService.getInstance().setUI(PageMsgCnt);
+    }
+
+    public void close(MouseEvent mouseEvent) {
+        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        stage.close();
     }
 }

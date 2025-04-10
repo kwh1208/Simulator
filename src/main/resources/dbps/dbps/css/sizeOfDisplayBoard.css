@@ -1,57 +1,61 @@
-.choice-box .context-menu {
-    -fx-background-color: #1C1F26;
-    -fx-pref-width: 150; /* 컨텍스트 메뉴 너비를 오른쪽 CSS와 동일하게 설정 */
-}
-.choice-box .menu-item:focused {
-    -fx-background-color: orange;
-}
-.choice-box .menu-item > .label {
-    -fx-text-fill: white;
-    -fx-padding: 0 0 0 20px;
-}
-.choice-box .menu-item:focused > .label {
-    -fx-text-fill: black;
-}
-.choice-box {
-    -fx-background-color: #1C1F26;
-    -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
-}
-.choice-box .label {
-    -fx-text-fill: white;
-}
-.check-box {
-    -fx-text-fill: white; /* 글씨 색상을 흰색으로 설정 */
-    -fx-font-size: 16px; /* 글씨 크기 설정 */
-}
-.label{
-    -fx-text-fill: #E0E0E0;
-    -fx-font-size: 16px;
-}
-
 .check-box .box {
-    -fx-border-color: #5A5A5A; /* 체크박스 테두리 색상 */
-    -fx-border-width: 1px; /* 테두리 두께 */
-    -fx-background-color: #1C1F26; /* 체크박스 배경색 */
+    -fx-shape: "M0 0 L1 0 1 1 0 1 Z"; /* 네모 모양 지정 */
+    -fx-border-width: 1px;           /* 테두리 두께 */
+    -fx-background-color: #1C1F26;    /* 배경색 */
+    -fx-padding: 5px;                /* 내부 여백 */
 }
 
-.spinner .increment-arrow-button, .spinner .decrement-arrow-button {
-    -fx-background-color: #1C1F26; /* 배경색 설정 */
-    -fx-text-fill: white; /* 텍스트 색상 설정 */
-    -fx-border-color: #5A5A5A; /* 테두리 색상 설정 */
-}
-
-.spinner .increment-arrow-button:hover, .spinner .decrement-arrow-button:hover {
-    -fx-background-color: #2A2E35; /* 마우스 오버 시 배경색 */
+/* 선택 표시용 내부 요소(.mark)를 네모 모양으로 */
+.check-box .mark {
+    -fx-shape: "M0 0 L1 0 1 1 0 1 Z";
 }
 .root{
     -fx-font-family: Gulim;
 }
-.spinner .increment-arrow-button:pressed, .spinner .decrement-arrow-button:pressed {
-    -fx-background-color: orange; /* 클릭 시 배경색 */
+.combo-box {
+    -fx-background-radius: 0; /* 버튼 모서리 둥글기 제거 */
+}
+.combo-box .list-view{
+    -fx-border-color: transparent;
+}
+.combo-box .list-view .list-cell {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
 }
 
-.spinner .text-field {
-    -fx-background-color: #1C1F26; /* 텍스트 필드 배경색 */
-    -fx-text-fill: white; /* 텍스트 색상 */
-    -fx-border-color: #5A5A5A; /* 테두리 색상 */
+.combo-box .scroll-bar:vertical {
+    -fx-opacity: 0; /* 스크롤바를 완전히 숨김 */
+    -fx-pref-width: 0; /* 수직 스크롤바 너비를 0으로 설정 */
+    -fx-pref-height: 0; /* 수평 스크롤바 높이를 0으로 설정 */
+}
+
+.combo-box-popup .list-view {
+    -fx-border-color: transparent;       /* 바깥 테두리 제거 */
+    -fx-border-width: 0;
+    -fx-cell-border-color: transparent;  /* 셀 사이 경계선 제거 */
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
+/* ComboBox 팝업 안에 있는 각 ListCell 스타일 */
+.combo-box-popup .list-cell {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-cell-border-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
+/* 마우스 오버 시 스타일 */
+.combo-box-popup .list-cell:hover {
+    -fx-border-color: transparent;
+    -fx-cell-border-color: transparent;
+}
+
+/* 선택된 항목 스타일 */
+.combo-box-popup .list-cell:filled:selected,
+.combo-box-popup .list-cell:filled:selected:focused {
+    -fx-border-color: transparent;
+    -fx-cell-border-color: transparent;
 }

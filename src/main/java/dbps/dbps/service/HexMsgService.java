@@ -1,16 +1,19 @@
 package dbps.dbps.service;
 
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import lombok.Setter;
+
+import java.util.ResourceBundle;
 
 @Setter
 public class HexMsgService {
     public static HexMsgService instance;
 
-    private ChoiceBox<String> xStart;
-    private ChoiceBox<String> yStart;
-    private ChoiceBox<String> xEnd;
-    private ChoiceBox<String> yEnd;
+    private ComboBox<ComboItem> xStart;
+    private ComboBox<ComboItem> yStart;
+    private ComboBox<ComboItem> xEnd;
+    private ComboBox<ComboItem> yEnd;
+    ResourceBundle bundle;
 
     public static HexMsgService getInstance() {
         if (instance == null) {
@@ -20,10 +23,11 @@ public class HexMsgService {
     }
 
 
-    public ChoiceBox<String> pageMsgCnt;
+    public ComboBox<String> pageMsgCnt;
 
 
     private HexMsgService() {
+        bundle = ResourceManager.getInstance().getBundle();
     }
 
     public void setUI(int num){
@@ -42,18 +46,18 @@ public class HexMsgService {
         xEnd.getItems().clear();
         yEnd.getItems().clear();
 
-        for (int i = 0; i <= 4*x; i++) {
-            xStart.getItems().add(String.valueOf(4*i));
-            xEnd.getItems().add(String.valueOf(4*i));
+        for (int i = 0; i <= 4 * x; i++) {
+            xStart.getItems().add(new ComboItem(String.valueOf(4 * i),String.valueOf(4 * i)+bundle.getString("pixel")));
+            xEnd.getItems().add(new ComboItem(String.valueOf(4 * i),String.valueOf(4 * i)+bundle.getString("pixel")));
         }
-        for (int i = 0; i <= 4*y; i++) {
-            yStart.getItems().add(String.valueOf(4*i));
-            yEnd.getItems().add(String.valueOf(4*i));
+        for (int i = 0; i <= 4 * y; i++) {
+            yStart.getItems().add(new ComboItem(String.valueOf(4 * i),String.valueOf(4 * i)+bundle.getString("pixel")));
+            yEnd.getItems().add(new ComboItem(String.valueOf(4 * i),String.valueOf(4 * i)+bundle.getString("pixel")));
         }
 
-        xStart.setValue("0");
-        yStart.setValue("0");
-        xEnd.setValue("0");
-        yEnd.setValue("0");
+        xStart.setValue(new ComboItem("0", 0+bundle.getString("pixel")));
+        yStart.setValue(new ComboItem("0", 0+bundle.getString("pixel")));
+        xEnd.setValue(new ComboItem("0", 0+bundle.getString("pixel")));
+        yEnd.setValue(new ComboItem("0", 0+bundle.getString("pixel")));
     }
 }

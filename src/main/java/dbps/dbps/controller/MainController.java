@@ -7,13 +7,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static dbps.dbps.Constants.IS_ASCII;
-
 public class MainController {
     MainService mainService;
     ConfigService configService;
@@ -32,25 +25,15 @@ public class MainController {
         mainService = MainService.getInstance();
         MainService.setMessageTab(messageTab);
         MainService.setSettingTab(setting);
-        if (IS_ASCII){
-            mainService.showASCiiMsgTab();
-        }else {
-            mainService.showHEXMsgTab();
-        }
-        mainService.changeSetTab();
-    }
-
-    public void handleHelpAction() {
-        String url = "https://publish.obsidian.md/dabitdocs"; // 여기에 원하는 URL 입력
-
-        if (Desktop.isDesktopSupported()) {
-            Desktop desktop = Desktop.getDesktop();
-            try {
-                desktop.browse(new URI(url));
-            } catch (IOException | URISyntaxException e) {
-                e.printStackTrace();
+        mainTab.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
+            if (newTab == messageTab) {
+                mainService.showHEXMsgTab();
+            } else if (newTab == setting) {
+                mainService.changeSetTab();
             }
-        } else {
-        }
+        });
+
+        // 초기 탭(예, 메시지 탭)을 미리 로드
+        mainService.showHEXMsgTab();
     }
 }

@@ -39,8 +39,7 @@ public class LogController {
         logTextArea = new InlineCssTextArea();
         logTextArea.setWrapText(true);
         logTextArea.setEditable(false);
-        logTextArea.setStyle("-fx-background-color: #1C1F26; -fx-text-fill: white; -fx-font-size: 16px;");
-        logTextArea.setMinWidth(696);
+        logTextArea.setMinWidth(527);
         logTextArea.setMinHeight(127);
         scrollPane.setContent(logTextArea);
 
@@ -55,28 +54,5 @@ public class LogController {
 
     public void clearLog(){
         logService.clearLog();
-    }
-
-    /**
-     * 기능 관련(click, input)등
-     */
-
-    @FXML
-    public void clearBtnClicked(){
-        clearLog();
-    }
-
-    /**
-     * 효과 관련된 메소드(mouse in/out)등
-     */
-
-    @FXML
-    public void clearBtnEntered(){
-        clearBtn.setStyle("-fx-background-color: #1C1F26; -fx-border-color: black; -fx-border-width: 1px");
-    }
-
-    @FXML
-    public void clearBtnExited(){
-        clearBtn.setStyle("-fx-background-color: #1C1F26");
     }
 }

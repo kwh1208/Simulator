@@ -2,20 +2,27 @@ package dbps.dbps;
 
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.ResourceManager;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import lombok.Setter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
+@Setter
 public class Constants {
-    //현재 연결 방법(serial, tcp, udp, RS485, WiFi, Bluetooth)
     public static String CONNECT_TYPE = "none";
     ConfigService configService;
 
@@ -25,44 +32,70 @@ public class Constants {
             (byte) 0x34, (byte) 0x35, (byte) 0x36, (byte) 0x37, (byte) 0x38,
             (byte) 0x39, (byte) 0x10, (byte) 0x03
     };
+    public static boolean KEEP_OPEN;
+
+    public static int RESPONSE_LATENCY;
+
+    public static boolean IS_ASCII;
+
+    public static int serverTCPPort;
+
+    public static String hostIP;
+
+    public static boolean ascUTF16;
+
+    public static int SERIAL_BAUDRATE;
+
+    public static String OPEN_PORT_NAME;
+
+    public static int RS485_ADDR_NUM;
+
+    public static boolean isRS;
+
+    public static String TCP_IP;
+
+    public static int TCP_PORT;
+
+    public static String UDP_IP;
+
+    public static int UDP_PORT;
+
+    public static boolean isBT;
+
+    public static int SIZE_ROW;
+    public static int SIZE_COLUMN;
+    public static int BITS_PER_PIXEL;
+    public static String howToArrange;
+    public static String uploadFirmwarePath;
+    public static int PageMsgCnt;
+
+    static {
+        ConfigService configService = ConfigService.getInstance();
+        RESPONSE_LATENCY = Integer.parseInt(configService.getProperty("RESPONSE_LATENCY"));
+        IS_ASCII = Boolean.parseBoolean(configService.getProperty("IS_ASCII"));
+        serverTCPPort = Integer.parseInt(configService.getProperty("serverTCPPort"));
+        hostIP = configService.getProperty("serverTCPAddr");
+        CONNECT_TYPE = configService.getProperty("connectType");
+        OPEN_PORT_NAME = configService.getProperty("openPortName");
+        SERIAL_BAUDRATE = Integer.parseInt(configService.getProperty("serialSpeed"));
+        RS485_ADDR_NUM = Integer.parseInt(configService.getProperty("RS485_ADDR_NUM"));
+        TCP_IP = configService.getProperty("clientTCPAddr");
+        TCP_PORT = Integer.parseInt(configService.getProperty("clientTCPPort"));
+        UDP_IP = configService.getProperty("UDPAddr");
+        UDP_PORT = Integer.parseInt(configService.getProperty("UDPPort"));
+        SIZE_ROW = Integer.parseInt(configService.getProperty("displayRowSize"));
+        SIZE_COLUMN = Integer.parseInt(configService.getProperty("displayColumnSize"));
+        BITS_PER_PIXEL = configService.getProperty("bitsPerPixel").charAt(0)-'0';
+        howToArrange = configService.getProperty("howToArrange");
+        isRS = Boolean.parseBoolean(configService.getProperty("isRS"));
+        serverTCPPort = Integer.parseInt(configService.getProperty("serverTCPPort"));
+        PageMsgCnt = Integer.parseInt(configService.getProperty("pageMsgCnt"));
+    }
+
     @FXML
     public void initialize() {
         configService = ConfigService.getInstance();
     }
-
-    public static int RESPONSE_LATENCY = 3;
-
-    public static boolean IS_ASCII = false;
-
-    public static int serverTCPPort = 5000;
-
-    public static String hostIP;
-
-    public static boolean ascUTF16 = false;
-
-    public static int SERIAL_BAUDRATE = 115200;
-
-    public static String OPEN_PORT_NAME = null;
-
-    public static int RS485_ADDR_NUM = 0;
-
-    public static boolean isRS = false;
-
-    public static String TCP_IP = "";
-
-    public static int TCP_PORT = 0;
-
-    public static String UDP_IP = "";
-
-    public static int UDP_PORT = 0;
-
-    public static boolean isBT = false;
-
-    public static int SIZE_ROW = 0;
-    public static int SIZE_COLUMN = 0;
-    public static int BITS_PER_PIXEL = 0;
-    public static String howToArrange = "가로형";
-    public static String uploadFirmwarePath = "";
 
     private static final int[] wCRCTable = {
             0X0000, 0XC0C1, 0XC181, 0X0140, 0XC301, 0X03C0, 0X0280, 0XC241,
@@ -143,6 +176,37 @@ public class Constants {
         return hexString.toString();
     }
 
+    private static String bytesToHexUTF16(byte[] bytes, int length) {
+        StringBuilder sb = new StringBuilder(" ");
+        for (int i = 0; i < length; i += 2) {
+            if (i + 1 < length) {
+                int codeUnit = (bytes[i] & 0xff) | ((bytes[i + 1] & 0xff) << 8);
+                sb.append(String.format("%04X", codeUnit));
+            } else {
+                sb.append(String.format("%02X", bytes[i]));
+            }
+            if (i + 2 < length) {
+                sb.append(" ");
+            }
+        }
+        return sb.toString();
+    }
+
+    public static String bytesToHexUTF8(byte[] bytes) {
+        StringBuilder sb = new StringBuilder(" ");
+        for (int i = 0; i < bytes.length; i += 3) {
+            // 3바이트씩 처리 (마지막 그룹은 3바이트 미만일 수 있음)
+            for (int j = i; j < i + 3 && j < bytes.length; j++) {
+                sb.append(String.format("%02X", bytes[j]));
+            }
+            if (i + 3 < bytes.length) {
+                sb.append(" ");
+            }
+        }
+        return sb.toString();
+    }
+
+
     public static String convertRS485AddrASCii(){
         String[] arr = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V"};
 
@@ -151,13 +215,12 @@ public class Constants {
 
     public static boolean dataReceivedIsComplete(byte[] buffer, int length) {
         String data = new String(buffer, 0, length);
-        if (data.contains("RX") && data.contains("![") && data.contains("!]")) {
-            int indexTX = data.indexOf("TX");
-            int indexStart = data.indexOf("![", indexTX); // "TX" 이후 검색
-            int indexEnd = data.indexOf("!]", indexStart); // "![ 이후 검색
+        if (data.contains("RX")&&!data.contains("TX")){
+            return false;
+        }
 
-            // 순서가 올바른지 확인
-            return indexTX != -1 && indexStart != -1 && indexEnd != -1 && indexTX < indexStart && indexStart < indexEnd;
+        if (data.contains("TX")&&data.contains("![")&&data.contains("!]")){
+            return true;
         }
 
         if (data.contains("BT DIBD")&&data.contains("!]")){
@@ -168,15 +231,9 @@ public class Constants {
     }
     public static boolean dataReceivedIsCompleteHex(byte[] buffer, int length) {
         String data = bytesToHex(buffer, length);
-        if (data.contains("54 58 28") && data.contains("31 30 20 30 32") && data.contains("31 30 20 30 33")) {
-            if (!data.startsWith("52 58 28")) {
-                return false;
-            }
-            int indexTX = data.indexOf("54 58 28");
-            int indexStart = data.indexOf("31 30 20 30 32", indexTX); // "TX" 이후 검색
-            int indexEnd = data.indexOf("31 30 20 30 33", indexStart); // "10 02" 이후 검색
-            // 순서가 올바른지 확인
-            return indexTX != -1 && indexStart != -1 && indexEnd != -1 && indexTX < indexStart && indexStart < indexEnd;
+
+        if (data.contains("10 02")&&data.contains("10 03")){
+            return true;
         }
 
         return length > 0 && buffer[length - 1] == 0x03 && buffer[length - 2] == (byte) 0x10;
@@ -209,7 +266,6 @@ public class Constants {
 
             // 모달 창 크기 계산
             double modalWidth = modalStage.getWidth();
-            double modalHeight = modalStage.getHeight();
 
             // 위치 계산
             double modalX = parentX + (parentWidth / 2) - (modalWidth / 2); // 가로 중앙
@@ -220,6 +276,126 @@ public class Constants {
             modalStage.setY(modalY);
         });
 
-        modalStage.showAndWait();
+        modalStage.show();
     }
+
+    public static byte[] createPacket(String rawPacket) throws UnsupportedEncodingException {
+        try {
+            String header = rawPacket.substring(2, 5);
+            String trimmed = rawPacket.substring(5, rawPacket.lastIndexOf("!]"));
+
+            ByteArrayOutputStream finalBaos = new ByteArrayOutputStream();
+            finalBaos.write("![".getBytes("MS949"));
+            finalBaos.write(header.getBytes("MS949"));
+
+            String[] tokens = trimmed.split("/");
+            for (String token : tokens) {
+                if(token.isEmpty()){
+                    continue;
+                }
+
+                if (tokens.length!=1){
+                    finalBaos.write("/".getBytes("MS949"));
+                }
+
+                int codeLen = getControlCodeLength(token);
+                String controlCode = token.substring(0, Math.min(codeLen, token.length()));
+                String content = token.length() > codeLen ? token.substring(codeLen) : "";
+
+                finalBaos.write(controlCode.getBytes("MS949"));
+                if(!content.isEmpty()){
+                    finalBaos.write(content.getBytes(StandardCharsets.UTF_16BE));
+                }
+            }
+            finalBaos.write("!]".getBytes("MS949"));
+
+            return finalBaos.toByteArray();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private static int getControlCodeLength(String token) {
+        token = token.toUpperCase();
+        char firstChar = token.charAt(0);
+        return switch (firstChar) {
+            case 'F', 'P', 'X', 'Y', 'E', 'S', 'D' -> 5;
+            case 'C', 'G', 'T' -> 2;
+            case 'I', 'i' ->3;
+            case 'B', 'U' -> 4;
+            default -> 0;
+        };
+    }
+
+    public static String formatLogForUTF16(String msg) throws UnsupportedEncodingException {
+        String header = msg.substring(2, 5);
+        String trimmed = msg.substring(5, msg.lastIndexOf("!]"));
+
+        StringBuilder logMsg= new StringBuilder("![");
+        logMsg.append(header);
+
+        String[] tokens = trimmed.split("/");
+
+        for (String token : tokens) {
+            if(token.isEmpty()){
+                continue;
+            }
+
+            if (tokens.length!=1){
+                logMsg.append("/");
+            }
+
+            int codeLen = getControlCodeLength(token);
+            String controlCode = token.substring(0, Math.min(codeLen, token.length()));
+            String content = token.length() > codeLen ? token.substring(codeLen) : "";
+
+            logMsg.append(controlCode);
+            if(!content.isEmpty()){
+                byte[] bytes = content.getBytes(StandardCharsets.UTF_16LE);
+                logMsg.append(bytesToHexUTF16(bytes, bytes.length));
+            }
+        }
+        logMsg.append("!]");
+        return logMsg.toString();
+    }
+
+    public static String formatLogForUTF8(String msg) throws UnsupportedEncodingException {
+        String header = msg.substring(2, 5);
+        String trimmed = msg.substring(5, msg.lastIndexOf("!]"));
+
+        StringBuilder logMsg= new StringBuilder("![");
+        logMsg.append(header);
+
+        String[] tokens = trimmed.split("/");
+        for (String token : tokens) {
+            if(token.isEmpty()){
+                continue;
+            }
+
+            logMsg.append("/");
+
+            int codeLen = getControlCodeLength(token);
+            String controlCode = token.substring(0, Math.min(codeLen, token.length()));
+            String content = token.length() > codeLen ? token.substring(codeLen) : "";
+
+            logMsg.append(controlCode);
+            if(!content.isEmpty()){
+                byte[] bytes = content.getBytes(StandardCharsets.UTF_8);
+                logMsg.append(bytesToHexUTF8(bytes));
+            }
+        }
+        logMsg.append("!]");
+        return logMsg.toString();
+    }
+
+    public static class EscapeKeyEventHandler implements EventHandler<KeyEvent> {
+        @Override
+        public void handle(KeyEvent event) {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.close();
+            }
+        }
+    }
+
 }

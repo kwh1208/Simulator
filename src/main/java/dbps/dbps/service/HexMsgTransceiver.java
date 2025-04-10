@@ -9,11 +9,11 @@ import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
@@ -33,6 +33,15 @@ public class HexMsgTransceiver {
     private final SizeOfDisplayBoardService sizeOfDisplayBoardService;
     private final HexMsgService hexMsgService;
     private final FontNameService fontNameService;
+    private final ResourceBundle bundle;
+
+    private static final int MIN_YEAR = 0, MAX_YEAR = 99;
+    private static final int MIN_MONTH = 1, MAX_MONTH = 12;
+    private static final int MIN_DAY = 1, MAX_DAY = 31;
+    private static final int MIN_DAY_OF_WEEK = 0, MAX_DAY_OF_WEEK = 6;
+    private static final int MIN_HOUR = 0, MAX_HOUR = 23;
+    private static final int MIN_MINUTE = 0, MAX_MINUTE = 59;
+    private static final int MIN_SECOND = 0, MAX_SECOND = 59;
 
 
     private HexMsgTransceiver() {
@@ -45,6 +54,7 @@ public class HexMsgTransceiver {
         sizeOfDisplayBoardService = SizeOfDisplayBoardService.getInstance();
         hexMsgService=HexMsgService.getInstance();
         fontNameService = FontNameService.getInstance();
+        bundle=ResourceManager.getInstance().getBundle();
     }
 
     public static HexMsgTransceiver getInstance() {
@@ -93,13 +103,12 @@ public class HexMsgTransceiver {
         } else {
             resultFuture.completeExceptionally(new IllegalStateException("Task is null."));
         }
-
         return resultFuture;
     }
 
 
 
-    public String sendByteMessagesNoLog(byte[] msg) {
+    public void sendByteMessagesNoLog(byte[] msg) {
         switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> {
                 try {
@@ -110,7 +119,7 @@ public class HexMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
-            case "UDP" -> //udp로 메세지 전송
+            case "UDP" -> //udp로 메시지 전송
             {
                 try {
                     udpManager.sendMsgAndGetMsgByteNoLog(msg);
@@ -118,7 +127,7 @@ public class HexMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
-            case "clientTCP" -> //tcp로 메세지 전송
+            case "clientTCP" -> //tcp로 메시지 전송
             {
                 try {
                     tcpManager.sendMsgAndGetMsgByteNoLog(msg);
@@ -135,11 +144,50 @@ public class HexMsgTransceiver {
                 }
             }
         }
+    }
+
+    public String sendByteMessagesShortLog(byte[] msg) {
+        switch (CONNECT_TYPE) {
+            case "serial", "bluetooth", "rs485" -> {
+                try {
+                    // Task 객체를 생성하여 비동기 작업 실행
+                    serialPortManager.sendMsgAndGetMsgByteShortLog(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+            }
+            case "UDP" -> //udp로 메시지 전송
+            {
+                try {
+                    udpManager.sendMsgAndGetMsgByteShortLog(msg);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case "clientTCP" -> //tcp로 메시지 전송
+            {
+                try {
+                    tcpManager.sendMsgAndGetMsgByteShortLog(msg);
+                } catch (Exception e) {
+
+                    throw new RuntimeException(e);
+                }
+            }
+            case "serverTCP" ->{
+                try {
+                    serverTCPManager.sendMsgAndGetMsgByteShortLog(msg);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
         return null;
     }
 
-    public String sendMessages(String msg, ProgressIndicator progressIndicator) {
-        return String.valueOf(sendByteMessages(hexStringToByteArray(msg), progressIndicator));
+    public void sendMessages(String msg, ProgressIndicator progressIndicator) {
+        byte[] bytes = hexStringToByteArray(msg);
+        sendByteMessages(bytes, progressIndicator);
     }
 
     private void msgReceive(String receiveMsg, byte[] msg) {
@@ -147,43 +195,62 @@ public class HexMsgTransceiver {
             return;
         }
         if (receiveMsg.equals("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03 ")){
-            logService.updateInfoLog("성공적으로 연결되었습니다.");
+            logService.updateInfoLog(bundle.getString("connectionSuccess"));
         }
         String[] splitMsg = receiveMsg.split(" ");
-        if (splitMsg[5].equals("94")) {
-            chkErrorCode(receiveMsg, splitMsg);
-        }
+
         if (splitMsg[5].equals("6A")) {
-            //특수 메세지
             for (int i = 6; i < 16; i++) {
-                if (splitMsg[i].equals("3" + i)) {
-                    logService.errorLog("커맨드가 없습니다.");
+                if (!splitMsg[i].equals("3" + (i-6))) {
+//                    logService.errorLog(bundle.getString("unknownStatusCode"));
+                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
                     return;
                 }
             }
+            return;
         }
         chkSpecificCmdCode(receiveMsg, msg);
     }
 
     public void chkSpecificCmdCode(String receiveMsg, byte[] msg) {
         String[] splitMsg = receiveMsg.split(" ");
+        String length = splitMsg[4];
         String command = splitMsg[5];
         String status = splitMsg[6];
+        if ((splitMsg.length-7)!=Integer.parseInt(length, 16)){
+            System.out.println("splitMsg = " + splitMsg.length);
+            System.out.println("length = " + Integer.parseInt(length, 16));
+            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+            return;
+        }
 
         switch (command) {
             case "40" -> {
+                if (!Objects.equals(length, "04")){
+                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                    return;
+                }
                 handleScreenSizeSetting(splitMsg, msg);
             }
             case "66" -> handleTimeRead(receiveMsg, splitMsg);
             case "6F" -> {
+                //Todo
                 updateFirmwareUI(splitMsg);
             }
             case "4C" -> {
-                hexMsgService.setUI((msg[6]& 0xFF));
+                if (splitMsg.length>8){
+                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                    return;
+                }
+                hexMsgService.setUI(msg[6] & 0xFF);
             }
 
             case "48" ->{
                 StringBuilder result = new StringBuilder();
+
+                if (receiveMsg.length()<226&&!status.equals("00")){
+                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                }
 
                 for (int i = 7; i <= 224; i++) {
                     result.append(splitMsg[i]).append(" ");
@@ -231,13 +298,13 @@ public class HexMsgTransceiver {
         FirmwareService.firmwareInformation.setText(asciiString);
     }
 
-
+    //Todo 로그 수정
     private void handleScreenSizeSetting(String[] splitMsg, byte[] msg) {
         if (!splitMsg[7].equals(String.format("%02X", msg[7])) || !splitMsg[8].equals(String.format("%02X", msg[8]))) {
-            logService.warningLog("화면 크기 설정에 실패했습니다.");
-            logService.warningLog(Integer.parseInt(splitMsg[7]) + "단, " + Integer.parseInt(splitMsg[8]) + "열까지만 가능합니다.");
+            logService.warningLog(bundle.getString("displaySizeSettingFailed"));
+            logService.warningLog(MessageFormat.format(bundle.getString("displaySizeLimit"), Integer.parseInt(splitMsg[7], 16), Integer.parseInt(splitMsg[8], 16)));
         } else {
-            logService.updateInfoLog("화면 크기 설정에 성공했습니다.");
+            logService.updateInfoLog(bundle.getString("displaySizeSettingSuccess"));
         }
         sizeOfDisplayBoardService.setDisplaySize(Integer.parseInt(splitMsg[7], 16), Integer.parseInt(splitMsg[8], 16));
     }
@@ -245,63 +312,133 @@ public class HexMsgTransceiver {
     Map<String, String> dayMap = new HashMap<>();
 
     private void handleTimeRead(String receiveMsg, String[] splitMsg) {
+        if (receiveMsg.length()<45){
+            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+            return;
+        }
+        processTimeString(receiveMsg.substring(18, 38));
         if (!splitMsg[6].equals("10") && !splitMsg[6].equals("20") && !splitMsg[6].equals("40") && !splitMsg[6].equals("80")) {
             StringBuilder time = new StringBuilder();
-            for (int i = 6; i < 13; i++) {
-                time.append(splitMsg[i]);
+
+            // 현재 언어 설정 확인
+            boolean isKorean = bundle.getLocale().getLanguage().equals("ko");
+
+            // 요일 변환을 위한 매핑
+            if (dayMap.isEmpty()) {
+                if (isKorean) {
+                    dayMap.put("01", "월"); // 일요일
+                    dayMap.put("02", "화"); // 월요일
+                    dayMap.put("03", "수"); // 화요일
+                    dayMap.put("04", "목"); // 수요일
+                    dayMap.put("05", "금"); // 목요일
+                    dayMap.put("06", "토"); // 금요일
+                    dayMap.put("00", "일"); // 토요일
+                } else {
+                    dayMap.put("01", "Mon"); // Sunday
+                    dayMap.put("02", "Tue"); // Monday
+                    dayMap.put("03", "Wed"); // Tuesday
+                    dayMap.put("04", "Thu"); // Wednesday
+                    dayMap.put("05", "Fri"); // Thursday
+                    dayMap.put("06", "Sat"); // Friday
+                    dayMap.put("00", "Sun"); // Saturday
+                }
             }
 
-            if (dayMap.isEmpty()){
-                dayMap.put("01", "월"); // 일요일
-                dayMap.put("02", "화"); // 월요일
-                dayMap.put("03", "수"); // 화요일
-                dayMap.put("04", "목"); // 수요일
-                dayMap.put("05", "금"); // 목요일
-                dayMap.put("06", "토"); // 금요일
-                dayMap.put("07", "일"); // 토요일
-            }
-
-
-            String datePart = time.substring(0, 6); // yyMMdd
-            String dayPart = time.substring(6, 8); // 요일 (숫자로 표현된 요일)
-            String timePart = time.substring(8);   // HHmmss
-
-            // 요일 변환
+            String dayPart = splitMsg[9];
             String dayOfWeek = dayMap.getOrDefault(dayPart, "?");
 
-            // 날짜 변환
-            SimpleDateFormat inputFormat = new SimpleDateFormat("yyMMddHHmmss");
-            SimpleDateFormat outputFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss", Locale.KOREAN);
+            // 날짜 및 시간 포맷 구성
+            time.append(splitMsg[6]).append("-").append(splitMsg[7]).append("-").append(splitMsg[8])
+                    .append(" (").append(dayOfWeek).append(") ")
+                    .append(splitMsg[10]).append(":").append(splitMsg[11]).append(":").append(splitMsg[12]);
 
             try {
-                Date date = inputFormat.parse(datePart + timePart);
-                String formattedDate = outputFormat.format(date);
-                String result = formattedDate.replace(" ", " (" + dayOfWeek + ") ");
-                underTheLineLeftService.setTime(result);
-                logService.updateInfoLog("컨트롤러 시간은 " + result + "입니다.");
+                underTheLineLeftService.setTime(time.toString());
+                logService.updateInfoLog(MessageFormat.format(bundle.getString("controllerTimeInfo"), time));
             } catch (Exception e) {
-                logService.warningLog("시간 변환에 실패했습니다: " + e.getMessage());
+                logService.warningLog(bundle.getString("controllerTimeReadFailed"));
             }
         } else {
+            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
             chkErrorCode(receiveMsg, splitMsg);
         }
     }
 
-    private void handleDefaultCommands(String status, String receiveMsg, String[] splitMsg) {
-        // 단순 상태 코드 확인 및 로그 출력
-        if (status.equals("00")) {
+    public void processTimeString(String timeStr){
+        if (timeStr == null || timeStr.trim().isEmpty()) {
+            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+            return;
+        }
 
-        } else {
+        // 공백 기준으로 분리 (토큰의 개수는 7개여야 함)
+        String[] tokens = timeStr.trim().split("\\s+");
+        if (tokens.length != 7) {
+            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+            return;
+        }
+
+        try {
+            // 숫자들은 보통 16진수(hex)로 표현되므로, 만약 16진수 형태라면 radix 16로 변환합니다.
+            // 십진수라면 Integer.parseInt(token) 으로 변경하면 됩니다.
+            int year = Integer.parseInt(tokens[0]);
+            int month = Integer.parseInt(tokens[1]);
+            int day = Integer.parseInt(tokens[2]);
+            int dayOfWeek = Integer.parseInt(tokens[3]);
+            int hour = Integer.parseInt(tokens[4]);
+            int minute = Integer.parseInt(tokens[5]);
+            int second = Integer.parseInt(tokens[6]);
+
+            // 각 필드의 값이 범위 내에 있는지 검증
+            if (year < MIN_YEAR || year > MAX_YEAR) {
+                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                return;
+            }
+            if (month < MIN_MONTH || month > MAX_MONTH) {
+                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                return;
+            }
+            if (day < MIN_DAY || day > MAX_DAY) {
+                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                return;
+            }
+            if (dayOfWeek < MIN_DAY_OF_WEEK || dayOfWeek > MAX_DAY_OF_WEEK) {
+                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                return;
+            }
+            if (hour < MIN_HOUR || hour > MAX_HOUR) {
+                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                return;
+            }
+            if (minute < MIN_MINUTE || minute > MAX_MINUTE) {
+                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                return;
+            }
+            if (second < MIN_SECOND || second > MAX_SECOND) {
+                System.out.println(second);
+                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+            }
+
+        } catch (NumberFormatException e) {
+            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+        }
+    }
+
+    private void handleDefaultCommands(String status, String receiveMsg, String[] splitMsg) {
+        if (splitMsg.length>9){
+            System.out.println("splitMsg = " + splitMsg.length);
+            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+        }
+        if (!status.equals("00")) {
             chkErrorCode(receiveMsg, splitMsg);
         }
     }
 
     private void chkErrorCode(String receiveMsg, String[] splitMsg) {
         switch (splitMsg[6]) {
-            case "10" -> logService.errorLog("커맨드가 없습니다. " + receiveMsg);
-            case "20" -> logService.warningLog("No Function(커맨드 비활성) " + receiveMsg);
-            case "40" -> logService.updateInfoLog("데이터가 허용 범위를 벗어났습니다. " + receiveMsg);
-            case "80" -> logService.updateInfoLog("알 수 없는 에러가 발생했습니다." + receiveMsg);
+            case "10" -> logService.errorLog(bundle.getString("noCommand") );
+            case "20" -> logService.warningLog(bundle.getString("noFunction") );
+            case "40" -> logService.warningLog(bundle.getString("dataOutOfRange"));
+            case "80" -> logService.errorLog(bundle.getString("unknownError") );
         }
     }
 }

@@ -1,51 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-
+<?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
-<Pane fx:id="msPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dbps.dbps.controller.MessageSettingController" layoutX="350.0" layoutY="210.0" prefHeight="101.0" prefWidth="330.0" style="-fx-border-color: #4A4A4A; -fx-border-radius: 10">
-<children>
-    <Label alignment="CENTER" layoutX="85.0" layoutY="-14.0" prefHeight="18.0" prefWidth="160.0" text="%PageMessageSettings"
-           style="-fx-background-color: #4A4A4A; -fx-padding: 5px; -fx-text-fill: white;-fx-font-size: 17; -fx-font-weight: bolder"/>
-    <Label layoutX="19.0" layoutY="26.0" text="%SetTotalCount" />
-    <ChoiceBox fx:id="pageMsgCnt" layoutX="140.0" layoutY="20.0" prefHeight="25.0" prefWidth="109" value="10개">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane fx:id="msPane" prefHeight="135.0" prefWidth="290.0" xmlns="http://javafx.com/javafx/17.0.14"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MessageSettingController">
+    <Label layoutX="19.0" layoutY="26.0" text="%SetTotalCount"/>
+    <ComboBox fx:id="pageMsgCnt" layoutX="120.0" layoutY="20.0" prefHeight="25.0" prefWidth="94.0" value="10">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="1개" />
-                <String fx:value="2개" />
-                <String fx:value="3개" />
-                <String fx:value="4개" />
-                <String fx:value="5개" />
-                <String fx:value="6개" />
-                <String fx:value="7개" />
-                <String fx:value="8개" />
-                <String fx:value="9개" />
-                <String fx:value="10개" />
+                <String fx:value="1"/>
+                <String fx:value="2"/>
+                <String fx:value="3"/>
+                <String fx:value="4"/>
+                <String fx:value="5"/>
+                <String fx:value="6"/>
+                <String fx:value="7"/>
+                <String fx:value="8"/>
+                <String fx:value="9"/>
+                <String fx:value="10"/>
             </FXCollections>
         </items>
-    </ChoiceBox>
-    <Button layoutX="260.0" layoutY="19.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="%sendButton" onMouseClicked="#sendPageCnt"/>
-    <Label layoutX="17.0" layoutY="63.0" text="%ResetMsg" />
-    <ChoiceBox fx:id="msgInitialize" layoutX="140.0" layoutY="58.0" prefHeight="25.0" prefWidth="109.0" value="전체">
+    </ComboBox>
+    <Button layoutX="220.0" layoutY="19.0" mnemonicParsing="false" onMouseClicked="#sendPageCnt" prefHeight="28.0"
+            prefWidth="63.0" text="%sendButton"/>
+    <Label layoutX="17.0" layoutY="63.0" text="%ResetMsg"/>
+    <ComboBox fx:id="msgInitialize" layoutX="120.0" layoutY="58.0" prefHeight="25.0" prefWidth="94.0">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="page 1" />
-                <String fx:value="page 2" />
-                <String fx:value="page 3" />
-                <String fx:value="page 4" />
-                <String fx:value="page 5" />
-                <String fx:value="page 6" />
-                <String fx:value="page 7" />
-                <String fx:value="page 8" />
-                <String fx:value="page 9" />
-                <String fx:value="page 10" />
-                <String fx:value="전체" />
+                <String fx:value="page 1"/>
+                <String fx:value="page 2"/>
+                <String fx:value="page 3"/>
+                <String fx:value="page 4"/>
+                <String fx:value="page 5"/>
+                <String fx:value="page 6"/>
+                <String fx:value="page 7"/>
+                <String fx:value="page 8"/>
+                <String fx:value="page 9"/>
+                <String fx:value="page 10"/>
             </FXCollections>
         </items>
-    </ChoiceBox>
-    <Button layoutX="260.0" layoutY="57.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="63.0" text="%sendButton" onMouseClicked="#sendMsgInitialize"/>
-</children>
+    </ComboBox>
+    <Button layoutX="220.0" layoutY="57.0" mnemonicParsing="false" onMouseClicked="#sendMsgInitialize" prefHeight="28.0"
+            prefWidth="63.0" text="%sendButton"/>
+    <Button layoutX="220.0" layoutY="95.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="28.0"
+            prefWidth="63.0" text="%close"/>
 </Pane>

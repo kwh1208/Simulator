@@ -5,26 +5,28 @@ import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.MainService;
 import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
 
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.IS_ASCII;
+import static dbps.dbps.controller.HEXMessageController.isAsc;
 
 public class BasicSettingController {
     @FXML
     public Pane basicPane;
     public ComboBox<String> programLanguage;
+    public RadioButton hexRadioBtn;
+    public RadioButton ascRadioBtn;
+    ToggleGroup protocolType = new ToggleGroup();
 
 
     MainService mainService;
     ConfigService configService;
 
-    @FXML
-    public ComboBox<String> protocolFormat;
 
     ResourceBundle bundle;
 
@@ -33,37 +35,40 @@ public class BasicSettingController {
     public void initialize() {
         bundle= ResourceManager.getInstance().getBundle();
         configService = ConfigService.getInstance();
-        //초기설정에 따라서 메세지 탭 변경
+        //초기설정에 따라서 메시지 탭 변경
         mainService = MainService.getInstance();
-
-        protocolFormat.getItems().addAll(
-                bundle.getString("ASCiiProtocol"),
-                bundle.getString("HexProtocol")
-        );
-
-        basicPane.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/communicationSetting.css").toExternalForm());
+        hexRadioBtn.setToggleGroup(protocolType);
+        ascRadioBtn.setToggleGroup(protocolType);
 
         if (IS_ASCII){
-            protocolFormat.setValue(bundle.getString("ASCiiProtocol"));
+            ascRadioBtn.setSelected(true);
+            isAsc.set(true);
         } else {
-            protocolFormat.setValue(bundle.getString("HexProtocol"));
+            hexRadioBtn.setSelected(true);
+            isAsc.set(false);
         }
 
-        //드롭다운 감지해서 탭 변경
-        protocolFormat.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.equals(bundle.getString("ASCiiProtocol"))) {
-                mainService.showASCiiMsgTab();
-                IS_ASCII = true;
-                configService.setProperty("IS_ASCII", "true");
-            } else if (newValue.equals(bundle.getString("HexProtocol"))) {
-                mainService.showHEXMsgTab();
-                IS_ASCII = false;
-                configService.setProperty("IS_ASCII", "false");
+        isAsc.addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                ascRadioBtn.setSelected(true);
+            } else {
+                hexRadioBtn.setSelected(true);
             }
-            mainService.changeSetTab();
         });
 
+        protocolType.selectedToggleProperty().addListener((observable, oldValue, newValue)->{
+            if (newValue.equals(hexRadioBtn)){
+                IS_ASCII=false;
+                isAsc.set(false);
+            }
+            else {
+                IS_ASCII=true;
+                isAsc.set(true);
+            }
+            configService.setProperty("IS_ASCII", String.valueOf(IS_ASCII));
+        });
 
+        basicPane.getStylesheets().add(Objects.requireNonNull(Simulator.class.getResource("/dbps/dbps/css/communicationSetting.css")).toExternalForm());
 
         programLanguage.setValue(configService.getProperty("PROGRAM_LANGUAGE"));
 
@@ -78,7 +83,7 @@ public class BasicSettingController {
                 alert.showAndWait();
             } else if (newValue.equals("English")) {
                 programLanguage.setValue("English");
-                configService.setProperty("PROGRAM_LANGUAGE", "english");
+                configService.setProperty("PROGRAM_LANGUAGE", "English");
                 Alert alert = new Alert(AlertType.INFORMATION);
                 alert.setTitle("alert");
                 alert.setHeaderText(null);

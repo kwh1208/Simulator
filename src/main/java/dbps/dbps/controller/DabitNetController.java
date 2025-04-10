@@ -1,10 +1,9 @@
 package dbps.dbps.controller;
 
 import com.fazecast.jSerialComm.SerialPort;
+import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
-import dbps.dbps.service.ConfigService;
-import dbps.dbps.service.DabitNetService;
-import dbps.dbps.service.LogService;
+import dbps.dbps.service.*;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.UDPManager;
 import javafx.application.Platform;
@@ -12,8 +11,11 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,13 +29,12 @@ import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+import static dbps.dbps.Constants.openModal;
+
 public class DabitNetController {
 
     @FXML
-    public ChoiceBox<String> networkSelection;
-    public RadioButton isSerial;
-    public RadioButton isUDP;
-    public ComboBox<String> serialPortComboBox;
+    public ComboBox<String> networkSelection;
     public ListView<String> dbList;
     public TextField clientIPTF;
     public TextField clientPortTF;
@@ -42,33 +43,36 @@ public class DabitNetController {
     public TextField serverIPTF;
     public TextField serverPortTF;
     public RadioButton staticRadio;
-    public CheckBox isClient;
+    public RadioButton isClient;
     public TextField boardNameTF;
     public RadioButton wifiStation;
     public TextField wifiSSID;
     public TextField wifiPW;
-    public ChoiceBox<String> debugging;
-    public ChoiceBox<String> connectPort;
-    public ChoiceBox<Integer> baudRate;
+    public ComboBox<String> debugging;
+    public ComboBox<String> connectPort;
+    public ComboBox<Integer> baudRate;
     public TextField ascFirst;
     public TextField ascSecond;
     public TextField hexFirst;
     public TextField hexSecond;
     public TextField timeOut;
-    public ChoiceBox<String> baudRateChoiceBox;
-    public Label versionInfo;
-    public Label DBCommunication;
+    public ComboBox<String> baudRateComboBox;
+    public TextField versionInfo;
     public Label AP;
-
+    ResourceBundle bundle;
     public AnchorPane dabitNetAP;
     public TextField keepAlive;
     public RadioButton DHCPRadio;
     public RadioButton wifiAP;
-    public Tab wifiTab;
     public Button searchBtn;
     public ProgressBar dbNetProgressBar;
+    public Pane wifiTab;
+    public Tab networkTab;
+    public Tab db300Tab;
+    public Button defaultChange;
+    public Button defaultLoad;
 
-    ToggleGroup connectionToggleGroup = new ToggleGroup();
+
     ToggleGroup IPToggleGroup = new ToggleGroup();
     ToggleGroup wifiToggleGroup = new ToggleGroup();
 
@@ -89,32 +93,33 @@ public class DabitNetController {
     @FXML
     public void initialize() {
         serialPortManager = SerialPortManager.getManager();
+        dabitNetAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
         udpManager = UDPManager.getUDPManager();
         db300InfoList = new HashMap<>();
         configService = ConfigService.getInstance();
         logService = LogService.getLogService();
         dabitNetService = DabitNetService.getInstance();
-        if (!serialPortComboBox.getItems().isEmpty()) {
-            serialPortComboBox.setValue(serialPortComboBox.getItems().get(0));
+        bundle= ResourceManager.getInstance().getBundle();
+        if (!networkSelection.getItems().isEmpty()) {
+            networkSelection.setValue(networkSelection.getItems().get(0));
         }
         dabitNetService.setDb300InfoList(db300InfoList);
         dabitNetService.setDbList(dbList);
         dabitNetService.setSearchBtn(searchBtn);
 
-        getSerialPortList();
-
-
-        if (!serialPortComboBox.getItems().isEmpty()) {
-            serialPortComboBox.setValue(serialPortComboBox.getItems().get(0));
-        }
-
-        serialPortComboBox.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-            serialPortComboBox.setValue(newValue);
+        dbList.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                Stage stage = (Stage) dabitNetAP.getScene().getWindow();
+                stage.close();
+                event.consume();
+            }
         });
 
-        serialPortComboBox.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
+        getSerialPortList();
 
-        serialPortComboBox.setValue(configService.getProperty("openPortName"));
+        networkSelection.showingProperty().addListener((observableValue, oldValue, newValue) -> getSerialPortList());
+
+        networkSelection.setValue("UDP");
 
         dbList.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue!=null){
@@ -130,18 +135,17 @@ public class DabitNetController {
             if (newValue){
                 serverIPTF.setDisable(false);
                 serverPortTF.setDisable(false);
+                keepAlive.setDisable(false);
             }
             else {
                 serverIPTF.setDisable(true);
                 serverPortTF.setDisable(true);
+                keepAlive.setDisable(true);
             }
                 }
         );
 
-        dabitNetAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/dabitNet.css").toExternalForm());
-
-        isUDP.setToggleGroup(connectionToggleGroup);
-        isSerial.setToggleGroup(connectionToggleGroup);
+        dabitNetAP.getStylesheets().add(Objects.requireNonNull(Simulator.class.getResource("/dbps/dbps/css/dabitNet.css")).toExternalForm());
 
         staticRadio.setToggleGroup(IPToggleGroup);
         DHCPRadio.setToggleGroup(IPToggleGroup);
@@ -156,12 +160,12 @@ public class DabitNetController {
             }
 
             if (newToggle.equals(wifiStation)) {
-                wifiSSID.setLayoutX(110.0);
-                wifiSSID.setPrefWidth(176);
+                wifiSSID.setLayoutX(124.0);
+                wifiSSID.setPrefWidth(180);
                 AP.setText("");
             } else if (newToggle.equals(wifiAP)) {
-                wifiSSID.setLayoutX(143.0);
-                wifiSSID.setPrefWidth(146);
+                wifiSSID.setLayoutX(150);
+                wifiSSID.setPrefWidth(154);
                 AP.setText("AP-");
             }
         });
@@ -183,13 +187,7 @@ public class DabitNetController {
         debugging.setValue("");
         connectPort.setValue("");
         baudRate.setValue(null);
-        ascFirst.setText("");
-        ascSecond.setText("");
-        hexFirst.setText("");
-        hexSecond.setText("");
-        timeOut.setText("");
         versionInfo.setText("");
-        DBCommunication.setText("");
         keepAlive.setText("");
     }
 
@@ -198,7 +196,7 @@ public class DabitNetController {
     @FXML
     public void search() throws ExecutionException, InterruptedException, IOException {
         if (isSearching) {
-            logService.errorLog("검색이 이미 진행 중입니다.");
+            logService.errorLog(bundle.getString("searchAlready"));
             return;
         }
         isSearching = true;
@@ -211,54 +209,42 @@ public class DabitNetController {
             db300InfoList.clear();
         });
 
-        logService.updateInfoLog("검색을 시작합니다.");
+        logService.updateInfoLog(bundle.getString("searchStart"));
 
         Task<Void> backgroundTask = new Task<>() {
             @Override
-            protected Void call() throws Exception {
+            protected Void call() {
                 Task<String> sendTask;
-                if (isSerial.isSelected()) { // ✅ 시리얼 통신 Task 실행
+                if (!networkSelection.getValue().equals("UDP")) { // ✅ 시리얼 통신 Task 실행
                     sendTask = serialPortManager.send300MsgAndGetMsg(
                             "++SET++![SEARCHING DIBD  B\r\n!]",
-                            serialPortComboBox.getValue(),
-                            Integer.parseInt(baudRateChoiceBox.getValue())
+                            networkSelection.getValue(),
+                            Integer.parseInt(baudRateComboBox.getValue())
                     );
                 } else {
-                    if (networkSelection.getValue().equals("All")) {
-                        udpManager.connect300All();
-                        sendTask = udpManager.send300MsgAndGetMsgByte("SEARCHING DIBD  B\r\n".getBytes());
-                    } else {
-                        int port = networkSelection.getValue().equals("Ethernet") ? 5108 : 5107;
-                        if (port == 5108) {
-                            udpManager.connect300Ethernet(5108); // ✅ UI 스레드에서 실행하지 않음
-                        } else {
-                            udpManager.connect300Wifi(port);
-                        }
-                        sendTask = udpManager.send300MsgAndGetMsgByte("SEARCHING DIBD  B\r\n".getBytes());
-                    }
+                    udpManager.connect300All();
+                    sendTask = udpManager.send300MsgAndGetMsgByte("SEARCHING DIBD  B\r\n".getBytes());
                 }
 
 
-                sendTask.setOnSucceeded(event -> {
-                    Platform.runLater(() -> {
-                        searchBtn.setDisable(false);
-                        dbNetProgressBar.setVisible(false);
-                        logService.updateInfoLog("검색이 완료되었습니다.");
-                        isSearching = false;
-                        if (dbList.getSelectionModel().getSelectedItem()==null){
-                            dbList.getSelectionModel().select(0);
-                        }
-                    });
-                });
+                sendTask.setOnSucceeded(event -> Platform.runLater(() -> {
+                    searchBtn.setDisable(false);
+                    dbNetProgressBar.setVisible(false);
+                    logService.updateInfoLog(bundle.getString("searchCompleted"));
+                    isSearching = false;
+                    udpManager.disconnectNoLog();
+                    if (dbList.getSelectionModel().getSelectedItem()==null){
+                        dbList.getSelectionModel().select(0);
+                    }
+                }));
 
-                sendTask.setOnFailed(event -> {
-                    Platform.runLater(() -> {
-                        searchBtn.setDisable(false);
-                        dbNetProgressBar.setVisible(false);
-                        logService.updateInfoLog("검색이 실패했습니다.");
-                        isSearching = false;
-                    });
-                });
+                sendTask.setOnFailed(event -> Platform.runLater(() -> {
+                    searchBtn.setDisable(false);
+                    dbNetProgressBar.setVisible(false);
+                    logService.updateInfoLog(bundle.getString("searchFailed"));
+                    isSearching = false;
+                    udpManager.disconnectNoLog();
+                }));
                 new Thread(sendTask).start();
 
 
@@ -279,9 +265,7 @@ public class DabitNetController {
 
     @FXML
     public void set() throws IOException {
-        Platform.runLater(()->{
-            dbNetProgressBar.setVisible(true);
-        });
+        Platform.runLater(()-> dbNetProgressBar.setVisible(true));
 
         DB300IPPort newDB300 = new DB300IPPort();
         newDB300.setMacAddress(dbList.getSelectionModel().getSelectedItem());
@@ -300,43 +284,37 @@ public class DabitNetController {
         newDB300.setStation(wifiStation.isSelected());
         byte[] sendByte;
 
-        if (isSerial.isSelected()) {
+        if (!networkSelection.getValue().equals("UDP")) {
 
             sendByte = getBytesSerial(newDB300);
 
-            Task<Void> set = serialPortManager.send300ByteMsg(sendByte, serialPortComboBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
+            Task<Void> set = serialPortManager.send300ByteMsg(sendByte, networkSelection.getValue(), Integer.parseInt(baudRateComboBox.getValue()));
 
-            new Thread(set).start();
-
-            set.setOnSucceeded(event->{
-                Platform.runLater(() -> {
-                    dbNetProgressBar.setVisible(false);
-                    logService.updateInfoLog("설정이 완료되었습니다.");
-                });
-            });
+            set.setOnSucceeded(event-> Platform.runLater(() -> {
+                dbNetProgressBar.setVisible(false);
+                logService.updateInfoLog(bundle.getString("setupCompleted"));
+                udpManager.disconnectNoLog();
+            }));
 
             set.setOnFailed(event->{
                 dbNetProgressBar.setVisible(false);
+                udpManager.disconnectNoLog();
             });
+
+            new Thread(set).start();
         } else {
             sendByte = getBytesUDP(newDB300);
 
             Task<String> set = udpManager.send300MsgAndGetMsgByte(sendByte);
 
+            set.setOnSucceeded(event-> Platform.runLater(() -> {
+                dbNetProgressBar.setVisible(false);
+                logService.updateInfoLog(bundle.getString("setupCompleted"));
+            }));
+
+            set.setOnFailed(event-> Platform.runLater(() -> dbNetProgressBar.setVisible(false)));
+
             new Thread(set).start();
-
-            set.setOnSucceeded(event->{
-                Platform.runLater(() -> {
-                    dbNetProgressBar.setVisible(false);
-                    logService.updateInfoLog("설정이 완료되었습니다.");
-                });
-            });
-
-            set.setOnFailed(event->{
-                Platform.runLater(() -> {
-                    dbNetProgressBar.setVisible(false);
-                });
-            });
         }
     }
 
@@ -473,6 +451,7 @@ public class DabitNetController {
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 22;
 
+
         tmp = new byte[]{0x33, (byte) (newDB300.isStation() ? 0x30 : 0x31)};
         System.arraycopy(tmp, 0, sendByte, destPos, tmp.length);
         sendByte[229] = 0x0D;
@@ -501,8 +480,10 @@ public class DabitNetController {
 
     @FXML
     public void reboot() {
-        if (isSerial.isSelected()) {
-            Task<String> reboot = serialPortManager.send300MsgAndGetMsg("++SET++![RESET  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortComboBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
+        udpManager.disconnectNoLog();
+
+        if (!networkSelection.getValue().equals("UDP")) {
+            Task<String> reboot = serialPortManager.send300MsgAndGetMsg("++SET++![RESET  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", networkSelection.getValue(), Integer.parseInt(baudRateComboBox.getValue()));
 
             new Thread(reboot).start();
         } else {
@@ -510,12 +491,14 @@ public class DabitNetController {
 
             new Thread(reboot).start();
         }
+
+        logService.updateInfoLog(dbList.getSelectionModel().getSelectedItem()+" 네트워크 초기화 완료");
     }
 
 
     @FXML
     public void close(MouseEvent mouseEvent) {
-        if (thread.isAlive()){
+        if (thread!=null&&thread.isAlive()){
             thread.interrupt();
         }
         udpManager.disconnectNoLog();
@@ -524,21 +507,19 @@ public class DabitNetController {
     }
 
     @FXML
-    public void setDefault(MouseEvent mouseEvent) {
-        clientIPTF.setText("192.168.0.201");
-        clientGatewayTF.setText("192.168.0.1");
-        clientPortTF.setText("5000");
-        clientSubnetMaskTF.setText("255.255.255.0");
+    public void setDefault() {
+        clientIPTF.setText(configService.getProperty("dbNetIP"));
+        clientGatewayTF.setText(configService.getProperty("dbNetGateway"));
+        clientPortTF.setText(configService.getProperty("dbNetPort"));
+        clientSubnetMaskTF.setText(configService.getProperty("dbNetSubnet"));
     }
 
 
     @FXML
     public void read() throws ExecutionException, InterruptedException, IOException {
-        Platform.runLater(()->{
-            dbNetProgressBar.setVisible(true);
-        });
-        if (isSerial.isSelected()) {
-            Task<String> read = serialPortManager.send300MsgAndGetMsg("++SET++![INFO_R  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", serialPortComboBox.getValue(), Integer.parseInt(baudRateChoiceBox.getValue()));
+        Platform.runLater(()-> dbNetProgressBar.setVisible(true));
+        if (!networkSelection.getValue().equals("UDP")) {
+            Task<String> read = serialPortManager.send300MsgAndGetMsg("++SET++![INFO_R  " + dbList.getSelectionModel().getSelectedItem() + "\r\n!]", networkSelection.getValue(), Integer.parseInt(baudRateComboBox.getValue()));
 
             Thread readTask = new Thread(read);
             readTask.start();
@@ -547,18 +528,22 @@ public class DabitNetController {
                 try {
                     get300Info(read.getValue());
                     dbNetProgressBar.setVisible(false);
-                    logService.updateInfoLog("정보 읽기를 완료했습니다.");
+                    logService.updateInfoLog(bundle.getString("infoReadCompleted"));
+                    udpManager.disconnectNoLog();
                 } catch (IOException e) {
                     dbNetProgressBar.setVisible(false);
+                    udpManager.disconnectNoLog();
                 }
             });
 
             read.setOnFailed(event ->{
                 dbNetProgressBar.setVisible(false);
+                udpManager.disconnectNoLog();
             });
 
 
         } else {
+
             Task<String> read = udpManager.send300MsgAndGetMsgByte(("INFO_R  " + dbList.getSelectionModel().getSelectedItem() + "\r\n").getBytes());
 
             Thread readTask = new Thread(read);
@@ -568,20 +553,21 @@ public class DabitNetController {
                 try {
                     get300Info(read.getValue());
                     dbNetProgressBar.setVisible(false);
-                    logService.updateInfoLog("정보 읽기를 완료했습니다.");
+                    logService.updateInfoLog(bundle.getString("infoReadCompleted"));
+                    udpManager.disconnectNoLog();
                 } catch (IOException e) {
                     dbNetProgressBar.setVisible(false);
+                    udpManager.disconnectNoLog();
                 }
             });
         }
     }
 
     public void write() throws UnsupportedEncodingException {
-        Platform.runLater(()->{
-            dbNetProgressBar.setVisible(true);
-        });
-        if (isSerial.isSelected()) {
-            String msg = "++SET++![INFO_W " + dbList.getSelectionModel().getSelectedItem() + "  "
+        udpManager.disconnectNoLog();
+        Platform.runLater(()-> dbNetProgressBar.setVisible(true));
+        if (!networkSelection.getValue().equals("UDP")) {
+            String msg = "++SET++![INFO_W  " + dbList.getSelectionModel().getSelectedItem() + "  "
                     + debugging.getItems().indexOf(debugging.getValue())
                     + connectPort.getItems().indexOf(connectPort.getValue())
                     + baudRate.getItems().indexOf(baudRate.getValue())
@@ -590,8 +576,8 @@ public class DabitNetController {
                     + String.format("%03d", Integer.parseInt(timeOut.getText())) + "      \r\n!]";
 
             Task<Void> write = serialPortManager.send300ByteMsg(msg.getBytes("MS949"),
-                    serialPortComboBox.getValue(),
-                    Integer.parseInt(baudRateChoiceBox.getValue()));
+                    networkSelection.getValue(),
+                    Integer.parseInt(baudRateComboBox.getValue()));
 
             new Thread(write).start();
         } else {
@@ -610,10 +596,8 @@ public class DabitNetController {
 
             new Thread(write).start();
         }
-        Platform.runLater(()->{
-            dbNetProgressBar.setVisible(false);
-        });
-        logService.updateInfoLog("정보 쓰기를 완료했습니다.");
+        Platform.runLater(()-> dbNetProgressBar.setVisible(false));
+        logService.updateInfoLog(bundle.getString("infoWriteCompleted"));
     }
 
 
@@ -647,37 +631,40 @@ public class DabitNetController {
                 case 3:
                     String[] split = line.split("(?=V)");
                     readDB300Info.setVersion(split[1]);
-                    versionInfo.setText(readDB300Info.getVersion());
                     readDB300Info.setCommunication(split[0]);
                     String communication = readDB300Info.getCommunication();
+                    String version = "";
                     if (communication.contains("E")) {
-                        DBCommunication.setText("Ethernet");
+                        version="Ethernet";
                     }
                     if (communication.contains("W")) {
-                        DBCommunication.setText("WiFi");
+                        version="WiFi";
                     }
                     if (communication.contains("B")) {
-                        DBCommunication.setText(DBCommunication.getText() + " & Bluetooth");
+                        version+=" & Bluetooth";
                     }
+                    versionInfo.setText(version+" "+readDB300Info.getVersion());
             }
         }
     }
 
     private void getSerialPortList() {
-        String selectedValue = serialPortComboBox.getValue();
-        List<String> portNames = Arrays.stream(SerialPort.getCommPorts())
+        String selectedValue = networkSelection.getValue();
+        List<String> portNames = new ArrayList<>(Arrays.stream(SerialPort.getCommPorts())
+                .filter(port -> !port.getPortDescription().toLowerCase().contains("bluetooth"))
                 .map(SerialPort::getSystemPortName)
                 .sorted(Comparator.comparingInt(this::extractPortNumber))
-                .toList();
+                .toList());
+        portNames.add(0, "UDP");
+        networkSelection.getItems().setAll(portNames);
 
-        serialPortComboBox.getItems().setAll(portNames);
-        // 기존 선택값 복원
-        if (selectedValue != null && portNames.contains(selectedValue)) {
-            serialPortComboBox.setValue(selectedValue);
+        if (portNames.contains(selectedValue)) {
+            networkSelection.setValue(selectedValue);
         } else {
-            // 기존 선택값이 없거나 리스트에 없으면 첫 번째 항목 선택
-            serialPortComboBox.getSelectionModel().selectFirst();
+            networkSelection.getSelectionModel().selectFirst();
         }
+
+        baudRateComboBox.setDisable("UDP".equals(networkSelection.getValue()));
     }
 
     private int extractPortNumber(String portName) {
@@ -718,17 +705,48 @@ public class DabitNetController {
         if (!isClient.isSelected()) {
             serverIPTF.setDisable(true);
             serverPortTF.setDisable(true);
+            keepAlive.setDisable(true);
         } else {
             serverIPTF.setDisable(false);
             serverPortTF.setDisable(false);
+            keepAlive.setDisable(false);
         }
 
-        if (db300IPPort.wifiPW==null){
-            wifiTab.setDisable(true);
+        wifiTab.setDisable(db300IPPort.wifiPW == null);
+    }
+
+    public void changeDefault(MouseEvent mouseEvent) throws IOException {
+        openModal("/dbps/dbps/fxmls/defaultChange.fxml", "기본 IP 변경", mouseEvent);
+    }
+
+    public void openDeviceManager() {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "devmgmt.msc");
+            pb.start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        else {
-            wifiTab.setDisable(false);
+    }
+
+    public void networkConnection() {
+        try {
+            Runtime.getRuntime().exec("cmd /c start ncpa.cpl");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    public void openPacketSetting(MouseEvent mouseEvent) throws IOException {
+        PacketSettingService packetSettingService = PacketSettingService.getInstance();
+        packetSettingService.setOriAscFirst(ascFirst);
+        packetSettingService.setOriAscSecond(ascSecond);
+        packetSettingService.setOriHexFirst(hexFirst);
+        packetSettingService.setOriHexSecond(hexSecond);
+        packetSettingService.setOriTimeOut(timeOut);
+
+        openModal("/dbps/dbps/fxmls/packetSetting.fxml", "패킷 설정", mouseEvent);
+
+        packetSettingService.setUI();
     }
 
     @Setter
@@ -788,7 +806,7 @@ public class DabitNetController {
 
     @Setter
     @Getter
-    public class DB300Info {
+    public static class DB300Info {
         String communication;
         String macAddress;
         boolean debugging;
