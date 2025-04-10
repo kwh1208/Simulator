@@ -224,27 +224,6 @@ public class TCPManager {
         }
     }
 
-    public Task<Void> createConnectTask(String IP, int PORT) {
-        return new Task<>() {
-            @Override
-            protected Void call() throws Exception {
-                // 연결 로그 출력
-                logService.updateInfoLog(MessageFormat.format(bundle.getString("tcpServerConnect"), IP, String.valueOf(PORT)));
-                TCPManager.this.IP = IP;
-                TCPManager.this.PORT = PORT;
-                try {
-                    socket = new Socket();
-                    socket.connect(new InetSocketAddress(IP, PORT), RESPONSE_LATENCY * 1000);
-                    socket.setSoTimeout(RESPONSE_LATENCY * 1000);
-                } catch (IOException e) {
-                    logService.errorLog(MessageFormat.format(bundle.getString("tcpServerConnectionFailed"), IP, String.valueOf(PORT)));
-                    throw e;
-                }
-                return null;
-            }
-        };
-    }
-
     public Task<String> sendMsgAndGetMsgByte(byte[] msg){
         return new Task<>() {
             @Override
@@ -253,19 +232,16 @@ public class TCPManager {
 //                    connect(IP, PORT);
 //                }
                 if (socket == null || socket.isClosed()) {
-                    Task<Void> connectTask = createConnectTask(IP, PORT);
-                    new Thread(connectTask).start();
-                    connectTask.get();
+                    connect(IP, PORT);
                 }
                 try {
                     InputStream input = socket.getInputStream();
                     OutputStream output = socket.getOutputStream();
                     input.skip(input.available());
 
-                    logService.updateInfoLog(bundle.getString("sendMsg")+bytesToHex(msg, msg.length));
                     output.write(msg);
                     output.flush();
-
+                    logService.updateInfoLog(bundle.getString("sendMsg")+bytesToHex(msg, msg.length));
 
                     byte[] buffer = new byte[1024];
                     int totalBytesRead = 0;
