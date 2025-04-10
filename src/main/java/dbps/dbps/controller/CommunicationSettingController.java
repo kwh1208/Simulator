@@ -231,7 +231,6 @@ public class CommunicationSettingController {
                 isRS=true;
                 break;
             default:
-                System.out.println(CONNECT_TYPE);
                 communicationGroup.selectToggle(null);
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);

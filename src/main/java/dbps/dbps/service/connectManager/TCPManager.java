@@ -350,9 +350,6 @@ public class TCPManager {
 
     public void sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
         if (socket == null || socket.isClosed()) {
-            if (socket.isClosed()){
-                System.out.println(111);
-            }
             connectNoLog(IP, PORT);
         }
         try {
