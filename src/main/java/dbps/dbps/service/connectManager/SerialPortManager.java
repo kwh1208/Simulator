@@ -54,15 +54,15 @@ public class SerialPortManager {
             }
             SerialPort port = SerialPort.getCommPort(portName);
             port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY*1000, 1000);
+            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY*1000, 0);
 
             if (!port.openPort()) {
                 logService.errorLog(portName + bundle.getString("portCantOpen"));
                 return;
             }
+            logService.updateInfoLog(portName + bundle.getString("portOpen"));
 
             serialPortMap.put(portName, port);
-            logService.updateInfoLog(portName + bundle.getString("portOpen"));
         }
     }
 
@@ -73,7 +73,7 @@ public class SerialPortManager {
             }
             SerialPort port = SerialPort.getCommPort(portName);
             port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 500, 0);
+            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY*1000, 0);
 //            port.setFlowControl(SerialPort.FLOW_CONTROL_RTS_ENABLED | SerialPort.FLOW_CONTROL_CTS_ENABLED);
 
 
@@ -147,6 +147,10 @@ public class SerialPortManager {
                         outputStream.write(dataToSend);
                         outputStream.flush();
 
+                        if (msg.startsWith("++SET++![BT SETT  ")){
+                            return null;
+                        }
+
                         byte[] buffer = new byte[1024];
                         int totalBytesRead = 0;
                         while (true) {
@@ -160,7 +164,7 @@ public class SerialPortManager {
                                 }
                             }
 
-                            if (inputStream.read()==-1){
+                            else{
                                 break;
                             }
                         }
@@ -210,13 +214,6 @@ public class SerialPortManager {
                         throw new RuntimeException();
                     }
 
-                    if (utf8){
-                        logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF8(msg));
-                    } else if (utf16) {
-                        logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF16(msg));
-                    }
-                    else logService.updateInfoLog(bundle.getString("sendMsg") + msg);
-
                     try (InputStream inputStream = new BufferedInputStream(port.getInputStream());
                          OutputStream outputStream = new BufferedOutputStream(port.getOutputStream())) {
                         inputStream.skip(inputStream.available());
@@ -224,6 +221,13 @@ public class SerialPortManager {
                         if (utf16) dataToSend = createPacket(msg);
                         outputStream.write(dataToSend);
                         outputStream.flush();
+
+                        if (utf8){
+                            logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF8(msg));
+                        } else if (utf16) {
+                            logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF16(msg));
+                        }
+                        else logService.updateInfoLog(bundle.getString("sendMsg") + msg);
 
                         byte[] buffer = new byte[1024];
                         int totalBytesRead = 0;
@@ -246,6 +250,18 @@ public class SerialPortManager {
                             int indexTX = result.indexOf("TX");
                             result = result.substring(indexTX);
                             result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                        }
+                        if (result.contains("RX")) {
+
+                            result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+
+                            String startMarker = "!["; // "10 02"
+                            String endMarker = "!]";   // "10 03"
+                            int startIndex = result.indexOf(startMarker);
+                            int endIndex = result.lastIndexOf(endMarker);
+
+                            result = result.substring(startIndex, endIndex + endMarker.length());
+                            result = result.toUpperCase();
                         }
                         logService.updateInfoLog(bundle.getString("receivedMsg") + result);
                         return result;
@@ -292,13 +308,12 @@ public class SerialPortManager {
                         throw new IllegalStateException("포트를 열 수 없습니다: " + portName);
                     }
 
-                    logService.updateInfoLog(bundle.getString("sendMsg") + bytesToHex(msg, msg.length));
 
                     try (OutputStream outputStream = new BufferedOutputStream(port.getOutputStream());
                          InputStream inputStream = new BufferedInputStream(port.getInputStream())) {
-                        inputStream.skip(inputStream.available());
                         outputStream.write(msg);
                         outputStream.flush();
+                        logService.updateInfoLog(bundle.getString("sendMsg") + bytesToHex(msg, msg.length));
 
                         byte[] buffer = new byte[1024];
                         int totalBytesRead = 0;
@@ -322,6 +337,7 @@ public class SerialPortManager {
                         }
 
                         String result = bytesToHex(buffer, totalBytesRead);
+
                         if (result.contains("54 58 28")) {
                             result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
                             int tmp = extractNumberAfterTXBeforeByteHex(result);
@@ -330,6 +346,18 @@ public class SerialPortManager {
                             } else {
                                 throw new IllegalArgumentException("유효하지 않은 offset 또는 tmp 값입니다.");
                             }
+                        }
+                        if (result.contains("52 58 28")) {
+
+                            result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+
+                            String startMarker = "10 02"; // "10 02"
+                            String endMarker = "10 03";   // "10 03"
+                            int startIndex = result.indexOf(startMarker);
+                            int endIndex = result.lastIndexOf(endMarker);
+
+                            result = result.substring(startIndex, endIndex + endMarker.length());
+                            result = result.toUpperCase();
                         }
                         logService.updateInfoLog(bundle.getString("receivedMsg") + result);
                         return result;
@@ -515,7 +543,6 @@ public class SerialPortManager {
 
                     // 데이터 수신
                     InputStream inputStream = new BufferedInputStream(port.getInputStream());
-
 
 
                     while (totalBytesRead < 230) { // 212바이트가 채워질 때까지 읽기

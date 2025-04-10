@@ -44,7 +44,7 @@ public class TCPManager {
         }
         return tcpManager;
     }
-    public Task<String> sendASCMsg(String msg, boolean utf8){
+    public Task<String> sendASCMsg(String msg){
         return new Task<>() {
 
             @Override
@@ -224,12 +224,38 @@ public class TCPManager {
         }
     }
 
+    public Task<Void> createConnectTask(String IP, int PORT) {
+        return new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                // 연결 로그 출력
+                logService.updateInfoLog(MessageFormat.format(bundle.getString("tcpServerConnect"), IP, String.valueOf(PORT)));
+                TCPManager.this.IP = IP;
+                TCPManager.this.PORT = PORT;
+                try {
+                    socket = new Socket();
+                    socket.connect(new InetSocketAddress(IP, PORT), RESPONSE_LATENCY * 1000);
+                    socket.setSoTimeout(RESPONSE_LATENCY * 1000);
+                } catch (IOException e) {
+                    logService.errorLog(MessageFormat.format(bundle.getString("tcpServerConnectionFailed"), IP, String.valueOf(PORT)));
+                    throw e;
+                }
+                return null;
+            }
+        };
+    }
+
     public Task<String> sendMsgAndGetMsgByte(byte[] msg){
         return new Task<>() {
             @Override
             protected String call() throws Exception {
-                if (socket==null||socket.isClosed()){
-                    connect(IP, PORT);
+//                if (socket==null||socket.isClosed()){
+//                    connect(IP, PORT);
+//                }
+                if (socket == null || socket.isClosed()) {
+                    Task<Void> connectTask = createConnectTask(IP, PORT);
+                    new Thread(connectTask).start();
+                    connectTask.get();
                 }
                 try {
                     InputStream input = socket.getInputStream();

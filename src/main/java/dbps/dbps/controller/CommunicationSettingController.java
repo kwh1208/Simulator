@@ -231,6 +231,7 @@ public class CommunicationSettingController {
                 isRS=true;
                 break;
             default:
+                System.out.println(CONNECT_TYPE);
                 communicationGroup.selectToggle(null);
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);
@@ -704,12 +705,25 @@ public class CommunicationSettingController {
         KEEP_OPEN = !KEEP_OPEN;
         if (KEEP_OPEN) {
             logService.updateInfoLog(bundle.getString("portAlwaysOpen"));
-            keepOpenBtn.setText("유지 해제");
-            openSerialPort();
+            try {
+                openSerialPort();
+            } catch (Exception e){
+                return;
+            }
+            Platform.runLater(()->{
+                keepOpenBtn.setText("유지 해제");
+            });
         } else {
             logService.updateInfoLog(bundle.getString("portOpenClose"));
-            keepOpenBtn.setText("포트 유지");
-            closeSerialPort();
+
+            try {
+                closeSerialPort();
+            } catch (Exception e){
+                return;
+            }
+            Platform.runLater(()->{
+                keepOpenBtn.setText("포트 유지");
+            });
         }
     }
 

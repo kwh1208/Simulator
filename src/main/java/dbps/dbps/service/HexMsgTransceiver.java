@@ -203,8 +203,6 @@ public class HexMsgTransceiver {
             for (int i = 6; i < 16; i++) {
                 if (!splitMsg[i].equals("3" + (i-6))) {
 //                    logService.errorLog(bundle.getString("unknownStatusCode"));
-                    System.out.println(i);
-                    System.out.println("splitMsg = " + splitMsg[i]);
                     logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
                     return;
                 }

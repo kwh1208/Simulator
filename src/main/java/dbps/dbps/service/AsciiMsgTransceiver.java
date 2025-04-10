@@ -11,7 +11,6 @@ import javafx.scene.control.TextField;
 
 import java.text.MessageFormat;
 import java.time.DateTimeException;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
@@ -141,7 +140,7 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
                 return switch (CONNECT_TYPE) {
                     case "serial", "bluetooth", "rs485" -> serialPortManager.sendMsgAndGetMsg(msg, utf8);
                     case "UDP" -> udpManager.sendASCMsg(msg, utf8);
-                    case "clientTCP" -> tcpManager.sendASCMsg(msg, utf8);
+                    case "clientTCP" -> tcpManager.sendASCMsg(msg);
                     case "serverTCP" -> serverTCPManager.sendASCMsg(msg, utf8);
                     default -> {
                         String errorMsg = "지원하지 않는 연결 유형: " + CONNECT_TYPE;
@@ -312,16 +311,7 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
                 return false;
             }
             // 요일은 1~7
-            if (weekdayInput >= 7) {
-                return false;
-            }
-
-            // 날짜의 유효성 체크 (윤년 등 포함)
-            LocalDate date = LocalDate.of(year, month, day);
-
-            // 실제 요일 계산 (Java에서는 MONDAY=1, ... SUNDAY=7)
-            int computedWeekday = date.getDayOfWeek().getValue();
-            if (computedWeekday != weekdayInput) {
+            if (weekdayInput > 7) {
                 return false;
             }
 

@@ -85,7 +85,7 @@ public class BlueToothController {
 
     //블루투스 검색
     public void search() {
-        CONNECT_TYPE = "bluetooth";
+        CONNECT_TYPE = "serial";
         OPEN_PORT_NAME = serialPortComboBox.getValue();
         isBT = true;
         btManager.search();
@@ -94,7 +94,7 @@ public class BlueToothController {
     //블루투스 이름 및 비밀번호 설정
     public void set( ){
         //++SET++![BT SETT  31  name  password!]
-        CONNECT_TYPE = "bluetooth";
+        CONNECT_TYPE = "serial";
         OPEN_PORT_NAME = serialPortComboBox.getValue();
         btManager.set(ble_id.getText(), ble_password.getText());
     }
@@ -102,7 +102,7 @@ public class BlueToothController {
     //블루투스 통신 시작
     public void begin( ) throws ExecutionException, InterruptedException {
         //++SET++![BT password             BEGIN!]
-        CONNECT_TYPE = "bluetooth";
+        CONNECT_TYPE = "serial";
         OPEN_PORT_NAME = serialPortComboBox.getValue();
         btManager.begin(ble_password.getText());
     }
@@ -110,7 +110,7 @@ public class BlueToothController {
     //블루투스 통신 종료
     public void end( ) {
         //++SET++![BT password             END!]
-        CONNECT_TYPE = "bluetooth";
+        CONNECT_TYPE = "serial";
         OPEN_PORT_NAME = serialPortComboBox.getValue();
         btManager.end(ble_password.getText());
     }
