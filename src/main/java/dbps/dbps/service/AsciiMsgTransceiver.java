@@ -357,7 +357,7 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
         switch (cmd) {
             case "31" -> {
                 String time = receiveMsg.substring(6, 19);
-                if (isValidCustomTime(time)){
+                if (!isValidCustomTime(time)){
                     logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
                 }
 

@@ -170,8 +170,6 @@ public class ServerTCPManager {
             }
         } catch (IOException e) {
             throw e;
-        } finally {
-            disconnect();
         }
     }
 
@@ -209,8 +207,6 @@ public class ServerTCPManager {
             }
         } catch (IOException e) {
             throw e;
-        } finally {
-            disconnect();
         }
     }
 

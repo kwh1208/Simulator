@@ -341,6 +341,7 @@ public class FontSettingController {
         progressBar.setPrefWidth(250);
 
         progressLabel = new Label("폰트 전송 준비 중...");
+        progressLabel.setStyle("-fx-font-family: Gulim;");
 
         Button cancelButton = new Button("취소");
         Region spacer = new Region(); // 중간에 공간을 추가

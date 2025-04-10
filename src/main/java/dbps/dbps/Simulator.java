@@ -1,6 +1,7 @@
 package dbps.dbps;
 
 import dbps.dbps.service.ConfigService;
+import dbps.dbps.service.LogService;
 import dbps.dbps.service.ResourceManager;
 import dbps.dbps.service.connectManager.SerialPortManager;
 import dbps.dbps.service.connectManager.ServerTCPManager;

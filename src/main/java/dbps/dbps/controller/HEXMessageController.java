@@ -19,6 +19,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -264,8 +266,8 @@ public class HEXMessageController {
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
 
         setXY();
-        doMsgSettings();
         setUI();
+        doMsgSettings();
         saveConfig();
         COLOR_MAP = new HashMap<>();
 
@@ -494,6 +496,7 @@ public class HEXMessageController {
             );
         }
         charCodes.setValue(new ComboItem(configService.getProperty("charCode"+getMsgNum()), bundle.getString(configService.getProperty("charCode"+getMsgNum()))));
+
 
         fontSize.getItems().clear();
         fontSize.getItems().add(new ComboItem("12", "12"+bundle.getString("pixel")));
@@ -1053,7 +1056,8 @@ public class HEXMessageController {
                     new ComboItem("left", bundle.getString("left")),
                     new ComboItem("right", bundle.getString("right")),
                     new ComboItem("up", bundle.getString("up")),
-                    new ComboItem("down", bundle.getString("down"))
+                    new ComboItem("down", bundle.getString("down")),
+                    new ComboItem("Bottom-Right", bundle.getString("Bottom-Right"))
             ));
         } else if (effect.equals(bundle.getString("rotateEffect"))) {
             directionBox.setItems(FXCollections.observableArrayList(
@@ -1131,7 +1135,7 @@ public class HEXMessageController {
                 (observable, oldValue, newValue) -> configService.setProperty("displayMethod" + getMsgNum(), newValue.key())
         );
         charCodes.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> configService.setProperty("charCodes" + getMsgNum(), newValue.key())
+                (observable, oldValue, newValue) -> configService.setProperty("charCode" + getMsgNum(), newValue.key())
         );
         fontSize.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> configService.setProperty("fontSize" + getMsgNum(), newValue.key())
@@ -1423,5 +1427,11 @@ public class HEXMessageController {
 
     public void openMulti(MouseEvent mouseEvent) throws IOException {
         openModal("/dbps/dbps/fxmls/ASCiiMessage.fxml", "ASCii 프로토콜 전송", mouseEvent);
+    }
+
+    public void handleKeyPressed(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            send();
+        }
     }
 }

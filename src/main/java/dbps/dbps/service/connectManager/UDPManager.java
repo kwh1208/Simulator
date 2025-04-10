@@ -280,8 +280,6 @@ public class UDPManager {
             return result;
         } catch (IOException e) {
             throw e;
-        } finally {
-            disconnectNoLog();
         }
     }
 

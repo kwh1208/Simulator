@@ -651,6 +651,7 @@ public class DabitNetController {
     private void getSerialPortList() {
         String selectedValue = networkSelection.getValue();
         List<String> portNames = new ArrayList<>(Arrays.stream(SerialPort.getCommPorts())
+                .filter(port -> !port.getPortDescription().toLowerCase().contains("bluetooth"))
                 .map(SerialPort::getSystemPortName)
                 .sorted(Comparator.comparingInt(this::extractPortNumber))
                 .toList());
