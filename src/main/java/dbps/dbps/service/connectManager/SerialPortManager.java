@@ -153,7 +153,15 @@ public class SerialPortManager {
 
                         byte[] buffer = new byte[1024];
                         int totalBytesRead = 0;
+                        long startTime = System.currentTimeMillis();
+                        long overallTimeout = RESPONSE_LATENCY * 1000L; // 예: RESPONSE_LATENCY가 초 단위라면 밀리초로 변환
+
                         while (true) {
+                            // 전체 대기 시간이 초과되었는지 체크
+                            if (System.currentTimeMillis() - startTime > overallTimeout) {
+                                logService.errorLog(bundle.getString("connectionFail"));
+                                throw new SocketTimeoutException("Overall timeout reached");
+                            }
                             int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
 
                             if (bytesRead > 0) {
@@ -231,7 +239,15 @@ public class SerialPortManager {
 
                         byte[] buffer = new byte[1024];
                         int totalBytesRead = 0;
+                        long startTime = System.currentTimeMillis();
+                        long overallTimeout = RESPONSE_LATENCY * 1000L; // 예: RESPONSE_LATENCY가 초 단위라면 밀리초로 변환
+
                         while (true) {
+                            // 전체 대기 시간이 초과되었는지 체크
+                            if (System.currentTimeMillis() - startTime > overallTimeout) {
+                                logService.errorLog(bundle.getString("connectionFail"));
+                                throw new SocketTimeoutException("Overall timeout reached");
+                            }
                             int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
 
                             if (bytesRead > 0) {
@@ -317,7 +333,15 @@ public class SerialPortManager {
 
                         byte[] buffer = new byte[1024];
                         int totalBytesRead = 0;
+                        long startTime = System.currentTimeMillis();
+                        long overallTimeout = RESPONSE_LATENCY * 1000L; // 예: RESPONSE_LATENCY가 초 단위라면 밀리초로 변환
+
                         while (true) {
+                            // 전체 대기 시간이 초과되었는지 체크
+                            if (System.currentTimeMillis() - startTime > overallTimeout) {
+                                logService.errorLog(bundle.getString("connectionFail"));
+                                throw new SocketTimeoutException("Overall timeout reached");
+                            }
                             try {
                                 int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
                                 if (bytesRead > 0) {
