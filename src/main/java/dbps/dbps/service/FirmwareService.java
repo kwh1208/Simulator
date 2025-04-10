@@ -73,7 +73,7 @@ public class FirmwareService {
                         if (isRS) {
                             msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 02 6F F1 10 03";
                         }
-                        hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
+                        hexMsgTransceiver.sendByteMessages(hexStringToByteArray(msg), null);
 
                         // 모든 패킷을 미리 구성
                         List<byte[]> allPackets = new ArrayList<>(totalPackets);
@@ -140,7 +140,7 @@ public class FirmwareService {
                                 } catch (Exception e) {
                                     retryCount++;
                                     if (retryCount >= 3) {
-                                        throw e;
+                                        logService.errorLog("재시도 3회 실패했습니다. 연결상태를 확인해주세요.");
                                     }
                                     // 지수 백오프로 재시도 대기 시간 증가
                                     Thread.sleep(300 * retryCount);
