@@ -101,7 +101,7 @@
             prefWidth="70.0" text="%set"/>
     <Spinner fx:id="spinnerForSec" layoutX="98.0" layoutY="381.0" prefHeight="28.0" prefWidth="64.0"/>
     <Button fx:id="autoTransfer" layoutX="178.0" layoutY="381.0" mnemonicParsing="false" onMouseClicked="#autoTransfer"
-            prefHeight="28.0" prefWidth="79.0" text="%autoTransfer"/>
+            prefHeight="28.0" text="%autoTransfer"/>
     <Button layoutX="447.0" layoutY="381.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="28.0"
             prefWidth="70.0" text="%close"/>
     <ProgressIndicator fx:id="progressIndicator" layoutX="250.0" layoutY="150.0" visible="false"/>

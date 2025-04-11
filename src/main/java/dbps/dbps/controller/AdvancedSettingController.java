@@ -21,6 +21,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
 import static dbps.dbps.service.SettingService.commonProgressIndicator;
@@ -29,6 +30,7 @@ public class AdvancedSettingController {
 
     HexMsgTransceiver hexMsgTransceiver;
     AsciiMsgTransceiver asciiMsgTransceiver;
+    ResourceBundle bundle;
 
 
     @FXML
@@ -40,7 +42,7 @@ public class AdvancedSettingController {
 
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
-
+        bundle = ResourceManager.getInstance().getBundle();
 
     }
 
@@ -48,12 +50,12 @@ public class AdvancedSettingController {
     // 폰트 설정 모달창
     @FXML
     public void fontSetting(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/fontSetting.fxml", "폰트 설정", mouseEvent);
+        openModal("/dbps/dbps/fxmls/fontSetting.fxml", bundle.getString("fontSetting"), mouseEvent);
     }
 
     @FXML
     public void communicationSettingClicked(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/communicationSetting.fxml", "통신 설정", mouseEvent);
+        openModal("/dbps/dbps/fxmls/communicationSetting.fxml", bundle.getString("communicationSetting"), mouseEvent);
     }
 
     //표출신호 창 열기
@@ -64,7 +66,7 @@ public class AdvancedSettingController {
         Parent root = fxmlLoader.load();
 
         Stage modalStage = new Stage();
-        modalStage.setTitle("표출신호 설정");
+        modalStage.setTitle(bundle.getString("displaySignalSetting"));
         modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
@@ -106,21 +108,21 @@ public class AdvancedSettingController {
     //보드기능 설정 창 열기
     @FXML
     public void boardSetting(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/boardSettings.fxml", "보드 기능 설정", mouseEvent);
+        openModal("/dbps/dbps/fxmls/boardSettings.fxml", bundle.getString("boardSetting"), mouseEvent);
     }
 
     public void pageMsg(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/messageSetting.fxml", "페이지메시지 설정", mouseEvent);
+        openModal("/dbps/dbps/fxmls/messageSetting.fxml", bundle.getString("pageMsgSetting"), mouseEvent);
     }
 
     //펌웨어 모달창 열기
     @FXML
     public void firmwareInfo(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/firmwareUpgrade.fxml", "펌웨어 정보", mouseEvent);
+        openModal("/dbps/dbps/fxmls/firmwareUpgrade.fxml", bundle.getString("firmwareUpgrade"), mouseEvent);
     }
 
     public void openAdditionalFunction(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/additionalFunctions.fxml", "추가 기능", mouseEvent);
+        openModal("/dbps/dbps/fxmls/additionalFunctions.fxml", bundle.getString("additionalFunction"), mouseEvent);
     }
 
     public void resetController() {

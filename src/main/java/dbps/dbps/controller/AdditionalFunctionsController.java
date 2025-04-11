@@ -105,11 +105,11 @@ public class AdditionalFunctionsController {
 
 
     public void openBGSchedule(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/BGSchedule.fxml", "배경화면 스케쥴", mouseEvent);
+        openModal("/dbps/dbps/fxmls/BGSchedule.fxml", bundle.getString("BGSchedule"), mouseEvent);
     }
 
     public void openRelay(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/Relay.fxml", "릴레이 신호 출력", mouseEvent);
+        openModal("/dbps/dbps/fxmls/Relay.fxml", bundle.getString("relaySignal"), mouseEvent);
     }
 
     public void sendoffSet() {

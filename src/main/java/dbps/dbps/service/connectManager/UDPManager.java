@@ -239,9 +239,9 @@ public class UDPManager {
         };
     }
 
-    public void sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
+    public void sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException, InterruptedException {
         if (socket == null||socket.isClosed()) {
-            connectNoLog(IP, PORT);
+            connect(IP, PORT);
         }
         DatagramPacket receivePacket;
         try {
@@ -264,7 +264,6 @@ public class UDPManager {
                         }
                     }
                 } catch (SocketTimeoutException e) {
-                    logService.errorLog(bundle.getString("connectionFail"));
                     throw new RuntimeException();
                 }
             }
@@ -278,11 +277,14 @@ public class UDPManager {
                 }
             }
         } catch (IOException e) {
+            e.printStackTrace();
             throw e;
+        } finally {
+            disconnect();
         }
     }
 
-    public void sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
+    public void sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException, InterruptedException {
         if (socket == null||socket.isClosed()) {
             connectNoLog(IP, PORT);
         }
@@ -299,7 +301,10 @@ public class UDPManager {
             byte[] receiveBuffer = new byte[1024];
             int totalBytesRead = 0;
             receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-            while (true) {
+            int retryCount = 0;
+            final int maxRetries = 3;
+            boolean success = false;
+            while (!success && retryCount < maxRetries) {
                 try {
                     socket.receive(receivePacket);
                     int bytesRead = receivePacket.getLength();
@@ -307,12 +312,31 @@ public class UDPManager {
                         totalBytesRead += bytesRead;
                         // 데이터 처리 로직
                         if (dataReceivedIsCompleteHex(receiveBuffer, totalBytesRead)) {
+                            success = true;
                             break; // 수신 완료 조건 만족 시 루프 종료
                         }
+                } else {
+                    retryCount++;
+                    Thread.sleep(1000);
+                    disconnectNoLog();
+                    logService.warningLog(
+                            MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount)
+                    );
+                    if (retryCount >= maxRetries) {
+                        throw new RuntimeException();
                     }
-                } catch (SocketTimeoutException e) {
-                    logService.errorLog(bundle.getString("connectionFail"));
+                } } catch (SocketTimeoutException e) {
+                retryCount++;
+                Thread.sleep(1000);
+                disconnectNoLog();
+                logService.warningLog(
+                        MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount)
+                );
+                if (retryCount >= maxRetries) {
                     throw new RuntimeException();
+                }
+            } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
             }
             String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
@@ -324,7 +348,7 @@ public class UDPManager {
                     result = matcher.group(0); // 전체 매칭된 부분을 추출
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw e;
         }

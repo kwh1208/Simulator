@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -139,13 +140,11 @@ public class ServerTCPManager {
         };
     }
 
-    public String sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
+    public void sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
         if (socket == null) {
             connect(hostIP, serverTCPPort);
         }
-
         try {
-            socket.setSoTimeout(RESPONSE_LATENCY * 1000); // 시간 초과 설정
             InputStream input = socket.getInputStream();
             OutputStream output = socket.getOutputStream();
 
@@ -153,23 +152,37 @@ public class ServerTCPManager {
             output.flush();
 
             byte[] buffer = new byte[1024];
-            int totalBytesRead = input.read(buffer);
+            int totalBytesRead = 0;
 
-            if (totalBytesRead > 0) {
-                String result = bytesToHex(buffer, totalBytesRead);
-                if (result.contains("52 58 28")) {
-                    result = result.substring(result.indexOf("10 02"));
-                }
-                if (result.isEmpty()) {
-                    throw new IOException("서버 응답이 비어 있습니다.");
-                }
+            while (true) {
+                int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                if (bytesRead > 0) {
+                    totalBytesRead += bytesRead;
 
-                return result;
-            } else {
-                throw new IOException("서버에서 응답이 없습니다.");
+                    // 데이터가 모두 수신되었는지 확인
+                    if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                        break;
+                    }
+                } else {
+                    break; // 타임아웃
+                }
+            }
+
+            String result = bytesToHex(buffer, totalBytesRead);
+            if (result.contains("52 58 28")) {
+                Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                Matcher matcher = pattern.matcher(result);
+
+                if (matcher.find()) {
+                    result = matcher.group(0); // 전체 매칭된 부분을 추출
+                }
             }
         } catch (IOException e) {
+            logService.errorLog(bundle.getString("connectionFail"));
+            e.printStackTrace();
             throw e;
+        } finally {
+            disconnect();
         }
     }
 
@@ -191,22 +204,59 @@ public class ServerTCPManager {
             logService.updateInfoLog(log);
 
             byte[] buffer = new byte[1024];
-            int totalBytesRead = input.read(buffer);
-
-            if (totalBytesRead > 0) {
-                String result = bytesToHex(buffer, totalBytesRead);
-                if (result.contains("52 58 28")) {
-                    result = result.substring(result.indexOf("10 02"));
+            int totalBytesRead = 0;
+            int retryCount = 0;
+            final int maxRetries = 3;
+            boolean success = false;
+            while (!success && retryCount < maxRetries) {
+                try {
+                    int bytesRead = input.read(buffer);
+                    if (bytesRead > 0) {
+                        totalBytesRead += bytesRead;
+                        if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                            success = true;
+                            break;
+                        }
+                    } else {
+                        retryCount++;
+                        Thread.sleep(1000);
+                        logService.warningLog(
+                                MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount)
+                        );
+                        if (retryCount >= maxRetries) {
+                            throw new RuntimeException();
+                        }
+                    } } catch (SocketTimeoutException e) {
+                    retryCount++;
+                    Thread.sleep(1000);
+                    logService.warningLog(
+                            MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount)
+                    );
+                    if (retryCount >= maxRetries) {
+                        throw new RuntimeException();
+                    }
                 }
-                if (result.isEmpty()) {
-                    throw new IOException("서버 응답이 비어 있습니다.");
-                }
-
-            } else {
-                throw new IOException("서버에서 응답이 없습니다.");
             }
+            // 재시도 횟수를 초과하면 예외 처리
+            if (!success) {
+                logService.warningLog(bundle.getString("packetTransmissionFailedAfterRetries"));
+                throw new RuntimeException();
+            }
+
+            String result = bytesToHex(buffer, totalBytesRead);
+            if (result.contains("52 58 28")) {
+                Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                Matcher matcher = pattern.matcher(result);
+                if (matcher.find()) {
+                    result = matcher.group(0); // 전체 매칭된 부분 추출
+                }
+            }
+            // 로깅 후 여기서 결과를 사용할 수 있지만, 반환값이 없는 void 함수임.
         } catch (IOException e) {
+            disconnectNoLog();
             throw e;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 

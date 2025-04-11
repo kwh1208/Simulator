@@ -370,32 +370,17 @@ public class FontService {
                         return null;
                     }
 
-                    boolean success = false;
-                    int retryCount = 0;
-                    
-                    // 재시도 로직 최적화
-                    while (!success && retryCount < 3) {
-                        try {
-                            hexMsgTransceiver.sendByteMessagesShortLog(sendPacket);
-                            success = true;
-                        } catch (Exception e) {
-                            if (isCancelled()){
-                                logService.updateInfoLog(bundle.getString("transferCancel"));
-                                msg = "10 02 00 00 02 45 01 10 03";
-                                if (isRS){
-                                    msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
-                                }
-                                hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
-                                return null;
+                    try {
+                        hexMsgTransceiver.sendByteMessagesShortLog(sendPacket);
+                    } catch (Exception e){
+                        if (isCancelled()){
+                            logService.updateInfoLog(bundle.getString("transferCancel"));
+                            msg = "10 02 00 00 02 45 01 10 03";
+                            if (isRS){
+                                msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
                             }
-                            retryCount++;
-                            logService.warningLog(MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount));
-                            if (retryCount >= 3) {
-                                logService.errorLog(bundle.getString("packetTransmissionFailedAfterRetries"));
-                                return null;
-                            }
-                            // 지수 백오프로 재시도 대기 시간 증가
-                            Thread.sleep(300 * retryCount);
+                            hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
+                            return null;
                         }
                     }
 

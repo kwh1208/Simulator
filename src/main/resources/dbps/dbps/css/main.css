@@ -13,6 +13,10 @@
     -fx-text-alignment: CENTER; /* 텍스트 중앙 정렬 */
 }
 
+.tab-pane .tab-header-area .tab .tab-label {
+    -fx-alignment: center;
+}
+
 .tab:selected {
     -fx-border-width: 1 1 5 1;
     -fx-focus-color: transparent; /* 포커스 색상 제거 */

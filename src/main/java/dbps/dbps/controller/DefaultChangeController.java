@@ -4,11 +4,14 @@ import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.LogService;
+import dbps.dbps.service.ResourceManager;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+
+import java.util.ResourceBundle;
 
 public class DefaultChangeController {
     public TextField clientIPTF;
@@ -18,6 +21,7 @@ public class DefaultChangeController {
     public AnchorPane defaultChangeAP;
     ConfigService configService;
     LogService logService;
+    ResourceBundle bundle;
 
 
     public void initialize() {
@@ -31,6 +35,7 @@ public class DefaultChangeController {
         clientGatewayTF.setText(configService.getProperty("dbNetGateway"));
 
         defaultChangeAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
+        bundle= ResourceManager.getInstance().getBundle();
 
 
         logService = LogService.getLogService();
@@ -50,6 +55,6 @@ public class DefaultChangeController {
 
         configService.reloadConfigProperties();
 
-        logService.updateInfoLog("기본 IP가 변경되었습니다.");
+        logService.updateInfoLog(bundle.getString("IPChange"));
     }
 }

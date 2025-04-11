@@ -23,7 +23,7 @@
         <Label layoutX="27.0" layoutY="80.0" text="%BLEPwd" />
         <TextField fx:id="ble_password" layoutX="152.0" layoutY="76.0" prefHeight="21.0" prefWidth="152.0" />
         <Button layoutX="14.0" layoutY="113.0" mnemonicParsing="false" onMouseClicked="#search" prefHeight="27.0" prefWidth="90.0" text="%search" />
-        <Button layoutX="214.0" layoutY="113.0" mnemonicParsing="false" onMouseClicked="#set" prefHeight="27.0" prefWidth="90.0" text="%setting" />
+        <Button layoutX="214.0" layoutY="113.0" mnemonicParsing="false" onMouseClicked="#set" prefHeight="27.0" prefWidth="90.0" text="%set" />
         <Button layoutX="14.0" layoutY="151.0" mnemonicParsing="false" onMouseClicked="#begin" prefHeight="27.0" prefWidth="90.0" text="%beginBLE" />
         <Button layoutX="114.0" layoutY="151.0" mnemonicParsing="false" onMouseClicked="#end" prefHeight="27.0" prefWidth="90.0" text="%endBLE" />
         <Button layoutX="214.0" layoutY="151.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="27.0" prefWidth="90.0" text="%close" />

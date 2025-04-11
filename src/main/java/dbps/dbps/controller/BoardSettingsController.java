@@ -4,6 +4,7 @@ import dbps.dbps.Constants;
 import dbps.dbps.Simulator;
 import dbps.dbps.service.AsciiMsgTransceiver;
 import dbps.dbps.service.BoardSettingService;
+import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -13,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
 
@@ -39,6 +41,7 @@ public class BoardSettingsController {
     public ComboBox<String> BH1_baud;
     public ProgressIndicator progressIndicator;
     public Label rs_address;
+    ResourceBundle bundle;
 
     private AsciiMsgTransceiver asciiMsgTransceiver;
 
@@ -60,6 +63,7 @@ public class BoardSettingsController {
 
         asciiMsgTransceiver = AsciiMsgTransceiver.getInstance();
         BoardSettingService boardSettingService = BoardSettingService.getInstance();
+        bundle = ResourceManager.getInstance().getBundle();
 
         boardSettingService.setDebugMethod(debugMethod);
         boardSettingService.setBH1_baud(BH1_baud);
@@ -74,7 +78,7 @@ public class BoardSettingsController {
 
     @FXML
     public void openCommunicationSetting(MouseEvent mouseEvent) throws IOException {
-        openModal(COMM_SETTING_FXML, "통신 설정", mouseEvent);
+        openModal(COMM_SETTING_FXML, bundle.getString("communicationSetting"), mouseEvent);
     }
 
     @FXML

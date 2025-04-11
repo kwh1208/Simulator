@@ -13,6 +13,7 @@ import java.io.*;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -403,43 +404,91 @@ public class SerialPortManager {
 
 
     public void sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
-        String portName = OPEN_PORT_NAME;
-        SerialPort port = serialPortMap.get(portName);
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String portName = OPEN_PORT_NAME;
+                synchronized (portLock) {
+                    if (!isPortOpen(portName)) {
+                        openPort(portName, SERIAL_BAUDRATE);
+                    }
+                    SerialPort port = serialPortMap.get(portName);
+                    if (port == null) {
+                        throw new IllegalStateException("포트를 열 수 없습니다: " + portName);
+                    }
 
-        if (port == null || !isPortOpen(portName)) {
-            openPortNoLog(portName, SERIAL_BAUDRATE);
-            port = serialPortMap.get(portName);
-        }
-        try {
-            OutputStream outputStream = port.getOutputStream();
-            InputStream inputStream = port.getInputStream();
 
-            outputStream.write(msg);
+                    try (OutputStream outputStream = new BufferedOutputStream(port.getOutputStream());
+                         InputStream inputStream = new BufferedInputStream(port.getInputStream())) {
+                        outputStream.write(msg);
+                        outputStream.flush();
 
-            // 읽기용 버퍼 초기화
-            byte[] buffer = new byte[1024];
-            int totalBytesRead = 0;
+                        byte[] buffer = new byte[1024];
+                        int totalBytesRead = 0;
+                        long startTime = System.currentTimeMillis();
+                        long overallTimeout = RESPONSE_LATENCY * 1000L; // 예: RESPONSE_LATENCY가 초 단위라면 밀리초로 변환
 
-            long startWait = System.currentTimeMillis();
-            long timeout = 150;
+                        while (true) {
+                            // 전체 대기 시간이 초과되었는지 체크
+                            if (System.currentTimeMillis() - startTime > overallTimeout) {
+                                logService.errorLog(bundle.getString("connectionFail"));
+                                throw new SocketTimeoutException("Overall timeout reached");
+                            }
+                            try {
+                                int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                                if (bytesRead > 0) {
+                                    totalBytesRead += bytesRead;
 
-            while ((System.currentTimeMillis() - startWait) < timeout) {
-                if (inputStream.available() > 0) {
-                    int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-
-                    if (bytesRead > 0) {
-                        totalBytesRead += bytesRead;
-                        if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
-                            break;
+                                    // 데이터가 모두 수신되었는지 확인
+                                    if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                                        break;
+                                    }
+                                } else {
+                                    break; // 스트림 종료
+                                }
+                            } catch (SocketTimeoutException e) {
+                                logService.errorLog(bundle.getString("connectionFail"));
+                                throw e;
+                            }
                         }
+
+                        String result = bytesToHex(buffer, totalBytesRead);
+
+                        if (result.contains("54 58 28")) {
+                            result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+                            int tmp = extractNumberAfterTXBeforeByteHex(result);
+                            if (tmp > 0 && 14 + String.valueOf(tmp).length() + result.indexOf("TX(") + tmp <= buffer.length) {
+                                result = new String(buffer, 15 + String.valueOf(tmp).length() + result.indexOf("54 58 28"), tmp * 3, Charset.forName("MS949"));
+                            } else {
+                                throw new IllegalArgumentException("유효하지 않은 offset 또는 tmp 값입니다.");
+                            }
+                        }
+                        if (result.contains("52 58 28")) {
+
+                            result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+
+                            String startMarker = "10 02"; // "10 02"
+                            String endMarker = "10 03";   // "10 03"
+                            int startIndex = result.indexOf(startMarker);
+                            int endIndex = result.lastIndexOf(endMarker);
+
+                            result = result.substring(startIndex, endIndex + endMarker.length());
+                            result = result.toUpperCase();
+                        }
+                        return result;
+                    } catch (SerialPortTimeoutException | SerialPortIOException e) {
+                        logService.errorLog(bundle.getString("connectionFail"));
+                        throw e;
+                    } catch (Exception e) {
+                        throw e;
+                    } finally {
+                        closePort(portName); // 작업 후 포트 닫기
                     }
                 }
             }
-            bytesToHex(buffer, totalBytesRead);
-        } catch (Exception e) {
-            logService.errorLog(bundle.getString("connectionFail"));
-            throw e;
-        }
+        };
+
+        taskQueue.add(task); // 작업을 큐에 추가
     }
 
     public void sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
@@ -463,28 +512,58 @@ public class SerialPortManager {
             byte[] buffer = new byte[1024];
             int totalBytesRead = 0;
 
-            long startWait = System.currentTimeMillis();
-            long timeout = 150;
+            int retryCount = 0;
+            final int maxRetries = 3;
+            boolean success = false;
 
-            while ((System.currentTimeMillis() - startWait) < timeout) {
-                if (inputStream.available() > 0) {
+            while (!success && retryCount < maxRetries) {
+                try {
                     int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-
                     if (bytesRead > 0) {
                         totalBytesRead += bytesRead;
                         if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                            success = true;
                             break;
                         }
+                    } else {
+                        retryCount++;
+                        Thread.sleep(1000);
+                        logService.warningLog(
+                                MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount)
+                        );
+                        if (retryCount >= maxRetries) {
+                            throw new RuntimeException();
+                        }
+                    } } catch (SocketTimeoutException e) {
+                    retryCount++;
+                    Thread.sleep(1000);
+                    logService.warningLog(
+                            MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount)
+                    );
+                    if (retryCount >= maxRetries) {
+                        throw new RuntimeException();
                     }
                 }
             }
-            if (totalBytesRead == 0){
+            // 재시도 횟수를 초과하면 예외 처리
+            if (!success) {
+                logService.warningLog(bundle.getString("packetTransmissionFailedAfterRetries"));
                 throw new RuntimeException();
             }
-            bytesToHex(buffer, totalBytesRead);
-        } catch (Exception e) {
-            logService.errorLog(bundle.getString("connectionFail"));
+
+            String result = bytesToHex(buffer, totalBytesRead);
+            if (result.contains("52 58 28")) {
+                Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                Matcher matcher = pattern.matcher(result);
+                if (matcher.find()) {
+                    result = matcher.group(0); // 전체 매칭된 부분 추출
+                }
+            }
+            // 로깅 후 여기서 결과를 사용할 수 있지만, 반환값이 없는 void 함수임.
+        } catch (IOException e) {
             throw e;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 

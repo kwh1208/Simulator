@@ -4,10 +4,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import lombok.Setter;
 
+import java.util.ResourceBundle;
+
 @Setter
 public class BoardSettingService {
     private static BoardSettingService instance = null;
     LogService logService = LogService.getLogService();
+    ResourceBundle bundle = ResourceManager.getInstance().getBundle();
 
     private BoardSettingService() {
     }
@@ -38,7 +41,7 @@ public class BoardSettingService {
             BH1_baud.getSelectionModel().select(Integer.parseInt(split[5]));
             rs_address.setText(split[6]);
         } catch (Exception e) {
-            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+            logService.warningLog(bundle.getString("receivePacketError"));
         }
     }
 }

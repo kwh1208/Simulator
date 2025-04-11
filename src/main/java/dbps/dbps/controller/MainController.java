@@ -3,9 +3,14 @@ package dbps.dbps.controller;
 
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.MainService;
+import dbps.dbps.service.ResourceManager;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+
+import java.util.ResourceBundle;
 
 public class MainController {
     MainService mainService;
@@ -15,6 +20,7 @@ public class MainController {
     public TabPane mainTab;
     @FXML
     public Tab messageTab;
+    ResourceBundle bundle;
 
     @FXML
     public Tab setting;
@@ -23,6 +29,7 @@ public class MainController {
     public void initialize() {
         configService = ConfigService.getInstance();
         mainService = MainService.getInstance();
+        bundle = ResourceManager.getInstance().getBundle();
         MainService.setMessageTab(messageTab);
         MainService.setSettingTab(setting);
         mainTab.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
