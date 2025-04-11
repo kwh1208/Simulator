@@ -1426,7 +1426,7 @@ public class HEXMessageController {
     }
 
     public void openMulti(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/ASCiiMessage.fxml", "ASCii 프로토콜 전송", mouseEvent);
+        openModal("/dbps/dbps/fxmls/ASCiiMessage.fxml", bundle.getString("ASCMulti"), mouseEvent);
     }
 
     public void handleKeyPressed(KeyEvent event) {

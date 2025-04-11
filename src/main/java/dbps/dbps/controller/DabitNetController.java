@@ -492,7 +492,7 @@ public class DabitNetController {
             new Thread(reboot).start();
         }
 
-        logService.updateInfoLog(dbList.getSelectionModel().getSelectedItem()+" 네트워크 초기화 완료");
+        logService.updateInfoLog(dbList.getSelectionModel().getSelectedItem()+" "+bundle.getString("networkReset"));
     }
 
 
@@ -716,7 +716,7 @@ public class DabitNetController {
     }
 
     public void changeDefault(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/defaultChange.fxml", "기본 IP 변경", mouseEvent);
+        openModal("/dbps/dbps/fxmls/defaultChange.fxml", bundle.getString("defaultIPChange"), mouseEvent);
     }
 
     public void openDeviceManager() {
@@ -744,7 +744,7 @@ public class DabitNetController {
         packetSettingService.setOriHexSecond(hexSecond);
         packetSettingService.setOriTimeOut(timeOut);
 
-        openModal("/dbps/dbps/fxmls/packetSetting.fxml", "패킷 설정", mouseEvent);
+        openModal("/dbps/dbps/fxmls/packetSetting.fxml", bundle.getString("packetSetting"), mouseEvent);
 
         packetSettingService.setUI();
     }

@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
@@ -187,6 +188,7 @@ public class TCPManager {
             socket = new Socket();
             socket.connect(new InetSocketAddress(IP, PORT), RESPONSE_LATENCY*1000);
             socket.setSoTimeout(RESPONSE_LATENCY * 1000);
+
         } catch (IOException e) {
             logService.errorLog(MessageFormat.format(bundle.getString("tcpServerConnectionFailed"), IP, String.valueOf(PORT)));
         }
@@ -224,27 +226,6 @@ public class TCPManager {
         }
     }
 
-    public Task<Void> createConnectTask(String IP, int PORT) {
-        return new Task<>() {
-            @Override
-            protected Void call() throws Exception {
-                // 연결 로그 출력
-                logService.updateInfoLog(MessageFormat.format(bundle.getString("tcpServerConnect"), IP, String.valueOf(PORT)));
-                TCPManager.this.IP = IP;
-                TCPManager.this.PORT = PORT;
-                try {
-                    socket = new Socket();
-                    socket.connect(new InetSocketAddress(IP, PORT), RESPONSE_LATENCY * 1000);
-                    socket.setSoTimeout(RESPONSE_LATENCY * 1000);
-                } catch (IOException e) {
-                    logService.errorLog(MessageFormat.format(bundle.getString("tcpServerConnectionFailed"), IP, String.valueOf(PORT)));
-                    throw e;
-                }
-                return null;
-            }
-        };
-    }
-
     public Task<String> sendMsgAndGetMsgByte(byte[] msg){
         return new Task<>() {
             @Override
@@ -253,19 +234,16 @@ public class TCPManager {
 //                    connect(IP, PORT);
 //                }
                 if (socket == null || socket.isClosed()) {
-                    Task<Void> connectTask = createConnectTask(IP, PORT);
-                    new Thread(connectTask).start();
-                    connectTask.get();
+                    connect(IP, PORT);
                 }
                 try {
                     InputStream input = socket.getInputStream();
                     OutputStream output = socket.getOutputStream();
                     input.skip(input.available());
 
-                    logService.updateInfoLog(bundle.getString("sendMsg")+bytesToHex(msg, msg.length));
                     output.write(msg);
                     output.flush();
-
+                    logService.updateInfoLog(bundle.getString("sendMsg")+bytesToHex(msg, msg.length));
 
                     byte[] buffer = new byte[1024];
                     int totalBytesRead = 0;
@@ -306,19 +284,18 @@ public class TCPManager {
 
     public void sendMsgAndGetMsgByteNoLog(byte[] msg) throws IOException {
         if (socket == null || socket.isClosed()) {
-            connectNoLog(IP, PORT);
+            connect(IP, PORT);
         }
         try {
             InputStream input = socket.getInputStream();
             OutputStream output = socket.getOutputStream();
-            input.skip(input.available()); // 기존에 남아있는 데이터 제거
+            input.skip(input.available());
 
             output.write(msg);
             output.flush();
 
             byte[] buffer = new byte[1024];
             int totalBytesRead = 0;
-
             while (true) {
                 int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
                 if (bytesRead > 0) {
@@ -342,17 +319,14 @@ public class TCPManager {
                     result = matcher.group(0); // 전체 매칭된 부분을 추출
                 }
             }
+
         } catch (IOException e) {
-            e.printStackTrace();
             throw e;
         }
     }
 
     public void sendMsgAndGetMsgByteShortLog(byte[] msg) throws IOException {
         if (socket == null || socket.isClosed()) {
-            if (socket.isClosed()){
-                System.out.println(111);
-            }
             connectNoLog(IP, PORT);
         }
         try {
@@ -364,38 +338,67 @@ public class TCPManager {
             output.flush();
 
             String log = bytesToHex(msg, 32);
-            log+=" ~ 10 03";
+            log += " ~ 10 03";
             logService.updateInfoLog(log);
 
             byte[] buffer = new byte[1024];
             int totalBytesRead = 0;
 
-            while (true) {
-                int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-                if (bytesRead > 0) {
-                    totalBytesRead += bytesRead;
+            int retryCount = 0;
+            final int maxRetries = 3;
+            boolean success = false;
 
-                    // 데이터가 모두 수신되었는지 확인
-                    if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
-                        break;
+            while (!success && retryCount < maxRetries) {
+                try {
+                    int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                    if (bytesRead > 0) {
+                        totalBytesRead += bytesRead;
+                        if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
+                            success = true;
+                            break;
+                        }
+                    } else {
+                        retryCount++;
+                        Thread.sleep(1000);
+                        disconnectNoLog();
+                        logService.warningLog(
+                                MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount)
+                        );
+                        if (retryCount >= maxRetries) {
+                            throw new RuntimeException();
+                        }
+                    } } catch (SocketTimeoutException e) {
+                    retryCount++;
+                    Thread.sleep(1000);
+                    disconnectNoLog();
+                    logService.warningLog(
+                            MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount)
+                    );
+                    if (retryCount >= maxRetries) {
+                        disconnectNoLog();
+                        throw new RuntimeException();
                     }
-                } else {
-                    throw new RuntimeException();
                 }
+            }
+            // 재시도 횟수를 초과하면 예외 처리
+            if (!success) {
+                logService.warningLog(bundle.getString("packetTransmissionFailedAfterRetries"));
+                throw new RuntimeException();
             }
 
             String result = bytesToHex(buffer, totalBytesRead);
             if (result.contains("52 58 28")) {
                 Pattern pattern = Pattern.compile("10 02(.*?)10 03");
                 Matcher matcher = pattern.matcher(result);
-
                 if (matcher.find()) {
-                    result = matcher.group(0); // 전체 매칭된 부분을 추출
+                    result = matcher.group(0); // 전체 매칭된 부분 추출
                 }
             }
+            // 로깅 후 여기서 결과를 사용할 수 있지만, 반환값이 없는 void 함수임.
         } catch (IOException e) {
-            e.printStackTrace();
             throw e;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

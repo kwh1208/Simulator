@@ -348,7 +348,7 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
             case "31" -> {
                 String time = receiveMsg.substring(6, 19);
                 if (!isValidCustomTime(time)){
-                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                    logService.warningLog(bundle.getString("receivePacketError"));
                 }
 
                 // 한글과 영어 요일을 다국어 지원하도록 변경
@@ -378,17 +378,17 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
             case "B5" ->{
                 String result = receiveMsg.substring(6);
                 if (!result.contains(" ")){
-                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                    logService.warningLog(bundle.getString("receivePacketError"));
                 }
                 String[] split = result.split(" ");
                 for (int i = 0; i < split.length; i++) {
                     try {
                         int tmp = Integer.parseInt(split[i]);
                         if (tmp < 0 || tmp > 99) {
-                            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                            logService.warningLog(bundle.getString("receivePacketError"));
                         }
                     } catch (Exception e) {
-                        logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                        logService.warningLog(bundle.getString("receivePacketError"));
                     }
                 }
                 additionalService.changeUI(receiveMsg.substring(6));
@@ -413,7 +413,7 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
             }
             case "96" -> {
                 if (receiveMsg.substring(8).length()>218){
-                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                    logService.warningLog(bundle.getString("receivePacketError"));
                 }
                 logService.updateInfoLog(bundle.getString("fontNameReadSuccess"));
                 return;

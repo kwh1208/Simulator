@@ -99,16 +99,16 @@ public class FirmwareUpgradeController {
 
         progressStage = new Stage();
         progressStage.initModality(Modality.APPLICATION_MODAL); // 부모 창을 블로킹
-        progressStage.setTitle("펌웨어 업로드 진행 상태");
+        progressStage.setTitle("Firmware Upload Progress");
 
         progressBar = new ProgressBar(0);
         progressBar.setStyle("-fx-accent: green;");
         progressBar.setPrefWidth(250);
 
-        progressLabel = new Label("펌웨어 업로드 준비 중...");
+        progressLabel = new Label("Preparing Firmware Upload...");
         progressLabel.setStyle("-fx-text-fill: black; -fx-font-weight: bold;");
 
-        cancelButton = new Button("취소");
+        cancelButton = new Button("Cancel");
 
 
         HBox buttonBox = new HBox(new Region(), cancelButton);
@@ -211,7 +211,7 @@ public class FirmwareUpgradeController {
 
     public void open(MouseEvent mouseEvent) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("펌웨어 파일 선택");
+        fileChooser.setTitle("File Select");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("펌웨어 파일", "*.bin"),
                 new FileChooser.ExtensionFilter("모든 파일", "*.*")
@@ -329,32 +329,32 @@ public class FirmwareUpgradeController {
         firmwareUploadTask = firmwareService.firmwareUpload(progressBar, progressLabel);
 
         firmwareUploadTask.setOnRunning(e -> {
-            progressLabel.setText("펌웨어 업로드 중...");
+            progressLabel.setText("Uploading Firmware...");
             progressBar.setProgress(-1); // 애니메이션 상태
         });
 
         cancelButton.setOnAction(e -> {
             if (firmwareUploadTask != null) {
                 firmwareUploadTask.cancel();
-                progressLabel.setText("업로드가 취소되었습니다.");
+                progressLabel.setText("Firmware upload Canceled!");
                 closeWindowAfterDelay(progressStage, 2000); // 2초 후 창 닫기
             }
         });
 
         firmwareUploadTask.setOnSucceeded(e -> {
-            progressLabel.setText("펌웨어 업로드 완료!");
+            progressLabel.setText("Firmware upload Completed!");
             progressBar.setProgress(1.0);
             closeWindowAfterDelay(progressStage, 2000); // 2초 후 창 닫기
         });
 
         firmwareUploadTask.setOnFailed(e -> {
-            progressLabel.setText("펌웨어 업로드 실패!");
+            progressLabel.setText("Firmware upload Failed!");
             progressBar.setProgress(0);
             closeWindowAfterDelay(progressStage, 2000); // 실패 시 2초 후 창 닫기
         });
 
         firmwareUploadTask.setOnCancelled(e -> {
-            progressLabel.setText("업로드가 취소되었습니다.");
+            progressLabel.setText("Firmware upload Canceled!");
             progressBar.setProgress(0);
             closeWindowAfterDelay(progressStage, 2000); // 취소 시 2초 후 창 닫기
         });

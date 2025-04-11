@@ -340,7 +340,7 @@ public class FontSettingController {
         progressBar.setVisible(true);
         progressBar.setPrefWidth(250);
 
-        progressLabel = new Label("폰트 전송 준비 중...");
+        progressLabel = new Label("Preparing Font Upload...");
         progressLabel.setStyle("-fx-font-family: Gulim;");
 
         Button cancelButton = new Button("취소");
@@ -568,7 +568,7 @@ public class FontSettingController {
         File selectedFont = fileChooser.showOpenDialog(stage);
 
         if (!selectedFont.exists()) {
-            logService.errorLog("해당 파일을 찾을 수 없습니다.");
+            logService.errorLog(bundle.getString("NotFindFile"));
         }
         // 선택된 폰트 경로를 TextArea에 설정
         else {
@@ -612,7 +612,7 @@ public class FontSettingController {
         String[] fontGroup4Path = null;
 
         //첫번째 그룹
-        if (chkFont(fontGroup1fontPath1.getText(), "영어")) {
+        if (chkFont(fontGroup1fontPath1.getText(), bundle.getString("english"))) {
             logService.warningLog(bundle.getString("fontGroup1") + bundle.getString("fontMismatch"));
             return;
         }
@@ -754,12 +754,12 @@ public class FontSettingController {
         fontSendTask = fontService.sendFont(fontGroup1Path, fontGroup2Path, fontGroup3Path, fontGroup4Path, fontType, progressBar, progressLabel);
 
         fontSendTask.setOnRunning(e -> {
-            progressLabel.setText("폰트 전송 준비 중...");
+            progressLabel.setText("Preparing Font Upload...");
             progressBar.setProgress(-1); // 진행 중 상태
         });
 
         fontSendTask.setOnSucceeded(e -> {
-            progressLabel.setText("폰트 전송 완료!");
+            progressLabel.setText("Font Upload Complete!");
             progressBar.setProgress(1.0);
             closeWindowAfterDelay(progressStage); // 1초 후 창 닫기
         });
@@ -768,7 +768,13 @@ public class FontSettingController {
     }
 
     private boolean chkFont(String fileName, String fontType) {
-        if (fontType == null || fontType.equals("사용안함")) return false;
+        if (fontType == null || fontType.equals(bundle.getString("notUsed"))) return false;
+
+        File file = new File(fileName);
+        if (!file.exists() || !file.isFile()) {
+            logService.errorLog(bundle.getString("errorFileNotFound"));
+            return false;
+        }
 
         if (!fileName.contains("fnt")) {
             return true;
@@ -986,7 +992,7 @@ public class FontSettingController {
     }
 
     public void fontName(MouseEvent mouseEvent) throws IOException {
-        openModal("/dbps/dbps/fxmls/fontName.fxml", "폰트 이름 설정", mouseEvent);
+        openModal("/dbps/dbps/fxmls/fontName.fxml", bundle.getString("fontNameSetting"), mouseEvent);
     }
 
     public void sendName() throws Exception {

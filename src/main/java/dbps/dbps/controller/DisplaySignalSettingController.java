@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
 import static dbps.dbps.controller.DisplayListController.SELECTED_SIGNAL;
@@ -47,6 +48,8 @@ public class DisplaySignalSettingController {
 
     @FXML
     private Spinner<Integer> spinnerForSec;
+
+    ResourceBundle bundle;
 
     @FXML
     private Button autoTransfer;
@@ -81,7 +84,7 @@ public class DisplaySignalSettingController {
             }
             memo.setText(configService.getDisplayProperty(signalList.getFocusModel().getFocusedItem()));
         });
-
+        bundle = ResourceManager.getInstance().getBundle();
         displaySignalAP.setOnKeyPressed(new Constants.EscapeKeyEventHandler());
         signalList.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
@@ -303,10 +306,10 @@ public class DisplaySignalSettingController {
 
     @FXML
     public void autoTransfer() {
-        if (autoTransfer.getText().equals("해제")) {
+        if (autoTransfer.getText().equals(bundle.getString("Stop"))) {
             timeline.stop(); // Timeline 중지
             timeline = null; // 객체 초기화
-            autoTransfer.setText("자동전송"); // 버튼 텍스트를 원래대로 변경
+            autoTransfer.setText(bundle.getString("autoTransfer")); // 버튼 텍스트를 원래대로 변경
             return; // 함수 종료
         }
         int signalCount = signalList.getItems().size();
@@ -331,11 +334,11 @@ public class DisplaySignalSettingController {
         // 작업이 끝나면 원래의 대기 시간을 복구
         timeline.setOnFinished(event -> {
             RESPONSE_LATENCY = originalTime;
-            autoTransfer.setText("자동 전송"); // 모든 작업이 끝나면 버튼 텍스트를 원래대로 변경
+            autoTransfer.setText(bundle.getString("autoTransfer")); // 모든 작업이 끝나면 버튼 텍스트를 원래대로 변경
             timeline = null; // 타임라인 초기화
         });
 
-        autoTransfer.setText("해제"); // 자동 전송 시작 시 버튼 텍스트 변경
+        autoTransfer.setText(bundle.getString("Stop")); // 자동 전송 시작 시 버튼 텍스트 변경
         timeline.play(); // 타임라인 시작
     }
 

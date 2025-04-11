@@ -170,7 +170,6 @@ public class HexMsgTransceiver {
                 try {
                     tcpManager.sendMsgAndGetMsgByteShortLog(msg);
                 } catch (Exception e) {
-
                     throw new RuntimeException(e);
                 }
             }
@@ -202,7 +201,7 @@ public class HexMsgTransceiver {
             for (int i = 6; i < 16; i++) {
                 if (!splitMsg[i].equals("3" + (i-6))) {
 //                    logService.errorLog(bundle.getString("unknownStatusCode"));
-                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                    logService.warningLog(bundle.getString("receivePacketError"));
                     return;
                 }
             }
@@ -217,16 +216,15 @@ public class HexMsgTransceiver {
         String command = splitMsg[5];
         String status = splitMsg[6];
         if ((splitMsg.length-7)!=Integer.parseInt(length, 16)){
-            System.out.println("splitMsg = " + splitMsg.length);
-            System.out.println("length = " + Integer.parseInt(length, 16));
-            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+
+            logService.warningLog(bundle.getString("receivePacketError"));
             return;
         }
 
         switch (command) {
             case "40" -> {
                 if (!Objects.equals(length, "04")){
-                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                    logService.warningLog(bundle.getString("receivePacketError"));
                     return;
                 }
                 handleScreenSizeSetting(splitMsg, msg);
@@ -238,7 +236,7 @@ public class HexMsgTransceiver {
             }
             case "4C" -> {
                 if (splitMsg.length>8){
-                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                    logService.warningLog(bundle.getString("receivePacketError"));
                     return;
                 }
                 hexMsgService.setUI(msg[6] & 0xFF);
@@ -248,7 +246,7 @@ public class HexMsgTransceiver {
                 StringBuilder result = new StringBuilder();
 
                 if (receiveMsg.length()<226&&!status.equals("00")){
-                    logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                    logService.warningLog(bundle.getString("receivePacketError"));
                 }
 
                 for (int i = 7; i <= 224; i++) {
@@ -312,7 +310,7 @@ public class HexMsgTransceiver {
 
     private void handleTimeRead(String receiveMsg, String[] splitMsg) {
         if (receiveMsg.length()<45){
-            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+            logService.warningLog(bundle.getString("receivePacketError"));
             return;
         }
         processTimeString(receiveMsg.substring(18, 38));
@@ -358,21 +356,21 @@ public class HexMsgTransceiver {
                 logService.warningLog(bundle.getString("controllerTimeReadFailed"));
             }
         } else {
-            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+            logService.warningLog(bundle.getString("receivePacketError"));
             chkErrorCode(receiveMsg, splitMsg);
         }
     }
 
     public void processTimeString(String timeStr){
         if (timeStr == null || timeStr.trim().isEmpty()) {
-            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+            logService.warningLog(bundle.getString("receivePacketError"));
             return;
         }
 
         // 공백 기준으로 분리 (토큰의 개수는 7개여야 함)
         String[] tokens = timeStr.trim().split("\\s+");
         if (tokens.length != 7) {
-            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+            logService.warningLog(bundle.getString("receivePacketError"));
             return;
         }
 
@@ -389,43 +387,43 @@ public class HexMsgTransceiver {
 
             // 각 필드의 값이 범위 내에 있는지 검증
             if (year < MIN_YEAR || year > MAX_YEAR) {
-                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                logService.warningLog(bundle.getString("receivePacketError"));
                 return;
             }
             if (month < MIN_MONTH || month > MAX_MONTH) {
-                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                logService.warningLog(bundle.getString("receivePacketError"));
                 return;
             }
             if (day < MIN_DAY || day > MAX_DAY) {
-                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                logService.warningLog(bundle.getString("receivePacketError"));
                 return;
             }
             if (dayOfWeek < MIN_DAY_OF_WEEK || dayOfWeek > MAX_DAY_OF_WEEK) {
-                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                logService.warningLog(bundle.getString("receivePacketError"));
                 return;
             }
             if (hour < MIN_HOUR || hour > MAX_HOUR) {
-                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                logService.warningLog(bundle.getString("receivePacketError"));
                 return;
             }
             if (minute < MIN_MINUTE || minute > MAX_MINUTE) {
-                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+                logService.warningLog(bundle.getString("receivePacketError"));
                 return;
             }
             if (second < MIN_SECOND || second > MAX_SECOND) {
-                System.out.println(second);
-                logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+
+                logService.warningLog(bundle.getString("receivePacketError"));
             }
 
         } catch (NumberFormatException e) {
-            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+            logService.warningLog(bundle.getString("receivePacketError"));
         }
     }
 
     private void handleDefaultCommands(String status, String receiveMsg, String[] splitMsg) {
         if (splitMsg.length>9){
-            System.out.println("splitMsg = " + splitMsg.length);
-            logService.warningLog("응답 패킷에 오류가 있습니다. 다시 한번 확인해주세요.");
+
+            logService.warningLog(bundle.getString("receivePacketError"));
         }
         if (!status.equals("00")) {
             chkErrorCode(receiveMsg, splitMsg);

@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.text.MessageFormat;
 import java.util.*;
 
 import static dbps.dbps.Constants.*;
@@ -231,7 +232,6 @@ public class CommunicationSettingController {
                 isRS=true;
                 break;
             default:
-                System.out.println(CONNECT_TYPE);
                 communicationGroup.selectToggle(null);
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);
@@ -711,7 +711,7 @@ public class CommunicationSettingController {
                 return;
             }
             Platform.runLater(()->{
-                keepOpenBtn.setText("유지 해제");
+                keepOpenBtn.setText(bundle.getString("holdOff"));
             });
         } else {
             logService.updateInfoLog(bundle.getString("portOpenClose"));
@@ -722,14 +722,14 @@ public class CommunicationSettingController {
                 return;
             }
             Platform.runLater(()->{
-                keepOpenBtn.setText("포트 유지");
+                keepOpenBtn.setText(bundle.getString("portkeep"));
             });
         }
     }
 
     public void pingTest() {
         pingTextField.setText("");
-        logService.updateInfoLog("핑 테스트를 시작합니다. 4개의 핑을 보냅니다. 잠시만 기다려주세요.");
+        logService.updateInfoLog(bundle.getString("PingTestStart"));
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -748,16 +748,19 @@ public class CommunicationSettingController {
                     long rtt = endTime - startTime;
 
                     if (reachable) {
-                        logService.updateInfoLog((i)+"번째 패킷 응답 시간 : " +rtt+"ms");
+                        logService.updateInfoLog(MessageFormat.format(bundle.getString("pingTime"), i, rtt));
                         successCnt++;
                         totalTime += rtt;
                     } else {
-                        logService.updateInfoLog((i)+"번째 패킷 손실되었습니다.");
+                        logService.updateInfoLog(MessageFormat.format(bundle.getString("pingLost"), i));
                     }
                 }
                 double avgTime = (double) totalTime / successCnt;
+                if (successCnt==0){
+                    avgTime=0;
+                }
                 String result = String.format("%.1fms (%d/4)", avgTime, successCnt);
-                Platform.runLater(() -> {pingTextField.setText(result);logService.updateInfoLog("핑 테스트가 완료되었습니다.");});
+                Platform.runLater(() -> {pingTextField.setText(result);logService.updateInfoLog(bundle.getString("pingTestComplete"));});
                 return null;
             }
         };
