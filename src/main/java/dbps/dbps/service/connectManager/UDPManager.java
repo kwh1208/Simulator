@@ -118,14 +118,76 @@ public class UDPManager {
             @Override
             protected String call() throws Exception {
                 if (socket == null||socket.isClosed()) {
+                    System.out.println(8888);
                     connect(IP, PORT);
                 }
                 DatagramPacket receivePacket;
                 try {
+                    System.out.println(5555);
                     InetAddress serverAddr = InetAddress.getByName(IP);
                     logService.updateInfoLog("전송 메세지 :"+bytesToHex(msg, msg.length));
                     DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
+                    System.out.println(6666);
                     socket.send(sendPacket);
+                    System.out.println(7777);
+
+                    byte[] receiveBuffer = new byte[1024];
+                    int totalBytesRead = 0;
+                    receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+                    while (true) {
+                        try {
+                            socket.receive(receivePacket);
+                            int bytesRead = receivePacket.getLength();
+                            if (bytesRead > 0) {
+                                totalBytesRead += bytesRead;
+                                // 데이터 처리 로직
+                                if (dataReceivedIsCompleteHex(receiveBuffer, totalBytesRead)) {
+                                    break; // 수신 완료 조건 만족 시 루프 종료
+                                }
+                            }
+                        } catch (SocketTimeoutException e) {
+                            logService.errorLog("데이터 수신에 실패했습니다. 연결상태를 확인해주세요.");
+                            throw new RuntimeException();
+                        }
+                    }
+                    String result = bytesToHex(receivePacket.getData(), receivePacket.getLength());
+                    if (result.contains("52 58 28")) {
+                        Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                        Matcher matcher = pattern.matcher(result);
+
+                        if (matcher.find()) {
+                            result = matcher.group(0); // 전체 매칭된 부분을 추출
+                        }
+                    }
+                    logService.updateInfoLog("받은 메세지 :"+result);
+                    return result;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw e;
+                } finally {
+                    disconnect();
+                }
+            }
+        };
+    }
+
+    public Task<String> sendMQTTMsgAndGetMsgByte(byte[] msg, int brokerPort){
+        return new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                if (socket == null||socket.isClosed()) {
+                    System.out.println(8888);
+                    connectMQTT(brokerPort);
+                }
+                DatagramPacket receivePacket;
+                try {
+                    System.out.println(5555);
+                    InetAddress serverAddr = InetAddress.getByName(IP);
+                    logService.updateInfoLog("전송 메세지 :"+bytesToHex(msg, msg.length));
+                    DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
+                    System.out.println(6666);
+                    socket.send(sendPacket);
+                    System.out.println(7777);
 
                     byte[] receiveBuffer = new byte[1024];
                     int totalBytesRead = 0;
@@ -488,6 +550,20 @@ public class UDPManager {
         try {
             if (socket == null) {
                 socket = new DatagramSocket(5109);
+            }
+            socket.setBroadcast(true);
+            socket.setSoTimeout(RESPONSE_LATENCY*1000);
+        } catch (SocketException e) {
+            e.printStackTrace();
+            logService.errorLog("IP: " + IP + ", PORT: " + PORT+"열기에 실패했습니다.");
+        }
+    }
+
+    public void connectMQTT(int PORT){
+        logService.updateInfoLog("UDP 서버에 연결합니다. IP: " + IP + ", PORT: " + PORT);
+        try {
+            if (socket == null) {
+                socket = new DatagramSocket(PORT);
             }
             socket.setBroadcast(true);
             socket.setSoTimeout(RESPONSE_LATENCY*1000);

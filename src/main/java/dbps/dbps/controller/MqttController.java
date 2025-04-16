@@ -6,10 +6,14 @@ import dbps.dbps.Simulator;
 import dbps.dbps.service.HexMsgTransceiver;
 import dbps.dbps.service.MQTTUIService;
 import dbps.dbps.service.connectManager.MQTTManager;
+import dbps.dbps.service.connectManager.UDPManager;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -17,6 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
 import static dbps.dbps.Constants.openModal;
@@ -41,20 +48,29 @@ public class MqttController {
     public TextField brokerPort;
     @FXML
     public TextField password;
-
+    public RadioButton UDPRadioBtn;
+    public RadioButton TCPRadioBtn;
+    ToggleGroup communicationGroup;
 
     HexMsgTransceiver hexTransceiver;
     MQTTManager mqttManager;
     MQTTUIService mqttUIService;
+    UDPManager udpManager;
 
     @FXML
     public void initialize(){
         hexTransceiver=HexMsgTransceiver.getInstance();
         mqttManager = MQTTManager.getInstance();
         mqttUIService = MQTTUIService.getMqttUIService();
+        udpManager = UDPManager.getUDPManager();
 
         mqttAP.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/mqtt.css").toExternalForm());
         mqttUIService.setMQTTControllerUI(mqttMac, name, API, brokerIP, brokerPort, userName, password);
+
+        communicationGroup = new ToggleGroup();
+        UDPRadioBtn.setToggleGroup(communicationGroup);
+        TCPRadioBtn.setToggleGroup(communicationGroup);
+        TCPRadioBtn.setSelected(true);
     }
 
     public void read() {
@@ -70,13 +86,45 @@ public class MqttController {
 
 
     public void set() throws JsonProcessingException {
-        DeviceInfo deviceInfo = new DeviceInfo(mqttMac.getText(),
-                API.getText(),
-                brokerIP.getText(),
-                Integer.parseInt(brokerPort.getText()),
-                userName.getText(),
-                password.getText());
-        mqttManager.sendSetMsg(new ObjectMapper().writeValueAsString(deviceInfo));
+        if (TCPRadioBtn.isSelected()) {
+            DeviceInfo deviceInfo = new DeviceInfo(mqttMac.getText(),
+                    API.getText(),
+                    brokerIP.getText(),
+                    Integer.parseInt(brokerPort.getText()),
+                    userName.getText(),
+                    password.getText());
+            mqttManager.sendSetMsg(new ObjectMapper().writeValueAsString(deviceInfo));
+        } else {
+            System.out.println(111);
+            try {
+                // deviceInfo 객체 생성 (TCP 전송 시와 동일)
+                DeviceInfo deviceInfo = new DeviceInfo(
+                        mqttMac.getText(),
+                        API.getText(),
+                        brokerIP.getText(),
+                        Integer.parseInt(brokerPort.getText()),
+                        userName.getText(),
+                        password.getText()
+                );
+                System.out.println(2222);
+
+                // 메시지 구조 : 토픽과 payload를 포함하는 Map (여기서는 topic을 "/set"으로 지정)
+                Map<String, Object> udpMsg = new HashMap<>();
+                udpMsg.put("payload", deviceInfo);
+                System.out.println(3333);
+
+                // JSON 변환: Jackson ObjectMapper를 사용하여 문자열로 변환합니다.
+                ObjectMapper mapper = new ObjectMapper();
+                String jsonPayload = mapper.writeValueAsString(udpMsg);
+                System.out.println(4444);
+
+                // 변환된 JSON 문자열을 바이트 배열로 변환하여 UDP 전송 메서드 호출
+                new Thread(udpManager.sendMQTTMsgAndGetMsgByte(jsonPayload.getBytes(StandardCharsets.UTF_8), Integer.parseInt(brokerPort.getText()))).start();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void mqttServer(MouseEvent mouseEvent) throws IOException {
