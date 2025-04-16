@@ -285,6 +285,10 @@ public class DabitNetController {
 
             sendByte = getBytesSerial(newDB300);
 
+            for (byte b : sendByte) {
+                System.out.printf("%02x ", b);
+            }
+
             Task<Void> set = serialPortManager.send300ByteMsg(sendByte, networkSelection.getValue(), Integer.parseInt(baudRateComboBox.getValue()));
 
             set.setOnSucceeded(event-> Platform.runLater(() -> {
@@ -440,11 +444,13 @@ public class DabitNetController {
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 37;
 
-        tmp = newDB300.getWifiSSID().getBytes();
+        if (newDB300.getWifiSSID() != null) tmp = newDB300.getWifiSSID().getBytes();
+        else tmp = new byte[]{0x20};
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 22;
 
-        tmp = newDB300.getWifiPW().getBytes();
+        if (newDB300.getWifiPW() != null) tmp = newDB300.getWifiPW().getBytes();
+        else tmp = new byte[]{0x20};
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 22;
 

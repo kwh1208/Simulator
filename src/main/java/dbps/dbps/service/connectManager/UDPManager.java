@@ -431,9 +431,7 @@ public class UDPManager {
                                         }
                                     }
                                     String finalMessage = message;
-                                    String log = message.substring(0, 20);
-                                    log+=message.substring(message.length()-10);
-                                    logService.updateInfoLog(bundle.getString("receivedMsg")+log);
+                                    logService.updateInfoLog(bundle.getString("receivedMsg")+message);
                                     Platform.runLater(() -> dabitNetService.updateUI(finalMessage));
                                     receivedMessages.add(message);
                                 }
