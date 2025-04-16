@@ -371,6 +371,7 @@ public class UDPManager {
                 InetAddress serverAddr = InetAddress.getByName(IP);
 
                 try {
+                    logService.updateInfoLog(bundle.getString("sendMsg")+new String(msg));
                     for (DatagramSocket socket : socketList) {
                         if (socket == null || socket.isClosed()) {
                             continue;
@@ -426,10 +427,13 @@ public class UDPManager {
                                         Matcher matcher = pattern.matcher(message);
 
                                         if (matcher.find()) {
-                                            message = matcher.group(0); // 전체 매칭된 부분을 추출
+                                            message = matcher.group(0);
                                         }
                                     }
                                     String finalMessage = message;
+                                    String log = message.substring(0, 20);
+                                    log+=message.substring(message.length()-10);
+                                    logService.updateInfoLog(bundle.getString("receivedMsg")+log);
                                     Platform.runLater(() -> dabitNetService.updateUI(finalMessage));
                                     receivedMessages.add(message);
                                 }

@@ -334,22 +334,21 @@ public class TCPManager {
             OutputStream output = socket.getOutputStream();
             input.skip(input.available()); // 기존에 남아있는 데이터 제거
 
+            int retryCount = 0;
+            final int maxRetries = 3;
+            boolean success = false;
+            byte[] buffer = new byte[1024];
+            int totalBytesRead = 0;
+
+            while (!success && retryCount < maxRetries) {
+                try {
             output.write(msg);
             output.flush();
 
             String log = bytesToHex(msg, 32);
             log += " ~ 10 03";
             logService.updateInfoLog(log);
-
-            byte[] buffer = new byte[1024];
-            int totalBytesRead = 0;
-
-            int retryCount = 0;
-            final int maxRetries = 3;
-            boolean success = false;
-
-            while (!success && retryCount < maxRetries) {
-                try {
+            
                     int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
                     if (bytesRead > 0) {
                         totalBytesRead += bytesRead;
@@ -369,11 +368,13 @@ public class TCPManager {
                         }
                     } } catch (SocketTimeoutException e) {
                     retryCount++;
-                    Thread.sleep(1000);
+
                     disconnectNoLog();
                     logService.warningLog(
                             MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount)
                     );
+
+                    Thread.sleep(1000);
                     if (retryCount >= maxRetries) {
                         disconnectNoLog();
                         throw new RuntimeException();

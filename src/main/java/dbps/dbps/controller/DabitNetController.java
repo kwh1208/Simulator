@@ -215,7 +215,7 @@ public class DabitNetController {
             @Override
             protected Void call() {
                 Task<String> sendTask;
-                if (!networkSelection.getValue().equals("UDP")) { // ✅ 시리얼 통신 Task 실행
+                if (!networkSelection.getValue().equals("UDP")) {
                     sendTask = serialPortManager.send300MsgAndGetMsg(
                             "++SET++![SEARCHING DIBD  B\r\n!]",
                             networkSelection.getValue(),
@@ -225,7 +225,6 @@ public class DabitNetController {
                     udpManager.connect300All();
                     sendTask = udpManager.send300MsgAndGetMsgByte("SEARCHING DIBD  B\r\n".getBytes());
                 }
-
 
                 sendTask.setOnSucceeded(event -> Platform.runLater(() -> {
                     searchBtn.setDisable(false);
@@ -260,8 +259,6 @@ public class DabitNetController {
     }
 
     Thread thread;
-
-
 
     @FXML
     public void set() throws IOException {
