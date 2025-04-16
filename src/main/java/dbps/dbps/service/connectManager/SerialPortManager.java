@@ -55,7 +55,7 @@ public class SerialPortManager {
             }
             SerialPort port = SerialPort.getCommPort(portName);
             port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY*1000, 0);
+            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY * 1000, 0);
 
             if (!port.openPort()) {
                 logService.errorLog(portName + bundle.getString("portCantOpen"));
@@ -74,7 +74,7 @@ public class SerialPortManager {
             }
             SerialPort port = SerialPort.getCommPort(portName);
             port.setComPortParameters(baudRate, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY*1000, 0);
+            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, RESPONSE_LATENCY * 1000, 0);
 //            port.setFlowControl(SerialPort.FLOW_CONTROL_RTS_ENABLED | SerialPort.FLOW_CONTROL_CTS_ENABLED);
 
 
@@ -88,7 +88,7 @@ public class SerialPortManager {
 
 
     public void closePort(String portName) {
-        if (KEEP_OPEN){
+        if (KEEP_OPEN) {
             return;
         }
         synchronized (portLock) {
@@ -102,7 +102,7 @@ public class SerialPortManager {
     }
 
     public void closePortNoLog(String portName) {
-        if (KEEP_OPEN){
+        if (KEEP_OPEN) {
             return;
         }
         synchronized (portLock) {
@@ -133,7 +133,7 @@ public class SerialPortManager {
                         throw new IllegalStateException("포트를 열 수 없습니다: " + portName);
                     }
 
-                    if(!isBT &&port.getPortDescription().toLowerCase().contains("bluetooth")){
+                    if (!isBT && port.getPortDescription().toLowerCase().contains("bluetooth")) {
                         logService.warningLog(bundle.getString("bluetoothPort"));
                         closePort(portName);
                         throw new RuntimeException();
@@ -148,7 +148,7 @@ public class SerialPortManager {
                         outputStream.write(dataToSend);
                         outputStream.flush();
 
-                        if (msg.startsWith("++SET++![BT SETT  ")){
+                        if (msg.startsWith("++SET++![BT SETT  ")) {
                             return null;
                         }
 
@@ -171,9 +171,7 @@ public class SerialPortManager {
                                 if (dataReceivedIsComplete(buffer, totalBytesRead)) {
                                     break;
                                 }
-                            }
-
-                            else{
+                            } else {
                                 break;
                             }
                         }
@@ -183,7 +181,7 @@ public class SerialPortManager {
                         if (result.contains("TX") && result.contains("![") && result.contains("!]")) {
                             int indexTX = result.indexOf("TX");
                             result = result.substring(indexTX);
-                            result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                            result = result.substring(result.indexOf("!["), result.indexOf("!]") + 2);
                         }
                         logService.updateInfoLog(bundle.getString("receivedMsg") + result);
                         return result;
@@ -217,7 +215,7 @@ public class SerialPortManager {
                         throw new IllegalStateException("포트를 열 수 없습니다: " + portName);
                     }
 
-                    if(!isBT &&port.getPortDescription().toLowerCase().contains("bluetooth")){
+                    if (!isBT && port.getPortDescription().toLowerCase().contains("bluetooth")) {
                         logService.warningLog(bundle.getString("bluetoothPort"));
                         closePort(portName);
                         throw new RuntimeException();
@@ -231,12 +229,11 @@ public class SerialPortManager {
                         outputStream.write(dataToSend);
                         outputStream.flush();
 
-                        if (utf8){
+                        if (utf8) {
                             logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF8(msg));
                         } else if (utf16) {
                             logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF16(msg));
-                        }
-                        else logService.updateInfoLog(bundle.getString("sendMsg") + msg);
+                        } else logService.updateInfoLog(bundle.getString("sendMsg") + msg);
 
                         byte[] buffer = new byte[1024];
                         int totalBytesRead = 0;
@@ -266,7 +263,7 @@ public class SerialPortManager {
                         if (result.contains("TX") && result.contains("![") && result.contains("!]")) {
                             int indexTX = result.indexOf("TX");
                             result = result.substring(indexTX);
-                            result = result.substring(result.indexOf("!["), result.indexOf("!]")+2);
+                            result = result.substring(result.indexOf("!["), result.indexOf("!]") + 2);
                         }
                         if (result.contains("RX")) {
 
@@ -503,12 +500,6 @@ public class SerialPortManager {
             OutputStream outputStream = port.getOutputStream();
             InputStream inputStream = port.getInputStream();
 
-            String log = bytesToHex(msg, 32);
-            log+=" ~ 10 03";
-            logService.updateInfoLog(log);
-
-            outputStream.write(msg);
-            // 읽기용 버퍼 초기화
             byte[] buffer = new byte[1024];
             int totalBytesRead = 0;
 
@@ -518,6 +509,12 @@ public class SerialPortManager {
 
             while (!success && retryCount < maxRetries) {
                 try {
+                    String log = bytesToHex(msg, 32);
+                    log += " ~ 10 03";
+                    outputStream.write(msg);
+                    logService.updateInfoLog(log);
+
+                    // 읽기용 버퍼 초기화
                     int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
                     if (bytesRead > 0) {
                         totalBytesRead += bytesRead;
@@ -534,7 +531,8 @@ public class SerialPortManager {
                         if (retryCount >= maxRetries) {
                             throw new RuntimeException();
                         }
-                    } } catch (SocketTimeoutException e) {
+                    }
+                } catch (SocketTimeoutException e) {
                     retryCount++;
                     Thread.sleep(1000);
                     logService.warningLog(
@@ -668,19 +666,18 @@ public class SerialPortManager {
                     } else {
                         throw new IOException("212 바이트를 읽는 데 실패했습니다. 총 읽은 바이트: " + totalBytesRead);
                     }
-                } catch (SerialPortTimeoutException e){
+                } catch (SerialPortTimeoutException e) {
                     String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
                     if (result.contains("TX")) {
                         result = result.substring(0, result.indexOf("TX") + 2); // "TX" 포함하여 잘라냄
                     }
                     String[] lines = result.split("\r?\n"); // 윈도우(\r\n)와 유닉스(\n) 모두 대응 가능
                     int lineCount = lines.length;
-                    if (lineCount>=12){
+                    if (lineCount >= 12) {
                         dabitNetService.updateUI(result);
                     }
                     return new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     logService.errorLog(bundle.getString("connectionFail"));
                     throw e;
                 } finally {

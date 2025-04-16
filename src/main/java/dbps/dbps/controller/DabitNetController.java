@@ -215,7 +215,7 @@ public class DabitNetController {
             @Override
             protected Void call() {
                 Task<String> sendTask;
-                if (!networkSelection.getValue().equals("UDP")) { // ✅ 시리얼 통신 Task 실행
+                if (!networkSelection.getValue().equals("UDP")) {
                     sendTask = serialPortManager.send300MsgAndGetMsg(
                             "++SET++![SEARCHING DIBD  B\r\n!]",
                             networkSelection.getValue(),
@@ -225,7 +225,6 @@ public class DabitNetController {
                     udpManager.connect300All();
                     sendTask = udpManager.send300MsgAndGetMsgByte("SEARCHING DIBD  B\r\n".getBytes());
                 }
-
 
                 sendTask.setOnSucceeded(event -> Platform.runLater(() -> {
                     searchBtn.setDisable(false);
@@ -261,8 +260,6 @@ public class DabitNetController {
 
     Thread thread;
 
-
-
     @FXML
     public void set() throws IOException {
         Platform.runLater(()-> dbNetProgressBar.setVisible(true));
@@ -287,6 +284,10 @@ public class DabitNetController {
         if (!networkSelection.getValue().equals("UDP")) {
 
             sendByte = getBytesSerial(newDB300);
+
+            for (byte b : sendByte) {
+                System.out.printf("%02x ", b);
+            }
 
             Task<Void> set = serialPortManager.send300ByteMsg(sendByte, networkSelection.getValue(), Integer.parseInt(baudRateComboBox.getValue()));
 
@@ -443,11 +444,13 @@ public class DabitNetController {
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 37;
 
-        tmp = newDB300.getWifiSSID().getBytes();
+        if (newDB300.getWifiSSID() != null) tmp = newDB300.getWifiSSID().getBytes();
+        else tmp = new byte[]{0x20};
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 22;
 
-        tmp = newDB300.getWifiPW().getBytes();
+        if (newDB300.getWifiPW() != null) tmp = newDB300.getWifiPW().getBytes();
+        else tmp = new byte[]{0x20};
         System.arraycopy(tmp, 0, sendByte, destPos, Math.min(tmp.length, 20));
         destPos += 22;
 

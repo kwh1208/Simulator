@@ -22,9 +22,6 @@ application {
     mainClass = 'dbps.dbps.Simulator'
 }
 
-// -----------------------------------
-// 의존성 (예시)
-// -----------------------------------
 def jfxVer = '17.0.14'
 dependencies {
     // JavaFX (Windows 64비트)
@@ -46,18 +43,12 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.16'
     implementation 'org.slf4j:slf4j-simple:2.0.16'
 
-    // MQTT (로컬 .jar)
-
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
 }
 
-// -----------------------------------
-// Gradle 8.x 에서 distZip/distTar/startScripts
-// 등을 그대로 사용해도,
-// shadow 플러그인이 없으므로 충돌 없음
-// -----------------------------------
+
 
 
 // UTF-8 컴파일 옵션
@@ -65,9 +56,6 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-// -----------------------------------
-// jlink + jpackage => Windows EXE
-// -----------------------------------
 jlink {
     options = [
             '--strip-debug',

@@ -235,7 +235,7 @@ public class HexMsgTransceiver {
                 updateFirmwareUI(splitMsg);
             }
             case "4C" -> {
-                if (splitMsg.length>8){
+                if (splitMsg.length>9){
                     logService.warningLog(bundle.getString("receivePacketError"));
                     return;
                 }
