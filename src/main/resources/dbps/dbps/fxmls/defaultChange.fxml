@@ -7,13 +7,17 @@
 
 <AnchorPane fx:id="defaultChangeAP" prefHeight="300.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.DefaultChangeController">
     <Label layoutX="25.0" layoutY="15.0" text="IP Address" />
-    <TextField fx:id="clientIPTF" layoutX="25.0" layoutY="45.0" prefHeight="21.0" prefWidth="150.0" />
-    <Label layoutX="25.0" layoutY="195.0" text="IP Port" />
-    <TextField fx:id="clientPortTF" layoutX="25.0" layoutY="225.0" prefHeight="21.0" prefWidth="150.0" />
+    <TextField fx:id="clientIPTF" layoutX="25.0" layoutY="35.0" prefHeight="21.0" prefWidth="150.0" />
+    
     <Label layoutX="25.0" layoutY="75.0" text="Subnet Mask" />
-    <TextField fx:id="clientSubnetMaskTF" layoutX="25.0" layoutY="105.0" prefHeight="21.0" prefWidth="150.0" />
+    <TextField fx:id="clientSubnetMaskTF" layoutX="25.0" layoutY="95.0" prefHeight="21.0" prefWidth="150.0" />
+    
     <Label layoutX="25.0" layoutY="135.0" text="Gateway" />
-    <TextField fx:id="clientGatewayTF" layoutX="25.0" layoutY="165.0" prefHeight="21.0" prefWidth="150.0" />
+    <TextField fx:id="clientGatewayTF" layoutX="25.0" layoutY="155.0" prefHeight="21.0" prefWidth="150.0" />
+    
+    <Label layoutX="25.0" layoutY="195.0" text="IP Port" />
+    <TextField fx:id="clientPortTF" layoutX="25.0" layoutY="215.0" prefHeight="21.0" prefWidth="150.0" />
+    
     <Button layoutX="25.0" layoutY="260.0" mnemonicParsing="false" onMouseClicked="#confirm" prefHeight="28.0" prefWidth="60.0" text="set" />
     <Button layoutX="115.0" layoutY="260.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="28.0" prefWidth="60.0" text="close" />
 </AnchorPane>

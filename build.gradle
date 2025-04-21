@@ -22,9 +22,6 @@ application {
     mainClass = 'dbps.dbps.Simulator'
 }
 
-// -----------------------------------
-// 의존성 (예시)
-// -----------------------------------
 def jfxVer = '17.0.14'
 dependencies {
     // JavaFX (Windows 64비트)
@@ -46,7 +43,9 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.16'
     implementation 'org.slf4j:slf4j-simple:2.0.16'
 
-    // MQTT (로컬 .jar)
+    // MQTT
+    implementation 'com.hivemq:hivemq-mqtt-client:1.3.5'
+    implementation 'org.json:json:20250107'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.34'

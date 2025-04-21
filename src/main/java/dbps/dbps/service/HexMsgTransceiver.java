@@ -1,9 +1,6 @@
 package dbps.dbps.service;
 
-import dbps.dbps.service.connectManager.SerialPortManager;
-import dbps.dbps.service.connectManager.ServerTCPManager;
-import dbps.dbps.service.connectManager.TCPManager;
-import dbps.dbps.service.connectManager.UDPManager;
+import dbps.dbps.service.connectManager.*;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
@@ -29,6 +26,7 @@ public class HexMsgTransceiver {
     private final UDPManager udpManager;
     private final TCPManager tcpManager;
     private final ServerTCPManager serverTCPManager;
+    private final MQTTManager mqttManager;
     private final UnderTheLineLeftService underTheLineLeftService;
     private final SizeOfDisplayBoardService sizeOfDisplayBoardService;
     private final HexMsgService hexMsgService;
@@ -55,6 +53,7 @@ public class HexMsgTransceiver {
         hexMsgService=HexMsgService.getInstance();
         fontNameService = FontNameService.getInstance();
         bundle=ResourceManager.getInstance().getBundle();
+        mqttManager = MQTTManager.getInstance();
     }
 
     public static HexMsgTransceiver getInstance() {
@@ -71,6 +70,7 @@ public class HexMsgTransceiver {
             case "UDP" -> udpManager.sendMsgAndGetMsgByte(msg);
             case "clientTCP" -> tcpManager.sendMsgAndGetMsgByte(msg);
             case "serverTCP" -> serverTCPManager.sendMsgAndGetMsgByte(msg);
+            case "mqtt" -> mqttManager.sendByteMsg(msg);
             default -> throw new IllegalStateException("Unexpected value: " + CONNECT_TYPE);
         };
 
@@ -143,6 +143,13 @@ public class HexMsgTransceiver {
                     throw new RuntimeException(e);
                 }
             }
+            case "mqtt" ->{
+                try {
+                    mqttManager.sendByteMsgNoLog(msg);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
@@ -176,6 +183,12 @@ public class HexMsgTransceiver {
             case "serverTCP" ->{
                 try {
                     serverTCPManager.sendMsgAndGetMsgByteShortLog(msg);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } case "mqtt" ->{
+                try {
+                    mqttManager.sendByteMsgShortLog(msg);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
