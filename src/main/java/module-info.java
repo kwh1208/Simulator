@@ -10,6 +10,8 @@ module DBPS.main {
     requires static lombok;
     requires org.fxmisc.richtext;
     requires org.slf4j;
+    requires com.hivemq.client.mqtt;
+    requires org.json;
 
     exports dbps.dbps;
     opens dbps.dbps.controller to javafx.fxml;

@@ -1,9 +1,6 @@
 package dbps.dbps.service;
 
-import dbps.dbps.service.connectManager.SerialPortManager;
-import dbps.dbps.service.connectManager.ServerTCPManager;
-import dbps.dbps.service.connectManager.TCPManager;
-import dbps.dbps.service.connectManager.UDPManager;
+import dbps.dbps.service.connectManager.*;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
@@ -35,6 +32,7 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
     private FirmwareService firmwareService;
     private BoardSettingService boardSettingService;
     private BTService btService;
+    private MQTTManager mqttManager;
     private ResourceBundle bundle;
     private AdditionalService additionalService;
 
@@ -77,6 +75,7 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
         boardSettingService = BoardSettingService.getInstance();
         bundle = ResourceManager.getInstance().getBundle();
         additionalService = AdditionalService.getInstance();
+        mqttManager = MQTTManager.getInstance();
     }
     
     /**
@@ -142,6 +141,7 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
                     case "UDP" -> udpManager.sendASCMsg(msg, utf8);
                     case "clientTCP" -> tcpManager.sendASCMsg(msg);
                     case "serverTCP" -> serverTCPManager.sendASCMsg(msg, utf8);
+                    case "mqtt" -> mqttManager.sendMsg(msg);
                     default -> {
                         String errorMsg = "지원하지 않는 연결 유형: " + CONNECT_TYPE;
                         logService.errorLog(errorMsg);
@@ -154,6 +154,7 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
                     case "UDP" -> udpManager.sendASCMsg(msg, utf8, utf16);
                     case "clientTCP" -> tcpManager.sendASCMsg(msg, utf8, utf16);
                     case "serverTCP" -> serverTCPManager.sendASCMsg(msg, utf8, utf16);
+                    case "mqtt" -> mqttManager.sendMsg(msg);
                     default -> {
                         String errorMsg = "지원하지 않는 연결 유형: " + CONNECT_TYPE;
                         logService.errorLog(errorMsg);

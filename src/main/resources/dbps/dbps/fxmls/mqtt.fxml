@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="mqttAP" minHeight="384.0" minWidth="371.0" prefHeight="418.0" prefWidth="371.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MqttController">
+    <Label layoutX="26.0" layoutY="49.0" prefHeight="29.0" text="MAC 주소" />
+    <TextField fx:id="mqttMac" layoutX="97.0" layoutY="49.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
+    <Label layoutX="26.0" layoutY="90.0" prefHeight="29.0" text="Name" />
+    <TextField fx:id="name" editable="false" layoutX="97.0" layoutY="90.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
+    <Label layoutX="26.0" layoutY="130.0" prefHeight="29.0" text="API URL" />
+    <TextField fx:id="API" layoutX="97.0" layoutY="130.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
+    <Label layoutX="26.0" layoutY="169.0" prefHeight="29.0" text="Broker IP" />
+    <TextField fx:id="brokerIP" layoutX="97.0" layoutY="169.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
+    <Label layoutX="26.0" layoutY="209.0" prefHeight="29.0" text="Broker Port" />
+    <TextField fx:id="brokerPort" layoutX="97.0" layoutY="209.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
+    <Pane layoutX="15.0" layoutY="255.0" prefHeight="112.0" prefWidth="336.0" style="-fx-border-color: #A0A0A0; -fx-border-radius: 10; -fx-border-width: 0.3">
+        <Label layoutX="10.0" layoutY="-7.0" text="인증정보" style="-fx-background-color: #F4F4F4; -fx-padding: 0 5 0 5px"/>
+        <Label layoutX="11.0" layoutY="14.0" prefHeight="29.0" text="User" />
+        <TextField fx:id="userName" layoutX="82.0" layoutY="14.0" prefHeight="29.0" prefWidth="240.0" />
+        <Label layoutX="11.0" layoutY="64.0" prefHeight="29.0" text="Password" />
+        <TextField fx:id="password" layoutX="82.0" layoutY="64.0" prefHeight="29.0" prefWidth="240.0" />
+    </Pane>
+    <Button layoutX="17.0" layoutY="380.0" mnemonicParsing="false" onMouseClicked="#read" prefHeight="21.0" prefWidth="90.0" text="읽기" />
+    <Button layoutX="140.0" layoutY="380.0" mnemonicParsing="false" onMouseClicked="#set" prefHeight="21.0" prefWidth="90.0" text="설정" />
+    <Button layoutX="260.0" layoutY="380.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="21.0" prefWidth="90.0" text="닫기" />
+    <ProgressIndicator fx:id="progressIndicator" layoutX="180.0" layoutY="160.0" visible="false" />
+    <RadioButton fx:id="TCPRadioBtn" layoutX="169.0" layoutY="14.0" mnemonicParsing="false" text="TCP" />
+    <RadioButton fx:id="UDPRadioBtn" layoutX="269.0" layoutY="14.0" mnemonicParsing="false" text="UDP" />
+</AnchorPane>
