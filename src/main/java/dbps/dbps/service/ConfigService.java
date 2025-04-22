@@ -185,6 +185,9 @@ public class ConfigService extends AbstractSingleton<ConfigService> {
         defaultProperties.setProperty("lastDisplaySignal", "16D-P16D1S11");
         defaultProperties.setProperty("PROGRAM_LANGUAGE", "한국어");
 
+        defaultProperties.setProperty("mqtt_IP", "192.168.0.10");
+        defaultProperties.setProperty("mqtt_Port", "1883");
+
         // 네트워크 설정
         defaultProperties.setProperty("dbNetIP", "192.168.0.201");
         defaultProperties.setProperty("dbNetPort", "5000");

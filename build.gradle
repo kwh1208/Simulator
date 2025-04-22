@@ -50,6 +50,8 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    implementation 'io.projectreactor.tools:blockhound:1.0.6.RELEASE'
 }
 
 
@@ -67,14 +69,11 @@ jlink {
             '--no-header-files',
             '--no-man-pages'
     ]
-    mergedModule {
-        enabled = false
-    }
     addExtraDependencies("javafx")
 
     launcher {
         // 런처(실행 파일) 이름
-        name = 'dbProtocolSimulator'
+        name = 'dbPS'
     }
 
     jpackage {
