@@ -9,7 +9,6 @@ module DBPS.main {
     requires javafx.graphics;
     requires static lombok;
     requires org.fxmisc.richtext;
-    requires org.slf4j;
     requires com.hivemq.client.mqtt;
     requires org.json;
 

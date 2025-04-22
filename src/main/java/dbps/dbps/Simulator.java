@@ -3,10 +3,7 @@ package dbps.dbps;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.LogService;
 import dbps.dbps.service.ResourceManager;
-import dbps.dbps.service.connectManager.SerialPortManager;
-import dbps.dbps.service.connectManager.ServerTCPManager;
-import dbps.dbps.service.connectManager.TCPManager;
-import dbps.dbps.service.connectManager.UDPManager;
+import dbps.dbps.service.connectManager.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -31,6 +28,7 @@ public class Simulator extends Application {
     ServerTCPManager serverTCPManager;
     TCPManager tcpManager;
     UDPManager udpManager;
+    MQTTManager mqttManager;
 
     @Override
     public void init() throws Exception {
@@ -134,6 +132,15 @@ public class Simulator extends Application {
             udpManager = UDPManager.getUDPManager();
             if (udpManager != null) {
                 udpManager.disconnect();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mqttManager = MQTTManager.getInstance();
+            if (mqttManager != null) {
+                mqttManager.disconnect();
             }
         } catch (Exception e) {
             e.printStackTrace();

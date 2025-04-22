@@ -314,4 +314,20 @@ public class MQTTManager {
         }
     }
 
+    public void disconnect() {
+        if (client != null && client.getState().isConnected()) {
+            try {
+                // 블로킹 클라이언트의 경우 간단히 disconnect() 호출
+                client.disconnect();
+                logService.updateInfoLog("MQTT 브로커 서버 연결을 해제했습니다.");
+            } catch (Exception e) {
+                logService.updateInfoLog("MQTT 브로커 연결 해제 중 오류 발생: " + e.getMessage());
+            } finally {
+                client = null;
+            }
+        } else {
+            logService.updateInfoLog("MQTT 브로커 연결이 되어 있지 않아 해제할 필요가 없습니다.");
+        }
+    }
+
 }
