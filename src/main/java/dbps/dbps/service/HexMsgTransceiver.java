@@ -205,6 +205,9 @@ public class HexMsgTransceiver {
         if (receiveMsg.isEmpty()) {
             return;
         }
+        if (receiveMsg.startsWith("{") && receiveMsg.endsWith("}")) {
+
+        }
         if (receiveMsg.equals("10 02 00 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03 ")){
             logService.updateInfoLog(bundle.getString("connectionSuccess"));
         }

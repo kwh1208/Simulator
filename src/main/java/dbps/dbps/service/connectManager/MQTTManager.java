@@ -1,5 +1,7 @@
 package dbps.dbps.service.connectManager;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
@@ -18,8 +20,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import static dbps.dbps.Constants.RESPONSE_LATENCY;
-import static dbps.dbps.Constants.bytesToHex;
+import static dbps.dbps.Constants.*;
 
 public class MQTTManager {
 
@@ -55,32 +56,36 @@ public class MQTTManager {
     }// MQTT 브로커에 연결
     public void connect() {
         logService.updateInfoLog("MQTT 브로커 서버에 연결 시도중입니다.");
-        if (brokerIp == null || brokerIp.isEmpty()) {
-            brokerIp = configService.getProperty("mqtt_IP");
-        }
-        if (brokerPort == null || brokerPort.isEmpty()) {
-            brokerPort = configService.getProperty("mqtt_Port");
-        }
-
-        int port = Integer.parseInt(brokerPort);
         try {
-            // HiveMQ client 빌더 사용 (MQTT 5 Blocking Client)
-            MqttClientBuilder builder = MqttClient.builder()
-                    .serverHost(brokerIp)
-                    .serverPort(port);
-
-            if (username != null && !username.isEmpty()) {
-                builder = (MqttClientBuilder) builder.useMqttVersion3().simpleAuth()
-                        .username(username)
-                        .password(password != null ? password.getBytes(StandardCharsets.UTF_8) : null);
+            if (brokerIp == null || brokerIp.isEmpty()) {
+                brokerIp = configService.getProperty("mqtt_IP");
+            }
+            if (brokerPort == null || brokerPort.isEmpty()) {
+                brokerPort = configService.getProperty("mqtt_Port");
             }
 
-            client = builder.useMqttVersion5().buildBlocking();
-            client.connect();
-            logService.updateInfoLog("MQTT 브로커 서버 연결에 성공했습니다.");
+            int port = Integer.parseInt(brokerPort);
+            try {
+                // HiveMQ client 빌더 사용 (MQTT 5 Blocking Client)
+                MqttClientBuilder builder = MqttClient.builder()
+                        .serverHost(brokerIp)
+                        .serverPort(port);
+
+                if (username != null && !username.isEmpty()) {
+                    builder = (MqttClientBuilder) builder.useMqttVersion3().simpleAuth()
+                            .username(username)
+                            .password(password != null ? password.getBytes(StandardCharsets.UTF_8) : null);
+                }
+
+                client = builder.useMqttVersion5().buildBlocking();
+                client.connect();
+                logService.updateInfoLog("MQTT 브로커 서버 연결에 성공했습니다.");
+            } catch (Exception e) {
+                logService.updateInfoLog("MQTT 브로커 서버 연결에 실패했습니다.");
+                throw new RuntimeException(e);
+            }
         } catch (Exception e) {
-            logService.updateInfoLog("MQTT 브로커 서버 연결에 실패했습니다.");
-            throw new RuntimeException(e);
+            logService.updateInfoLog(e.getMessage());
         }
     }
 
@@ -177,8 +182,9 @@ public class MQTTManager {
             protected String call() {
                 chkConnect();
                 try {
-                    String hexString = bytesToHex(payload, payload.length);
-                    String json = "{\"db_asc\":\"" + hexString + "\"}";
+                    String b64 = Base64.getEncoder().encodeToString(payload);
+
+                    String json = "{\"db_hex\":\"" + b64 + "\"}";
 
                     client.publishWith()
                             .topic(sendTopic)
@@ -186,12 +192,10 @@ public class MQTTManager {
                             .qos(MqttQos.AT_MOST_ONCE)
                             .send();
 
-                    logService.updateInfoLog("전송 메세지 : " + hexString);
+                    logService.updateInfoLog("전송 메세지 : " + json);
 
                     String result = receivedMsg();
-                    result = result.substring(result.indexOf(":\"") + 2, result.indexOf("\"}"));
-                    byte[] bytes = Base64.getDecoder().decode(result);
-                    result = bytesToHex(bytes, bytes.length);
+
                     logService.updateInfoLog("받은 메세지 : " + result);
                     return result;
                 } catch (Exception e) {
@@ -205,8 +209,10 @@ public class MQTTManager {
     public void sendByteMsgNoLog(byte[] payload) {
         chkConnect();
         try {
-            String hexString = bytesToHex(payload, payload.length);
-            String json = "{\"db_asc\":\"" + hexString + "\"}";
+            String b64 = Base64.getEncoder().encodeToString(payload);
+
+            // 2) JSON으로 감싸기
+            String json = "{\"db_hex\":\"" + b64 + "\"}";
 
             client.publishWith()
                     .topic(sendTopic)
@@ -225,8 +231,9 @@ public class MQTTManager {
     public void sendByteMsgShortLog(byte[] payload) {
         chkConnect();
         try {
-            String hexString = bytesToHex(payload, payload.length);
-            String json = "{\"db_asc\":\"" + hexString + "\"}";
+            String b64 = Base64.getEncoder().encodeToString(payload);
+
+            String json = "{\"db_hex\":\"" + b64 + "\"}";
 
             client.publishWith()
                     .topic(sendTopic)
@@ -245,23 +252,81 @@ public class MQTTManager {
     // 응답 메시지 수신 (최대 5초 대기)
     private String receivedMsg() {
         try {
-            // 구독 요청: receiveTopic에 대해 구독을 요청합니다.
+            // 1) 구독 요청
             client.subscribeWith()
                     .topicFilter(receiveTopic)
                     .send();
 
-            Optional<Mqtt5Publish> optionalPublish = client.publishes(MqttGlobalPublishFilter.SUBSCRIBED)
-                    .receive(5, TimeUnit.SECONDS);
+            // 2) 메시지 대기
+            Optional<Mqtt5Publish> optionalPublish =
+                    client.publishes(MqttGlobalPublishFilter.SUBSCRIBED)
+                            .receive(5, TimeUnit.SECONDS);
+
             if (optionalPublish.isEmpty()) {
                 return "Error: Timeout waiting for response";
             }
-            Mqtt5Publish publish = optionalPublish.get();
-            return new String(publish.getPayloadAsBytes(), StandardCharsets.UTF_8);
+
+            // 3) 페이로드를 문자열로 변환
+            String msg = new String(
+                    optionalPublish.get().getPayloadAsBytes(),
+                    StandardCharsets.UTF_8
+            );
+
+            // 4) { 로 시작하면, RX 뒤에 있는 ![ ... !] 프레임만 추출
+            if (msg.startsWith("{")&&msg.contains("![")) {
+                int start = msg.indexOf("![");
+                int end   = msg.indexOf("!]");
+                if (start != -1 && end != -1 && end > start) {
+                    return msg.substring(start, end + 2);
+                }
+            }
+
+            else {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(msg);
+                msg = root.get("db_hex").asText();
+
+                byte[] decodedBytes = Base64.getDecoder().decode(msg);
+
+                msg = bytesToHex(decodedBytes, decodedBytes.length);
+
+                // 3) 프레임 마커 정의
+                String startMarker = "10 02";
+                String endMarker   = "10 03";
+
+                // 4) 시작/끝 인덱스 찾기
+                int startIdx = msg.indexOf(startMarker);
+                int endIdx   = msg.lastIndexOf(endMarker);
+
+                // 5) 잘라내기
+                if (startIdx != -1 && endIdx != -1 && endIdx + endMarker.length() <= msg.length()) {
+                    msg = msg.substring(startIdx, endIdx + endMarker.length());
+                }
+            }
+            return msg;
+
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             return "Error: " + e.getMessage();
         } catch (Exception e) {
             e.printStackTrace();
             return "Error: " + e.getMessage();
+        }
+    }
+
+    public void disconnect() {
+        if (client != null && client.getState().isConnected()) {
+            try {
+                // 블로킹 클라이언트의 경우 간단히 disconnect() 호출
+                client.disconnect();
+                logService.updateInfoLog("MQTT 브로커 서버 연결을 해제했습니다.");
+            } catch (Exception e) {
+                logService.updateInfoLog("MQTT 브로커 연결 해제 중 오류 발생: " + e.getMessage());
+            } finally {
+                client = null;
+            }
+        } else {
+            logService.updateInfoLog("MQTT 브로커 연결이 되어 있지 않아 해제할 필요가 없습니다.");
         }
     }
 
