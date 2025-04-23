@@ -452,68 +452,37 @@ public class SerialPortManager {
             OutputStream outputStream = port.getOutputStream();
             InputStream inputStream = port.getInputStream();
 
+            String log = bytesToHex(msg, 32);
+            log+=" ~ 10 03";
+            logService.updateInfoLog(log);
+
+            outputStream.write(msg);
+            // 읽기용 버퍼 초기화
             byte[] buffer = new byte[1024];
             int totalBytesRead = 0;
 
-            int retryCount = 0;
-            final int maxRetries = 3;
-            boolean success = false;
+            long startWait = System.currentTimeMillis();
+            long timeout = 150;
 
-            while (!success && retryCount < maxRetries) {
-                try {
-                    String log = bytesToHex(msg, 32);
-                    log += " ~ 10 03";
-                    outputStream.write(msg);
-                    logService.updateInfoLog(log);
-
-                    // 읽기용 버퍼 초기화
+            while ((System.currentTimeMillis() - startWait) < timeout) {
+                if (inputStream.available() > 0) {
                     int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+
                     if (bytesRead > 0) {
                         totalBytesRead += bytesRead;
                         if (dataReceivedIsCompleteHex(buffer, totalBytesRead)) {
-                            success = true;
                             break;
                         }
-                    } else {
-                        retryCount++;
-                        Thread.sleep(1000);
-                        logService.warningLog(
-                                MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount)
-                        );
-                        if (retryCount >= maxRetries) {
-                            throw new RuntimeException();
-                        }
-                    }
-                } catch (SocketTimeoutException e) {
-                    retryCount++;
-                    Thread.sleep(1000);
-                    logService.warningLog(
-                            MessageFormat.format(bundle.getString("packetTransmissionRetry"), retryCount)
-                    );
-                    if (retryCount >= maxRetries) {
-                        throw new RuntimeException();
                     }
                 }
             }
-            // 재시도 횟수를 초과하면 예외 처리
-            if (!success) {
-                logService.warningLog(bundle.getString("packetTransmissionFailedAfterRetries"));
+            if (totalBytesRead == 0){
                 throw new RuntimeException();
             }
-
-            String result = bytesToHex(buffer, totalBytesRead);
-            if (result.contains("52 58 28")) {
-                Pattern pattern = Pattern.compile("10 02(.*?)10 03");
-                Matcher matcher = pattern.matcher(result);
-                if (matcher.find()) {
-                    result = matcher.group(0); // 전체 매칭된 부분 추출
-                }
-            }
-            // 로깅 후 여기서 결과를 사용할 수 있지만, 반환값이 없는 void 함수임.
-        } catch (IOException e) {
+            bytesToHex(buffer, totalBytesRead);
+        } catch (Exception e) {
+            logService.errorLog(bundle.getString("connectionFail"));
             throw e;
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 
