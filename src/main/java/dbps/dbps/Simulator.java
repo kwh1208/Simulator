@@ -71,8 +71,8 @@ public class Simulator extends Application {
             Platform.runLater(() -> {
                 stage.setScene(scene);
                 stage.setResizable(false);
-                stage.setTitle("DBPS V1.3.4");
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
+                stage.setTitle("DBPS V1.4.1");
+                stage.getIcons().add(new Image(getClass().getResourceAsStream("/dabit_app.png")));
                 stage.show();
             });
         });

@@ -225,7 +225,7 @@ public class HEXMessageController {
             section2.setSelected(true);
         }
 
-        if (configService.getProperty("textAsc"+getMsgNum())!=null){
+        if (configService.getProperty("textAsc"+getMsgNum())!=null && realTimeMsg.isSelected()){
             sendMsgAsc.setText(configService.getProperty("textAsc"+getMsgNum()));
         }
 
@@ -257,9 +257,15 @@ public class HEXMessageController {
             bgImg.getItems().add(new ComboItem(String.valueOf(i), MessageFormat.format(bundle.getString("Img"), i)));
         }
 
-        pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {doMsgSettings();configService.setProperty("lastPage", pageMsgCnt.getValue());});
+        pageMsgCnt.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            doMsgSettings();
+            configService.setProperty("lastPage", pageMsgCnt.getValue());
+        });
 
-        sectionGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {doMsgSettings();configService.setProperty("lastSection", newValue.getUserData().toString());});
+        sectionGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            doMsgSettings();
+            configService.setProperty("lastSection", newValue.getUserData().toString());
+        });
         effectOut.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateOutDirections(newValue.displayText()));
         effectIn.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateInDirections(newValue.displayText()));
 
@@ -692,14 +698,35 @@ public class HEXMessageController {
     public void send() {
         if (IS_ASCII) {
             String msg = sendMsgAsc.getText();
+            
+            // 특수 명령어 처리 (/F01, /F02)는 그대로 유지
             if (msg.contains("/F01")||msg.contains("/f01")){
                 asciiMsgTransceiver.sendMessages(msg, false, true, progressIndicator);
                 return;
             }
             if (msg.contains("/F02")||msg.contains("/f02")){
-                asciiMsgTransceiver.sendMessages(msg, true,false, progressIndicator);
+                asciiMsgTransceiver.sendMessages(msg, true, false, progressIndicator);
+                return;
             }
-            else asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
+            
+            // charCodes 값에 따라 인코딩 설정
+            String charCodesValue = "";
+            if (charCodes != null && charCodes.getValue() != null) {
+                charCodesValue = charCodes.getValue().key();
+            }
+            
+            // 선택된 인코딩에 따라 전송
+            if (charCodesValue.equals("UTF16")) {
+                // UTF-16 인코딩
+                asciiMsgTransceiver.sendMessages(msg, false, true, progressIndicator);
+            } else if (charCodesValue.equals("UTF8Com") || charCodesValue.equals("UTF8UNI")) {
+                // UTF-8 인코딩 
+                asciiMsgTransceiver.sendMessages(msg, true, false, progressIndicator);
+            } else {
+                // 기본 EUC-KR 인코딩
+                asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);
+            }
+            
             checkASCColor(msg);
         } else {
             String msg = makeHexMsg();

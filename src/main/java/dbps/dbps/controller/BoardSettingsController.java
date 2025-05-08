@@ -105,7 +105,7 @@ public class BoardSettingsController {
 
     public void readTransfer() {
         String msg = "![00B30!]";
-        if (isRS){
+        if (isRS && CONNECT_TYPE.equals("rs485")){
             msg = "!["+convertRS485AddrASCii()+"0B30!]";
         }
         asciiMsgTransceiver.sendMessages(msg, false, progressIndicator);

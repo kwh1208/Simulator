@@ -9,10 +9,10 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="boardAP" prefHeight="302.0" prefWidth="356.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BoardSettingsController">
+<AnchorPane fx:id="boardAP" prefHeight="322.0" prefWidth="356.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.BoardSettingsController">
     <Pane fx:id="boardDisable" layoutX="13.0" layoutY="14.0" prefHeight="228.0" prefWidth="333.0">
-        <Label layoutX="-1.0" layoutY="13.0" text="%debug" />
-        <ComboBox fx:id="debugMethod" layoutX="158.0" layoutY="9.0" prefHeight="21.0" prefWidth="158.0">
+        <Label layoutX="0.0" layoutY="13.0" text="%debug" />
+        <ComboBox fx:id="debugMethod" layoutX="175.0" layoutY="9.0" prefHeight="21.0" prefWidth="158.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Disable" />
@@ -27,13 +27,13 @@
                 </FXCollections>
             </items>
         </ComboBox>
-        <Label layoutX="-1.0" layoutY="47.0" text="BH1(TTL/RS485) Function" />
-        <ComboBox fx:id="BH1_Func" layoutX="158.0" layoutY="43.0" prefHeight="21.0" prefWidth="158.0">
+        <Label layoutX="0.0" layoutY="47.0" text="BH1(TTL/RS485) Function" />
+        <ComboBox fx:id="BH1_Func" layoutX="175.0" layoutY="43.0" prefHeight="21.0" prefWidth="158.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="TTL/RS485" />
                     <String fx:value="CAN" />
-                    <String fx:value="12C" />
+                    <String fx:value="I2C" />
                     <String fx:value="SPI" />
                     <String fx:value="8Pin Input(HEX)" />
                     <String fx:value="8Pin Input(BCD)" />
@@ -43,8 +43,8 @@
             </items>
         </ComboBox>
 
-        <Label layoutX="-1.0" layoutY="81.0" text="BH1(TTL/RS485) Baud Rate" />
-        <ComboBox fx:id="BH1_baud" layoutX="158.0" layoutY="77.0" prefHeight="21.0" prefWidth="158.0">
+        <Label layoutX="0.0" layoutY="81.0" text="BH1(TTL/RS485) Baud Rate" />
+        <ComboBox fx:id="BH1_baud" layoutX="175.0" layoutY="77.0" prefHeight="21.0" prefWidth="158.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="9600" />
@@ -60,8 +60,8 @@
         </ComboBox>
 
 
-        <Label layoutX="-1.0" layoutY="115.0" text="J2(RS232) Baud Rate" />
-        <ComboBox fx:id="J2_baud" layoutX="158.0" layoutY="111.0" prefHeight="21.0" prefWidth="158.0">
+        <Label layoutX="0.0" layoutY="115.0" text="J2(RS232) Baud Rate" />
+        <ComboBox fx:id="J2_baud" layoutX="175.0" layoutY="111.0" prefHeight="21.0" prefWidth="158.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="9600" />
@@ -75,8 +75,8 @@
                 </FXCollections>
             </items>
         </ComboBox>
-        <Label layoutX="-1.0" layoutY="149.0" text="J3(TTL) Baud Rate" />
-        <ComboBox fx:id="J3_baud" layoutX="158.0" layoutY="145.0" prefHeight="21.0" prefWidth="158.0">
+        <Label layoutX="0.0" layoutY="149.0" text="J3(TTL) Baud Rate" />
+        <ComboBox fx:id="J3_baud" layoutX="175.0" layoutY="145.0" prefHeight="21.0" prefWidth="158.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="9600" />
@@ -90,8 +90,8 @@
                 </FXCollections>
             </items>
         </ComboBox>
-        <Label layoutX="-1.0" layoutY="183.0" text="J4(4pin) Function" />
-        <ComboBox fx:id="J4_func" layoutX="158.0" layoutY="179.0" prefWidth="158.0">
+        <Label layoutX="0.0" layoutY="183.0" text="J4(4pin) Function" />
+        <ComboBox fx:id="J4_func" layoutX="175.0" layoutY="179.0" prefHeight="21.0" prefWidth="158.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Relay Out" />
@@ -105,13 +105,13 @@
                 </FXCollections>
             </items>
         </ComboBox>
-       <Label layoutX="-1.0" layoutY="217.0" text="RS485 Address" />
-       <Label fx:id="rs_address" layoutX="159.0" layoutY="217.0" text="00" />
+       <Label layoutX="0.0" layoutY="217.0" text="RS485 Address" />
+       <Label fx:id="rs_address" layoutX="175.0" layoutY="217.0" text="00" />
        <ProgressIndicator fx:id="progressIndicator" layoutX="135.0" layoutY="77.0" visible="false"/>
     </Pane>
-    <Button focusTraversable="false" layoutX="10.0" layoutY="255.0" mnemonicParsing="false" onMouseClicked="#openCommunicationSetting" prefHeight="31.0" prefWidth="78.0" styleClass="newWindow-button" text="%communication">
+    <Button focusTraversable="false" layoutX="10.0" layoutY="275.0" mnemonicParsing="false" onMouseClicked="#openCommunicationSetting" prefHeight="31.0" prefWidth="78.0" styleClass="newWindow-button" text="%communication">
     </Button>
-    <Button layoutX="95.0" layoutY="255.0" mnemonicParsing="false" onMouseClicked="#readTransfer" prefHeight="31.0" prefWidth="78.0" text="%read" />
-    <Button layoutX="181.0" layoutY="255.0" mnemonicParsing="false" onMouseClicked="#setTransfer" prefHeight="31.0" prefWidth="78.0" text="%set" />
-    <Button layoutX="267.0" layoutY="255.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="31.0" prefWidth="78.0" text="%close" />
+    <Button layoutX="95.0" layoutY="275.0" mnemonicParsing="false" onMouseClicked="#readTransfer" prefHeight="31.0" prefWidth="78.0" text="%read" />
+    <Button layoutX="181.0" layoutY="275.0" mnemonicParsing="false" onMouseClicked="#setTransfer" prefHeight="31.0" prefWidth="78.0" text="%set" />
+    <Button layoutX="267.0" layoutY="275.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="31.0" prefWidth="78.0" text="%close" />
 </AnchorPane>

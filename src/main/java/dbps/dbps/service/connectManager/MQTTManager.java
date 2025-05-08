@@ -6,6 +6,8 @@ import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3ClientBuilder;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import dbps.dbps.service.ConfigService;
@@ -18,7 +20,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static dbps.dbps.Constants.*;
 
@@ -45,7 +49,7 @@ public class MQTTManager {
     @Setter
     private String password;
 
-    private Mqtt5BlockingClient client;
+    private Mqtt3BlockingClient client;
 
     String sendTopic = "/msg";
     String receiveTopic = "/msg_r";
@@ -67,25 +71,49 @@ public class MQTTManager {
             int port = Integer.parseInt(brokerPort);
             try {
                 // HiveMQ client 빌더 사용 (MQTT 5 Blocking Client)
-                MqttClientBuilder builder = MqttClient.builder()
+                MqttClientBuilder defaultBuilder = MqttClient.builder()
                         .serverHost(brokerIp)
                         .serverPort(port);
 
                 if (username != null && !username.isEmpty()) {
-                    builder = (MqttClientBuilder) builder.useMqttVersion3().simpleAuth()
+                    // MQTT 3 빌더로 변환
+                    Mqtt3ClientBuilder mqtt3Builder = defaultBuilder.useMqttVersion3();
+                    mqtt3Builder = mqtt3Builder.simpleAuth()
                             .username(username)
-                            .password(password != null ? password.getBytes(StandardCharsets.UTF_8) : null);
+                            .password(password != null ? password.getBytes(StandardCharsets.UTF_8) : null)
+                            .applySimpleAuth();
+
+                    client = mqtt3Builder.buildBlocking();
+                } else {
+                    client = defaultBuilder.useMqttVersion3().buildBlocking();
                 }
 
-                client = builder.useMqttVersion5().buildBlocking();
                 client.connect();
                 logService.updateInfoLog("MQTT 브로커 서버 연결에 성공했습니다.");
+                subscribeInitialTopics();
             } catch (Exception e) {
                 logService.updateInfoLog("MQTT 브로커 서버 연결에 실패했습니다.");
                 throw new RuntimeException(e);
             }
         } catch (Exception e) {
-            logService.updateInfoLog(e.getMessage());
+            if (e.getMessage().contains("NOT_AUTHORIZED")){
+                logService.updateInfoLog("아이디와 비밀번호를 확인해주세요.");
+            }
+        }
+    }
+
+    private void subscribeInitialTopics() {
+        try {
+            client.toAsync().subscribeWith()
+                    .topicFilter("/sch_r")   // ★ 첫 번째 토픽
+                    .send();
+
+            client.toAsync().subscribeWith()
+                    .topicFilter("/msg_r")  // ★ 두 번째 토픽
+                    .send();
+
+        } catch (Exception e) {
+
         }
     }
 
@@ -130,17 +158,18 @@ public class MQTTManager {
     private String receiveReadMsg() {
         CompletableFuture<String> future = new CompletableFuture<>();
         try {
-            client.subscribeWith()
+            client.toAsync().subscribeWith()
                     .topicFilter("/sch_r")
+                    .callback(publish -> {
+                        String payload = new String(publish.getPayloadAsBytes(), StandardCharsets.UTF_8);
+                        future.complete(payload);
+                    })
                     .send();
-            Optional<Mqtt5Publish> optionalPublish = client.publishes(MqttGlobalPublishFilter.SUBSCRIBED)
-                    .receive(RESPONSE_LATENCY, TimeUnit.SECONDS);
-            if (optionalPublish.isEmpty()) {
-                return "Error: Timeout waiting for response";
-            }
-            Mqtt5Publish publish = optionalPublish.get();
-            return new String(publish.getPayloadAsBytes(), StandardCharsets.UTF_8);
-        } catch (InterruptedException e) {
+
+            return future.get(RESPONSE_LATENCY, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            return "Error: Timeout waiting for response";
+        } catch (InterruptedException | ExecutionException e) {
             return "Error: " + e.getMessage();
         } catch (Exception e) {
             e.printStackTrace();
@@ -251,61 +280,59 @@ public class MQTTManager {
 
     // 응답 메시지 수신 (최대 5초 대기)
     private String receivedMsg() {
+        CompletableFuture<String> future = new CompletableFuture<>();
         try {
-            // 1) 구독 요청
-            client.subscribeWith()
+            // 1) 구독 요청 + 콜백 등록
+            client.toAsync().subscribeWith()
                     .topicFilter(receiveTopic)
+                    .callback(publish -> {
+                        String msg = new String(publish.getPayloadAsBytes(), StandardCharsets.UTF_8);
+
+                        try {
+                            // 2) { 로 시작하면, RX 뒤에 있는 ![ ... !] 프레임만 추출
+                            if (msg.startsWith("{") && msg.contains("![")) {
+                                int start = msg.indexOf("![");
+                                int end = msg.indexOf("!]");
+                                if (start != -1 && end != -1 && end > start) {
+                                    future.complete(msg.substring(start, end + 2));
+                                    return;
+                                }
+                            } else {
+                                ObjectMapper mapper = new ObjectMapper();
+                                JsonNode root = mapper.readTree(msg);
+                                msg = root.get("db_hex").asText();
+
+                                byte[] decodedBytes = Base64.getDecoder().decode(msg);
+
+                                msg = bytesToHex(decodedBytes, decodedBytes.length);
+
+                                // 3) 프레임 마커 정의
+                                String startMarker = "10 02";
+                                String endMarker = "10 03";
+
+                                // 4) 시작/끝 인덱스 찾기
+                                int startIdx = msg.indexOf(startMarker);
+                                int endIdx = msg.lastIndexOf(endMarker);
+
+                                // 5) 잘라내기
+                                if (startIdx != -1 && endIdx != -1 && endIdx + endMarker.length() <= msg.length()) {
+                                    future.complete(msg.substring(startIdx, endIdx + endMarker.length()));
+                                } else {
+                                    future.complete(msg);
+                                }
+                            }
+                        } catch (Exception ex) {
+                            future.completeExceptionally(ex);
+                        }
+                    })
                     .send();
 
             // 2) 메시지 대기
-            Optional<Mqtt5Publish> optionalPublish =
-                    client.publishes(MqttGlobalPublishFilter.SUBSCRIBED)
-                            .receive(5, TimeUnit.SECONDS);
+            return future.get(5, TimeUnit.SECONDS);
 
-            if (optionalPublish.isEmpty()) {
-                return "Error: Timeout waiting for response";
-            }
-
-            // 3) 페이로드를 문자열로 변환
-            String msg = new String(
-                    optionalPublish.get().getPayloadAsBytes(),
-                    StandardCharsets.UTF_8
-            );
-
-            // 4) { 로 시작하면, RX 뒤에 있는 ![ ... !] 프레임만 추출
-            if (msg.startsWith("{")&&msg.contains("![")) {
-                int start = msg.indexOf("![");
-                int end   = msg.indexOf("!]");
-                if (start != -1 && end != -1 && end > start) {
-                    return msg.substring(start, end + 2);
-                }
-            }
-
-            else {
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode root = mapper.readTree(msg);
-                msg = root.get("db_hex").asText();
-
-                byte[] decodedBytes = Base64.getDecoder().decode(msg);
-
-                msg = bytesToHex(decodedBytes, decodedBytes.length);
-
-                // 3) 프레임 마커 정의
-                String startMarker = "10 02";
-                String endMarker   = "10 03";
-
-                // 4) 시작/끝 인덱스 찾기
-                int startIdx = msg.indexOf(startMarker);
-                int endIdx   = msg.lastIndexOf(endMarker);
-
-                // 5) 잘라내기
-                if (startIdx != -1 && endIdx != -1 && endIdx + endMarker.length() <= msg.length()) {
-                    msg = msg.substring(startIdx, endIdx + endMarker.length());
-                }
-            }
-            return msg;
-
-        } catch (InterruptedException e) {
+        } catch (TimeoutException e) {
+            return "Error: Timeout waiting for response";
+        } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
             return "Error: " + e.getMessage();
         } catch (Exception e) {
@@ -313,6 +340,7 @@ public class MQTTManager {
             return "Error: " + e.getMessage();
         }
     }
+
 
     public void disconnect() {
         if (client != null && client.getState().isConnected()) {
