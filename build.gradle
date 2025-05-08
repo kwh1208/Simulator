@@ -103,7 +103,7 @@ jlink {
     }
 
     jpackage {
-        imageName = 'dbPS v1.3.4'
+        imageName = 'dbPS v1.4.2'
         installerName = 'dbProtocolSimulator'
         installerType = 'exe'
         icon = 'src/main/resources/icon-removebg.ico'
