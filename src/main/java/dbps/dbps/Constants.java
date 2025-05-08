@@ -247,7 +247,7 @@ public class Constants {
 
         Stage modalStage = new Stage();
         modalStage.setTitle(title);
-        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/dabit_app.png")));
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
         Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();

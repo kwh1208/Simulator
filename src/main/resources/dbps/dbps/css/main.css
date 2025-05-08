@@ -98,3 +98,10 @@
 
     -fx-cursor: hand;
 }
+
+/* 탭 헤더 배경 영역을 투명하게 설정하고 아래쪽 선만 유지 */
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #cccccc transparent;
+    -fx-border-width: 0 0 1 0;
+} 

@@ -46,7 +46,7 @@ public class FontService {
                 if (isRS){
                     msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 00 10 03";
                 }
-                hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
+                hexMsgTransceiver.sendByteMessages(hexStringToByteArray(msg), null);
 
                 int packetSize = 1024;
                 int totalPackets = 0;
@@ -366,7 +366,7 @@ public class FontService {
                         if (isRS){
                             msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
                         }
-                        hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
+                        hexMsgTransceiver.sendByteMessages(hexStringToByteArray(msg), null);
                         return null;
                     }
 
@@ -379,7 +379,7 @@ public class FontService {
                             if (isRS){
                                 msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
                             }
-                            hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
+                            hexMsgTransceiver.sendByteMessages(hexStringToByteArray(msg), null);
                             return null;
                         }
                     }
@@ -403,7 +403,7 @@ public class FontService {
                 if (isRS){
                     msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
                 }
-                hexMsgTransceiver.sendByteMessagesNoLog(hexStringToByteArray(msg));
+                hexMsgTransceiver.sendByteMessages(hexStringToByteArray(msg), null);
 
                 return null;
             }

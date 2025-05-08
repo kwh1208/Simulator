@@ -317,14 +317,37 @@ public class DisplaySignalSettingController {
         int originalTime = RESPONSE_LATENCY;
         RESPONSE_LATENCY = time;
         int startIdx = signalList.getSelectionModel().getSelectedIndex();
+        
+        // 처리할 항목 수 계산
+        int itemsToProcess = signalCount - startIdx;
+        
         timeline = new Timeline();
-        timeline.setCycleCount(signalCount); // 각 신호에 대해 반복
+        timeline.setCycleCount(1); // 한 번만 실행 (모든 KeyFrame을 순서대로 실행)
 
-        for (int i = startIdx; i < signalCount; i++) {
-            int index = i; // 람다식 내부에서 사용될 인덱스
-            KeyFrame keyFrame = new KeyFrame(Duration.seconds((i - startIdx) * time), event -> {
-                // 신호를 선택하여 UI에 반영
-                signalList.getSelectionModel().select(index);
+        // 리스트뷰에 표시되는 항목 수 계산 (대략 13개로 가정)
+        final int visibleItemCount = 13;
+        final int middlePosition = visibleItemCount / 2;
+
+        for (int i = 0; i < itemsToProcess; i++) {
+            int index = startIdx + i; // 실제 리스트 인덱스
+            KeyFrame keyFrame = new KeyFrame(Duration.seconds(i * time), event -> {
+                // 신호를 선택하여 UI에 반영 (파란색 하이라이트로 표시되도록)
+                signalList.getSelectionModel().clearAndSelect(index);
+                signalList.getFocusModel().focus(index);
+                signalList.requestFocus();
+                
+                // 스마트 스크롤링 구현
+                if (index < middlePosition) {
+                    // 처음 몇 개 항목은 스크롤 없음 (이미 보이므로)
+                    signalList.scrollTo(0);
+                } else if (index >= signalCount - (visibleItemCount - middlePosition)) {
+                    // 마지막 항목들은 스크롤 최대 위치 유지
+                    signalList.scrollTo(signalCount - visibleItemCount);
+                } else {
+                    // 중간 항목들은 항상 리스트뷰 중간에 위치하도록
+                    signalList.scrollTo(index - middlePosition);
+                }
+                
                 // signalTransfer() 호출
                 signalTransfer();
             });
@@ -355,8 +378,8 @@ public class DisplaySignalSettingController {
 
         Stage modalStage = new Stage();
         modalStage.setTitle("통신 설정");
-        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
-
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/dabit_app.png")));
+        
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
         Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();

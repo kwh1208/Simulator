@@ -21,44 +21,44 @@
     <TabPane layoutX="194.0" layoutY="14.0" prefHeight="550.0" prefWidth="357.0" tabClosingPolicy="UNAVAILABLE">
         <Tab fx:id="networkTab" style="-fx-padding:0 10px" text="Network">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="523.0" prefWidth="366.0">
-                <Label layoutX="31.0" layoutY="140.0" text="Board Name" />
-                <TextField fx:id="boardNameTF" layoutX="123.0" layoutY="136.0" prefHeight="22.0" prefWidth="132.0" />
-                <Label layoutX="31.0" layoutY="175.0" text="IP Address" />
-                <TextField fx:id="clientIPTF" layoutX="123.0" layoutY="171.0" prefHeight="22.0" prefWidth="132.0" />
-                <Label layoutX="31.0" layoutY="210.0" text="Subnet Mask" />
-                <TextField fx:id="clientSubnetMaskTF" layoutX="123.0" layoutY="206.0" prefHeight="22.0" prefWidth="132.0" />
-                <Label layoutX="31.0" layoutY="245.0" text="Gateway" />
-                <Label layoutX="31.0" layoutY="280.0" text="IP Port" />
-                <TextField fx:id="clientPortTF" layoutX="123.0" layoutY="276.0" prefHeight="22.0" prefWidth="132.0" />
-                <TextField fx:id="clientGatewayTF" layoutX="123.0" layoutY="241.0" prefHeight="22.0" prefWidth="132.0" />
+                <Label layoutX="20.0" layoutY="140.0" text="Board Name" />
+                <TextField fx:id="boardNameTF" layoutX="115.0" layoutY="136.0" prefHeight="22.0" prefWidth="129.0" />
+                <Label layoutX="20.0" layoutY="175.0" text="IP Address" />
+                <TextField fx:id="clientIPTF" layoutX="115.0" layoutY="171.0" prefHeight="22.0" prefWidth="129.0" />
+                <Label layoutX="20.0" layoutY="210.0" text="Subnet Mask" />
+                <TextField fx:id="clientSubnetMaskTF" layoutX="115.0" layoutY="206.0" prefHeight="22.0" prefWidth="129.0" />
+                <Label layoutX="20.0" layoutY="245.0" text="Gateway" />
+                <Label layoutX="20.0" layoutY="280.0" text="IP Port" />
+                <TextField fx:id="clientPortTF" layoutX="115.0" layoutY="276.0" prefHeight="22.0" prefWidth="129.0" />
+                <TextField fx:id="clientGatewayTF" layoutX="115.0" layoutY="241.0" prefHeight="22.0" prefWidth="129.0" />
                 <Button fx:id="defaultChange" layoutX="260.0" layoutY="206.0" mnemonicParsing="false" onMouseClicked="#changeDefault" prefHeight="40.0" prefWidth="82.0" text="Change&#10;Default IP" textAlignment="CENTER" wrapText="true" />
                 <Pane layoutX="9.0" layoutY="382.0" prefHeight="117.0" prefWidth="320.0">
-                    <RadioButton fx:id="isClient" layoutX="21.0" layoutY="-4.0" mnemonicParsing="false" text="Controller Client Mode(Server TCP/IP)" />
-                    <Label layoutX="22.0" layoutY="26.0" text="Server IP" />
-                    <TextField fx:id="serverIPTF" layoutX="114.0" layoutY="22.0" prefHeight="22.0" prefWidth="132.0" />
-                    <Label layoutX="22.0" layoutY="59.0" text="Server Port" />
-                    <TextField fx:id="serverPortTF" layoutX="114.0" layoutY="55.0" prefHeight="22.0" prefWidth="132.0" />
-                    <Label layoutX="22.0" layoutY="92.0" text="Heartbeat" />
-                    <TextField fx:id="keepAlive" layoutX="114.0" layoutY="88.0" prefWidth="132.0" />
+                    <RadioButton fx:id="isClient" layoutX="11.0" layoutY="-4.0" mnemonicParsing="false" text="Controller Client Mode(Server TCP/IP)" />
+                    <Label layoutX="35.0" layoutY="26.0" text="Server IP" />
+                    <TextField fx:id="serverIPTF" layoutX="106.0" layoutY="22.0" prefHeight="22.0" prefWidth="129.0" />
+                    <Label layoutX="35.0" layoutY="59.0" text="Server Port" />
+                    <TextField fx:id="serverPortTF" layoutX="106.0" layoutY="55.0" prefHeight="22.0" prefWidth="129.0" />
+                    <Label layoutX="35.0" layoutY="92.0" text="Heartbeat" />
+                    <TextField fx:id="keepAlive" layoutX="106.0" layoutY="88.0" prefHeight="22.0" prefWidth="129.0" />
                 </Pane>
                 <Button fx:id="defaultLoad" layoutX="260.0" layoutY="258.0" mnemonicParsing="false" onMouseClicked="#setDefault" prefHeight="40.0" prefWidth="82.0" text="Load&#10;Default IP" textAlignment="CENTER" wrapText="true" />
-                <Label layoutX="124.0" layoutY="304.0" prefHeight="14.0" prefWidth="220.0" text="(UDP-Ethernet: 5108, UDP-Wifi: 5107)" />
+                <Label layoutX="115.0" layoutY="304.0" prefHeight="14.0" prefWidth="220.0" text="(UDP-Ethernet: 5108, UDP-Wifi: 5107)" />
                 <Pane layoutX="9.0" layoutY="315.0" prefHeight="45.0" prefWidth="320.0">
-                    <Label layoutX="22.0" layoutY="16.0" text="IP Config Method" />
-                    <RadioButton fx:id="staticRadio" layoutX="152.0" layoutY="16.0" mnemonicParsing="false" text="Static" />
-                    <RadioButton fx:id="DHCPRadio" layoutX="241.0" layoutY="16.0" mnemonicParsing="false" text="DHCP" />
+                    <Label layoutX="11.0" layoutY="16.0" text="IP Config Method" />
+                    <RadioButton fx:id="staticRadio" layoutX="141.0" layoutY="16.0" mnemonicParsing="false" text="Static" />
+                    <RadioButton fx:id="DHCPRadio" layoutX="230.0" layoutY="16.0" mnemonicParsing="false" text="DHCP" />
                 </Pane>
                 <Pane layoutX="9.0" layoutY="11.0" prefHeight="105.0" prefWidth="331.0">
-                    <Label layoutX="22.0" layoutY="12.0" text="Network" />
-                    <ComboBox fx:id="networkSelection" layoutX="114.0" layoutY="9.0" prefHeight="22.0" prefWidth="132.0">
+                    <Label layoutX="11.0" layoutY="12.0" text="Network" />
+                    <ComboBox fx:id="networkSelection" layoutX="106.0" layoutY="9.0" prefHeight="22.0" prefWidth="129.0">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                             <String fx:value="UDP" />
                             </FXCollections>
                         </items>
                     </ComboBox>
-                    <Label layoutX="22.0" layoutY="44.0" text="Baud Rate" />
-                    <ComboBox fx:id="baudRateComboBox" disable="true" layoutX="114.0" layoutY="41.0" prefHeight="22.0" prefWidth="132.0" value="115200">
+                    <Label layoutX="11.0" layoutY="44.0" text="Baud Rate" />
+                    <ComboBox fx:id="baudRateComboBox" disable="true" layoutX="106.0" layoutY="41.0" prefHeight="22.0" prefWidth="129.0" value="115200">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="9600" />
@@ -72,8 +72,8 @@
                             </FXCollections>
                         </items>
                     </ComboBox>
-                    <Button layoutX="182.0" layoutY="73.0" mnemonicParsing="false" onMouseClicked="#openDeviceManager" prefHeight="22.0" prefWidth="125.0" text="Device Manager" textAlignment="CENTER" wrapText="true" />
-                    <Button layoutX="22.0" layoutY="73.0" mnemonicParsing="false" onMouseClicked="#networkConnection" prefHeight="22.0" prefWidth="150.0" text="Network Connections" textAlignment="CENTER" wrapText="true" />
+                    <Button layoutX="171.0" layoutY="73.0" mnemonicParsing="false" onMouseClicked="#openDeviceManager" prefHeight="22.0" prefWidth="125.0" text="Device Manager" textAlignment="CENTER" wrapText="true" />
+                    <Button layoutX="11.0" layoutY="73.0" mnemonicParsing="false" onMouseClicked="#networkConnection" prefHeight="22.0" prefWidth="150.0" text="Network Connections" textAlignment="CENTER" wrapText="true" />
                 </Pane>
             </AnchorPane>
         </Tab>
@@ -81,10 +81,10 @@
         <Tab fx:id="db300Tab" style="-fx-padding:0 15px" text="DB300">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="523.0" prefWidth="357.0">
                 <Pane layoutX="9.0" layoutY="12.0" prefHeight="176.0" prefWidth="329.0">
-                    <Label layoutX="22.0" layoutY="12.0" prefHeight="13.0" text="Device Version" />
-                    <TextField fx:id="versionInfo" editable="false" layoutX="132.0" layoutY="8.0" prefHeight="22.0" prefWidth="180.0" />
-                    <Label layoutX="22.0" layoutY="44.0" text="Debugging State" />
-                    <ComboBox fx:id="debugging" layoutX="132.0" layoutY="40.0" prefWidth="180.0">
+                    <Label layoutX="11.0" layoutY="12.0" prefHeight="13.0" text="Device Version" />
+                    <TextField fx:id="versionInfo" editable="false" layoutX="120.0" layoutY="8.0" prefHeight="22.0" prefWidth="175.0" />
+                    <Label layoutX="11.0" layoutY="44.0" text="Debugging State" />
+                    <ComboBox fx:id="debugging" layoutX="120.0" layoutY="40.0" prefWidth="175.0">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="Disabled" />
@@ -92,8 +92,8 @@
                             </FXCollections>
                         </items>
                     </ComboBox>
-                    <Label layoutX="22.0" layoutY="76.0" text="Dev Connect Port" />
-                    <ComboBox fx:id="connectPort" layoutX="132.0" layoutY="72.0" prefWidth="180.0">
+                    <Label layoutX="11.0" layoutY="76.0" text="Dev Connect Port" />
+                    <ComboBox fx:id="connectPort" layoutX="120.0" layoutY="72.0" prefWidth="175.0">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="TTL" />
@@ -101,8 +101,8 @@
                             </FXCollections>
                         </items>
                     </ComboBox>
-                    <Label layoutX="22.0" layoutY="108.0" text="Dev Baud Rate" />
-                    <ComboBox fx:id="baudRate" layoutX="132.0" layoutY="104.0" prefWidth="180.0">
+                    <Label layoutX="11.0" layoutY="108.0" text="Dev Baud Rate" />
+                    <ComboBox fx:id="baudRate" layoutX="120.0" layoutY="104.0" prefWidth="175.0">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <Integer fx:value="9600" />
@@ -116,22 +116,22 @@
                             </FXCollections>
                         </items>
                     </ComboBox>
-                    <Button layoutX="209.0" layoutY="145.0" mnemonicParsing="false" onMouseClicked="#read" text="Read" />
-                    <Button layoutX="266.0" layoutY="145.0" mnemonicParsing="false" onMouseClicked="#write" text="Write" />
-                    <Button layoutX="14.0" layoutY="145.0" mnemonicParsing="false" onMouseClicked="#openPacketSetting" prefHeight="22.0" prefWidth="117.0" text="Packet Setting" />
+                    <Button layoutX="190.0" layoutY="145.0" mnemonicParsing="false" onMouseClicked="#read" text="Read" />
+                    <Button layoutX="245.0" layoutY="145.0" mnemonicParsing="false" onMouseClicked="#write" text="Write" />
+                    <Button layoutX="11.0" layoutY="145.0" mnemonicParsing="false" onMouseClicked="#openPacketSetting" prefHeight="22.0" prefWidth="117.0" text="Packet Setting" />
 
                 </Pane>
                 <Pane fx:id="wifiTab" layoutX="15.0" layoutY="259.0" prefHeight="118.0" prefWidth="326.0">
-                    <Label fx:id="AP" layoutX="124.0" layoutY="44.0" />
-                    <Label layoutX="25.0" layoutY="11.0" text="Wifi Mode" />
+                    <Label fx:id="AP" layoutX="115.0" layoutY="44.0" />
+                    <Label layoutX="11.0" layoutY="11.0" text="Wifi Mode" />
                     <Pane layoutX="88.0" layoutY="1.0" prefHeight="35.0" prefWidth="241.0">
-                        <RadioButton fx:id="wifiStation" layoutX="36.0" layoutY="10.0" mnemonicParsing="false" text="STA" />
+                        <RadioButton fx:id="wifiStation" layoutX="27.0" layoutY="10.0" mnemonicParsing="false" text="STA" />
                         <RadioButton fx:id="wifiAP" layoutX="159.0" layoutY="10.0" mnemonicParsing="false" text="AP" />
                     </Pane>
-                    <Label layoutX="25.0" layoutY="44.0" text="Wifi SSID" />
-                    <TextField fx:id="wifiSSID" layoutX="124.0" layoutY="40.0" prefWidth="180.0" />
-                    <Label layoutX="25.0" layoutY="76.0" text="Wifi Password" />
-                    <TextField fx:id="wifiPW" layoutX="124.0" layoutY="72.0" prefWidth="180.0" />
+                    <Label layoutX="11.0" layoutY="44.0" text="Wifi SSID" />
+                    <TextField fx:id="wifiSSID" layoutX="115.0" layoutY="40.0" prefWidth="175.0" />
+                    <Label layoutX="11.0" layoutY="76.0" text="Wifi Password" />
+                    <TextField fx:id="wifiPW" layoutX="115.0" layoutY="72.0" prefWidth="175.0" />
                 </Pane>
             </AnchorPane>
         </Tab>

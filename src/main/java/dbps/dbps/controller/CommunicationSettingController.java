@@ -158,7 +158,7 @@ public class CommunicationSettingController {
 
                 Stage modalStage = new Stage();
                 modalStage.setTitle("테스트중");
-                modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
+                modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/dabit_app.png")));
                 modalStage.initModality(Modality.APPLICATION_MODAL);
 
                 Stage parentStage = (Stage) communicationSettingAP.getScene().getWindow();
@@ -505,6 +505,15 @@ public class CommunicationSettingController {
     public void openSerialPort() {
         changeConnectType();
         if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
+            if (RS485ChkBox.isSelected()) {
+                RS485_ADDR_NUM = Integer.parseInt(RS485ComboBox.getValue().replaceAll("[^0-9]", ""));
+                configService.setProperty("RS485_ADDR_NUM", String.valueOf(RS485_ADDR_NUM));
+                isRS = true;
+                CONNECT_TYPE = "rs485";
+            } else {
+                isRS = false;
+                CONNECT_TYPE = "serial";
+            }
             openPort(serialPortComboBox.getValue());
         } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn))
             connectClientTCP();
@@ -537,8 +546,7 @@ public class CommunicationSettingController {
 
         Stage modalStage = new Stage();
         modalStage.setTitle("dbNet");
-        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
-
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/dabit_app.png")));
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
         Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
@@ -590,8 +598,7 @@ public class CommunicationSettingController {
 
         Stage modalStage = new Stage();
         modalStage.setTitle("블루투스 설정");
-        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/icon.jpg")));
-
+        modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/dabit_app.png")));
         modalStage.initModality(Modality.APPLICATION_MODAL);
 
         Stage parentStage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
@@ -631,12 +638,14 @@ public class CommunicationSettingController {
                 Platform.runLater(() -> showLoading()); // 로딩 애니메이션 시작
                 try {
                     // 시리얼일 때
-                    if (communicationGroup.getSelectedToggle().equals(serialRadioBtn) && RS485ChkBox.isSelected()) {
-                        String msg = "10 02 " + convertRS485AddrASCii() + " 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
-                        hexMsgTransceiver.sendMessages(msg, progressIndicator);
+                    if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
+                        if (RS485ChkBox.isSelected()) {
+                            String msg = "10 02 " + convertRS485AddrASCii() + " 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                            hexMsgTransceiver.sendMessages(msg, progressIndicator);
+                        } else {
+                            hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
+                        }
                     }
-
-                    hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                 } finally {
                     Platform.runLater(() -> hideLoading()); // 작업 완료 후 로딩 애니메이션 종료
                 }

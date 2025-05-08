@@ -160,12 +160,12 @@ public class DabitNetController {
             }
 
             if (newToggle.equals(wifiStation)) {
-                wifiSSID.setLayoutX(124.0);
-                wifiSSID.setPrefWidth(180);
+                wifiSSID.setLayoutX(115.0); // Password와 동일한 X좌표
+                wifiSSID.setPrefWidth(175.0); // Password와 동일한 너비
                 AP.setText("");
             } else if (newToggle.equals(wifiAP)) {
-                wifiSSID.setLayoutX(150);
-                wifiSSID.setPrefWidth(154);
+                wifiSSID.setLayoutX(140.0); // AP- 라벨 뒤에 위치
+                wifiSSID.setPrefWidth(150.0); // 줄어든 너비지만 끝 정렬이 맞도록 조정
                 AP.setText("AP-");
             }
         });
