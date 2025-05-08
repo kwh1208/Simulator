@@ -51,8 +51,8 @@ public class MQTTManager {
 
     private Mqtt3BlockingClient client;
 
-    String sendTopic = "/msg";
-    String receiveTopic = "/msg_r";
+    String sendTopic = "/db";
+    String receiveTopic = "/db_r";
 
     private MQTTManager() {
         logService = LogService.getLogService();
@@ -105,11 +105,11 @@ public class MQTTManager {
     private void subscribeInitialTopics() {
         try {
             client.toAsync().subscribeWith()
-                    .topicFilter("/sch_r")   // ★ 첫 번째 토픽
+                    .topicFilter("/sch_r")
                     .send();
 
             client.toAsync().subscribeWith()
-                    .topicFilter("/msg_r")  // ★ 두 번째 토픽
+                    .topicFilter("/db_r")
                     .send();
 
         } catch (Exception e) {
