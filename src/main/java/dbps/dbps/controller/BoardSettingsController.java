@@ -94,8 +94,8 @@ public class BoardSettingsController {
 
         String hexDebug = String.format("%X", debugVal);
 
-        String msg = (isRS ? "![" + convertRS485AddrASCii() + "0B2 " : "![00B2 ") + hexDebug +
-                getComboBoxIndex(BH1_Func, BH1_OPTIONS) + "," +
+        String msg = (isRS ? "![" + convertRS485AddrASCii() + "0B2 " : "![00B2 ") +
+                hexDebug + "," + getComboBoxIndex(BH1_Func, BH1_OPTIONS) + "," +
                 getComboBoxIndex(J4_func, J4_OPTIONS) + "," +
                 getComboBoxIndex(J2_baud, BAUD_RATES) + "," +
                 getComboBoxIndex(J3_baud, BAUD_RATES) + "," +

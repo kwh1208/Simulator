@@ -637,7 +637,7 @@ public class CommunicationSettingController {
             protected Void call() {
                 Platform.runLater(() -> showLoading()); // 로딩 애니메이션 시작
                 try {
-                    // 시리얼일 때
+                    // 시리얼/RS485일 때
                     if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
                         if (RS485ChkBox.isSelected()) {
                             String msg = "10 02 " + convertRS485AddrASCii() + " 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
@@ -645,6 +645,11 @@ public class CommunicationSettingController {
                         } else {
                             hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                         }
+                    } else if (communicationGroup.getSelectedToggle().equals(clientTCPRadioBtn)
+                            || communicationGroup.getSelectedToggle().equals(serverTCPRadioBtn)
+                            || communicationGroup.getSelectedToggle().equals(UDPRadioBtn)
+                            || communicationGroup.getSelectedToggle().equals(mqttRadio)) {
+                        hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);
                     }
                 } finally {
                     Platform.runLater(() -> hideLoading()); // 작업 완료 후 로딩 애니메이션 종료
@@ -652,7 +657,6 @@ public class CommunicationSettingController {
                 return null;
             }
         };
-
         // 비동기 실행
         new Thread(task).start();
     }

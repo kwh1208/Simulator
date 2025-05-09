@@ -294,8 +294,14 @@ public class UDPManager {
             DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, serverAddr, PORT);
             socket.send(sendPacket);
 
-            String log = bytesToHex(msg, 32);
-            log+=" ~ 10 03";
+            String log;
+            if (msg.length>=32){
+                log = bytesToHex(msg, 32);
+                log += " ~ 10 03";
+            }
+            else {
+                log = bytesToHex(msg, msg.length);
+            }
             logService.updateInfoLog(log);
 
             byte[] receiveBuffer = new byte[1024];

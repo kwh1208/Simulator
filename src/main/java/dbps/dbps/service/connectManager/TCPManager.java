@@ -345,8 +345,14 @@ public class TCPManager {
             output.write(msg);
             output.flush();
 
-            String log = bytesToHex(msg, 32);
-            log += " ~ 10 03";
+            String log;
+            if (msg.length>=32){
+                log = bytesToHex(msg, 32);
+                log += " ~ 10 03";
+            }
+            else {
+                log = bytesToHex(msg, msg.length);
+            }
             logService.updateInfoLog(log);
             
                     int bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
