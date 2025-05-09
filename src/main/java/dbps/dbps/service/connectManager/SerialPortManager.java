@@ -452,8 +452,14 @@ public class SerialPortManager {
             OutputStream outputStream = port.getOutputStream();
             InputStream inputStream = port.getInputStream();
 
-            String log = bytesToHex(msg, 32);
-            log+=" ~ 10 03";
+            String log;
+            if (msg.length>=32){
+                log = bytesToHex(msg, 32);
+                log += " ~ 10 03";
+            }
+            else {
+                log = bytesToHex(msg, msg.length);
+            }
             logService.updateInfoLog(log);
 
             outputStream.write(msg);

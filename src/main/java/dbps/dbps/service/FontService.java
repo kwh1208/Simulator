@@ -46,7 +46,7 @@ public class FontService {
                 if (isRS){
                     msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 00 10 03";
                 }
-                hexMsgTransceiver.sendByteMessages(hexStringToByteArray(msg), null);
+                hexMsgTransceiver.sendByteMessagesShortLog(hexStringToByteArray(msg));
 
                 int packetSize = 1024;
                 int totalPackets = 0;
@@ -360,13 +360,13 @@ public class FontService {
                     if (isCancelled()){
                         logService.updateInfoLog(bundle.getString("transferCancel"));
 
-                        hexMsgTransceiver.sendByteMessagesNoLog(finalPacket);
+                        hexMsgTransceiver.sendByteMessagesShortLog(finalPacket);
 
                         msg = "10 02 00 00 02 45 01 10 03";
                         if (isRS){
                             msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
                         }
-                        hexMsgTransceiver.sendByteMessages(hexStringToByteArray(msg), null);
+                        hexMsgTransceiver.sendByteMessagesShortLog(hexStringToByteArray(msg));
                         return null;
                     }
 
@@ -379,7 +379,7 @@ public class FontService {
                             if (isRS){
                                 msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
                             }
-                            hexMsgTransceiver.sendByteMessages(hexStringToByteArray(msg), null);
+                            hexMsgTransceiver.sendByteMessagesShortLog(hexStringToByteArray(msg));
                             return null;
                         }
                     }
@@ -403,7 +403,7 @@ public class FontService {
                 if (isRS){
                     msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
                 }
-                hexMsgTransceiver.sendByteMessages(hexStringToByteArray(msg), null);
+                hexMsgTransceiver.sendByteMessagesShortLog(hexStringToByteArray(msg));
 
                 return null;
             }
