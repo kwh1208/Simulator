@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ResourceBundle;
@@ -236,6 +237,24 @@ public class FirmwareUpgradeController {
         fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
         if (fileName.contains("502")) {
             firmwareFileInformation.setText(fileName);
+        } else if (fileName.contains("400")) {
+            int startOffset = 0x50;   // 읽기 시작 위치
+            int endOffset   = 0x6B;   // 읽기 끝 위치
+            int length      = endOffset - startOffset + 1;
+
+            try (RandomAccessFile raf = new RandomAccessFile(filePath, "r")) {
+                raf.seek(startOffset);
+                byte[] buffer = new byte[length];
+                raf.read(buffer);
+                String data = new String(buffer, StandardCharsets.US_ASCII);
+
+                System.out.println("data = " + data);
+
+                firmwareFileInformation.setText(data.toString());
+
+            } catch (IOException e) {
+
+            }
         } else {
             try {
                 assert selectedFile != null;
