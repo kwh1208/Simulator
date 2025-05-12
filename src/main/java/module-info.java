@@ -13,5 +13,5 @@ module DBPS.main {
     requires org.json;
 
     exports dbps.dbps;
-    opens dbps.dbps.controller to javafx.fxml;
+    opens dbps.dbps.controller to javafx.fxml, com.fasterxml.jackson.databind;
 }
