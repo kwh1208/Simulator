@@ -194,6 +194,7 @@ public class MQTTManager {
                     logService.updateInfoLog("전송 메세지 : " + payload);
 
                     String result = receivedMsg();
+                    result=dataReceivedIsComplete(result);
                     logService.updateInfoLog("받은 메세지 : " + result);
                     result = result.substring(result.indexOf("!["), result.indexOf("!]") + 2);
                     return result;
@@ -224,6 +225,7 @@ public class MQTTManager {
                     logService.updateInfoLog("전송 메세지 : " + json);
 
                     String result = receivedMsg();
+                    result = dataReceivedIsCompleteHex(result);
 
                     logService.updateInfoLog("받은 메세지 : " + result);
                     return result;
