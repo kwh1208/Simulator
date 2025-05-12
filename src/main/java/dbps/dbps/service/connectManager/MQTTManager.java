@@ -23,6 +23,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static dbps.dbps.Constants.*;
 
@@ -194,7 +196,6 @@ public class MQTTManager {
                     logService.updateInfoLog("전송 메세지 : " + payload);
 
                     String result = receivedMsg();
-                    result=dataReceivedIsComplete(result);
                     logService.updateInfoLog("받은 메세지 : " + result);
                     result = result.substring(result.indexOf("!["), result.indexOf("!]") + 2);
                     return result;
@@ -225,7 +226,6 @@ public class MQTTManager {
                     logService.updateInfoLog("전송 메세지 : " + json);
 
                     String result = receivedMsg();
-                    result = dataReceivedIsCompleteHex(result);
 
                     logService.updateInfoLog("받은 메세지 : " + result);
                     return result;
@@ -293,11 +293,15 @@ public class MQTTManager {
                         try {
                             // 2) { 로 시작하면, RX 뒤에 있는 ![ ... !] 프레임만 추출
                             if (msg.startsWith("{") && msg.contains("![")) {
+                                if (msg.contains("RX") && msg.contains("![") && msg.contains("!]")) {
+                                    int indexTX = msg.indexOf("TX");
+                                    msg = msg.substring(indexTX);
+                                    msg = msg.substring(msg.indexOf("!["), msg.indexOf("!]")+2);
+                                }
                                 int start = msg.indexOf("![");
                                 int end = msg.indexOf("!]");
                                 if (start != -1 && end != -1 && end > start) {
                                     future.complete(msg.substring(start, end + 2));
-                                    return;
                                 }
                             } else {
                                 ObjectMapper mapper = new ObjectMapper();
@@ -307,6 +311,15 @@ public class MQTTManager {
                                 byte[] decodedBytes = Base64.getDecoder().decode(msg);
 
                                 msg = bytesToHex(decodedBytes, decodedBytes.length);
+
+                                if (msg.contains("52 58 28")) {
+                                    Pattern pattern = Pattern.compile("10 02(.*?)10 03");
+                                    Matcher matcher = pattern.matcher(msg);
+
+                                    if (matcher.find()) {
+                                        msg = matcher.group(0); // 전체 매칭된 부분을 추출
+                                    }
+                                }
 
                                 // 3) 프레임 마커 정의
                                 String startMarker = "10 02";

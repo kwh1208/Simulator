@@ -58,8 +58,8 @@ public class MqttController {
     UDPManager udpManager;
 
     @FXML
-    public void initialize(){
-        hexTransceiver=HexMsgTransceiver.getInstance();
+    public void initialize() {
+        hexTransceiver = HexMsgTransceiver.getInstance();
         mqttManager = MQTTManager.getInstance();
         mqttUIService = MQTTUIService.getMqttUIService();
         udpManager = UDPManager.getUDPManager();
