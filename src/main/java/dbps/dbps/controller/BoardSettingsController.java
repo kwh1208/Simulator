@@ -90,7 +90,7 @@ public class BoardSettingsController {
     public void setTransfer() {
         int debugVal = debugMethod.getValue().equals("Disable")
                 ? 0
-                : Integer.parseInt(debugMethod.getValue());
+                : Integer.parseInt(debugMethod.getValue().replaceAll("\\D+", ""));
 
         String hexDebug = String.format("%X", debugVal);
 
