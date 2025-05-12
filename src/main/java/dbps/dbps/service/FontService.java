@@ -405,6 +405,8 @@ public class FontService {
                 }
                 hexMsgTransceiver.sendByteMessagesShortLog(hexStringToByteArray(msg));
 
+                logService.updateInfoLog(bundle.getString("completeFontUpload"));
+
                 return null;
             }
         };

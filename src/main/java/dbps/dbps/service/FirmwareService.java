@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import static dbps.dbps.Constants.*;
 import static dbps.dbps.Constants.calcCRC;
@@ -21,10 +22,12 @@ public class FirmwareService {
     private static FirmwareService instance = null;
     HexMsgTransceiver hexMsgTransceiver;
     LogService logService;
+    ResourceBundle bundle;
 
     private FirmwareService() {
         hexMsgTransceiver = HexMsgTransceiver.getInstance();
         logService = LogService.getLogService();
+        bundle = ResourceManager.getInstance().getBundle();
     }
 
     public static FirmwareService getFirmwareService() {
@@ -49,6 +52,11 @@ public class FirmwareService {
         return new Task<>() {
             @Override
             protected Void call() throws Exception {
+                String msg = "10 02 00 00 02 45 00 10 03";
+                if (isRS){
+                    msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 00 10 03";
+                }
+                hexMsgTransceiver.sendByteMessagesShortLog(hexStringToByteArray(msg));
                 try {
                     // BufferedInputStream을 사용하여 파일 읽기 성능 향상
                     try (BufferedInputStream firmwareStream = new BufferedInputStream(new FileInputStream(uploadFirmwarePath))) {
@@ -69,7 +77,7 @@ public class FirmwareService {
                         }
 
                         // 시작 메시지 전송
-                        String msg = "10 02 00 00 02 6F F1 10 03";
+                        msg = "10 02 00 00 02 6F F1 10 03";
                         if (isRS) {
                             msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 02 6F F1 10 03";
                         }
@@ -156,10 +164,18 @@ public class FirmwareService {
                         }
                     }
                 } catch (Exception e) {
+                    msg = "10 02 00 00 02 45 01 10 03";
+                    if (isRS){
+                        msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
+                    }
+                    hexMsgTransceiver.sendByteMessagesShortLog(hexStringToByteArray(msg));
                     e.printStackTrace();
                 }
 
                 Thread.sleep(500);
+
+                logService.updateInfoLog(bundle.getString("completeFirmwareUpload"));
+
                 return null;
             }
         };

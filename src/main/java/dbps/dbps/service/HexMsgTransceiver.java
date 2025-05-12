@@ -13,8 +13,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
-import static dbps.dbps.Constants.CONNECT_TYPE;
-import static dbps.dbps.Constants.hexStringToByteArray;
+import static dbps.dbps.Constants.*;
 import static dbps.dbps.controller.FontNameController.getFontName;
 
 public class HexMsgTransceiver {
@@ -104,6 +103,43 @@ public class HexMsgTransceiver {
             resultFuture.completeExceptionally(new IllegalStateException("Task is null."));
         }
         return resultFuture;
+    }
+
+    public void close() {
+        switch (CONNECT_TYPE){
+            case "serial", "bluetooth", "rs485" -> {
+                try {
+                    // Task 객체를 생성하여 비동기 작업 실행
+                    serialPortManager.closePort(OPEN_PORT_NAME);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case "UDP" -> //udp로 메시지 전송
+            {
+                try {
+                    udpManager.disconnect();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case "clientTCP" -> //tcp로 메시지 전송
+            {
+                try {
+                    tcpManager.disconnect();
+                } catch (Exception e) {
+
+                    throw new RuntimeException(e);
+                }
+            }
+            case "serverTCP" ->{
+                try {
+                    serverTCPManager.disconnect();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
 

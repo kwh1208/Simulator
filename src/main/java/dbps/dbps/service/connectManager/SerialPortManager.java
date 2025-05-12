@@ -452,13 +452,13 @@ public class SerialPortManager {
             OutputStream outputStream = port.getOutputStream();
             InputStream inputStream = port.getInputStream();
 
-            String log;
+            String log = bundle.getString("sendMsg");
             if (msg.length>=32){
-                log = bytesToHex(msg, 32);
+                log += bytesToHex(msg, 32);
                 log += " ~ 10 03";
             }
             else {
-                log = bytesToHex(msg, msg.length);
+                log += bytesToHex(msg, msg.length);
             }
             logService.updateInfoLog(log);
 

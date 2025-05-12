@@ -199,13 +199,13 @@ public class ServerTCPManager {
             output.write(msg);
             output.flush();
 
-            String log;
+            String log = bundle.getString("sendMsg");
             if (msg.length>=32){
-                log = bytesToHex(msg, 32);
+                log += bytesToHex(msg, 32);
                 log += " ~ 10 03";
             }
             else {
-                log = bytesToHex(msg, msg.length);
+                log += bytesToHex(msg, msg.length);
             }
             logService.updateInfoLog(log);
 
