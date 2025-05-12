@@ -104,17 +104,14 @@ public class MqttController {
                         userName.getText(),
                         password.getText()
                 );
-                System.out.println(2222);
 
                 // 메시지 구조 : 토픽과 payload를 포함하는 Map (여기서는 topic을 "/set"으로 지정)
                 Map<String, Object> udpMsg = new HashMap<>();
                 udpMsg.put("payload", deviceInfo);
-                System.out.println(3333);
 
                 // JSON 변환: Jackson ObjectMapper를 사용하여 문자열로 변환합니다.
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonPayload = mapper.writeValueAsString(udpMsg);
-                System.out.println(4444);
 
                 // 변환된 JSON 문자열을 바이트 배열로 변환하여 UDP 전송 메서드 호출
                 new Thread(udpManager.sendMQTTMsgAndGetMsgByte(jsonPayload.getBytes(StandardCharsets.UTF_8), Integer.parseInt(brokerPort.getText()))).start();

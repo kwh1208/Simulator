@@ -48,6 +48,8 @@ public class CommunicationSettingController {
     public Button pingTestBtn;
     public Pane mqttPane;
     public RadioButton mqttRadio;
+    public Button mqttServer;
+    public Button mqttSetting;
     SerialPortManager serialPortManager;
     TCPManager tcpManager;
 
@@ -237,6 +239,8 @@ public class CommunicationSettingController {
                 break;
             case "mqtt":
                 communicationGroup.selectToggle(mqttRadio);
+                mqttSetting.setDisable(false);
+                mqttServer.setDisable(false);
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(false);
@@ -260,6 +264,8 @@ public class CommunicationSettingController {
                 serialRadioToggle(true);
                 clientTCPRadioToggle(false);
                 serverTCPRadioToggle(false);
+                mqttSetting.setDisable(true);
+                mqttSetting.setDisable(true);
                 UDPRadioToggle(false);
                 CONNECT_TYPE = "serial";
                 configService.setProperty("connectType", "serial");
@@ -269,11 +275,15 @@ public class CommunicationSettingController {
                 serialRadioToggle(false);
                 clientTCPRadioToggle(true);
                 serverTCPRadioToggle(false);
+                mqttSetting.setDisable(true);
+                mqttSetting.setDisable(true);
                 UDPRadioToggle(false);
                 CONNECT_TYPE = "clientTCP";
                 configService.setProperty("connectType", "clientTCP");
                 RS485ChkBox.setSelected(false);
                 RS485ComboBox.setVisible(false);
+                mqttSetting.setDisable(true);
+                mqttSetting.setDisable(true);
             } else if (selectedRadioButton.equals(serverTCPRadioBtn)) {
                 serialRadioToggle(false);
                 clientTCPRadioToggle(false);
@@ -281,6 +291,8 @@ public class CommunicationSettingController {
                 UDPRadioToggle(false);
                 RS485ChkBox.setSelected(false);
                 RS485ComboBox.setVisible(false);
+                mqttSetting.setDisable(true);
+                mqttSetting.setDisable(true);
                 configService.setProperty("connectType", "serverTCP");
                 CONNECT_TYPE = "serverTCP";
             } else if (selectedRadioButton.equals(UDPRadioBtn)) {
@@ -291,6 +303,8 @@ public class CommunicationSettingController {
                 RS485ChkBox.setSelected(false);
                 RS485ComboBox.setVisible(false);
                 CONNECT_TYPE = "UDP";
+                mqttSetting.setDisable(true);
+                mqttSetting.setDisable(true);
                 configService.setProperty("connectType", "UDP");
             } else if (selectedRadioButton.equals(mqttRadio)) {
                 serialRadioToggle(false);
@@ -300,6 +314,8 @@ public class CommunicationSettingController {
                 mqttRadio.setSelected(true);
                 RS485ChkBox.setSelected(false);
                 RS485ComboBox.setVisible(false);
+                mqttSetting.setDisable(false);
+                mqttSetting.setDisable(false);
                 CONNECT_TYPE = "mqtt";
                 configService.setProperty("connectType", "mqtt");
             }
