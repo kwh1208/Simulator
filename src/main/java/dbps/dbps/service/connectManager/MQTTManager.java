@@ -143,7 +143,7 @@ public class MQTTManager {
         chkConnect();
         try {
             client.publishWith()
-                    .topic("/sch")
+                    .topic("/db_sch")
                     .payload(payload.getBytes(StandardCharsets.UTF_8))
                     .qos(MqttQos.AT_MOST_ONCE)
                     .send();
@@ -159,7 +159,7 @@ public class MQTTManager {
         CompletableFuture<String> future = new CompletableFuture<>();
         try {
             client.toAsync().subscribeWith()
-                    .topicFilter("/sch_r")
+                    .topicFilter("/db_sch_r")
                     .callback(publish -> {
                         String payload = new String(publish.getPayloadAsBytes(), StandardCharsets.UTF_8);
                         future.complete(payload);
