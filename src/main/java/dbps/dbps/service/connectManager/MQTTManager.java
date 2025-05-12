@@ -51,8 +51,8 @@ public class MQTTManager {
 
     private Mqtt3BlockingClient client;
 
-    String sendTopic = "/db";
-    String receiveTopic = "/db_r";
+    String sendTopic = "/db_msg";
+    String receiveTopic = "/db_msg_r";
 
     private MQTTManager() {
         logService = LogService.getLogService();
@@ -105,11 +105,11 @@ public class MQTTManager {
     private void subscribeInitialTopics() {
         try {
             client.toAsync().subscribeWith()
-                    .topicFilter("/sch_r")
+                    .topicFilter("/db_sch_r")
                     .send();
 
             client.toAsync().subscribeWith()
-                    .topicFilter("/db_r")
+                    .topicFilter("/db_msg_r")
                     .send();
 
         } catch (Exception e) {
@@ -129,7 +129,7 @@ public class MQTTManager {
         chkConnect();
         try {
             client.publishWith()
-                    .topic("/set")
+                    .topic("/db_set")
                     .payload(payload.getBytes(StandardCharsets.UTF_8))
                     .qos(MqttQos.AT_MOST_ONCE)
                     .send();
@@ -143,14 +143,14 @@ public class MQTTManager {
         chkConnect();
         try {
             client.publishWith()
-                    .topic("/sch")
+                    .topic("/db_sch")
                     .payload(payload.getBytes(StandardCharsets.UTF_8))
                     .qos(MqttQos.AT_MOST_ONCE)
                     .send();
             return receiveReadMsg();
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error: " + e.getMessage();
+            return "Error";
         }
     }
 
@@ -159,7 +159,7 @@ public class MQTTManager {
         CompletableFuture<String> future = new CompletableFuture<>();
         try {
             client.toAsync().subscribeWith()
-                    .topicFilter("/sch_r")
+                    .topicFilter("/db_sch_r")
                     .callback(publish -> {
                         String payload = new String(publish.getPayloadAsBytes(), StandardCharsets.UTF_8);
                         future.complete(payload);
@@ -170,10 +170,10 @@ public class MQTTManager {
         } catch (TimeoutException e) {
             return "Error: Timeout waiting for response";
         } catch (InterruptedException | ExecutionException e) {
-            return "Error: " + e.getMessage();
+            return "Error";
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error: " + e.getMessage();
+            return "Error";
         }
     }
 
@@ -199,7 +199,7 @@ public class MQTTManager {
                     return result;
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return "Error: " + e.getMessage();
+                    return "Error";
                 }
             }
         };
@@ -229,7 +229,7 @@ public class MQTTManager {
                     return result;
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return "Error: " + e.getMessage();
+                    return "Error";
                 }
             }
         };
@@ -334,10 +334,10 @@ public class MQTTManager {
             return "Error: Timeout waiting for response";
         } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
-            return "Error: " + e.getMessage();
+            return "Error";
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error: " + e.getMessage();
+            return "Error";
         }
     }
 
@@ -349,7 +349,7 @@ public class MQTTManager {
                 client.disconnect();
                 logService.updateInfoLog("MQTT 브로커 서버 연결을 해제했습니다.");
             } catch (Exception e) {
-                logService.updateInfoLog("MQTT 브로커 연결 해제 중 오류 발생: " + e.getMessage());
+                logService.updateInfoLog("MQTT 브로커 연결 해제 중 오류 발생");
             } finally {
                 client = null;
             }
