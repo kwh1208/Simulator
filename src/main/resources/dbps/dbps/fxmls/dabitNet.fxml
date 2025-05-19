@@ -42,7 +42,7 @@
                     <TextField fx:id="keepAlive" layoutX="106.0" layoutY="88.0" prefHeight="22.0" prefWidth="129.0" />
                 </Pane>
                 <Button fx:id="defaultLoad" layoutX="260.0" layoutY="258.0" mnemonicParsing="false" onMouseClicked="#setDefault" prefHeight="40.0" prefWidth="82.0" text="Load&#10;Default IP" textAlignment="CENTER" wrapText="true" />
-                <Label layoutX="115.0" layoutY="304.0" prefHeight="14.0" prefWidth="220.0" text="(UDP-Ethernet: 5108, UDP-Wifi: 5107)" />
+                <Label layoutX="115.0" layoutY="304.0" prefHeight="14.0" prefWidth="220.0" text="(UDP port: 5108)" />
                 <Pane layoutX="9.0" layoutY="315.0" prefHeight="45.0" prefWidth="320.0">
                     <Label layoutX="11.0" layoutY="16.0" text="IP Config Method" />
                     <RadioButton fx:id="staticRadio" layoutX="141.0" layoutY="16.0" mnemonicParsing="false" text="Static" />

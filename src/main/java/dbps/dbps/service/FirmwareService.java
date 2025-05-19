@@ -52,6 +52,7 @@ public class FirmwareService {
         return new Task<>() {
             @Override
             protected Void call() throws Exception {
+                cancel = false;
                 String msg = "10 02 00 00 02 45 00 10 03";
                 if (isRS){
                     msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 00 10 03";
@@ -81,7 +82,7 @@ public class FirmwareService {
                         if (isRS) {
                             msg = "10 02 " + String.format("%02X ", RS485_ADDR_NUM) + "00 02 6F F1 10 03";
                         }
-                        hexMsgTransceiver.sendByteMessages(hexStringToByteArray(msg), null);
+                        hexMsgTransceiver.sendByteMessagesShortLog(hexStringToByteArray(msg));
 
                         // 모든 패킷을 미리 구성
                         List<byte[]> allPackets = new ArrayList<>(totalPackets);
@@ -168,8 +169,9 @@ public class FirmwareService {
                     if (isRS){
                         msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 01 10 03";
                     }
+                    Thread.sleep(500);
                     hexMsgTransceiver.sendByteMessagesShortLog(hexStringToByteArray(msg));
-                    e.printStackTrace();
+                    return null;
                 }
 
                 Thread.sleep(500);

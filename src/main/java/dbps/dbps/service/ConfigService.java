@@ -8,9 +8,6 @@ import java.util.Properties;
 
 import static dbps.dbps.Constants.*;
 
-/**
- * 애플리케이션 설정을 관리하는 서비스
- */
 public class ConfigService extends AbstractSingleton<ConfigService> {
     // 싱글톤 인스턴스
     private static volatile ConfigService instance;

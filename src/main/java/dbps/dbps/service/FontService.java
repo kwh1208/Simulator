@@ -42,6 +42,7 @@ public class FontService {
         return new Task<Void>() {
             @Override
             protected Void call() throws Exception {
+                cancel = false;
                 String msg = "10 02 00 00 02 45 00 10 03";
                 if (isRS){
                     msg = "10 02 "+RS485_ADDR_NUM+" 00 02 45 00 10 03";

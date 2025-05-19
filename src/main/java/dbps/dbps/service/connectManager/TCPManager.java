@@ -395,17 +395,8 @@ public class TCPManager {
                 logService.warningLog(bundle.getString("packetTransmissionFailedAfterRetries"));
                 throw new RuntimeException();
             }
-
-            String result = bytesToHex(buffer, totalBytesRead);
-            if (result.contains("52 58 28")) {
-                Pattern pattern = Pattern.compile("10 02(.*?)10 03");
-                Matcher matcher = pattern.matcher(result);
-                if (matcher.find()) {
-                    result = matcher.group(0); // 전체 매칭된 부분 추출
-                }
-            }
-            // 로깅 후 여기서 결과를 사용할 수 있지만, 반환값이 없는 void 함수임.
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw e;
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

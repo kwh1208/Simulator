@@ -74,7 +74,9 @@
         <Label layoutX="16.0" layoutY="21.0" prefHeight="16.0" text="IP Address" />
         <TextField fx:id="UDPIPAddress" layoutX="210.0" layoutY="17.0" prefHeight="25.0" prefWidth="145.0" text="192.168.0.202" />
         <Label layoutX="16.0" layoutY="53.0" prefHeight="16.0" text="IP Port" />
-        <TextField fx:id="UDPIPPort" layoutX="210.0" layoutY="49.0" prefHeight="25.0" prefWidth="145.0" text="5108" />
+        <TextField fx:id="UDPIPPort" layoutX="210.0" layoutY="49.0" prefHeight="25.0" prefWidth="145.0"
+                   text="5108" editable="false"
+                   style="-fx-background-color: #F4F4F4; -fx-border-width: 0; -fx-focus-color: transparent; -fx-faint-focus-color: transparent; -fx-text-fill: #555555;" />
     </Pane>
 
     <Pane fx:id="mqttPane" layoutX="15.0" layoutY="514.0" prefHeight="58.0" prefWidth="373.0" style="-fx-border-color: #A0A0A0; -fx-border-radius: 10; -fx-border-width: 0.3">

@@ -14,6 +14,9 @@ import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.LogService;
 import javafx.concurrent.Task;
 import lombok.Setter;
+
+import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -259,22 +262,36 @@ public class MQTTManager {
         }
     }
 
-    public void sendByteMsgShortLog(byte[] payload) {
+    public void sendByteMsgShortLog(byte[] payload) throws InterruptedIOException {
         chkConnect();
+        if (Thread.currentThread().isInterrupted()) {
+            throw new InterruptedIOException("전송이 취소되었습니다.");
+        }
         try {
             String b64 = Base64.getEncoder().encodeToString(payload);
 
             String json = "{\"db_hex\":\"" + b64 + "\"}";
+
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedIOException("전송이 취소되었습니다.");
+            }
 
             client.publishWith()
                     .topic(sendTopic)
                     .payload(json.getBytes(Charset.forName("MS949")))
                     .qos(MqttQos.AT_MOST_ONCE)
                     .send();
+
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedIOException("전송이 취소되었습니다.");
+            }
+
             String result = receivedMsg();
             result = result.substring(result.indexOf(":\"") + 2, result.indexOf("\"}"));
             byte[] bytes = Base64.getDecoder().decode(result);
             bytesToHex(bytes, bytes.length);
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }

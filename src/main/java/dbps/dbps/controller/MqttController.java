@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import static dbps.dbps.Constants.CONNECT_TYPE;
 import static dbps.dbps.Constants.openModal;
@@ -74,6 +75,22 @@ public class MqttController {
     }
 
     public void read() {
+        if (UDPRadioBtn.isSelected()) {
+            Task<String> stringTask = udpManager.sendASCMsg("/sch{\"name\":\"DB300\"}", false);
+            Thread thread = new Thread(stringTask);
+            thread.start();
+            stringTask.setOnSucceeded(e -> {
+                try {
+                    System.out.println(stringTask.get());
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                } catch (ExecutionException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+
+            return;
+        }
         CONNECT_TYPE = "mqtt";
         String result = mqttManager.sendReadMsg("{\"name\":\"DB300\"}");
         mqttUIService.changeUIRead(result);
@@ -87,7 +104,8 @@ public class MqttController {
 
     public void set() throws JsonProcessingException {
         if (TCPRadioBtn.isSelected()) {
-            DeviceInfo deviceInfo = new DeviceInfo(mqttMac.getText(),
+            DeviceInfo deviceInfo = new DeviceInfo(name.getText(),
+                    mqttMac.getText(),
                     API.getText(),
                     brokerIP.getText(),
                     Integer.parseInt(brokerPort.getText()),
@@ -96,7 +114,7 @@ public class MqttController {
             mqttManager.sendSetMsg(new ObjectMapper().writeValueAsString(deviceInfo));
         } else {
             try {
-                DeviceInfo deviceInfo = new DeviceInfo(
+                DeviceInfo deviceInfo = new DeviceInfo(name.getText(),
                         mqttMac.getText(),
                         API.getText(),
                         brokerIP.getText(),
@@ -130,6 +148,7 @@ public class MqttController {
     @Getter
     public static class DeviceInfo {
         private String dev_name;
+        private String dev_mac;
         private String api_url;
         private int api_delay;
         private int uart_comm;
@@ -138,8 +157,9 @@ public class MqttController {
         private String broker_user;
         private String broker_pass;
 
-        public DeviceInfo(String dev_mac, String api_url, String broker_ip, int broker_port, String broker_user, String broker_pass) {
-            this.dev_name = dev_mac;
+        public DeviceInfo(String dev_name, String dev_mac, String api_url, String broker_ip, int broker_port, String broker_user, String broker_pass) {
+            this.dev_name = dev_name;
+            this.dev_mac = dev_mac;
             this.api_url = api_url;
             this.api_delay = 10;
             this.uart_comm = 1;
