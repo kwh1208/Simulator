@@ -12,6 +12,7 @@ import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import dbps.dbps.service.ConfigService;
 import dbps.dbps.service.LogService;
+import dbps.dbps.service.ResourceManager;
 import javafx.concurrent.Task;
 import lombok.Setter;
 
@@ -22,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 
 import java.util.Base64;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +38,7 @@ public class MQTTManager {
     private static MQTTManager instance = null;
     private final LogService logService;
     private final ConfigService configService;
+    private final ResourceBundle bundle;
 
     public static MQTTManager getInstance() {
         if (instance == null) {
@@ -62,6 +65,7 @@ public class MQTTManager {
     private MQTTManager() {
         logService = LogService.getLogService();
         configService = ConfigService.getInstance();
+        bundle = ResourceManager.getInstance().getBundle();
     }// MQTT 브로커에 연결
     public void connect() {
         logService.updateInfoLog("MQTT 브로커 서버에 연결 시도중입니다.");
@@ -199,6 +203,10 @@ public class MQTTManager {
                     logService.updateInfoLog("전송 메세지 : " + payload);
 
                     String result = receivedMsg();
+                    if (result.contains("Error")){
+                        logService.errorLog(bundle.getString("Error"));
+                        return null;
+                    }
                     logService.updateInfoLog("받은 메세지 : " + result);
                     result = result.substring(result.indexOf("!["), result.indexOf("!]") + 2);
                     return result;
@@ -229,7 +237,10 @@ public class MQTTManager {
                     logService.updateInfoLog("전송 메세지 : " + json);
 
                     String result = receivedMsg();
-
+                    if (result.contains("Error")){
+                        logService.errorLog(bundle.getString("Error"));
+                        return "Error";
+                    }
                     logService.updateInfoLog("받은 메세지 : " + result);
                     return result;
                 } catch (Exception e) {
@@ -247,6 +258,10 @@ public class MQTTManager {
 
             // 2) JSON으로 감싸기
             String json = "{\"db_hex\":\"" + b64 + "\"}";
+
+            if (Thread.currentThread().isInterrupted()) {
+                throw new RuntimeException();
+            }
 
             client.publishWith()
                     .topic(sendTopic)
@@ -306,7 +321,7 @@ public class MQTTManager {
                     .topicFilter(receiveTopic)
                     .callback(publish -> {
                         String msg = new String(publish.getPayloadAsBytes(), StandardCharsets.UTF_8);
-
+                        System.out.println("msg = " + msg);
                         try {
                             // 2) { 로 시작하면, RX 뒤에 있는 ![ ... !] 프레임만 추출
                             if (msg.startsWith("{") && msg.contains("![")) {
@@ -363,7 +378,8 @@ public class MQTTManager {
             return future.get(5, TimeUnit.SECONDS);
 
         } catch (TimeoutException e) {
-            return "Error: Timeout waiting for response";
+
+            return "Error";
         } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
             return "Error";

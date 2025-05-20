@@ -146,7 +146,10 @@ public class FirmwareService {
                                 try {
                                     hexMsgTransceiver.sendByteMessagesShortLog(packet);
                                     success = true;
-                                } catch (Exception e) {
+                                } catch (RuntimeException e){
+                                    return null;
+                                }
+                                catch (Exception e) {
                                     retryCount++;
                                     if (retryCount >= 3) {
                                         logService.errorLog("재시도 3회 실패했습니다. 연결상태를 확인해주세요.");
