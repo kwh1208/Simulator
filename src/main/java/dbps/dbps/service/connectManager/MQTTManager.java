@@ -287,7 +287,7 @@ public class MQTTManager {
 
             String json = "{\"db_hex\":\"" + b64 + "\"}";
 
-            if (Thread.currentThread().isInterrupted()) {
+            if (cancel) {
                 throw new InterruptedIOException("전송이 취소되었습니다.");
             }
 
@@ -297,7 +297,7 @@ public class MQTTManager {
                     .qos(MqttQos.AT_MOST_ONCE)
                     .send();
 
-            if (Thread.currentThread().isInterrupted()) {
+            if (cancel) {
                 throw new InterruptedIOException("전송이 취소되었습니다.");
             }
 

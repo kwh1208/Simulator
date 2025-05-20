@@ -5,6 +5,8 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 
+import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -189,7 +191,7 @@ public class HexMsgTransceiver {
         }
     }
 
-    public void sendByteMessagesShortLog(byte[] msg) {
+    public void sendByteMessagesShortLog(byte[] msg) throws IOException {
         switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> {
                 try {
@@ -225,7 +227,9 @@ public class HexMsgTransceiver {
             } case "mqtt" ->{
                 try {
                     mqttManager.sendByteMsgShortLog(msg);
-                } catch (Exception e) {
+                } catch (InterruptedIOException e) {
+                    throw new IOException(e);
+                }catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }

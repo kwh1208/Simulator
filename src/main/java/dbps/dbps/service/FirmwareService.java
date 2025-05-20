@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -146,7 +147,7 @@ public class FirmwareService {
                                 try {
                                     hexMsgTransceiver.sendByteMessagesShortLog(packet);
                                     success = true;
-                                } catch (RuntimeException e){
+                                } catch (IOException e){
                                     return null;
                                 }
                                 catch (Exception e) {
