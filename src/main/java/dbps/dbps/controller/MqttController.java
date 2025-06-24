@@ -147,8 +147,8 @@ public class MqttController {
     @Setter
     @Getter
     public static class DeviceInfo {
-        private String dev_name;
         private String dev_mac;
+        private String dev_name;
         private String api_url;
         private int api_delay;
         private int uart_comm;
@@ -157,7 +157,7 @@ public class MqttController {
         private String broker_user;
         private String broker_pass;
 
-        public DeviceInfo(String dev_name, String dev_mac, String api_url, String broker_ip, int broker_port, String broker_user, String broker_pass) {
+        public DeviceInfo(String dev_mac, String dev_name, String api_url, String broker_ip, int broker_port, String broker_user, String broker_pass) {
             this.dev_name = dev_name;
             this.dev_mac = dev_mac;
             this.api_url = api_url;

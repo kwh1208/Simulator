@@ -594,11 +594,12 @@ public class CommunicationSettingController {
         if (selected) {
             serverIPPort.setText(port);
             serverTCPRadioBtn.setSelected(true);
-            UDPIPPort.setText(port);
+            serverTCPRadioBtn.requestFocus();
         } else {
             clientIPAddress.setText(ip);
             clientIPPort.setText(port);
             clientTCPRadioBtn.setSelected(true);
+            clientTCPRadioBtn.requestFocus();
         }
 
         UDPIPAddress.setText(ip);
@@ -655,6 +656,7 @@ public class CommunicationSettingController {
                     if (communicationGroup.getSelectedToggle().equals(serialRadioBtn)) {
                         if (RS485ChkBox.isSelected()) {
                             String msg = "10 02 " + convertRS485AddrASCii() + " 00 0B 6A 30 31 32 33 34 35 36 37 38 39 10 03";
+                            System.out.println("CommunicationSettingController.call");
                             hexMsgTransceiver.sendMessages(msg, progressIndicator);
                         } else {
                             hexMsgTransceiver.sendByteMessages(CONNECT_START, progressIndicator);

@@ -377,7 +377,7 @@ public class DisplaySignalSettingController {
         DisplayListController controller = fxmlLoader.getController();
 
         Stage modalStage = new Stage();
-        modalStage.setTitle("통신 설정");
+        modalStage.setTitle("모듈 검색");
         modalStage.getIcons().add(new Image(Simulator.class.getResourceAsStream("/dabit_app.png")));
         
         modalStage.initModality(Modality.APPLICATION_MODAL);

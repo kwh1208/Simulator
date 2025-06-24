@@ -175,7 +175,7 @@ public class ConfigService extends AbstractSingleton<ConfigService> {
         defaultProperties.setProperty("clientTCPPort", "5100");
         defaultProperties.setProperty("serverTCPAddr", "192.168.0.10");
         defaultProperties.setProperty("serverTCPPort", "5000");
-        defaultProperties.setProperty("UDPPort", "5109");
+        defaultProperties.setProperty("UDPPort", "5108");
         defaultProperties.setProperty("UDPAddr", "192.168.0.10");
         defaultProperties.setProperty("RESPONSE_LATENCY", "3");
         defaultProperties.setProperty("latency", "3");
@@ -187,7 +187,7 @@ public class ConfigService extends AbstractSingleton<ConfigService> {
 
         // 네트워크 설정
         defaultProperties.setProperty("dbNetIP", "192.168.0.201");
-        defaultProperties.setProperty("dbNetPort", "5000");
+        defaultProperties.setProperty("dbNetPort", "5108");
         defaultProperties.setProperty("dbNetGateway", "192.168.0.1");
         defaultProperties.setProperty("dbNetSubnet", "255.255.255.0");
 

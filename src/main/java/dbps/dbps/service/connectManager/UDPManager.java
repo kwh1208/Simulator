@@ -27,7 +27,7 @@ public class UDPManager {
 
     @Getter
     @Setter
-    private int PORT;
+    private int PORT = UDP_PORT;
 
 
     DatagramSocket socket = null;
@@ -467,7 +467,6 @@ public class UDPManager {
 
     public void connect300Wifi(int port){
         this.IP = "255.255.255.255";
-        this.PORT = port;
         try {
             String wifiIP = getLocalWiFiIP();
             WifiOnly = true;
@@ -528,7 +527,7 @@ public class UDPManager {
 
     public void connect300Ethernet(int port) {
         this.IP = "255.255.255.255";
-        this.PORT = port;
+        
 
         try {
             List<String> ethernetIPs = getLocalEthernetIPs();
@@ -591,7 +590,7 @@ public class UDPManager {
     public void connect(String IP, int PORT){
         logService.updateInfoLog(MessageFormat.format(bundle.getString("udpServerConnection"), IP, String.valueOf(PORT)));
         this.IP = IP;
-        this.PORT = PORT;
+        
         try {
             if (socket == null) {
                 socket = new DatagramSocket(5109);
@@ -606,7 +605,7 @@ public class UDPManager {
 
     public void connectNoLog(String IP, int PORT){
         this.IP = IP;
-        this.PORT = PORT;
+        
         try {
             if (socket == null) {
                 socket = new DatagramSocket();
