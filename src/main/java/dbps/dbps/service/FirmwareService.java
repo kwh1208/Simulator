@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -146,7 +147,10 @@ public class FirmwareService {
                                 try {
                                     hexMsgTransceiver.sendByteMessagesShortLog(packet);
                                     success = true;
-                                } catch (Exception e) {
+                                } catch (IOException e){
+                                    return null;
+                                }
+                                catch (Exception e) {
                                     retryCount++;
                                     if (retryCount >= 3) {
                                         logService.errorLog("재시도 3회 실패했습니다. 연결상태를 확인해주세요.");

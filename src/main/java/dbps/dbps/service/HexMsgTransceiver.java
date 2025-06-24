@@ -5,7 +5,8 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -13,8 +14,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static dbps.dbps.Constants.*;
 import static dbps.dbps.controller.FontNameController.getFontName;
@@ -66,7 +65,6 @@ public class HexMsgTransceiver {
     }
 
     public CompletableFuture<String> sendByteMessages(byte[] msg, ProgressIndicator progressIndicator) {
-        System.out.println("HexMsgTransceiver.sendByteMessages");
         CompletableFuture<String> resultFuture = new CompletableFuture<>();
         Task<String> sendTask = switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> serialPortManager.sendMsgAndGetMsgByte(msg);
@@ -104,7 +102,6 @@ public class HexMsgTransceiver {
 
             new Thread(sendTask).start(); // 비동기로 실행
         } else {
-            System.out.println(9999);
             resultFuture.completeExceptionally(new IllegalStateException("Task is null."));
         }
         return resultFuture;
@@ -194,7 +191,7 @@ public class HexMsgTransceiver {
         }
     }
 
-    public void sendByteMessagesShortLog(byte[] msg) {
+    public void sendByteMessagesShortLog(byte[] msg) throws IOException {
         switch (CONNECT_TYPE) {
             case "serial", "bluetooth", "rs485" -> {
                 try {
@@ -230,7 +227,9 @@ public class HexMsgTransceiver {
             } case "mqtt" ->{
                 try {
                     mqttManager.sendByteMsgShortLog(msg);
-                } catch (Exception e) {
+                } catch (InterruptedIOException e) {
+                    throw new IOException(e);
+                }catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -239,10 +238,6 @@ public class HexMsgTransceiver {
 
     public void sendMessages(String msg, ProgressIndicator progressIndicator) {
         byte[] bytes = hexStringToByteArray(msg);
-        for (int i = 0; i < bytes.length; i++) {
-            System.out.printf("%02x ", bytes[i]);
-        }
-//
         sendByteMessages(bytes, progressIndicator);
     }
 

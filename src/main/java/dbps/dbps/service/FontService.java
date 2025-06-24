@@ -8,6 +8,7 @@ import javafx.scene.control.ProgressBar;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.MessageFormat;
@@ -373,8 +374,9 @@ public class FontService {
 
                     try {
                         hexMsgTransceiver.sendByteMessagesShortLog(sendPacket);
-                    } catch (Exception e){
-                        if (isCancelled()){
+                    }
+                    catch (Exception e){
+                        if (isCancelled()||cancel){
                             logService.updateInfoLog(bundle.getString("transferCancel"));
                             msg = "10 02 00 00 02 45 01 10 03";
                             if (isRS){

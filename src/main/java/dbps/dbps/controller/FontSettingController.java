@@ -352,7 +352,7 @@ public class FontSettingController {
         cancelButton.setOnAction(e -> {
             if (fontSendTask != null) {
                 cancel = true;
-                fontSendTask.cancel(true);
+                fontSendTask.cancel();
                 progressBar.setProgress(0);
                 closeWindowAfterDelay(progressStage);
                 cancel = false;

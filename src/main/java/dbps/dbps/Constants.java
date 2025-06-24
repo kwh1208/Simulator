@@ -24,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 @Setter
 public class Constants {
     public static boolean cancel = false;
-
     public static String CONNECT_TYPE = "none";
     ConfigService configService;
 
