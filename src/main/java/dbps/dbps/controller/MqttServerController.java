@@ -28,6 +28,9 @@ public class MqttServerController {
         mqttManager = MQTTManager.getInstance();
         configService = ConfigService.getInstance();
         mqttServer.getStylesheets().add(Simulator.class.getResource("/dbps/dbps/css/additionalFunction.css").toExternalForm());
+
+        IP.setText(configService.getProperty("mqtt_IP"));
+        port.setText(configService.getProperty("mqtt_Port"));
     }
 
     public void set() {

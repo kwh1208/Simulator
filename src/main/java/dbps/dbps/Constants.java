@@ -157,7 +157,6 @@ public class Constants {
 
 
     public static byte[] hexStringToByteArray(String hex) {
-        System.out.println("hex = " + hex);
         String[] hexValues = hex.split(" ");
         byte[] byteArray = new byte[hexValues.length];
 

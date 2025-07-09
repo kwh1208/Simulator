@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -124,6 +125,7 @@ public class SerialPortManager {
             @Override
             protected String call() throws Exception {
                 String portName = OPEN_PORT_NAME;
+                String result = null;
                 synchronized (portLock) {
                     if (!isPortOpen(portName)) {
                         openPort(portName, SERIAL_BAUDRATE);
@@ -176,20 +178,47 @@ public class SerialPortManager {
                             }
                         }
 
-                        String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+                        result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
 
                         if (result.contains("TX") && result.contains("![") && result.contains("!]")) {
                             int indexTX = result.indexOf("TX");
                             result = result.substring(indexTX);
                             result = result.substring(result.indexOf("!["), result.indexOf("!]") + 2);
                         }
+
+                        if (!result.startsWith("![")||!result.endsWith("!]")) {
+                            System.out.println("에러");
+                            throw new Exception();
+                        }
+
                         logService.updateInfoLog(bundle.getString("receivedMsg") + result);
                         return result;
                     } catch (SerialPortTimeoutException | SerialPortIOException e) {
+                        if (Objects.requireNonNull(result).contains("![")&&result.contains("!]")) {
+                            int startIndex = result.indexOf("![");
+                            int endIndex = result.indexOf("!]");
+
+                            // endIndex는 "!"의 위치이므로 "]"까지 포함하려면 +2 해줘야 함
+                            if (startIndex >= 0 && endIndex >= 0 && endIndex + 2 <= result.length()) {
+                                result = result.substring(startIndex, endIndex + 2); // "!["부터 "!]"까지 포함해서 자름
+                            }
+                            return result;
+                        }
                         logService.errorLog(bundle.getString("connectionFail"));
                         throw e;
                     } catch (Exception e) {
-                        logService.errorLog(bundle.getString("Error") + e.getMessage());
+                        if (Objects.requireNonNull(result).contains("![")&&result.contains("!]")) {
+                            int startIndex = result.indexOf("![");
+                            int endIndex = result.indexOf("!]");
+
+                            // endIndex는 "!"의 위치이므로 "]"까지 포함하려면 +2 해줘야 함
+                            if (startIndex >= 0 && endIndex >= 0 && endIndex + 2 <= result.length()) {
+                                result = result.substring(startIndex, endIndex + 2); // "!["부터 "!]"까지 포함해서 자름
+                            }
+                            logService.updateInfoLog(bundle.getString("receivedMsg") + result);
+                            return result;
+                        }
+                        logService.errorLog(bundle.getString("Error"));
                         throw e;
                     } finally {
                         closePort(portName); // 작업 후 포트 닫기
@@ -206,6 +235,8 @@ public class SerialPortManager {
             @Override
             protected String call() throws Exception {
                 String portName = OPEN_PORT_NAME;
+                String result = null; // catch 블록에서도 사용 가능하도록 바깥에서 선언
+
                 synchronized (portLock) {
                     if (!isPortOpen(portName)) {
                         openPort(portName, SERIAL_BAUDRATE);
@@ -223,9 +254,13 @@ public class SerialPortManager {
 
                     try (InputStream inputStream = new BufferedInputStream(port.getInputStream());
                          OutputStream outputStream = new BufferedOutputStream(port.getOutputStream())) {
+
                         inputStream.skip(inputStream.available());
                         byte[] dataToSend = msg.getBytes(utf8 ? StandardCharsets.UTF_8 : Charset.forName("MS949"));
-                        if (utf16) dataToSend = createPacket(msg);
+                        if (utf16) {
+                            dataToSend = createPacket(msg);
+                        }
+
                         outputStream.write(dataToSend);
                         outputStream.flush();
 
@@ -233,19 +268,21 @@ public class SerialPortManager {
                             logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF8(msg));
                         } else if (utf16) {
                             logService.updateInfoLog(bundle.getString("sendMsg") + formatLogForUTF16(msg));
-                        } else logService.updateInfoLog(bundle.getString("sendMsg") + msg);
+                        } else {
+                            logService.updateInfoLog(bundle.getString("sendMsg") + msg);
+                        }
 
                         byte[] buffer = new byte[1024];
                         int totalBytesRead = 0;
                         long startTime = System.currentTimeMillis();
-                        long overallTimeout = RESPONSE_LATENCY * 1000L; // 예: RESPONSE_LATENCY가 초 단위라면 밀리초로 변환
+                        long overallTimeout = RESPONSE_LATENCY * 1000L;
 
                         while (true) {
-                            // 전체 대기 시간이 초과되었는지 체크
                             if (System.currentTimeMillis() - startTime > overallTimeout) {
                                 logService.errorLog(bundle.getString("connectionFail"));
                                 throw new SocketTimeoutException("Overall timeout reached");
                             }
+
                             int bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
 
                             if (bytesRead > 0) {
@@ -255,45 +292,74 @@ public class SerialPortManager {
                                     break;
                                 }
                             } else {
-                                break; // 타임아웃
+                                break;
                             }
                         }
 
-                        String result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+                        result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+
                         if (result.contains("TX") && result.contains("![") && result.contains("!]")) {
                             int indexTX = result.indexOf("TX");
                             result = result.substring(indexTX);
                             result = result.substring(result.indexOf("!["), result.indexOf("!]") + 2);
                         }
-                        if (result.contains("RX")) {
 
+                        if (result.contains("RX")) {
                             result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
 
-                            String startMarker = "!["; // "10 02"
-                            String endMarker = "!]";   // "10 03"
+                            String startMarker = "![";
+                            String endMarker = "!]";
                             int startIndex = result.indexOf(startMarker);
                             int endIndex = result.lastIndexOf(endMarker);
-
                             result = result.substring(startIndex, endIndex + endMarker.length());
-                            result = result.toUpperCase();
                         }
+                        if (!result.startsWith("![")||!result.endsWith("!]")) {
+                            System.out.println("에러");
+                            throw new Exception();
+                        }
+
                         logService.updateInfoLog(bundle.getString("receivedMsg") + result);
                         return result;
+
                     } catch (SerialPortTimeoutException | SerialPortIOException e) {
+                        if (Objects.requireNonNull(result).contains("![")&&result.contains("!]")) {
+                            int startIndex = result.indexOf("![");
+                            int endIndex = result.indexOf("!]");
+
+                            // endIndex는 "!"의 위치이므로 "]"까지 포함하려면 +2 해줘야 함
+                            if (startIndex >= 0 && endIndex >= 0 && endIndex + 2 <= result.length()) {
+                                result = result.substring(startIndex, endIndex + 2); // "!["부터 "!]"까지 포함해서 자름
+                            }
+                            return result;
+                        }
                         logService.errorLog(bundle.getString("connectionFail"));
                         throw e;
+
                     } catch (Exception e) {
+                        if (Objects.requireNonNull(result).contains("![")&&result.contains("!]")) {
+                            int startIndex = result.indexOf("![");
+                            int endIndex = result.indexOf("!]");
+
+                            // endIndex는 "!"의 위치이므로 "]"까지 포함하려면 +2 해줘야 함
+                            if (startIndex >= 0 && endIndex >= 0 && endIndex + 2 <= result.length()) {
+                                result = result.substring(startIndex, endIndex + 2); // "!["부터 "!]"까지 포함해서 자름
+                            }
+                            return result;
+                        }
                         logService.errorLog(bundle.getString("Error"));
                         throw e;
+
                     } finally {
-                        closePort(portName); // 작업 후 포트 닫기
+                        closePort(portName);
                     }
                 }
             }
         };
+
         taskQueue.add(task);
         return task;
     }
+
 
     private int extractNumberAfterTXBeforeByteHex(String input) {
         // "TX" 뒤의 "byte" 앞 숫자를 찾는 정규식
@@ -328,7 +394,7 @@ public class SerialPortManager {
                         outputStream.flush();
                         logService.updateInfoLog(bundle.getString("sendMsg") + bytesToHex(msg, msg.length));
 
-                        byte[] buffer = new byte[1024];
+                        byte[] buffer = new byte[2048];
                         int totalBytesRead = 0;
                         long startTime = System.currentTimeMillis();
                         long overallTimeout = RESPONSE_LATENCY * 1000L; // 예: RESPONSE_LATENCY가 초 단위라면 밀리초로 변환
@@ -359,12 +425,33 @@ public class SerialPortManager {
 
                         String result = bytesToHex(buffer, totalBytesRead);
 
+                        System.out.println("result = " + result);
+
                         if (result.contains("54 58 28")) {
                             result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
+
+                            System.out.println("result = " + result);
+
+                            if (result.contains(">DIBD")){
+                                int start = result.indexOf("<");
+                                int end = result.indexOf("port:");
+
+                                if (start != -1 && end != -1) {
+                                    end += 10;
+                                    result = result.substring(start, end);
+                                    System.out.println("extracted = " + result);
+                                }
+                                logService.updateInfoLog(bundle.getString("receivedMsg") + result);
+                                return result;
+                            }
+
                             int tmp = extractNumberAfterTXBeforeByteHex(result);
                             if (tmp > 0 && 14 + String.valueOf(tmp).length() + result.indexOf("TX(") + tmp <= buffer.length) {
                                 result = new String(buffer, Charset.forName("MS949"));
                                 int txIndex = result.indexOf("TX(");
+
+                                System.out.println("txIndex = " + txIndex);
+
                                 if (txIndex != -1) {
                                     // "10 02" 이후부터 "10 03"까지 탐색
                                     int start = result.indexOf("10 02", txIndex);
@@ -375,7 +462,8 @@ public class SerialPortManager {
                                         result = result.substring(start, end);
                                         System.out.println("extracted = " + result);
                                     }}
-                                result = result.toUpperCase();
+                                result = result;
+
                             } else {
                                 throw new IllegalArgumentException("유효하지 않은 offset 또는 tmp 값입니다.");
                             }
@@ -384,13 +472,12 @@ public class SerialPortManager {
                             System.out.println(111);
                             result = new String(buffer, 0, totalBytesRead, Charset.forName("MS949"));
 
-                            String startMarker = "10 02"; // "10 02"
-                            String endMarker = "10 03";   // "10 03"
+                            String startMarker = "10 02";
+                            String endMarker = "10 03";
                             int startIndex = result.indexOf(startMarker);
                             int endIndex = result.lastIndexOf(endMarker);
 
                             result = result.substring(startIndex, endIndex + endMarker.length());
-                            result = result.toUpperCase();
                             System.out.println("result1 = " + result);
                         }
                         logService.updateInfoLog(bundle.getString("receivedMsg") + result);

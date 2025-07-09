@@ -43,6 +43,7 @@ public class FirmwareService {
 
     public void setFirmware(String firmware) {
         String replace = firmware.replace("!]", "");
+        replace = replace.replace("\\n", "\n");
         if (firmwareInformation==null){
             return;
         }

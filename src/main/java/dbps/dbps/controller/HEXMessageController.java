@@ -759,7 +759,7 @@ public class HEXMessageController {
             String displayMethodValue = displayMethod.getValue().key();
             String charCodesValue = charCodes.getValue().displayText();
             String fontSizeValue = fontSize.getValue().displayText().replaceAll("[^0-9]", "");
-            String fontGroupValue = fontGroup.getValue().displayText();
+            String fontGroupValue = fontGroup.getValue().key();
             String effectInValue = effectIn.getValue().displayText();
             String inDirectionValue = inDirection.getValue().displayText();
             String effectOutValue = effectOut.getValue().displayText();
@@ -779,7 +779,7 @@ public class HEXMessageController {
             StringBuilder msg = new StringBuilder("10 02 ");
             msg.append(isRS ? String.format("%02X ", RS485_ADDR_NUM) : "00 ");
 
-            List<String> colorHexList = new ArrayList<>();
+
             ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
             Pattern pattern = Pattern.compile("\\^\\[([0-9A-Fa-f;]+)\\^\\]");
             Matcher matcher = pattern.matcher(text);
@@ -791,21 +791,11 @@ public class HEXMessageController {
                 for (char ch : normal.toCharArray()) {
                     byte[] encoded = String.valueOf(ch).getBytes(charset);
                     byteOut.write(encoded);
-
-                    String bg = colorIndex < bgColorValue.length() ? String.valueOf(bgColorValue.charAt(colorIndex)) : String.valueOf(bgColorValue.charAt(bgColorValue.length() - 1));
-                    String fg = colorIndex < textColorValue.length() ? String.valueOf(textColorValue.charAt(colorIndex)) : String.valueOf(textColorValue.charAt(textColorValue.length() - 1));
-                    colorHexList.add(bg + fg);
-                    colorIndex++;
                 }
 
                 String[] hexes = matcher.group(1).split(";");
                 for (String hex : hexes) {
                     byteOut.write(Integer.parseInt(hex, 16));
-
-                    String bg = colorIndex < bgColorValue.length() ? String.valueOf(bgColorValue.charAt(colorIndex)) : String.valueOf(bgColorValue.charAt(bgColorValue.length() - 1));
-                    String fg = colorIndex < textColorValue.length() ? String.valueOf(textColorValue.charAt(colorIndex)) : String.valueOf(textColorValue.charAt(textColorValue.length() - 1));
-                    colorHexList.add(bg + fg);
-                    colorIndex++;
                 }
 
                 lastEnd = matcher.end();
@@ -815,11 +805,6 @@ public class HEXMessageController {
             for (char ch : remaining.toCharArray()) {
                 byte[] encoded = String.valueOf(ch).getBytes(charset);
                 byteOut.write(encoded);
-
-                String bg = colorIndex < bgColorValue.length() ? String.valueOf(bgColorValue.charAt(colorIndex)) : String.valueOf(bgColorValue.charAt(bgColorValue.length() - 1));
-                String fg = colorIndex < textColorValue.length() ? String.valueOf(textColorValue.charAt(colorIndex)) : String.valueOf(textColorValue.charAt(textColorValue.length() - 1));
-                colorHexList.add(bg + fg);
-                colorIndex++;
             }
 
             byte[] textBytes = byteOut.toByteArray();
@@ -853,26 +838,76 @@ public class HEXMessageController {
             msg.append(String.format("%02X ", Integer.parseInt(yEndValue) / 4));
             msg.append(bgImgValue.equals("notUsed") ? "00 " : String.format("%02X ", Integer.parseInt(bgImgValue)));
 
-            for (int i = 0; i < colorHexList.size(); i++) {
+            //String 배열 만들기
+            List<String> textList = new ArrayList<>();
+            List<String> colorHexList = new ArrayList<>();
+
+            Pattern controlPattern = Pattern.compile("\\^\\[E[0-9AB];[0-9AB][0-90-9AB]\\^\\]");
+
+            for (int i = 0; i < text.length(); ) {
+                if (text.charAt(i) == '^' && i + 1 < text.length() && text.charAt(i + 1) == '[') {
+                    Matcher matcher1 = controlPattern.matcher(text.substring(i));
+                    if (matcher1.find() && matcher1.start() == 0) {
+                        String controlSeq = matcher1.group();  // ^[E0;B3^] 같은 형식
+                        textList.add(controlSeq);
+                        String bg = colorIndex < bgColorValue.length() ? String.valueOf(bgColorValue.charAt(colorIndex)) : String.valueOf(bgColorValue.charAt(bgColorValue.length() - 1));
+                        String fg = colorIndex < textColorValue.length() ? String.valueOf(textColorValue.charAt(colorIndex)) : String.valueOf(textColorValue.charAt(textColorValue.length() - 1));
+                        colorHexList.add(bg + fg);
+                        colorIndex++;
+                        i += controlSeq.length();  // 건너뛰기
+                        continue;
+                    }
+                }
+                textList.add(String.valueOf(text.charAt(i)));
+                String bg = colorIndex < bgColorValue.length() ? String.valueOf(bgColorValue.charAt(colorIndex)) : String.valueOf(bgColorValue.charAt(bgColorValue.length() - 1));
+                String fg = colorIndex < textColorValue.length() ? String.valueOf(textColorValue.charAt(colorIndex)) : String.valueOf(textColorValue.charAt(textColorValue.length() - 1));
+                colorHexList.add(bg + fg);
+                colorIndex++;
+                i++;
+            }
+            for (int i = 0; i < textList.size(); i++) {
+                String s = textList.get(i);
                 int tmpValue = Integer.parseInt(colorHexList.get(i), 16);
+
+                System.out.println("fontGroupValue = " + fontGroupValue);
                 int add = switch (fontGroupValue) {
-                    case "Group 1" -> 0;
-                    case "Group 2" -> 8;
-                    case "Group 3" -> 128;
-                    case "Group 4" -> 136;
+                    case "fontGroup1" -> 0;
+                    case "fontGroup2" -> 8;
+                    case "fontGroup3" -> 128;
+                    case "fontGroup4" -> 136;
                     default -> 0;
                 };
 
                 int result = (tmpValue + add) & 0xFF;
                 msg.append(String.format("%02X ", result));
 
-                if (charCodesValue.equals(bundle.getString("UTF16")) || (i < text.length() && String.valueOf(text.charAt(i)).getBytes(charset).length != 1)) {
+                if (s.equals(bundle.getString("UTF16")) || s.getBytes(charset).length != 1) {
                     msg.append("00 ");
                 }
             }
 
+
+//            for (int i = 0; i < colorHexList.size(); i++) {
+//                int tmpValue = Integer.parseInt(colorHexList.get(i), 16);
+//                int add = switch (fontGroupValue) {
+//                    case "Group 1" -> 0;
+//                    case "Group 2" -> 8;
+//                    case "Group 3" -> 128;
+//                    case "Group 4" -> 136;
+//                    default -> 0;
+//                };
+//
+//                int result = (tmpValue + add) & 0xFF;
+//                msg.append(String.format("%02X ", result));
+//
+//                if (charCodesValue.equals(bundle.getString("UTF16")) || (i < text.length() && String.valueOf(text.charAt(i)).getBytes(charset).length != 1)) {
+//                    msg.append("00 ");
+//                }
+//            }
+
             msg.append(bytesToHex(textBytes, textBytes.length));
             msg.append("10 03");
+            System.out.println("msg = " + msg);
             return msg.toString();
 
         } catch (Exception e) {

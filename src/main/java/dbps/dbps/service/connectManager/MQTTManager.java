@@ -321,7 +321,6 @@ public class MQTTManager {
                     .topicFilter(receiveTopic)
                     .callback(publish -> {
                         String msg = new String(publish.getPayloadAsBytes(), StandardCharsets.UTF_8);
-                        System.out.println("msg = " + msg);
                         try {
                             // 2) { 로 시작하면, RX 뒤에 있는 ![ ... !] 프레임만 추출
                             if (msg.startsWith("{") && msg.contains("![")) {
@@ -344,14 +343,53 @@ public class MQTTManager {
 
                                 msg = bytesToHex(decodedBytes, decodedBytes.length);
 
-                                if (msg.contains("52 58 28")) {
-                                    Pattern pattern = Pattern.compile("10 02(.*?)10 03");
-                                    Matcher matcher = pattern.matcher(msg);
-
-                                    if (matcher.find()) {
-                                        msg = matcher.group(0); // 전체 매칭된 부분을 추출
+                                if (!msg.startsWith("10")){
+                                    StringBuilder result = new StringBuilder();
+                                    String[] hexArray = msg.split(" ");
+                                    for (String hex : hexArray) {
+                                        int byteVal = Integer.parseInt(hex, 16);
+                                        result.append((char) byteVal);
                                     }
+
+                                    msg = result.toString();
+                                    msg = msg.toUpperCase();
+
+                                    if (msg.contains(">DIBD")){
+                                        int start = result.indexOf("<");
+                                        int end = result.indexOf("port:");
+
+                                        if (start != -1 && end != -1) {
+                                            end += 10;
+                                            msg = result.substring(start, end);
+                                        }
+                                    }
+
+                                    if (msg.contains("52 58 28")) {
+                                        System.out.println(111);
+
+                                        String startMarker = "10 02";
+                                        String endMarker = "10 03";
+                                        int startIndex = msg.indexOf(startMarker);
+                                        int endIndex = msg.indexOf(endMarker);
+
+                                        msg = msg.substring(startIndex, endIndex + endMarker.length());
+                                        System.out.println("result1 = " + msg);
+                                    }
+
+                                        int txIndex = result.indexOf("TX(");
+
+
+                                        if (txIndex != -1) {
+                                            // "10 02" 이후부터 "10 03"까지 탐색
+                                            int start = result.indexOf("10 02", txIndex);
+                                            int end = result.indexOf("10 03", start);
+
+                                            if (start != -1 && end != -1) {
+                                                end += "10 03".length(); // "10 03"까지 포함
+                                                msg = msg.substring(start, end);
+                                            }}
                                 }
+
 
                                 // 3) 프레임 마커 정의
                                 String startMarker = "10 02";
@@ -359,7 +397,9 @@ public class MQTTManager {
 
                                 // 4) 시작/끝 인덱스 찾기
                                 int startIdx = msg.indexOf(startMarker);
-                                int endIdx = msg.lastIndexOf(endMarker);
+                                int endIdx = msg.indexOf(endMarker);
+
+                                System.out.println("msg = " + msg);
 
                                 // 5) 잘라내기
                                 if (startIdx != -1 && endIdx != -1 && endIdx + endMarker.length() <= msg.length()) {
@@ -387,6 +427,19 @@ public class MQTTManager {
             e.printStackTrace();
             return "Error";
         }
+    }
+
+    private int extractNumberAfterTXBeforeByteHex(String input) {
+        // "TX" 뒤의 "byte" 앞 숫자를 찾는 정규식
+        Pattern pattern = Pattern.compile("TX.*?(\\d+)\\s*byte");
+        Matcher matcher = pattern.matcher(input);
+
+        if (matcher.find()) {
+            String number = matcher.group(1); // 첫 번째 그룹에서 숫자 추출
+            return Integer.parseInt(number); // 숫자를 Integer로 변환하여 반환
+        }
+
+        return -1;
     }
 
 

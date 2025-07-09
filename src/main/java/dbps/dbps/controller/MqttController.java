@@ -104,8 +104,8 @@ public class MqttController {
 
     public void set() throws JsonProcessingException {
         if (TCPRadioBtn.isSelected()) {
-            DeviceInfo deviceInfo = new DeviceInfo(name.getText(),
-                    mqttMac.getText(),
+            DeviceInfo deviceInfo = new DeviceInfo(mqttMac.getText(),
+                    name.getText(),
                     API.getText(),
                     brokerIP.getText(),
                     Integer.parseInt(brokerPort.getText()),
@@ -151,7 +151,8 @@ public class MqttController {
         private String dev_name;
         private String api_url;
         private int api_delay;
-        private int uart_comm;
+        private int dev_uart;
+        private int debug_level;
         private String broker_ip;
         private int broker_port;
         private String broker_user;
@@ -162,7 +163,8 @@ public class MqttController {
             this.dev_mac = dev_mac;
             this.api_url = api_url;
             this.api_delay = 10;
-            this.uart_comm = 1;
+            this.dev_uart = 1;
+            this.debug_level = 4;
             this.broker_ip = broker_ip;
             this.broker_port = broker_port;
             this.broker_user = broker_user;

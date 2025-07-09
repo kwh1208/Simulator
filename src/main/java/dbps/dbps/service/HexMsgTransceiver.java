@@ -242,8 +242,12 @@ public class HexMsgTransceiver {
     }
 
     private void msgReceive(String receiveMsg, byte[] msg) {
+        receiveMsg = receiveMsg.toUpperCase();
         if (receiveMsg.isEmpty()) {
             return;
+        }
+        if (receiveMsg.contains(">DIBD")){
+            updateFirmwareUIHEX(receiveMsg);
         }
         if (receiveMsg.startsWith("{") && receiveMsg.endsWith("}")) {
 
@@ -253,7 +257,7 @@ public class HexMsgTransceiver {
         }
         String[] splitMsg = receiveMsg.split(" ");
 
-        if (splitMsg[5].equals("6A")) {
+        if (splitMsg[5].equals("6A")|| splitMsg[5].equals("6a")) {
             for (int i = 6; i < 16; i++) {
                 if (!splitMsg[i].equals("3" + (i-6))) {
 //                    logService.errorLog(bundle.getString("unknownStatusCode"));
@@ -272,13 +276,20 @@ public class HexMsgTransceiver {
         String command = splitMsg[5];
         String status = splitMsg[6];
         if ((splitMsg.length-7)!=Integer.parseInt(length, 16)){
-
+            System.out.println(111);
             logService.warningLog(bundle.getString("receivePacketError"));
             return;
         }
 
         switch (command) {
             case "40" -> {
+                String tmp = bytesToHex(msg, msg.length);
+                System.out.println("tmp = " + tmp);
+                System.out.println("receiveMsg = " + receiveMsg);
+                if (receiveMsg.replace(" ", "").equals(tmp.replace(" ", ""))) {
+                    handleScreenSizeSetting(splitMsg, msg);
+                    return;
+                }
                 if (!Objects.equals(length, "04")){
                     logService.warningLog(bundle.getString("receivePacketError"));
                     return;
@@ -351,6 +362,11 @@ public class HexMsgTransceiver {
         FirmwareService.firmwareInformation.setText(asciiString);
     }
 
+    private void updateFirmwareUIHEX(String msg) {
+        // firmwareService에 전달
+        FirmwareService.firmwareInformation.setText(msg);
+    }
+
     //Todo 로그 수정
     private void handleScreenSizeSetting(String[] splitMsg, byte[] msg) {
         if (!splitMsg[7].equals(String.format("%02X", msg[7])) || !splitMsg[8].equals(String.format("%02X", msg[8]))) {
@@ -365,16 +381,15 @@ public class HexMsgTransceiver {
     Map<String, String> dayMap = new HashMap<>();
 
     private void handleTimeRead(String receiveMsg, String[] splitMsg) {
-        if (receiveMsg.length()<45){
-            logService.warningLog(bundle.getString("receivePacketError"));
-            return;
-        }
+
         processTimeString(receiveMsg.substring(18, 38));
         if (!splitMsg[6].equals("10") && !splitMsg[6].equals("20") && !splitMsg[6].equals("40") && !splitMsg[6].equals("80")) {
             StringBuilder time = new StringBuilder();
 
             // 현재 언어 설정 확인
             boolean isKorean = bundle.getLocale().getLanguage().equals("ko");
+            //10 02 00 00 08 66 00 01 01 00 00 06 03 10 03
+            //10 02 00 00 08 66 00 01 01 00 00 09 27 10 03
 
             // 요일 변환을 위한 매핑
             if (dayMap.isEmpty()) {

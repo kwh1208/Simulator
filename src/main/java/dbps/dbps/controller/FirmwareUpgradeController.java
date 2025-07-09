@@ -239,7 +239,7 @@ public class FirmwareUpgradeController {
         fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
         if (fileName.contains("502")) {
             firmwareFileInformation.setText(fileName);
-        } else if (fileName.contains("400")) {
+        } else if (fileName.contains("400")||fileName.contains("402")) {
             int startOffset = 0x50;   // 읽기 시작 위치
             int endOffset   = 0x6B;   // 읽기 끝 위치
             int length      = endOffset - startOffset + 1;

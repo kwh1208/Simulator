@@ -262,6 +262,7 @@ public class TCPManager {
                     }
 
                     String result = bytesToHex(buffer, totalBytesRead);
+
                     if (result.contains("52 58 28")) {
                         Pattern pattern = Pattern.compile("10 02(.*?)10 03");
                         Matcher matcher = pattern.matcher(result);

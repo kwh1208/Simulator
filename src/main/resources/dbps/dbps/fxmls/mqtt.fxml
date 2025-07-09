@@ -5,9 +5,9 @@
 
 <AnchorPane fx:id="mqttAP" minHeight="384.0" minWidth="371.0" prefHeight="418.0" prefWidth="371.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbps.dbps.controller.MqttController">
     <Label layoutX="26.0" layoutY="49.0" prefHeight="29.0" text="MAC 주소" />
-    <TextField fx:id="mqttMac" layoutX="97.0" layoutY="49.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
+    <TextField editable = "false" fx:id="mqttMac" layoutX="97.0" layoutY="49.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
     <Label layoutX="26.0" layoutY="90.0" prefHeight="29.0" text="Name" />
-    <TextField fx:id="name" editable="false" layoutX="97.0" layoutY="90.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
+    <TextField fx:id="name" layoutX="97.0" layoutY="90.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
     <Label layoutX="26.0" layoutY="130.0" prefHeight="29.0" text="API URL" />
     <TextField fx:id="API" layoutX="97.0" layoutY="130.0" minWidth="240.0" prefHeight="29.0" prefWidth="240.0" />
     <Label layoutX="26.0" layoutY="169.0" prefHeight="29.0" text="Broker IP" />

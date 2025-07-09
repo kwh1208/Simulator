@@ -69,12 +69,12 @@ public class DisplaySignalSettingController {
         signalList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.equals("08D-P64D1S21")) {
                 scanOrder.getItems().clear();
-                scanOrder.getItems().addAll("138 IC", "L800", "NO IC");
+                scanOrder.getItems().addAll("138 IC", "595 IC", "SUM2017TD IC");
                 scanOrder.setValue("138 IC");
                 scanOrder.setDisable(false);
             } else if (newValue.equals("04D-P32D2S61")) {
                 scanOrder.getItems().clear();
-                scanOrder.getItems().addAll("138 IC", "595 IC", "SUM2017TD IC");
+                scanOrder.getItems().addAll("138 IC", "L800", "NO IC");
                 scanOrder.getStyleClass().add("wide-choice-box");
                 scanOrder.setValue("138 IC");
                 scanOrder.setDisable(false);
@@ -235,7 +235,7 @@ public class DisplaySignalSettingController {
                 case "138 IC":
                     result = result + " 01";
                     break;
-                case " L800":
+                case "L800":
                     result = result + " 02";
                     break;
                 case "NO IC":
@@ -291,7 +291,7 @@ public class DisplaySignalSettingController {
                 case "138 IC":
                     result = result + "1";
                     break;
-                case " L800":
+                case "L800":
                     result = result + "2";
                     break;
                 case "NO IC":

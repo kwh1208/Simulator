@@ -501,8 +501,8 @@ public class AsciiMsgTransceiver extends AbstractSingleton<AsciiMsgTransceiver> 
                 
                 String[] split = receivedMsg.split("\n");
                 if (split.length >= 4) {
-                    bleId.setText(split[2]);
-                    blePassword.setText(split[3].replaceAll("!]", ""));
+                    bleId.setText(split[2].trim());
+                    blePassword.setText(split[3].replaceAll("!]", "").trim());
                 }
             } catch (Exception e) {
                 logService.errorLog("BT DIBD 메시지 처리 중 오류 발생: " + e.getMessage());

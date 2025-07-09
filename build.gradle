@@ -103,7 +103,7 @@ jlink {
     }
 
     jpackage {
-        imageName = 'dbPS v1.4.3'
+        imageName = 'dbPS v1.4.4'
         installerName = 'dbProtocolSimulator'
         installerType = 'exe'
         icon = 'src/main/resources/dabit_icon.ico'
